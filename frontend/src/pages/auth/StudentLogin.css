@@ -1,0 +1,461 @@
+/* ========================================
+   STUDENT LOGIN - Simple y Accesible
+   ======================================== */
+
+.student-login-content {
+  --background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.student-login-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow: hidden;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.student-login-header {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.student-login-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.student-login-subtitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* ========================================
+   SECUENCIA SELECCIONADA
+   ======================================== */
+
+.student-sequence-display {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1rem;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.student-sequence-placeholder {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.student-sequence-items {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.student-sequence-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background: white;
+  border: 3px solid #f093fb;
+  border-radius: 12px;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-sequence-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.student-sequence-number {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  background: #f093fb;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   GRID DE PICTOGRAMAS (5 en 1 fila)
+   ======================================== */
+
+.student-pictograms-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  flex: 1;
+  align-content: center;
+}
+
+.student-pictogram-button {
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.student-pictogram-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(240, 147, 251, 0.15);
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.student-pictogram-button:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.student-pictogram-button:hover:not(:disabled) {
+  transform: scale(1.2);
+}
+
+.student-pictogram-button:active:not(:disabled) {
+  transform: scale(1.08);
+}
+
+.student-pictogram-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.student-pictogram-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+  transition: filter 0.3s ease;
+}
+
+.student-pictogram-button:hover:not(:disabled) .student-pictogram-image {
+  filter: drop-shadow(0 6px 20px rgba(240, 147, 251, 0.5));
+}
+
+/* ========================================
+   ERROR
+   ======================================== */
+
+.student-error-message {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.student-error-message p {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ef4444;
+  margin: 0;
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+
+.student-actions {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.student-actions ion-button {
+  --border-radius: 16px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --padding-top: 1rem;
+  --padding-bottom: 1rem;
+  font-weight: 800;
+  font-size: 1.3rem;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+.student-actions ion-button:hover:not([disabled]) {
+  transform: translateY(-2px);
+  --box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.student-actions ion-button:active:not([disabled]) {
+  transform: translateY(0);
+}
+
+.student-login-button {
+  --background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.student-back-button {
+  --color: rgba(255, 255, 255, 0.95);
+  --border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+/* ========================================
+   TABLET (< 1024px)
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .student-login-container {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .student-login-title {
+    font-size: 1.75rem;
+  }
+
+  .student-login-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .student-sequence-display {
+    min-height: 90px;
+    padding: 0.75rem;
+  }
+
+  .student-sequence-item {
+    width: 70px;
+    height: 70px;
+  }
+
+  .student-pictogram-button {
+    padding: 0.4rem;
+  }
+}
+
+/* ========================================
+   MÓVIL (< 768px)
+   ======================================== */
+
+@media (max-width: 768px) {
+  .student-login-container {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .student-login-title {
+    font-size: 1.5rem;
+  }
+
+  .student-login-subtitle {
+    font-size: 1rem;
+  }
+
+  .student-sequence-display {
+    min-height: 80px;
+    padding: 0.5rem;
+  }
+
+  .student-sequence-item {
+    width: 60px;
+    height: 60px;
+  }
+
+  .student-sequence-number {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+
+  .student-pictograms-grid {
+    gap: 0.5rem;
+  }
+
+  .student-pictogram-button {
+    padding: 0.3rem;
+  }
+
+  .student-actions {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .student-actions ion-button {
+    font-size: 1.1rem;
+  }
+}
+
+/* ========================================
+   MÓVIL PEQUEÑO (< 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+  .student-login-container {
+    padding: 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .student-login-title {
+    font-size: 1.3rem;
+  }
+
+  .student-login-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .student-sequence-display {
+    min-height: 70px;
+    padding: 0.4rem;
+  }
+
+  .student-sequence-item {
+    width: 50px;
+    height: 50px;
+    border-width: 2px;
+  }
+
+  .student-sequence-number {
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
+  }
+
+  .student-pictograms-grid {
+    gap: 0.4rem;
+  }
+
+  .student-pictogram-button {
+    padding: 0.25rem;
+  }
+
+  .student-error-message p {
+    font-size: 1rem;
+  }
+
+  .student-actions ion-button {
+    font-size: 1rem;
+  }
+}
+
+/* ========================================
+   LANDSCAPE (< 650px altura)
+   ======================================== */
+
+@media (max-height: 650px) and (orientation: landscape) {
+  .student-login-container {
+    padding: 0.5rem;
+    gap: 0.4rem;
+  }
+
+  .student-login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .student-login-title {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .student-login-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .student-sequence-display {
+    min-height: 60px;
+    padding: 0.4rem;
+  }
+
+  .student-sequence-item {
+    width: 50px;
+    height: 50px;
+  }
+
+  .student-sequence-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
+
+  .student-pictograms-grid {
+    gap: 0.4rem;
+  }
+
+  .student-pictogram-button {
+    padding: 0.25rem;
+  }
+
+  .student-back-button {
+    display: none;
+  }
+
+  .student-actions {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .student-actions ion-button {
+    font-size: 0.95rem;
+    --padding-top: 0.75rem;
+    --padding-bottom: 0.75rem;
+  }
+}
+
+/* ========================================
+   ACCESIBILIDAD
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .student-pictogram-button {
+    transition: none !important;
+  }
+
+  .student-pictogram-button:hover {
+    transform: none !important;
+  }
+
+  .student-pictogram-button:active {
+    transform: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .student-pictogram-button::before {
+    background: rgba(240, 147, 251, 0.3);
+  }
+
+  .student-pictogram-button:hover:not(:disabled) .student-pictogram-image {
+    filter: drop-shadow(0 8px 24px rgba(240, 147, 251, 0.7));
+  }
+}

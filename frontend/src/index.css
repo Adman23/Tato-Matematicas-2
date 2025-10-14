@@ -1,0 +1,284 @@
+/* ========== IONIC CORE ========== */
+@import "@ionic/react/css/core.css";
+@import "@ionic/react/css/normalize.css";
+@import "@ionic/react/css/structure.css";
+@import "@ionic/react/css/typography.css";
+
+/* ========== IONIC UTILITIES ========== */
+@import "@ionic/react/css/padding.css";
+@import "@ionic/react/css/float-elements.css";
+@import "@ionic/react/css/text-alignment.css";
+@import "@ionic/react/css/text-transformation.css";
+@import "@ionic/react/css/flex-utils.css";
+@import "@ionic/react/css/display.css";
+
+/* ========== TEMA TATOMATHS ========== */
+:root {
+  /* Colores primarios */
+  --ion-color-primary: #3880ff;
+  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #3171e0;
+  --ion-color-primary-tint: #4c8dff;
+
+  /* Colores secundarios */
+  --ion-color-secondary: #0cd1e8;
+  --ion-color-secondary-rgb: 12, 209, 232;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #0bb8cc;
+  --ion-color-secondary-tint: #24d6ea;
+
+  /* Colores de estado */
+  --ion-color-success: #10dc60;
+  --ion-color-success-rgb: 16, 220, 96;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #0ec254;
+  --ion-color-success-tint: #28e070;
+
+  --ion-color-warning: #ffce00;
+  --ion-color-warning-rgb: 255, 206, 0;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #e0b500;
+  --ion-color-warning-tint: #ffd31a;
+
+  --ion-color-danger: #f04141;
+  --ion-color-danger-rgb: 240, 65, 65;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #d33939;
+  --ion-color-danger-tint: #f25454;
+
+  /* Colores neutros */
+  --ion-color-dark: #222428;
+  --ion-color-dark-rgb: 34, 34, 34;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #1e2023;
+  --ion-color-dark-tint: #383a3e;
+
+  --ion-color-medium: #92949c;
+  --ion-color-medium-rgb: 146, 148, 156;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #808289;
+  --ion-color-medium-tint: #9d9fa6;
+
+  --ion-color-light: #f4f5f8;
+  --ion-color-light-rgb: 244, 244, 244;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-contrast-rgb: 0, 0, 0;
+  --ion-color-light-shade: #d7d8da;
+  --ion-color-light-tint: #f5f6f9;
+
+  /* ========== COLORES TATOMATHS ========== */
+  /* Estos colores pueden ser sobrescritos por las preferencias del estudiante */
+  --tatomaths-primary: #4CAF50;
+  --tatomaths-secondary: #FFC107;
+  --tatomaths-background: #FFFFFF;
+  --tatomaths-text: #000000;
+
+  /* Colores de roles (Home) */
+  --color-tutor-primary: #667eea;
+  --color-tutor-secondary: #764ba2;
+  --color-student-primary: #f093fb;
+  --color-student-secondary: #f5576c;
+
+  /* Colores funcionales */
+  --color-focus: #ffd700;
+  --color-border: #e2e8f0;
+
+  /* ========== TIPOGRAFÍA ========== */
+  --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-size-small: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-large: 1.25rem;
+  --font-size-xlarge: 1.5rem;
+  --font-size-xxlarge: 2rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* ========== ESPACIADO ========== */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+
+  /* ========== BORDES Y SOMBRAS ========== */
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
+  --border-radius-xl: 32px;
+  --box-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --box-shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --box-shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.12);
+
+  /* ========== TRANSICIONES ========== */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --transition-bounce: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ========== ACCESIBILIDAD ========== */
+  --min-touch-target: 48px;
+  --focus-outline: 4px;
+}
+
+/* ========== ESTILOS GLOBALES ========== */
+html,
+body,
+#root {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Botones con bordes redondeados */
+ion-button {
+  --border-radius: 12px;
+  text-transform: none;
+  font-weight: 600;
+}
+
+/* Cards con sombra suave */
+ion-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Inputs con mejor contraste */
+ion-item {
+  --border-radius: 8px;
+}
+
+/* Títulos centrados */
+ion-title {
+  text-align: center;
+  font-weight: 700;
+}
+
+/* ========================================
+   COMPONENTES REUTILIZABLES
+   ======================================== */
+
+/* Botones grandes accesibles - Reutilizables en toda la app */
+.tatomaths-button {
+  background: #ffffff;
+  border: 3px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-xxl) var(--spacing-xl);
+  cursor: pointer;
+  box-shadow: var(--box-shadow-md);
+  transition: all var(--transition-bounce);
+  min-height: var(--min-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-primary);
+}
+
+.tatomaths-button:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--box-shadow-lg);
+}
+
+.tatomaths-button:active {
+  transform: translateY(-2px) scale(0.98);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.tatomaths-button:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow:
+    var(--box-shadow-md),
+    0 0 0 var(--focus-outline) rgba(255, 215, 0, 0.3);
+}
+
+/* Variantes de botones por rol */
+.tatomaths-button-tutor {
+  border-color: var(--color-tutor-primary);
+}
+
+.tatomaths-button-tutor:hover {
+  background: linear-gradient(135deg, var(--color-tutor-primary) 0%, var(--color-tutor-secondary) 100%);
+  border-color: var(--color-tutor-primary);
+  color: #ffffff;
+}
+
+.tatomaths-button-student {
+  border-color: var(--color-student-primary);
+}
+
+.tatomaths-button-student:hover {
+  background: linear-gradient(135deg, var(--color-student-primary) 0%, var(--color-student-secondary) 100%);
+  border-color: var(--color-student-primary);
+  color: #ffffff;
+}
+
+/* Contenedores de imágenes accesibles */
+.tatomaths-image {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  transition: transform var(--transition-bounce);
+}
+
+.tatomaths-button:hover .tatomaths-image {
+  transform: scale(1.1);
+}
+
+/* Etiquetas de texto */
+.tatomaths-label {
+  font-size: var(--font-size-xxlarge);
+  font-weight: var(--font-weight-bold);
+  color: var(--tatomaths-text);
+  transition: color var(--transition-normal);
+}
+
+/* ========================================
+   ACCESIBILIDAD GLOBAL
+   ======================================== */
+
+/* Reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .tatomaths-button,
+  .tatomaths-image,
+  .tatomaths-label {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .tatomaths-button:hover {
+    transform: none !important;
+  }
+
+  .tatomaths-button:hover .tatomaths-image {
+    transform: none !important;
+  }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  .tatomaths-button {
+    border-width: 4px;
+  }
+
+  .tatomaths-label {
+    font-weight: var(--font-weight-black);
+  }
+
+  .tatomaths-button:focus {
+    border-width: 6px;
+  }
+}

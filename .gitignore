@@ -1,0 +1,71 @@
+# ============================================================================
+# GITIGNORE - TatoMaths Project
+# ============================================================================
+
+# === Entornos virtuales ===
+.venv/
+venv/
+env/
+ENV/
+.claude/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# === Node.js / Frontend ===
+node_modules/
+dist/
+build/
+.next/
+.cache/
+
+# === Variables de entorno ===
+.env
+.env.local
+.env.*.local
+.env.production
+backend/.env
+frontend/.env
+*.pem
+*.key
+*.cert
+
+# === IDEs y Editores ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# === Claude Code ===
+.claude/
+
+# === Logs ===
+*.log
+logs/
+
+# === Bases de datos locales ===
+*.db
+*.sqlite
+*.sqlite3
+
+# === Archivos temporales ===
+*.tmp
+*.bak
+*.cache
+
+# === Coverage y Testing ===
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# === Build artifacts ===
+*.egg-info/
+dist/
+build/

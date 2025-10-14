@@ -1,0 +1,13 @@
+{
+  "name": "tatomaths",
+  "version": "1.0.0",
+  "description": "TatoMaths - Juegos educativos accesibles",
+  "scripts": {
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "cd backend && ../.venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "keywords": ["tatomaths", "educacion", "accesibilidad"],
+  "author": "TatoMaths Team",
+  "license": "MIT"
+}
