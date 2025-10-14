@@ -1,4 +1,4 @@
-# 🎮 TatoMaths - Aplicación Educativa Accesible
+#  TatoMaths - Aplicación Educativa Accesible
 
 Juegos matemáticos para niños de 3-5 años y estudiantes con discapacidad cognitiva.
 
@@ -7,7 +7,7 @@ Juegos matemáticos para niños de 3-5 años y estudiantes con discapacidad cogn
 
 ---
 
-## 📖 Documentación
+##  Documentación
 
 | Documento | Descripción |
 |-----------|-------------|
@@ -15,12 +15,11 @@ Juegos matemáticos para niños de 3-5 años y estudiantes con discapacidad cogn
 | **[README.md](README.md)** | 📚 Este archivo - Visión general |
 | **[frontend/README.md](frontend/README.md)** | 🎨 Documentación técnica del frontend |
 | **[backend/database/README.md](backend/database/README.md)** | 🗄️ Documentación de la base de datos |
-| **[GUIA_COLABORACION.md](GUIA_COLABORACION.md)** | 👥 Guía para trabajar en equipo (Git/GitHub) |
-| **[INICIO_RAPIDO.md](INICIO_RAPIDO.md)** | ⚡ Setup inicial en 5 minutos |
+| **[INICIO.md](INICIO.md)** | ⚡ Setup inicial GITHUB|
 
 ---
 
-## 🏗️ Arquitectura del Proyecto
+##  Arquitectura del Proyecto
 
 ```
 dgp/
@@ -49,7 +48,7 @@ dgp/
 
 ---
 
-## 🚀 Cómo Iniciar la Aplicación
+##  Cómo Iniciar la Aplicación
 
 ### **Requisitos Previos**
 - **Python 3.10+** instalado
@@ -63,7 +62,8 @@ git clone <url-del-repositorio>
 cd dgp
 ```
 
-### **2. Configurar variables de entorno**
+### **2. Configurar variables de entorno **
+#### Lo más facil es copiar el .env.example en .env y rellenar conforme se  indica en el mismo .env.example
 
 #### **Backend** (`backend/.env`):
 ```env
@@ -95,7 +95,7 @@ npm install
 cd ..
 ```
 
-### **4. Configurar la base de datos**
+### **4. Configurar la base de datos (YA HECHO ver en supabase)**
 
 Ejecuta los scripts SQL **en orden** en el SQL Editor de Supabase:
 
@@ -148,7 +148,7 @@ npm run dev:frontend
 
 ---
 
-## 🔑 Usuarios de Prueba
+##  Usuarios de Prueba
 
 ### **Estudiante**
 - **Método:** Login con pictogramas
@@ -162,7 +162,7 @@ npm run dev:frontend
 
 ---
 
-## 🛠️ Tecnologías
+##  Tecnologías
 
 ### **Frontend**
 - **React 18** - Framework UI
