@@ -3,6 +3,8 @@ Router de Autenticación
 Endpoints: /auth/register, /auth/login, /auth/me
 """
 from fastapi import APIRouter, HTTPException, status, Depends
+from datetime import datetime, timedelta, timezone
+import jwt
 from ..schemas.auth import (
     RegisterRequest,
     LoginRequest,
@@ -14,6 +16,7 @@ from ..schemas.auth import (
 )
 from ..services.supabase import supabase
 from ..dependencies import get_current_user
+from ..config import settings
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 
@@ -168,7 +171,7 @@ async def student_login(data: StudentLoginRequest):
     Login de estudiante con secuencia de pictogramas.
 
     - Busca estudiante cuya secuencia de pictogramas coincida
-    - Retorna token temporal y datos del estudiante
+    - Retorna token JWT y datos del estudiante
     """
     try:
         # Obtener todos los estudiantes y comparar en Python
@@ -196,9 +199,21 @@ async def student_login(data: StudentLoginRequest):
                 detail="Secuencia de pictogramas incorrecta"
             )
 
-        # Generar token simple (en producción usarías JWT)
-        # Por ahora usamos el ID del estudiante como token
-        token = f"student_{student['id']}"
+        # Generar token JWT para el estudiante
+        token_payload = {
+            "sub": student['id'],  # Subject: ID del estudiante
+            "type": "student",     # Tipo de usuario
+            "aud": settings.APP_JWT_AUDIENCE,  # Audience
+            "iss": settings.APP_JWT_ISSUER,    # Issuer
+            "exp": datetime.now(timezone.utc) + timedelta(hours=24),  # Expira en 24 horas
+            "iat": datetime.now(timezone.utc)  # Issued at
+        }
+
+        token = jwt.encode(
+            token_payload,
+            settings.APP_JWT_SECRET,
+            algorithm="HS256"
+        )
 
         return StudentAuthResponse(
             token=token,

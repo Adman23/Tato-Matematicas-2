@@ -78,3 +78,70 @@ async def get_current_admin(
             detail="Solo administradores pueden acceder"
         )
     return current_user
+
+
+async def get_current_student(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """
+    Obtiene el estudiante actual desde el token JWT
+    """
+    token = credentials.credentials
+
+    # Modo desarrollo: devolver estudiante fake
+    if settings.DEV_MODE:
+        return {
+            "id": "dev-student-id",
+            "username": "estudiante_dev",
+            "full_name": "Estudiante Dev"
+        }
+
+    try:
+        # Verificar token JWT con el secreto de la aplicación
+        payload = jwt.decode(
+            token,
+            settings.APP_JWT_SECRET,
+            algorithms=["HS256"],
+            audience=settings.APP_JWT_AUDIENCE
+        )
+
+        # Verificar que sea un token de estudiante
+        if payload.get("type") != "student":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token no válido para estudiante"
+            )
+
+        student_id = payload.get("sub")
+        if not student_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token inválido"
+            )
+
+        # Obtener datos del estudiante desde la BD
+        response = supabase.table("students").select("*").eq("id", student_id).execute()
+
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Estudiante no encontrado"
+            )
+
+        return response.data[0]
+
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expirado"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido o expirado"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al verificar token de estudiante: {str(e)}"
+        )

@@ -1,12 +1,7 @@
-# 🗺️ ROADMAP - TatoMaths
-
-**Última actualización**: 2025-01-13
-**Estado Actual**: Infraestructura completada + Autenticación parcial
-**Basado en**: Pliego Técnico DGP
-
+# Este es un documento no necesario solo para seguir un poco el hilo de lo que esta hecho al momento 
 ---
 
-## ✅ FASE 0: Infraestructura y Configuración (COMPLETADO - 100%)
+##  FASE 0: Infraestructura y Configuración (COMPLETADO - 100%)
 
 ### Base de Datos
 - [x] 12 tablas diseñadas según requisitos
@@ -16,7 +11,7 @@
 - [x] Triggers automáticos (preferencias por defecto)
 - [x] Funciones SQL (estadísticas, progreso)
 - [x] 4 juegos insertados en catálogo
-- [x] Estudiante de prueba (pepito con pictogramas 🐶🐱🐸)
+- [x] Estudiante de prueba (pepito con pictogramas )
 - [x] Arquitectura backend-first (SERVICE_ROLE, sin RLS)
 - [x] Documentación completa
 
@@ -47,9 +42,9 @@
 
 ---
 
-## 🔄 FASE 1: Sistema de Usuarios y Autenticación (EN PROGRESO - 75%)
+##  FASE 1: Sistema de Usuarios y Autenticación (EN PROGRESO - 75%)
 
-### ✅ Completado
+###  Completado
 - [x] Login administrador (email + contraseña)
 - [x] Login tutor (email + contraseña)
 - [x] Login estudiante accesible (pictogramas)
@@ -57,7 +52,7 @@
 - [x] Context de autenticación unificado
 - [x] Logout funcional
 
-### 🚧 Pendiente
+###  Pendiente
 - [ ] Registro de administradores
 - [ ] Registro de tutores (por admin)
 - [ ] Gestión de contraseñas
@@ -65,7 +60,7 @@
 
 ---
 
-## 📋 FASE 2: Gestión de Perfiles de Estudiantes (0%)
+##  FASE 2: Gestión de Perfiles de Estudiantes (0%)
 
 ### Datos de Identificación
 - [ ] Crear perfil de estudiante (por admin)
@@ -76,7 +71,7 @@
   - [ ] Notas adicionales
 
 ### Login Accesible para Estudiantes
-- [ ] Sistema de login con pictogramas (YA HECHO ✅)
+- [ ] Sistema de login con pictogramas (YA HECHO )
 - [ ] Secuencia de 3-5 pictogramas personalizables
 - [ ] Alternativa: PIN numérico accesible
 
@@ -87,7 +82,7 @@
 
 ---
 
-## ⚙️ FASE 3: Preferencias de Visualización (0%)
+##  FASE 3: Preferencias de Visualización (0%)
 
 ### Configuración de Preferencias (por Tutor)
 - [ ] **Colores favoritos**
@@ -126,7 +121,7 @@
 
 ---
 
-## 🎮 FASE 4: Juego 1 - "Toca el número que suena" (0%)
+##  FASE 4: Juego 1 - "Toca el número que suena" (0%)
 
 ### Requisitos del Pliego
 > Se escucha un número y se escoge el correspondiente de entre los mostrados en pantalla.
@@ -171,7 +166,7 @@
 
 ---
 
-## 🎮 FASE 5: Juego 2 - "Ordena la secuencia" (0%)
+##  FASE 5: Juego 2 - "Ordena la secuencia" (0%)
 
 ### Requisitos del Pliego
 > Se muestra una fila con números desordenados y hay que colocarlos ordenados en una fila de abajo.
@@ -211,7 +206,7 @@
 
 ---
 
-## 🎮 FASE 6: Juego 3 - "Reparte el mismo número en cada recipiente" (0%)
+##  FASE 6: Juego 3 - "Reparte el mismo número en cada recipiente" (0%)
 
 ### Requisitos del Pliego
 > Se muestran objetos o bolas con un número que hay que mover a los recipientes que aparecen abajo, de tal forma que la misma cantidad esté en cada recipiente. Puede implicar operaciones de suma para alcanzar la cantidad solicitada.
@@ -267,7 +262,7 @@
 
 ---
 
-## 🎮 FASE 7: Juego 4 - "Deja el mismo número en cada recipiente" (0%)
+##  FASE 7: Juego 4 - "Deja el mismo número en cada recipiente" (0%)
 
 ### Requisitos del Pliego
 > Se muestran recipientes con objetos o números dentro y hay que sacar de ellos (colocar arriba) los que sobren para que todos los recipientes tengan la misma cantidad. Puede implicar operaciones de resta para alcanzar la cantidad solicitada.
@@ -308,7 +303,7 @@
 
 ---
 
-## 📊 FASE 8: Visualización de Progreso - Estudiante (0%)
+##  FASE 8: Visualización de Progreso - Estudiante (0%)
 
 ### Gráficas para el Estudiante
 - [ ] Ver gráficas de progreso propias
@@ -322,7 +317,7 @@
 
 ---
 
-## 👨‍🏫 FASE 9: Panel de Tutor - Gestión y Seguimiento (0%)
+##  FASE 9: Panel de Tutor - Gestión y Seguimiento (0%)
 
 ### Dashboard de Tutor
 - [ ] Ver lista de estudiantes asignados
@@ -355,7 +350,7 @@
 
 ---
 
-## 👑 FASE 10: Panel de Administrador (0%)
+##  FASE 10: Panel de Administrador (0%)
 
 ### Gestión de Tutores
 - [ ] Crear tutores (email, contraseña, nombre)
@@ -384,7 +379,7 @@
 
 ---
 
-## ♿ FASE 11: Accesibilidad para Problemas de Movilidad (0%)
+##  FASE 11: Accesibilidad para Problemas de Movilidad (0%)
 
 ### Requisitos del Pliego
 > La aplicación debe ser también accesible para estudiantes con problemas de movilidad. Habrá una clase extra para explicar el uso y aplicación de algunos dispositivos específicos.
@@ -418,7 +413,7 @@
 
 ---
 
-## 🚀 FASE 12: Características Avanzadas y Optimización (0%)
+##  FASE 12: Características Avanzadas y Optimización (0%)
 
 ### Multimedia Personalizado
 - [ ] Gestión de biblioteca multimedia del tutor
@@ -447,7 +442,7 @@
 
 ---
 
-## 📊 Progreso General del Proyecto
+##  Progreso General del Proyecto
 
 | Fase | Requisito del Pliego | Estado | Progreso |
 |------|---------------------|--------|----------|
@@ -469,7 +464,7 @@
 
 ---
 
-## 🎯 Prioridades según el Pliego
+##  Prioridades según el Pliego
 
 ### Críticas (Obligatorias)
 1. ✅ Sistema de usuarios (admin, tutor, estudiante)
