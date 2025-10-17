@@ -1,9 +1,9 @@
 # Crear Storage Buckets en Supabase
 
+Los Storage Buckets nos sirven para almacear persistentemente en la bd(realmenete es en un sistema de almacenaje que gestiona Supabase, pero se entiende).
 
-### 1. Acceder a Storage
-1. Ve a: https://app.supabase.com
-2. Abre tu proyecto: `miidturirngqpmwtdalk`
+
+### 1. Acceder a Supabase
 3. En el menú lateral → **Storage**
 4. Haz clic en **New Bucket**
 
@@ -13,7 +13,7 @@
 
 Crea cada bucket con esta configuración:
 - **Name**: `student-photos`
-- **Public**: ❌ NO (desactivado)
+- **Public**:  NO (desactivado)
 - **File size limit**: `5242880` (5 MB)
 - **Allowed MIME types**:
   ```
@@ -25,7 +25,7 @@ Crea cada bucket con esta configuración:
 ---
 
 - **Name**: `custom-audios`
-- **Public**: ❌ NO
+- **Public**:  NO
 - **File size limit**: `10485760` (10 MB)
 - **Allowed MIME types**:
   ```
@@ -38,7 +38,7 @@ Crea cada bucket con esta configuración:
 ---
 
 - **Name**: `custom-images`
-- **Public**: ❌ NO
+- **Public**:  NO
 - **File size limit**: `5242880` (5 MB)
 - **Allowed MIME types**:
   ```
@@ -50,7 +50,7 @@ Crea cada bucket con esta configuración:
 
 ---
 - **Name**: `reinforcement-videos`
-- **Public**: ❌ NO
+- **Public**:  NO
 - **File size limit**: `52428800` (50 MB)
 - **Allowed MIME types**:
   ```
@@ -62,7 +62,7 @@ Crea cada bucket con esta configuración:
 ---
 
 - **Name**: `game-help-videos`
-- **Public**: ✅ SÍ (activado)
+- **Public**:  SÍ (activado)
 - **File size limit**: `104857600` (100 MB)
 - **Allowed MIME types**:
   ```
@@ -73,7 +73,7 @@ Crea cada bucket con esta configuración:
 ---
 
 - **Name**: `pictograms`
-- **Public**: ✅ SÍ
+- **Public**:  SÍ
 - **File size limit**: `2097152` (2 MB)
 - **Allowed MIME types**:
   ```
@@ -85,7 +85,7 @@ Crea cada bucket con esta configuración:
 ---
 
 - **Name**: `system-assets`
-- **Public**: ✅ SÍ
+- **Public**:  SÍ
 - **File size limit**: `5242880` (5 MB)
 - **Allowed MIME types**:
   ```
@@ -96,59 +96,4 @@ Crea cada bucket con esta configuración:
   audio/mpeg
   ```
 
----
 
-##  Verificar que Existen
-
-Después de crear los 7 buckets, ejecuta este script para verificar:
-
-**Ejecuta**: `backend/database/09_storage_buckets_NEW.sql`
-
-Debe mostrar:
-```
-✅ student-photos
-✅ custom-audios
-✅ custom-images
-✅ reinforcement-videos
-✅ game-help-videos
-✅ pictograms
-✅ system-assets
-```
-
----
-
-##  Resumen Rápido
-
-| # | Bucket | Public | Tamaño | MIME Types |
-|---|--------|--------|--------|------------|
-| 1 | student-photos | ❌ | 5 MB | images |
-| 2 | custom-audios | ❌ | 10 MB | audio |
-| 3 | custom-images | ❌ | 5 MB | images |
-| 4 | reinforcement-videos | ❌ | 50 MB | video + gif |
-| 5 | game-help-videos | ✅ | 100 MB | video |
-| 6 | pictograms | ✅ | 2 MB | images |
-| 7 | system-assets | ✅ | 5 MB | images + audio |
-
----
-
-##  Nota sobre el Script 09
-
-El archivo `09_storage_buckets_NEW.sql` hace dos cosas:
-
-1.  **Verifica** que los buckets existan
-2.  **Configura políticas** de acceso (permisos)
-
-Pero **NO crea los buckets** (eso se debe hacer desde el Dashboard).
-
----
-
-##  Si algo sale mal
-
-Si ejecutaste el script `09_storage_buckets.sql` antiguo y dio error:
-- **No pasa nada**, simplemente no creó los buckets
-- Créalos manualmente siguiendo esta guía
-- Luego ejecuta `09_storage_buckets_NEW.sql` para configurar las políticas
-
----
-
-**Tiempo estimado**: 5-10 minutos para crear los 7 buckets

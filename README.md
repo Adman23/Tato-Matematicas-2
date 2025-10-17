@@ -1,7 +1,5 @@
 #  TatoMaths - Aplicación Educativa Accesible
 
-Juegos matemáticos para niños de 3-5 años y estudiantes con discapacidad cognitiva.
-
 **Proyecto:** DGP - Diseño y Gestión de Proyectos
 **Tecnologías:** React + Ionic (Frontend) | FastAPI (Backend) | PostgreSQL/Supabase (Base de Datos)
 
@@ -11,11 +9,11 @@ Juegos matemáticos para niños de 3-5 años y estudiantes con discapacidad cogn
 
 | Documento | Descripción |
 |-----------|-------------|
-| **[ROADMAP.md](ROADMAP.md)** | 🗺️ Plan de desarrollo completo (fases y progreso) |
-| **[README.md](README.md)** | 📚 Este archivo - Visión general |
-| **[frontend/README.md](frontend/README.md)** | 🎨 Documentación técnica del frontend |
-| **[backend/database/README.md](backend/database/README.md)** | 🗄️ Documentación de la base de datos |
-| **[INICIO.md](INICIO.md)** | ⚡ Setup inicial GITHUB|
+| **[INICIO.md](INICIO.md)** |  Setup inicial GITHUB y SUPABASE|
+| **[ROADMAP.md](ROADMAP.md)** | Plan de desarrolo NO ACTUALIZADO |
+| **[README.md](README.md)** |  Este archivo - Visión general |
+| **[frontend/README-FRONT.md](frontend/README-FRONT.md)** |  Documentación técnica del frontend |
+| **[backend//README-BACK.md](backend/README-BACK.md)** |  Documentación de backend |
 
 ---
 
@@ -56,6 +54,8 @@ dgp/
 - **Cuenta de Supabase** configurada
 - **Git** instalado
 
+### TENER AJUSTADO GITHUB
+Puedes revisar **[INICIO.md](INICIO.md)** |  Setup inicial GITHUB y SUPABASE| para segurarte.
 ### **1. Clonar el repositorio**
 ```bash
 git clone <url-del-repositorio>
@@ -63,28 +63,26 @@ cd dgp
 ```
 
 ### **2. Configurar variables de entorno **
-#### Lo más facil es copiar el .env.example en .env y rellenar conforme se  indica en el mismo .env.example
+#### Es una mala practica exponern nuestro .env, con todas las variables de entorno en la red. Por lo que envio .env.example.  
+### Archivos disponibles en:
+#### **Backend** (`backend/.env.example`):
+#### **Frontend** (`frontend/.env.example`):
 
-#### **Backend** (`backend/.env`):
-```env
-SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_SERVICE_ROLE=tu-service-role-key-aqui
-ALLOWED_ORIGINS=http://localhost:5173
-```
+### PROCESO
+#### Copiar el contenido de .env.example en un archivo .env en el mismo directorio y rellenerlo conforme se dice en el archivo. Así conseguimos sincronizar el proyecto.
 
-#### **Frontend** (`frontend/.env`):
-```env
-VITE_API_URL=http://localhost:8000
-```
 
-> **Nota:** Consulta `INICIO_RAPIDO.md` para obtener las claves de Supabase.
 
 ### **3. Instalar dependencias**
+
+Para el backend usamos un entorno virtual de python3, por lo que estas dependencias son solamente para este proyecto y no genera problemas.  
+
+Para el front se aisla dependencias automaticamente en node_modules.
 
 ```bash
 # Backend (Python)
 python3 -m venv .venv
-source .venv/bin/activate  # En Windows: .venv\Scripts\activate
+source .venv/bin/activate  
 cd backend
 pip install -r requirements.txt
 cd ..
@@ -97,7 +95,7 @@ cd ..
 
 ### **4. Configurar la base de datos (YA HECHO ver en supabase)**
 
-Ejecuta los scripts SQL **en orden** en el SQL Editor de Supabase:
+Ejecutar los scripts SQL **en orden** en el SQL Editor de Supabase:
 
 ```bash
 cd backend/database
@@ -110,15 +108,14 @@ cd backend/database
 5. 04_games_and_configurations.sql
 6. 05_sessions_and_results.sql
 7. 06_media_library.sql
-8. 09_storage_buckets.sql    # Verificación de buckets
-9. 10_initial_data.sql       # Datos iniciales (4 juegos + estudiante de prueba)
+9. 9_initial_data.sql       # Datos iniciales (4 juegos + estudiante de prueba)
 ```
 
 > **Detalle:** Ver [`backend/database/README.md`](backend/database/README.md) para más información.
 
 ### **5. Iniciar la aplicación**
 
-#### **Opción A: Iniciar ambos servidores con un solo comando** ⚡
+#### **Opción A: Iniciar ambos servidores con un solo comando** 
 ```bash
 npm run dev
 ```
@@ -186,45 +183,8 @@ npm run dev:frontend
   - Storage (archivos)
   - Realtime (futuro)
 
----
 
-## 📊 Estado Actual del Proyecto
-
-| Fase | Estado | Progreso |
-|------|--------|----------|
-| **Infraestructura** | ✅ Completado | 100% |
-| **Autenticación** | 🔄 En progreso | 75% |
-| **Gestión de usuarios** | ⏳ Pendiente | 0% |
-| **Juegos** | ⏳ Pendiente | 0% |
-| **Preferencias** | ⏳ Pendiente | 0% |
-
-**Ver [ROADMAP.md](ROADMAP.md) para detalles completos.**
-
-### ✅ Completado
-- Base de datos completa (12 tablas + funciones SQL)
-- Backend FastAPI funcionando
-- Frontend React + Ionic con estructura modular
-- Login tutores/admins (email + password)
-- Login estudiantes (pictogramas accesibles)
-- Sistema de autenticación unificado (AuthContext)
-- Protección de rutas
-- Página Home con diseño accesible
-- Dashboard básico para estudiantes
-
-### 🚧 En Progreso
-- Registro de nuevos usuarios
-- Gestión de contraseñas
-
-### ⏳ Pendiente
-- Panel de administrador (CRUD de tutores y estudiantes)
-- Panel de tutor (gestionar estudiantes)
-- 4 juegos matemáticos
-- Sistema de preferencias y accesibilidad
-- Visualización de progreso
-
----
-
-## 📁 Archivos Clave
+##  Archivos Clave
 
 ### **Backend**
 | Archivo | Qué hace |
@@ -244,26 +204,8 @@ npm run dev:frontend
 | `src/lib/api.ts` | Cliente HTTP (Axios) - Llama al backend |
 | `src/pages/` | Todas las páginas (Home, Login, Dashboards) |
 
----
 
-## 🎯 Próximos Pasos
-
-Según el pliego técnico, las prioridades son:
-
-1. **Completar autenticación** (registro, reset password)
-2. **Panel de administrador** (CRUD de tutores y estudiantes)
-3. **Sistema de preferencias** (colores, fuentes, accesibilidad)
-4. **Primer juego** ("Toca el número que suena")
-5. **Panel de tutor** (gestionar estudiantes y ver progreso)
-6. **Juegos restantes** (3 juegos más)
-7. **Visualización de progreso** (gráficas)
-8. **Accesibilidad avanzada** (pulsadores, switches)
-
-**Ver [ROADMAP.md](ROADMAP.md) para el plan detallado.**
-
----
-
-## 🧪 Comandos Útiles
+##  Comandos Útiles
 
 ```bash
 # Desarrollo
@@ -288,32 +230,7 @@ npm run lint             # Verificar código
 # Ver backend/database/README.md
 ```
 
----
-
-## 🐛 Troubleshooting
-
-### **Error: No se conecta al backend**
-- Verifica que el backend esté corriendo en http://localhost:8000
-- Verifica el archivo `frontend/.env` tenga `VITE_API_URL=http://localhost:8000`
-
-### **Error: 401 Unauthorized**
-- El token expiró o es inválido
-- Vuelve a hacer login
-
-### **Error: Supabase connection failed**
-- Verifica `backend/.env` tenga las claves correctas
-- Verifica que tu proyecto de Supabase esté activo
-
-### **Error: Module not found**
-- Backend: `source .venv/bin/activate && pip install -r requirements.txt`
-- Frontend: `cd frontend && npm install`
-
-### **Error: La base de datos no tiene tablas**
-- Ejecuta los scripts SQL en orden (ver paso 4)
-
----
-
-## 📚 Recursos Externos
+##  Recursos Externos
 
 - **FastAPI Docs:** https://fastapi.tiangolo.com/
 - **React Docs:** https://react.dev
@@ -322,37 +239,20 @@ npm run lint             # Verificar código
 - **Axios:** https://axios-http.com/
 - **Pydantic:** https://docs.pydantic.dev/
 
----
 
-## 👥 Colaboración
 
-Para trabajar en equipo con Git/GitHub, consulta **[GUIA_COLABORACION.md](GUIA_COLABORACION.md)**.
+##  Licencia
 
-### Flujo básico:
-```bash
-git pull origin main              # Actualizar
-git checkout -b feature/mi-feature  # Nueva rama
-# ... hacer cambios ...
-git add .
-git commit -m "Descripción"
-git push origin feature/mi-feature
-# Crear Pull Request en GitHub
-```
+MIT License.
 
 ---
 
-## 📝 Licencia
+##  Contacto
 
-MIT License - Ver archivo `LICENSE` para detalles.
-
----
-
-## 📧 Contacto
-
-**Equipo TatoMaths** - Proyecto DGP
+**Equipo TatoMaths** - Quinternions+1
 
 ---
 
 **Última actualización:** 2025-01-13
 **Versión:** 1.0.0
-**Estado:** ✅ Infraestructura completa - En desarrollo activo
+**Estado:**  Infraestructura completa - En desarrollo activo

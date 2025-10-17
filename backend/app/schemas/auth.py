@@ -46,7 +46,7 @@ class StudentLoginRequest(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "pictos": ["🐶", "🐱", "🐸"]
+                "pictos": ["perro", "gato", "tortuga"]
             }
         }
 
