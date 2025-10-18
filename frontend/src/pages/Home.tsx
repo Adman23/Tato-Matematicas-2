@@ -1,3 +1,15 @@
+/**
+ * Página de inicio de TatoMaths.
+ * ------------------------------------------------------
+ * Muestra la pantalla principal donde el usuario elige si acceder
+ * como **tutor/administrador** o como **estudiante**.
+ *
+ * Utiliza:
+ * - **Ionic React** (`IonPage`, `IonContent`) para la estructura visual.
+ * - **React Router** (`useHistory`) para navegación programática.
+ * - Estilos definidos en `Home.css` para diseño y personalización.
+ */
+
 import {
   IonPage,
   IonContent,
@@ -5,6 +17,22 @@ import {
 import { useHistory } from 'react-router-dom';
 import './Home.css';
 
+/**
+ * Componente principal de la pantalla de inicio.
+ *
+ * Permite seleccionar el tipo de usuario que va a iniciar sesión:
+ * - Tutor o Administrador → redirige a `/login`.
+ * - Estudiante → redirige a `/student-login`.
+ *
+ * @returns {JSX.Element} Página inicial de selección de tipo de usuario.
+ *
+ * @example
+ * ```tsx
+ * import Home from "./pages/Home";
+ * 
+ * <Route path="/" exact component={Home} />
+ * ```
+ */
 export default function Home() {
   const history = useHistory();
 

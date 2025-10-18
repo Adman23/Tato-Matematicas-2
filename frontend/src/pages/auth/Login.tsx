@@ -1,3 +1,15 @@
+/**
+ * Página de inicio de sesión para tutores y administradores.
+ * -----------------------------------------------------------
+ * Permite a los usuarios autenticarse mediante nombre de usuario y contraseña.
+ *
+ * Utiliza:
+ * - **Ionic React** para la interfaz (`IonInput`, `IonButton`, `IonCard`, etc.).
+ * - **React Hooks** (`useState`) para gestionar el estado del formulario.
+ * - **React Router** (`useHistory`) para redirecciones.
+ * - **AuthContext** (`useAuth`) para conectarse con la API de autenticación.
+ */
+
 import {
   IonPage,
   IonHeader,
@@ -18,6 +30,23 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
+
+/**
+ * Componente funcional de la pantalla de inicio de sesión.
+ *
+ * Permite al tutor o administrador autenticarse ingresando su nombre de usuario
+ * y contraseña. Realiza validaciones básicas en frontend y muestra errores en caso
+ * de credenciales inválidas o problemas de conexión.
+ *
+ * @returns {JSX.Element} Interfaz del formulario de inicio de sesión.
+ *
+ * @example
+ * ```tsx
+ * import Login from "./pages/auth/Login";
+ *
+ * <Route path="/login" component={Login} />
+ * ```
+ */
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +56,14 @@ export default function Login() {
   const { login } = useAuth();
   const history = useHistory();
 
+  /**
+ * Maneja el envío del formulario de inicio de sesión.
+ *
+ * Valida el nombre de usuario antes de enviar la solicitud al backend.
+ * En caso de éxito, redirige al dashboard correspondiente al rol.
+ *
+ * @param {React.FormEvent} e - Evento del formulario.
+ */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
