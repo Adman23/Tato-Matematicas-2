@@ -1,5 +1,13 @@
 """
-Dependencies para FastAPI
+Dependencias de autenticación para FastAPI.
+
+Este módulo define las dependencias que se utilizan para autenticar y autorizar
+a los usuarios dentro de la aplicación. Se incluyen funciones que validan los
+tokens JWT tanto de administradores/tutores (emitidos por Supabase) como de
+estudiantes (emitidos por la propia aplicación).
+
+Las dependencias se integran en los endpoints mediante el parámetro
+`Depends()` de FastAPI.
 """
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -7,6 +15,7 @@ import jwt
 from .config import settings
 from .services.supabase import supabase
 
+#: Dependencia de seguridad HTTP Bearer utilizada para extraer el token JWT
 security = HTTPBearer()
 
 
@@ -14,7 +23,23 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
     """
-    Obtiene el usuario actual desde el token JWT de Supabase
+    Obtiene la información del usuario autenticado a partir del token JWT de Supabase.
+
+    Esta función valida el token JWT emitido por Supabase Auth y recupera el
+    perfil del usuario desde la tabla `user_profiles`. Si el modo desarrollo
+    está activado, devuelve un usuario de prueba (fake).
+
+    Args:
+        credentials (HTTPAuthorizationCredentials): Token de autorización HTTP
+            enviado en la cabecera `Authorization: Bearer <token>`.
+
+    Raises:
+        HTTPException: Si el token es inválido o no contiene un ID de usuario (`401 UNAUTHORIZED`).
+        HTTPException: Si el usuario no se encuentra en la base de datos (`404 NOT FOUND`).
+        HTTPException: Si ocurre un error interno al verificar el token (`500 INTERNAL SERVER ERROR`).
+
+    Returns:
+        dict: Diccionario con los datos del usuario autenticado (id, email, rol, full_name).
     """
     token = credentials.credentials
     
@@ -70,7 +95,19 @@ async def get_current_admin(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Verifica que el usuario actual sea admin
+    Verifica que el usuario autenticado tenga rol de administrador.
+
+    Esta dependencia se utiliza en endpoints que requieren permisos elevados.
+    Si el usuario no tiene el rol `admin`, se lanza una excepción HTTP 403.
+
+    Args:
+        current_user (dict): Datos del usuario autenticado obtenidos desde `get_current_user`.
+
+    Raises:
+        HTTPException: Si el usuario no es administrador (`403 FORBIDDEN`).
+
+    Returns:
+        dict: Datos del usuario autenticado con rol de administrador.
     """
     if current_user.get("role") != "admin":
         raise HTTPException(
@@ -84,7 +121,23 @@ async def get_current_student(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
     """
-    Obtiene el estudiante actual desde el token JWT
+    Obtiene la información del estudiante autenticado a partir del token JWT de la aplicación.
+
+    Esta función valida el token JWT emitido por la propia aplicación (no por Supabase)
+    para autenticar a los estudiantes. Si el modo desarrollo está activado,
+    devuelve un estudiante de prueba (fake).
+
+    Args:
+        credentials (HTTPAuthorizationCredentials): Token JWT del estudiante enviado
+            en la cabecera `Authorization: Bearer <token>`.
+
+    Raises:
+        HTTPException: Si el token es inválido o no corresponde a un estudiante (`401 UNAUTHORIZED`).
+        HTTPException: Si el estudiante no se encuentra en la base de datos (`404 NOT FOUND`).
+        HTTPException: Si ocurre un error durante la verificación (`500 INTERNAL SERVER ERROR`).
+
+    Returns:
+        dict: Datos del estudiante autenticado (id, username, full_name, etc.).
     """
     token = credentials.credentials
 

@@ -1,11 +1,45 @@
+/**
+ * Página principal del Dashboard de TatoMaths.
+ * ------------------------------------------------------
+ * Muestra la información del usuario autenticado (tutor o admin)
+ * y ofrece accesos directos a las secciones correspondientes.
+ *
+ * Utiliza:
+ * - **Ionic React** (`IonPage`, `IonHeader`, `IonContent`, etc.)
+ * - **React Router** para redirección (`Redirect`, `useHistory`)
+ * - **AuthContext** para obtener el estado de autenticación.
+ */
+
 import { IonPage, IonHeader, IonContent, IonButton, IonTitle, IonSpinner, IonToolbar } from '@ionic/react';
 import { useHistory, Redirect } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+
+/**
+ * Componente funcional del Dashboard.
+ *
+ * Muestra un panel personalizado según el tipo de usuario:
+ * - **Tutor:** acceso a la gestión de alumnos.
+ * - **Administrador:** acceso a la gestión de tutores y juegos.
+ *
+ * Incluye botón para cerrar sesión, y control de carga/autenticación.
+ *
+ * @returns {JSX.Element} Interfaz del panel principal para usuarios autenticados.
+ *
+ * @example
+ * ```tsx
+ * import Dashboard from "./pages/Dashboard";
+ * 
+ * <Route path="/dashboard" component={Dashboard} />
+ * ```
+ */
 export default function Dashboard() {
   const { user, logout, loading } = useAuth();
   const history = useHistory();
 
+  /**
+   * Cierra la sesión del usuario y redirige a la página principal.
+   */
   const handleLogout = async () => {
     await logout();
     history.replace('/');

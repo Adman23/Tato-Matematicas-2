@@ -1,11 +1,23 @@
 /**
- * Cliente API para TatoMaths Backend
+ * Cliente API para el backend de TatoMaths.
+ * --------------------------------------------------
+ * Este módulo define:
+ * - La configuración base de Axios (`api`)
+ * - Interceptores de autenticación y manejo de errores
+ * - Tipos de datos (User, Student, etc.)
+ * - Servicios API de autenticación (`authAPI`)
+ *
+ * Se encarga de realizar las peticiones HTTP al backend
+ * y añadir automáticamente el token correspondiente (usuario o estudiante).
  */
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-// Cliente axios con configuración base
+/**
+ * Cliente Axios configurado con la URL base del backend.
+ * Incluye encabezado `Content-Type: application/json`.
+ */
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -13,7 +25,12 @@ export const api = axios.create({
   },
 });
 
-// Interceptor para añadir el token a todas las peticiones
+
+/**
+ * Interceptor de peticiones.
+ * Añade automáticamente el token JWT del usuario o estudiante
+ * en el encabezado `Authorization` de cada petición.
+ */
 api.interceptors.request.use((config) => {
   // Primero intenta con el token de tutor/admin
   const accessToken = localStorage.getItem('access_token');
@@ -29,7 +46,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor para manejar errores
+
+/**
+ * Interceptor de respuestas.
+ * Maneja errores comunes del backend (por ejemplo, 401 Unauthorized).
+ * Si el token es inválido o expiró, limpia los datos locales
+ * y redirige al login correspondiente.
+ */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -64,8 +87,12 @@ api.interceptors.response.use(
   }
 );
 
-// === TIPOS ===
 
+// ==== INTERFACES DE DATOS ====
+
+/**
+ * Representa un usuario del sistema (tutor o admin).
+ */
 export interface User {
   id: string;
   username: string;
@@ -74,6 +101,10 @@ export interface User {
   role: 'admin' | 'tutor';
 }
 
+
+/**
+ * Representa un estudiante autenticado en el sistema.
+ */
 export interface Student {
   id: string;
   name: string;
@@ -84,18 +115,27 @@ export interface Student {
   photo_url?: string;
 }
 
+/**
+ * Respuesta de autenticación de usuario.
+ */
 export interface AuthResponse {
   access_token: string;
   token_type: string;
   user: User;
 }
 
+/**
+ * Respuesta de autenticación de estudiante.
+ */
 export interface StudentAuthResponse {
   token: string;
   student_id: string;
   student: Student;
 }
 
+/**
+ * Datos requeridos para registrar un nuevo usuario.
+ */
 export interface RegisterData {
   username: string;
   email: string;
@@ -104,20 +144,32 @@ export interface RegisterData {
   role: 'admin' | 'tutor';
 }
 
+/**
+ * Datos requeridos para iniciar sesión de usuario.
+ */
 export interface LoginData {
   username: string;
   password: string;
 }
 
+/**
+ * Datos requeridos para el login de estudiante (pictogramas).
+ */
 export interface StudentLoginData {
   pictos: string[];
 }
 
 // === ENDPOINTS DE AUTENTICACIÓN ===
 
+/**
+ * Conjunto de endpoints de autenticación.
+ * Cada método devuelve una promesa con los datos del backend.
+ */
 export const authAPI = {
   /**
-   * Registrar nuevo usuario (admin o tutor)
+   * Registrar un nuevo usuario (admin o tutor).
+   * @param data - Datos de registro.
+   * @returns Información del usuario y tokens de acceso.
    */
   register: async (data: RegisterData): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/register', data);
@@ -125,7 +177,9 @@ export const authAPI = {
   },
 
   /**
-   * Login con username y contraseña
+   * Iniciar sesión de tutor o administrador.
+   * @param data - Credenciales de inicio de sesión.
+   * @returns Información del usuario y tokens de acceso.
    */
   login: async (data: LoginData): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/login', data);
@@ -133,7 +187,8 @@ export const authAPI = {
   },
 
   /**
-   * Obtener usuario actual
+   * Obtener información del usuario autenticado actual.
+   * @returns Perfil del usuario actual.
    */
   me: async (): Promise<User> => {
     const response = await api.get<User>('/auth/me');
@@ -141,7 +196,8 @@ export const authAPI = {
   },
 
   /**
-   * Cerrar sesión
+   * Cerrar sesión del usuario actual.
+   * Limpia tokens y perfil del almacenamiento local.
    */
   logout: async (): Promise<void> => {
     await api.post('/auth/logout');
@@ -150,7 +206,9 @@ export const authAPI = {
   },
 
   /**
-   * Login de estudiante con pictogramas
+   * Iniciar sesión de estudiante mediante secuencia de pictogramas.
+   * @param data - Datos de pictogramas del estudiante.
+   * @returns Token y perfil del estudiante autenticado.
    */
   loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
     const response = await api.post<StudentAuthResponse>('/auth/student', data);
@@ -161,4 +219,10 @@ export const authAPI = {
 // === OTROS ENDPOINTS ===
 
 
+// ==== EXPORTACIÓN PRINCIPAL ====
+
+/**
+ * Exporta el cliente Axios preconfigurado.
+ * Permite realizar peticiones adicionales fuera de `authAPI`.
+ */
 export default api;

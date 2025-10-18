@@ -1,3 +1,16 @@
+/**
+ * Página principal del panel del estudiante (Student Dashboard).
+ * ---------------------------------------------------------------
+ * Muestra la interfaz principal para los estudiantes autenticados,
+ * incluyendo su información, foto o inicial, y accesos a las secciones
+ * de juego y progreso.
+ *
+ * Utiliza:
+ * - **Ionic React** para la estructura y componentes visuales (`IonPage`, `IonCard`, `IonButton`, etc.).
+ * - **React Router** para redirección (`Redirect`, `useHistory`).
+ * - **AuthContext** (`useAuth`) para obtener el estado de autenticación del estudiante.
+ */
+
 import {
   IonPage,
   IonHeader,
@@ -14,10 +27,33 @@ import { gameControllerOutline, trophyOutline, logOutOutline } from 'ionicons/ic
 import { Redirect, useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
+/**
+ * Componente funcional que representa el panel del estudiante.
+ *
+ * Permite al alumno autenticado:
+ * - Ver su nombre y foto (o inicial si no tiene imagen).
+ * - Acceder a las secciones de juegos y progreso.
+ * - Cerrar sesión y volver a la página principal.
+ *
+ * Muestra un *spinner* mientras se carga el estado de autenticación
+ * y redirige a `/student-login` si no hay sesión activa.
+ *
+ * @returns {JSX.Element} Interfaz del panel principal del estudiante.
+ *
+ * @example
+ * ```tsx
+ * import StudentDashboard from "./pages/student/Dashboard";
+ *
+ * <Route path="/student-dashboard" component={StudentDashboard} />
+ * ```
+ */
 export default function StudentDashboard() {
   const { student, logout, loading } = useAuth();
   const history = useHistory();
 
+  /**
+   * Cierra la sesión del estudiante y redirige a la página de inicio.
+   */
   const handleLogout = async () => {
     await logout();
     history.replace('/');
