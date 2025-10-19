@@ -145,7 +145,7 @@ export default function StudentLogin() {
                         alt={picto?.name}
                         className="student-sequence-image"
                       />
-                      <span className="student-sequence-number">{index + 1}</span>
+                      {/* <span className="student-sequence-number">{index + 1}</span> */}
                     </div>
                   );
                 })}
@@ -189,6 +189,8 @@ export default function StudentLogin() {
               disabled={loading || selected.length === 0}
               size="large"
               className="student-login-button"
+              aria-label={loading ? 'Verificando credenciales' : 'Entrar como estudiante'}
+
             >
               {loading ? 'Verificando...' : '✓ Entrar'}
             </IonButton>
@@ -204,18 +206,19 @@ export default function StudentLogin() {
               <IonIcon icon={trashOutline} slot="start" />
               Borrar
             </IonButton>
-          </div>
 
-          {/* Botón volver */}
-          <IonButton
-            expand="block"
-            fill="clear"
-            onClick={() => history.push('/')}
-            className="student-back-button"
-          >
-            <IonIcon icon={arrowBackOutline} slot="start" />
-            Volver
-          </IonButton>
+
+            {/* Botón volver */}
+            <IonButton
+              expand="block"
+              fill="clear"
+              onClick={() => history.push('/')}
+              className="student-back-button"
+            >
+              <IonIcon icon={arrowBackOutline} slot="start" />
+              Volver
+            </IonButton>
+          </div>
         </div>
       </IonContent>
     </IonPage>

@@ -3,7 +3,7 @@
    ======================================== */
 
 .student-login-content {
-  --background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
 }
 
 .student-login-container {
@@ -29,7 +29,7 @@
 .student-login-title {
   font-size: 2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #000000;
   margin: 0 0 0.5rem 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -37,7 +37,7 @@
 .student-login-subtitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #801616;
   margin: 0;
 }
 
@@ -46,7 +46,7 @@
    ======================================== */
 
 .student-sequence-display {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(216, 206, 206, 0.95);
   border-radius: 16px;
   padding: 1rem;
   min-height: 100px;
@@ -71,8 +71,8 @@
 
 .student-sequence-item {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 200px;
+  height: 200px;
   background: white;
   border: 3px solid #f093fb;
   border-radius: 12px;
@@ -87,15 +87,15 @@
   height: 100%;
   object-fit: contain;
 }
-
+/*
 .student-sequence-number {
   position: absolute;
   top: -10px;
   right: -10px;
-  width: 28px;
-  height: 28px;
-  background: #f093fb;
-  color: white;
+  width: 50px;
+  height: 50px;
+  background: #e5ff00;
+  color: rgb(0, 0, 0);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -103,7 +103,7 @@
   font-weight: 900;
   font-size: 0.9rem;
 }
-
+*/
 /* ========================================
    GRID DE PICTOGRAMAS (5 en 1 fila)
    ======================================== */
@@ -112,7 +112,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
-  flex: 1;
+  flex: 0.5;
   align-content: center;
 }
 
@@ -128,28 +128,45 @@
   transition: all 0.3s ease;
   aspect-ratio: 1;
   position: relative;
+  outline: 3px solid transparent;
+  outline-offset: 4px;
 }
 
 .student-pictogram-button::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: rgba(240, 147, 251, 0.15);
-  border-radius: 20px;
+  inset: -8px;
+  background: rgba(16, 185, 129, 0.4);
+  border-radius: 24px;
   opacity: 0;
   transition: opacity 0.3s ease;
+  box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.3),
+              0 0 25px 10px rgba(16, 185, 129, 0.35);
 }
 
-.student-pictogram-button:hover:not(:disabled)::before {
+.student-pictogram-button:hover:not(:disabled)::before,
+.student-pictogram-button:focus:not(:disabled)::before,
+.student-pictogram-button:focus-visible:not(:disabled)::before {
   opacity: 1;
 }
 
+.student-pictogram-button:focus-visible {
+  outline: 5px solid #10b981;
+  outline-offset: 8px;
+}
+
 .student-pictogram-button:hover:not(:disabled) {
-  transform: scale(1.2);
+  transform: scale(1.15);
 }
 
 .student-pictogram-button:active:not(:disabled) {
-  transform: scale(1.08);
+  transform: scale(1.05);
+}
+
+.student-pictogram-button:active:not(:disabled)::before {
+  background: rgba(16, 185, 129, 0.55);
+  box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.4),
+              0 0 35px 15px rgba(16, 185, 129, 0.5);
 }
 
 .student-pictogram-button:disabled {
@@ -163,10 +180,13 @@
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
   transition: filter 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
-.student-pictogram-button:hover:not(:disabled) .student-pictogram-image {
-  filter: drop-shadow(0 6px 20px rgba(240, 147, 251, 0.5));
+.student-pictogram-button:hover:not(:disabled) .student-pictogram-image,
+.student-pictogram-button:focus:not(:disabled) .student-pictogram-image {
+  filter: drop-shadow(0 6px 20px rgba(16, 185, 129, 0.6));
 }
 
 /* ========================================
@@ -174,7 +194,7 @@
    ======================================== */
 
 .student-error-message {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(241, 131, 131, 0.95);
   border-radius: 12px;
   padding: 1rem;
   text-align: center;
@@ -184,7 +204,7 @@
 .student-error-message p {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #ef4444;
+  color: #000000;
   margin: 0;
 }
 
@@ -192,43 +212,109 @@
    BOTONES
    ======================================== */
 
+/* Layout de acciones: 2/1 en desktop, 1/1 en móvil */
 .student-actions {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1rem;
+  grid-template-columns: 2fr 2fr 2fr;
+  gap: 1.5rem;
   flex-shrink: 0;
 }
-
-.student-actions ion-button {
-  --border-radius: 16px;
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --padding-top: 1rem;
-  --padding-bottom: 1rem;
-  font-weight: 800;
-  font-size: 1.3rem;
-  text-transform: none;
-  letter-spacing: 0.5px;
+@media (max-width: 640px) {
+  .student-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
-.student-actions ion-button:hover:not([disabled]) {
-  transform: translateY(-2px);
+/* Botones dentro de .student-actions */
+.student-actions ion-button {
+  /* Tamaño y forma (usar variables de Ionic) */
+  --border-radius: 20px;
   --box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  --padding-top: 1.5rem;
+  --padding-bottom: 1.5rem;
+  --padding-start: 1.25rem;
+  --padding-end: 1.25rem;
+  --min-height: 72px;                 /* en lugar de min-height “normal” */
+
+  /* Estados accesibles */
+  --background-focused: var(--background);   /* mantiene el gradiente al enfocar */
+  --background-activated: rgba(0,0,0,0.06);  /* toque/pulsación */
+  --ripple-color: rgba(0,0,0,0.12);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Tipografía dentro del Shadow DOM del botón */
+.student-actions ion-button::part(native) {
+  font-weight: 800;
+  font-size: 1.25rem;  /* grande y legible */
+  text-transform: none;
+  letter-spacing: 0.5px;
+  
+}
+/* Efecto hover: solo remarcar el botón real */
+.student-actions ion-button:hover:not([disabled])::part(native) {
+  outline: 10px solid #10b981;
+  outline-offset: 2px;
+  border-radius: 16px;
+  transition: outline 0.2s ease;
 }
 
 .student-actions ion-button:active:not([disabled]) {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(1.005);
 }
 
-.student-login-button {
+/* Focus visible accesible (teclado/lectores) */
+.student-actions ion-button::part(native):focus-visible {
+  outline: 10px solid #10b981;
+  outline-offset: 3px;
+  border-radius: 16px;
+}
+
+/* LOGIN — gradiente y contraste */
+ion-button.student-login-button {
+  --color: #ffffff;
   --background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --background-focused: linear-gradient(135deg, #0fb07d 0%, #058a61 100%);
+  --background-activated: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+ion-button.student-login-button:hover:not([disabled]) {
+  --background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+ion-button.student-login-button[disabled] {
+  --opacity: 0.6;
 }
 
-.student-back-button {
-  --color: rgba(255, 255, 255, 0.95);
-  --border-radius: 12px;
-  font-weight: 600;
+/* BOTÓN BORRAR (outline): borde grueso y legible */
+.student-actions ion-button[fill="outline"] {
+  --color: #374151;
+  --border-color: #9ca3af;
+  --border-width: 2px;
+  --min-height: 64px;
+}
+.student-actions ion-button[fill="outline"]::part(native) {
   font-size: 1.1rem;
+  font-weight: 800;
+}
+
+/* VOLVER (clear): grande y con buen contraste */
+ion-button.student-back-button {
+  --color: rgba(207, 35, 35, 0.98);
+  --padding-top: 1rem;
+  --padding-bottom: 1rem;
+  --min-height: 64px;
+  --border-radius: 40px;
   margin-top: 0.5rem;
+}
+ion-button.student-back-button::part(native) {
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+/* Iconos un poco más grandes y con separación */
+ion-button .button-native ion-icon[slot="start"] {
+  font-size: 1.25rem;
+  margin-inline-end: 8px;
 }
 
 /* ========================================
@@ -237,30 +323,35 @@
 
 @media (max-width: 1024px) {
   .student-login-container {
-    padding: 0.75rem;
-    gap: 0.75rem;
+    padding: 1rem;
+    gap: 1rem;
   }
 
   .student-login-title {
-    font-size: 1.75rem;
+    font-size: 1.8rem;
   }
 
   .student-login-subtitle {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
   }
 
   .student-sequence-display {
-    min-height: 90px;
-    padding: 0.75rem;
+    min-height: 100px;
+    padding: 0.8rem;
   }
 
   .student-sequence-item {
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
   }
 
   .student-pictogram-button {
     padding: 0.4rem;
+  }
+
+  .student-actions ion-button {
+    font-size: 1.4rem;
+    min-height: 65px;
   }
 }
 
@@ -270,32 +361,154 @@
 
 @media (max-width: 768px) {
   .student-login-container {
-    padding: 0.5rem;
-    gap: 0.5rem;
+    padding: 0.8rem;
+    gap: 0.8rem;
   }
 
   .student-login-title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .student-login-subtitle {
-    font-size: 1rem;
+    font-size: 1.05rem;
   }
 
   .student-sequence-display {
-    min-height: 80px;
+    min-height: 85px;
+    padding: 0.6rem;
+  }
+
+  .student-sequence-item {
+    width: 80px;
+    height: 80px;
+  }
+
+  .student-sequence-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .student-pictograms-grid {
+    gap: 0.6rem;
+  }
+
+  .student-pictogram-button {
+    padding: 0.35rem;
+  }
+
+  .student-pictogram-button::before {
+    inset: -6px;
+  }
+
+  .student-actions {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .student-actions ion-button {
+    font-size: 1.3rem;
+    min-height: 60px;
+  }
+}
+
+/* ========================================
+   MÓVIL PEQUEÑO (< 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+  .student-login-container {
+    padding: 0.6rem;
+    gap: 0.6rem;
+  }
+
+  .student-login-title {
+    font-size: 1.4rem;
+  }
+
+  .student-login-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .student-sequence-display {
+    min-height: 75px;
     padding: 0.5rem;
   }
 
   .student-sequence-item {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
+    border-width: 2px;
+  }
+
+  .student-sequence-number {
+    width: 26px;
+    height: 26px;
+    font-size: 0.8rem;
+  }
+
+  .student-pictograms-grid {
+    gap: 0.5rem;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .student-pictogram-button {
+    padding: 0.3rem;
+  }
+
+  .student-pictogram-button::before {
+    inset: -5px;
+  }
+
+  .student-error-message p {
+    font-size: 1.05rem;
+  }
+
+  .student-actions ion-button {
+    font-size: 1.2rem;
+    min-height: 55px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE (< 650px altura)
+   ======================================== */
+
+@media (max-height: 650px) and (orientation: landscape) {
+  .student-login-container {
+    padding: 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .student-login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .student-login-title {
+    font-size: 1.3rem;
+    margin: 0;
+  }
+
+  .student-login-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .student-sequence-display {
+    min-height: 65px;
+    padding: 0.5rem;
+  }
+
+  .student-sequence-item {
+    width: 65px;
+    height: 65px;
   }
 
   .student-sequence-number {
     width: 24px;
     height: 24px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .student-pictograms-grid {
@@ -306,115 +519,8 @@
     padding: 0.3rem;
   }
 
-  .student-actions {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .student-actions ion-button {
-    font-size: 1.1rem;
-  }
-}
-
-/* ========================================
-   MÓVIL PEQUEÑO (< 480px)
-   ======================================== */
-
-@media (max-width: 480px) {
-  .student-login-container {
-    padding: 0.4rem;
-    gap: 0.4rem;
-  }
-
-  .student-login-title {
-    font-size: 1.3rem;
-  }
-
-  .student-login-subtitle {
-    font-size: 0.9rem;
-  }
-
-  .student-sequence-display {
-    min-height: 70px;
-    padding: 0.4rem;
-  }
-
-  .student-sequence-item {
-    width: 50px;
-    height: 50px;
-    border-width: 2px;
-  }
-
-  .student-sequence-number {
-    width: 22px;
-    height: 22px;
-    font-size: 0.75rem;
-  }
-
-  .student-pictograms-grid {
-    gap: 0.4rem;
-  }
-
-  .student-pictogram-button {
-    padding: 0.25rem;
-  }
-
-  .student-error-message p {
-    font-size: 1rem;
-  }
-
-  .student-actions ion-button {
-    font-size: 1rem;
-  }
-}
-
-/* ========================================
-   LANDSCAPE (< 650px altura)
-   ======================================== */
-
-@media (max-height: 650px) and (orientation: landscape) {
-  .student-login-container {
-    padding: 0.5rem;
-    gap: 0.4rem;
-  }
-
-  .student-login-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .student-login-title {
-    font-size: 1.2rem;
-    margin: 0;
-  }
-
-  .student-login-subtitle {
-    font-size: 0.9rem;
-  }
-
-  .student-sequence-display {
-    min-height: 60px;
-    padding: 0.4rem;
-  }
-
-  .student-sequence-item {
-    width: 50px;
-    height: 50px;
-  }
-
-  .student-sequence-number {
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-  }
-
-  .student-pictograms-grid {
-    gap: 0.4rem;
-  }
-
-  .student-pictogram-button {
-    padding: 0.25rem;
+  .student-pictogram-button::before {
+    inset: -5px;
   }
 
   .student-back-button {
@@ -426,9 +532,10 @@
   }
 
   .student-actions ion-button {
-    font-size: 0.95rem;
-    --padding-top: 0.75rem;
-    --padding-bottom: 0.75rem;
+    font-size: 1.1rem;
+    min-height: 50px;
+    --padding-top: 0.8rem;
+    --padding-bottom: 0.8rem;
   }
 }
 
@@ -437,25 +544,43 @@
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .student-pictogram-button {
+  .student-pictogram-button,
+  .student-pictogram-button::before,
+  .student-pictogram-image,
+  .student-actions ion-button {
     transition: none !important;
   }
 
-  .student-pictogram-button:hover {
+  .student-pictogram-button:hover,
+  .student-pictogram-button:active {
     transform: none !important;
   }
 
-  .student-pictogram-button:active {
+  .student-actions ion-button:hover,
+  .student-actions ion-button:active {
     transform: none !important;
   }
 }
 
 @media (prefers-contrast: high) {
   .student-pictogram-button::before {
-    background: rgba(240, 147, 251, 0.3);
+    background: rgba(16, 185, 129, 0.6);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.4),
+                0 0 30px 12px rgba(16, 185, 129, 0.5);
   }
 
-  .student-pictogram-button:hover:not(:disabled) .student-pictogram-image {
-    filter: drop-shadow(0 8px 24px rgba(240, 147, 251, 0.7));
+  .student-pictogram-button:hover:not(:disabled) .student-pictogram-image,
+  .student-pictogram-button:focus:not(:disabled) .student-pictogram-image {
+    filter: drop-shadow(0 8px 28px rgba(16, 185, 129, 0.8));
+  }
+
+  .student-pictogram-button:focus-visible {
+    outline: 6px solid #10b981;
+    outline-offset: 10px;
+  }
+
+  .student-actions ion-button:focus-visible {
+    outline: 6px solid #10b981;
+    outline-offset: 6px;
   }
 }
