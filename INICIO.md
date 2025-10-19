@@ -15,7 +15,7 @@ contraseña:quinternions.5A
 
 ---
 
-### **Paso 1: Clonar el repositorio Si no lo has hecho ya **
+### **Paso 1: Clonar el repositorio Si no lo has hecho ya**
 
 Abre una terminal y ejecuta:
 
