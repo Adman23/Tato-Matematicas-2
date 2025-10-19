@@ -59,7 +59,7 @@ export default function Home() {
                   alt="Tutor o Administrador"
                   className="tatomaths-image"
                 />
-                <span className="tatomaths-label">Tutor</span>
+               {/* <span className="tatomaths-label">Tutor</span> */}
               </div>
             </button>
 
@@ -74,7 +74,7 @@ export default function Home() {
                   alt="Estudiante"
                   className="tatomaths-image"
                 />
-                <span className="tatomaths-label">Estudiante</span>
+                {/* <span className="tatomaths-label">Estudiante</span> */}
               </div>
             </button>
           </div>
