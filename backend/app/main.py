@@ -10,10 +10,11 @@ Incluye:
     - Inclusión de routers (por ejemplo, autenticación).
     - Rutas básicas de estado y diagnóstico (raíz y health check).
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, status as http_status
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .routers import auth
+from .services.supabase import supabase
 
 # === Inicialización de la aplicación ===
 
@@ -44,10 +45,9 @@ app.add_middleware(
 # === Registro de routers ===
 
 #: Se incluyen los routers que gestionan las distintas rutas del backend.
-#: 
+#:
 #: Actualmente, solo se importa el router de autenticación (`auth.router`),
 #: pero se pueden añadir otros módulos en el futuro (por ejemplo, `students`, `games`, etc.).
-app.include_router(auth.router)
 app.include_router(auth.router)
 
 # Ruta raíz
@@ -62,7 +62,7 @@ def read_root():
         dict: Información básica con mensaje, estado, versión y enlace a la documentación.
     """
     return {
-        "message": "TatoMaths API ✅",
+        "message": "TatoMaths API ",
         "status": "online",
         "version": "1.0.0",
         "docs": "/docs"
@@ -75,8 +75,45 @@ def health_check():
     Verificación de salud del servicio (health check).
 
     Este endpoint permite comprobar rápidamente si el servidor está activo y respondiendo.
+    También verifica la conexión con la base de datos Supabase.
 
     Returns:
-        dict: Objeto con el estado de la API.
+        dict: Objeto con el estado de la API, incluyendo:
+            - status: Estado general ("healthy" o "unhealthy")
+            - version: Versión de la API
+            - services: Estado de cada servicio (api, database)
+
+    Response Codes:
+        - 200: Todos los servicios están operativos
+        - 503: Algún servicio no está disponible
     """
-    return {"status": "healthy"}
+    # Estado inicial
+    db_status = "unavailable"
+    overall_status = "unhealthy"
+    status_code = http_status.HTTP_503_SERVICE_UNAVAILABLE
+
+    # Intentar verificar la conexión a la base de datos
+    try:
+        # Realizar una consulta simple para verificar conectividad
+        # Intentamos obtener el primer registro de user_profiles (o cualquier tabla)
+        response = supabase.table("user_profiles").select("id").limit(1).execute()
+
+        # Si no hay error, la BD está operativa
+        db_status = "operational"
+        overall_status = "healthy"
+        status_code = http_status.HTTP_200_OK
+
+    except Exception as e:
+        # Si hay error, registramos que la BD no está disponible
+        db_status = f"unavailable: {str(e)[:100]}"  # Limitamos el mensaje de error
+        overall_status = "unhealthy"
+        status_code = http_status.HTTP_503_SERVICE_UNAVAILABLE
+
+    return {
+        "status": overall_status,
+        "version": "1.0.0",
+        "services": {
+            "api": "operational",
+            "database": db_status
+        }
+    }

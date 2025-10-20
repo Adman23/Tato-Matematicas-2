@@ -62,7 +62,26 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 #: Instancia global de la configuración de la aplicación.
-#: 
+#:
 #: Al importarse este módulo, se carga automáticamente el archivo `.env`
 #: y se valida que todas las variables necesarias estén presentes.
-settings = Settings()
+#: Si faltan variables críticas, se muestra un mensaje de error claro.
+try:
+    settings = Settings()
+except Exception as e:
+    print("\n" + "=" * 70)
+    print(" ERROR-001: Variables de entorno faltantes o inválidas")
+    print("=" * 70)
+    print(f"\nDetalle: {str(e)}\n")
+    print(" Solución:")
+    print("  1. Verifica que existe el archivo backend/.env")
+    print("  2. Copia desde .env.example si no existe:")
+    print("     cp backend/.env.example backend/.env")
+    print("  3. Completa todas las variables requeridas:")
+    print("     - SUPABASE_URL")
+    print("     - SUPABASE_ANON_KEY")
+    print("     - SUPABASE_JWT_SECRET")
+    print("     - SUPABASE_SERVICE_ROLE")
+    print("     - APP_JWT_SECRET")
+    print("=" * 70 + "\n")
+    raise  # Re-lanza la excepción para detener el servidor
