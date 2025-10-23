@@ -135,3 +135,7 @@ Toast
     background-color: var(--ion-color-danger);
     border-radius: 4px;
 }
+
+.custom-form-toast {
+    margin: 600px auto auto auto;
+}
