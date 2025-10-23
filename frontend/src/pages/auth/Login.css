@@ -1,0 +1,33 @@
+/* ========================================
+   Toasts personalizados
+   ======================================== */
+.custom-form-toast {
+    margin: 1% auto auto auto;
+}
+
+.custom-form-toast::part(container) {
+    background-color: var(--ion-color-danger);
+    border-radius: 4px;
+}
+
+/* ========================================
+     Login profesores
+     ======================================== */
+
+ion-button.rounded-button::part(native) {
+    width: 100%;
+    height: 48px;
+    background-color: white;
+    color: var(--ion-color-primary);
+    border-radius: 40px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+ion-button.rounded-button::part(native):hover {
+    background-color: var(--ion-color-light);
+}
+
+ion-input.rounded-input::part(native) {
+    border-radius: 40px !important;
+}
