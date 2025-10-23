@@ -1,33 +1,137 @@
 /* ========================================
-   Toasts personalizados
+   Login profesores
    ======================================== */
-.custom-form-toast {
-    margin: 1% auto auto auto;
-}
 
-.custom-form-toast::part(container) {
-    background-color: var(--ion-color-danger);
-    border-radius: 4px;
-}
-
-/* ========================================
-     Login profesores
-     ======================================== */
-
-ion-button.rounded-button::part(native) {
+/*
+Centra todo el contenido en la pantalla
+*/
+.outer-center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100%;
+    padding-top: 50px;
+    box-sizing: border-box;
     width: 100%;
-    height: 48px;
-    background-color: white;
-    color: var(--ion-color-primary);
-    border-radius: 40px;
-    border: none;
+}
+
+/*
+Título principal
+*/
+.main-title {
     margin-bottom: 20px;
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-normal);
+    color: black;
+    text-align: center;
+    width: 100%;
+}
+
+/*
+Tarjeta que engloba todo el formulario
+*/
+.login-card {
+    max-width: 400px;
+    width: 100%;
+    margin: 0;
+}
+
+/*
+Cuadrado azul que engloba el formulario
+*/
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: var(--ion-color-primary);
+    border-radius: 16px;
+    max-width: 400px;
+}
+
+/*
+Título del formulario
+*/
+.login-heading {
+    margin-bottom: 4px;
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-normal);
+    color: white;
+}
+
+/*
+Subtítulo del formulario
+*/
+.login-subheading {
+    margin-bottom: 24px;
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-normal);
+    color: black;
+}
+
+/*
+Contenedor del formulario
+*/
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/*
+Campos del formulario
+*/
+.input-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    width: 80%;
+    margin-bottom: 15px;
+    margin-left: 64px;
+    color: black;
+}
+
+.input-item ion-label {
+    color: black !important;
+    margin-bottom: 5px;
+}
+
+/*
+Icono dentro del input
+*/
+.input-icon {
+    color: black;
+}
+
+/*
+Espacio entre los elementos
+*/
+.spacer {
+    height: 10px;
+}
+
+/*
+Botones
+*/
+ion-button.rounded-button {
+    margin-top: 15px;
+    width: 65%;
+    --background: white;
+    --color: var(--ion-color-primary);
+    --border-radius: 40px;
 }
 
 ion-button.rounded-button::part(native):hover {
     background-color: var(--ion-color-light);
 }
 
-ion-input.rounded-input::part(native) {
-    border-radius: 40px !important;
+/*
+Toast
+*/
+.custom-form-toast::part(container) {
+    background-color: var(--ion-color-danger);
+    border-radius: 4px;
 }
