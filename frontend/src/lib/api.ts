@@ -60,8 +60,8 @@ api.interceptors.response.use(
       // Solo redirigir si NO es un endpoint de login/auth
       // Los endpoints de login pueden devolver 401 por credenciales incorrectas
       const isAuthEndpoint = error.config?.url?.includes('/auth/login') ||
-                            error.config?.url?.includes('/auth/student') ||
-                            error.config?.url?.includes('/auth/register');
+        error.config?.url?.includes('/auth/student') ||
+        error.config?.url?.includes('/auth/register');
 
       if (!isAuthEndpoint) {
         // Token inválido o expirado, determinar qué tipo de usuario y limpiar

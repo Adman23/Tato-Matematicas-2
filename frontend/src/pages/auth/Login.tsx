@@ -24,34 +24,42 @@ import {
   IonButton,
   IonText,
   IonIcon,
+  IonToast,
 } from '@ionic/react';
-import { logInOutline, arrowBackOutline } from 'ionicons/icons';
+import { arrowBackOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
+import './Login.css';
+
 
 /**
- * Componente funcional de la pantalla de inicio de sesión.
- *
- * Permite al tutor o administrador autenticarse ingresando su nombre de usuario
- * y contraseña. Realiza validaciones básicas en frontend y muestra errores en caso
- * de credenciales inválidas o problemas de conexión.
- *
- * @returns {JSX.Element} Interfaz del formulario de inicio de sesión.
- *
- * @example
- * ```tsx
- * import Login from "./pages/auth/Login";
- *
- * <Route path="/login" component={Login} />
- * ```
- */
+* Componente funcional de la pantalla de inicio de sesión.
+*
+* Permite al tutor o administrador autenticarse ingresando su nombre de usuario
+* y contraseña. Realiza validaciones básicas en frontend y muestra errores en caso
+* de credenciales inválidas o problemas de conexión.
+*
+* @returns {JSX.Element} Interfaz del formulario de inicio de sesión.
+*
+* @example
+* ```tsx
+* import Login from "./pages/auth/Login";
+*
+* <Route path="/login" component={Login} />
+* ```
+*/
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastColor, setToastColor] = useState<'danger' | 'success'>('danger');
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
   const history = useHistory();
@@ -66,21 +74,15 @@ export default function Login() {
  */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-
-    // Validación frontend antes de enviar
-    if (username.length < 3) {
-      setError('El nombre de usuario debe tener al menos 3 caracteres');
-      return;
-    }
-
+    setToastMessage('');
     setLoading(true);
+
+    let current_error = '';
 
     try {
       await login({ username, password });
       history.push('/dashboard');
     } catch (err: any) {
-      console.error('Login error:', err);
 
       // Manejar diferentes tipos de errores
       if (err.response) {
@@ -88,109 +90,137 @@ export default function Login() {
         const detail = err.response.data?.detail;
 
         if (status === 404) {
-          setError('El usuario no existe');
+          current_error = ' El usuario es incorrecto ';
         } else if (status === 401) {
-          setError('La contraseña es incorrecta');
+          current_error = ' La contraseña es incorrecta ';
         } else if (status === 422) {
-          setError('El nombre de usuario debe tener al menos 3 caracteres');
-        } else {
-          setError(detail || 'Error al iniciar sesión');
+          current_error = 'El usuario o la contraseña son incorrectos '
+        }
+        else {
+          current_error = detail || ' Error al iniciar sesión ';
         }
       } else {
-        setError('Error de conexión. Verifica que el servidor esté activo.');
+        current_error = (' Error de conexión. Verifica que el servidor esté activo. ');
       }
+      console.error('Login error:', current_error);
+
+      // Mostramos el toast con el error
+      setToastMessage(current_error);
+      setToastColor('danger');
+      setShowToast(true);
+
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+* Alterna la visibilidad de la contraseña.
+*/
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Iniciar Sesión - TatoMaths</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-
       <IonContent className="ion-padding">
-        <div style={{ maxWidth: '500px', margin: '40px auto' }}>
-          <IonCard>
-            <IonCardContent>
-              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                <IonIcon
-                  icon={logInOutline}
-                  style={{ fontSize: '64px', color: 'var(--ion-color-primary)' }}
-                />
-                <h2 style={{ margin: '16px 0 8px 0' }}>Tutor / Administrador</h2>
-                <p style={{ color: 'var(--ion-color-medium)', margin: 0 }}>
-                  Introduce tus credenciales
-                </p>
-              </div>
-
+        <IonCard>
+          <IonCardContent>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <h1 style={{
+                margin: '16px 0 8px 0',
+                fontFamily: 'var(--font-family-primary)',
+                fontWeight: 'var(--font-weight-normal)'
+              }}>Tato Matemáticas 2</h1>
+            </div>
+            <div style={{
+              backgroundColor: 'var(--ion-color-primary)',
+              borderRadius: '16px',
+              padding: '20px',
+              maxWidth: '300px',
+              margin: '40px auto',
+              textAlign: 'center',
+              color: 'white',
+              position: 'relative'
+            }}>
+              <h2 style={{
+                marginBottom: '4px',
+                fontFamily: 'var(--font-family-primary)',
+                fontWeight: 'var(--font-weight-normal)'
+              }}>Inicio de sesión</h2>
+              <p style={{
+                marginBottom: '24px',
+                fontFamily: 'var(--font-family-primary)',
+                fontWeight: 'var(--font-weight-normal)',
+                color: 'black'
+              }}
+              >Ingrese sus datos, por favor</p>
               <form onSubmit={handleLogin}>
-                <IonItem>
-                  <IonLabel position="floating">Nombre de usuario</IonLabel>
-                  <IonInput
-                    type="text"
-                    value={username}
-                    onIonInput={(e) => setUsername(e.detail.value!)}
-                    required
-                    minlength={3}
-                    autocomplete="username"
-                    placeholder="Mínimo 3 caracteres"
-                  />
-                </IonItem>
+                <div style={{ textAlign: 'left', marginBottom: '30px', color: 'black' }}>
+                  <IonItem>
+                    <IonLabel position="floating">Usuario</IonLabel>
+                    <IonInput
+                      className='rounded-input'
+                      type="text"
+                      value={username}
+                      onIonInput={(e) => setUsername(e.detail.value!)}
+                      required
+                      autocomplete="email"
+                      placeholder="Escriba aquí"
+                    />
+                  </IonItem>
 
-                {username && username.length < 3 && (
-                  <IonText color="warning">
-                    <p style={{ padding: '4px 16px', margin: 0, fontSize: '12px' }}>
-                      El nombre de usuario debe tener al menos 3 caracteres
-                    </p>
-                  </IonText>
-                )}
+                  <div style={{ height: '20px' }}></div>
 
-                <IonItem style={{ marginTop: '12px' }}>
-                  <IonLabel position="floating">Contraseña</IonLabel>
-                  <IonInput
-                    type="password"
-                    value={password}
-                    onIonInput={(e) => setPassword(e.detail.value!)}
-                    required
-                    autocomplete="current-password"
-                  />
-                </IonItem>
-
-                {error && (
-                  <IonText color="danger">
-                    <p style={{ padding: '12px 16px', margin: 0, fontSize: '14px' }}>
-                      {error}
-                    </p>
-                  </IonText>
-                )}
+                  <IonItem>
+                    <IonLabel position="floating">Contraseña</IonLabel>
+                    <IonInput
+                      className='rounded-input'
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onIonInput={(e) => setPassword(e.detail.value!)}
+                      required
+                      autocomplete="current-password"
+                    >
+                      <IonIcon
+                        icon={showPassword ? eyeOffOutline : eyeOutline}
+                        slot='end'
+                        onClick={togglePasswordVisibility}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </IonInput>
+                  </IonItem>
+                </div>
 
                 <IonButton
                   expand="block"
                   type="submit"
-                  disabled={loading || !username || username.length < 3 || !password}
-                  style={{ marginTop: '24px' }}
+                  className='rounded-button'
                 >
-                  {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                  {loading ? 'Accediendo...' : 'Acceder'}
                 </IonButton>
+                <IonButton
+                  className='rounded-button'
+                  expand="block"
+                  fill="clear"
+                  onClick={() => history.push('/')}
+                >
+                  Volver al inicio
+                </IonButton>
+                <IonToast
+                  isOpen={showToast}
+                  onDidDismiss={() => setShowToast(false)}
+                  message={toastMessage}
+                  duration={2000}
+                  color={toastColor}
+                  position="bottom"
+                  cssClass={'custom-form-toast'}
+                />
               </form>
-            </IonCardContent>
-          </IonCard>
-
-          <IonButton
-            expand="block"
-            fill="clear"
-            onClick={() => history.push('/')}
-            style={{ marginTop: '16px' }}
-          >
-            <IonIcon icon={arrowBackOutline} slot="start" />
-            Volver al inicio
-          </IonButton>
-        </div>
+            </div>
+          </IonCardContent>
+        </IonCard>
       </IonContent>
-    </IonPage>
+    </IonPage >
   );
 }
