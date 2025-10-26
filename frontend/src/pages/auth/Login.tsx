@@ -176,13 +176,13 @@ export default function Login() {
                   <IonButton
                     expand="block"
                     type="submit"
-                    className='rounded-button'
+                    className='login-button'
                   >
                     {loading ? 'Accediendo...' : 'Acceder'}
                   </IonButton>
 
                   <IonButton
-                    className='rounded-button'
+                    className='login-button'
                     expand="block"
                     fill="clear"
                     onClick={() => history.push('/')}
