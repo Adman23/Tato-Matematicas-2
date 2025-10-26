@@ -1,0 +1,81 @@
+/* Contenedor del ion-item — no forzamos display:flex al ion-item en sí */
+.student-item {
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+}
+
+/* Contenedor interno: aquí sí hacemos el layout flex horizontal */
+.student-item__inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 15px 15px;
+  border-bottom: 1px solid gray;
+}
+
+/* Avatar */
+.student-item__avatar {
+  /* No usar margin grande; solo tamaño y que el img ocupe el contenedor */
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.student-item__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+}
+
+/* Texto */
+.student-item__text {
+    width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 30px;
+  overflow: hidden;
+}
+
+.student-item__name {
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.student-item__icons::part(native){
+
+    display: flex;
+    gap: 10px;
+}
+
+.student-item__icons ion-icon{
+
+  color: #50BFE6;
+  background-color: white;
+  width: 30px;
+  height: 30px;
+}
+
+ion-button.Button::part(native) {
+  background: white;   
+  border-radius: 10px; 
+  --width: 20px;
+  --height: 20px;
+  border: none;
+}
+
+ion-button.Button ion-icon {
+  color: #50BFE6;
+  background-color: white;
+  width: 30px;
+  height: 30px;
+}

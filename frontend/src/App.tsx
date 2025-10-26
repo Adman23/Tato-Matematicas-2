@@ -26,6 +26,9 @@ import StudentLogin from './pages/auth/StudentLogin';
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
 
+// === Perfil profesor ===
+import TeacherProfilePage from './pages/teacherProfile/teacherProfilePage';
+
 
 /**
  * Componente raíz de la aplicación.
@@ -57,6 +60,7 @@ export default function App() {
             <Route path="/student-login" exact component={StudentLogin} />
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+            <Route path="/teacher-profile" exact component={TeacherProfilePage} />
             <Redirect to="/" />
           </IonRouterOutlet>
         </IonReactRouter>

@@ -1,0 +1,9 @@
+.studentTable{
+
+    border: 3px solid var(--ion-color-primary);
+    overflow-y: auto;
+    width: 80%;
+    height: 95%;
+    border-radius: 20px;
+    margin: auto auto;
+}
