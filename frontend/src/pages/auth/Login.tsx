@@ -30,9 +30,11 @@ import { eyeOutline, eyeOffOutline, checkmarkOutline, closeOutline } from 'ionic
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { setupIonicReact } from '@ionic/react';
 
 import './Login.css';
 
+setupIonicReact();
 
 /**
 * Componente funcional de la pantalla de inicio de sesión.
@@ -125,85 +127,87 @@ export default function Login() {
 
   return (
     <IonPage>
-      <IonContent className="ion-padding">
-        <div className="outer-center-container">
-          <h1 className="main-title">Tato Matemáticas 2</h1>
-          <IonCard className="login-card">
-            <IonCardContent>
-              <div className='main-container'>
-                <h2 className="login-heading">Inicio de sesión</h2>
-                <p className="login-subheading">Ingrese sus datos, por favor</p>
-                <form onSubmit={handleLogin} className="login-form">
-                  <IonItem lines="none" className="input-item">
-                    <IonLabel position="stacked">Usuario</IonLabel>
-                    <IonInput
-                      type="text"
-                      value={username}
-                      onIonInput={(e) => setUsername(e.detail.value!)}
-                      required
-                      autocomplete="username"
-                      placeholder="Escriba aquí"
-                    >
-                      <IonIcon
-                        icon={isUsernameValid ? checkmarkOutline : closeOutline}
-                        slot='end'
-                        className="input-icon"
-                      />
-                    </IonInput>
-                  </IonItem>
-
-                  <div className="spacer"></div>
-
-                  <IonItem lines="none" className="input-item">
-                    <IonLabel position="stacked">Contraseña</IonLabel>
-                    <IonInput
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onIonInput={(e) => setPassword(e.detail.value!)}
-                      required
-                      autocomplete="current-password"
-                    >
-                      <IonIcon
-                        icon={showPassword ? eyeOffOutline : eyeOutline}
-                        onClick={togglePasswordVisibility}
-                        slot='end'
-                        className="input-icon"
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </IonInput>
-                  </IonItem>
-
-                  <IonButton
-                    expand="block"
-                    type="submit"
-                    className='login-button'
-                  >
-                    {loading ? 'Accediendo...' : 'Acceder'}
-                  </IonButton>
-
-                  <IonButton
-                    className='login-button'
-                    expand="block"
-                    fill="clear"
-                    onClick={() => history.push('/')}
-                  >
-                    Volver al inicio
-                  </IonButton>
-                  <IonToast
-                    isOpen={showToast}
-                    onDidDismiss={() => setShowToast(false)}
-                    message={toastMessage}
-                    duration={2000}
-                    color={toastColor}
-                    position="bottom"
-                    cssClass={'custom-form-toast'}
-                  />
-                </form>
-              </div>
-            </IonCardContent>
-          </IonCard>
+      <IonContent fullscreen className="ion-padding login-background">
+        <div className="main-title">
+          <IonText>
+            <h1>Tato Matemáticas 2</h1>
+          </IonText>
         </div>
-      </IonContent>
+
+        <div className="login-card">
+          <IonText>
+            <h2> Inicio de sesión</h2>
+            <p>Ingrese sus datos, por favor</p>
+          </IonText>
+
+          <form onSubmit={handleLogin} className="login-form">
+            <IonItem lines="none" className="input-item">
+              <IonLabel position="stacked">Usuario</IonLabel>
+              <IonInput
+                className='login-custom-input'
+                type="text"
+                value={username}
+                onIonInput={(e) => setUsername(e.detail.value!)}
+                required
+                autocomplete="username"
+                placeholder="Escriba aquí"
+              >
+                <IonIcon
+                  icon={isUsernameValid ? checkmarkOutline : closeOutline}
+                  slot='end'
+                  className="input-icon"
+                />
+              </IonInput>
+            </IonItem>
+
+            <IonItem lines="none" className="input-item">
+              <IonLabel position="stacked">Contraseña</IonLabel>
+              <IonInput
+                className='login-custom-input'
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onIonInput={(e) => setPassword(e.detail.value!)}
+                required
+                autocomplete="current-password"
+              >
+                <IonIcon
+                  icon={showPassword ? eyeOffOutline : eyeOutline}
+                  onClick={togglePasswordVisibility}
+                  slot='end'
+                  className="input-icon"
+                  style={{ cursor: 'pointer' }}
+                />
+              </IonInput>
+            </IonItem>
+
+            <IonButton
+              expand="block"
+              type="submit"
+              className='login-button'
+            >
+              {loading ? 'Accediendo...' : 'Acceder'}
+            </IonButton>
+
+            <IonButton
+              className='login-button'
+              expand="block"
+              fill="clear"
+              onClick={() => history.push('/')}
+            >
+              Volver al inicio
+            </IonButton>
+            <IonToast
+              isOpen={showToast}
+              onDidDismiss={() => setShowToast(false)}
+              message={toastMessage}
+              duration={2000}
+              color={toastColor}
+              position="top"
+              cssClass={'custom-form-toast'}
+            />
+          </form>
+        </div >
+      </IonContent >
     </IonPage >
   );
 }
