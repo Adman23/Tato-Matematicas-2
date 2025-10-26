@@ -114,7 +114,7 @@ export default function StudentLogin() {
     <IonPage>
       <IonHeader>
         <IonToolbar color="secondary">
-          <IonTitle>Acceso Estudiante</IonTitle>
+          <IonTitle className="student-login-title" >Acceso Estudiante</IonTitle>
         </IonToolbar>
       </IonHeader>
 
