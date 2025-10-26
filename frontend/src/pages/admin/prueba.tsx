@@ -7,6 +7,7 @@ import {
 
 import './LinkProfiles.css';
 import { useState } from 'react';
+import type { User } from '../../lib/api';
 import HeaderAdmin from './HeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 import TeacherSelect from './TeacherSelect';
