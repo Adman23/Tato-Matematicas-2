@@ -202,7 +202,7 @@ export default function Login() {
               message={toastMessage}
               duration={2000}
               color={toastColor}
-              position="bottom"
+              position="top"
               cssClass={'custom-form-toast'}
             />
           </form>

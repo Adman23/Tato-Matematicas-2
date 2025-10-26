@@ -14,12 +14,16 @@
 Título principal
 */
 .main-title {
-    margin-bottom: 30px;
+    margin-top: 70px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.main-title h1 {
     font-family: var(--font-family-primary);
     font-weight: var(--font-weight-normal);
     color: black;
-    text-align: center;
-    flex-shrink: 0;
+    font-size: 2.5rem;
 }
 
 /*
@@ -42,7 +46,7 @@ Tarjeta que engloba todo el formulario
     font-weight: var(--font-weight-normal);
 
     justify-content: center;
-    margin: 0 auto;
+    margin: 50px auto;
 }
 
 .login-card h2 {
