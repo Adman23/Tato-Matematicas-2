@@ -17,6 +17,33 @@
   overflow: hidden;
 }
 
+.student-volver-boton {
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 30px;
+  width: 100px;
+  height: 100px;
+    
+}
+
+.student-volver-boton::part(native) {
+  border-radius: 16px;
+  padding: 0.5rem;
+
+}
+
+.student-volver-boton::part(native):hover,
+.student-volver-boton::part(native):focus-visible {
+  background-color: var(--ion-color-primary);
+}
+
+.student-boton-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+
 /* ========================================
    HEADER
    ======================================== */
@@ -37,10 +64,21 @@
   color: #000000;
   margin: 0;
 }
+.student-login-image {
+  width: 200px;
+  height: 200px;
+}
+
 
 /* ========================================
    SECUENCIA SELECCIONADA
    ======================================== */
+
+.student-sequence-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
 .student-sequence-display {
   background: rgba(119, 114, 114, 0.5);
@@ -51,6 +89,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  flex: 1;
 }
 
 .student-sequence-placeholder {
@@ -120,6 +159,7 @@
 .student-pictogram-button:focus-visible:not(:disabled) {
   border-color: var(--ion-color-primary);
   background-color: var(--ion-color-primary);
+  outline: 2px solid black;
 }
 
 
@@ -146,45 +186,49 @@
    BOTONES
    ======================================== */
 
-.student-actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* siempre 3 */
-  gap: 1.5rem;
+.student-borrar-boton {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 150px;
+  height: 150px;
   flex-shrink: 0;
 }
 
-/* Botones dentro de .student-actions */
-.student-actions ion-button {
-  --border-radius: 20px;
-  --padding-top: 1.25rem;
-  --padding-bottom: 1.25rem;
-  --padding-start: 1rem;
-  --padding-end: 1rem;
-  --min-height: 64px;
-  background: transparent;
-  border: none;
+.student-borrar-boton::part(native) {
+  border-radius: 16px;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
 }
 
-/* Tipografía del botón (Shadow DOM) */
-.student-actions ion-button::part(native) {
-  font-weight: 800;
-  font-size: 1.25rem;
-  text-transform: none;
-  letter-spacing: 0.5px;
-}
-      
-/* Foco accesible (teclado) — sutil */
-.student-actions ion-button::part(native):focus-visible,
-.student-actions ion-button::part(native):hover {
-  border-color: var(--ion-color-primary);
+.student-borrar-boton::part(native):hover,
+.student-borrar-boton::part(native):focus-visible {
   background-color: var(--ion-color-primary);
-  
 }
 
-/* Iconos un poco más grandes y con separación */
-ion-button .button-native ion-icon[slot="start"] {
-  font-size: 1.25rem;
-  margin-inline-end: 8px;
+.student-avance-boton {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 100px;
+  height: 100px;
+  background: transparent;
+}
+
+.student-avance-boton::part(native) {
+  border-radius: 16px;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.student-avance-boton::part(native):hover,
+.student-avance-boton::part(native):focus-visible {
+  background-color: var(--ion-color-primary);
+}
+
+.student-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 12px;
 }
 
 
@@ -220,11 +264,6 @@ ion-button .button-native ion-icon[slot="start"] {
   .student-pictogram-button {
     padding: 0.4rem;
   }
-
-  .student-actions ion-button {
-    font-size: 1.4rem;
-    min-height: 65px;
-  }
 }
 
 /* ========================================
@@ -255,12 +294,6 @@ ion-button .button-native ion-icon[slot="start"] {
     height: 80px;
   }
 
-  .student-sequence-number {
-    width: 28px;
-    height: 28px;
-    font-size: 0.85rem;
-  }
-
   .student-pictograms-grid {
     gap: 0.6rem;
   }
@@ -271,16 +304,6 @@ ion-button .button-native ion-icon[slot="start"] {
 
   .student-pictogram-button::before {
     inset: -6px;
-  }
-
-  .student-actions {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .student-actions ion-button {
-    font-size: 1.3rem;
-    min-height: 60px;
   }
 }
 
@@ -310,13 +333,6 @@ ion-button .button-native ion-icon[slot="start"] {
   .student-sequence-item {
     width: 80px;
     height: 80px;
-    border-width: 2px;
-  }
-
-  .student-sequence-number {
-    width: 26px;
-    height: 26px;
-    font-size: 0.8rem;
   }
 
   .student-pictograms-grid {
@@ -334,11 +350,6 @@ ion-button .button-native ion-icon[slot="start"] {
 
   .student-error-message p {
     font-size: 1.05rem;
-  }
-
-  .student-actions ion-button {
-    font-size: 1.2rem;
-    min-height: 55px;
   }
 }
 
@@ -377,12 +388,6 @@ ion-button .button-native ion-icon[slot="start"] {
     height: 65px;
   }
 
-  .student-sequence-number {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-  }
-
   .student-pictograms-grid {
     gap: 0.5rem;
   }
@@ -394,21 +399,6 @@ ion-button .button-native ion-icon[slot="start"] {
   .student-pictogram-button::before {
     inset: -5px;
   }
-
-  .student-back-button {
-    display: none;
-  }
-
-  .student-actions {
-    grid-template-columns: 2fr 1fr;
-  }
-
-  .student-actions ion-button {
-    font-size: 1.1rem;
-    min-height: 50px;
-    --padding-top: 0.8rem;
-    --padding-bottom: 0.8rem;
-  }
 }
 
 /* ========================================
@@ -419,17 +409,14 @@ ion-button .button-native ion-icon[slot="start"] {
   .student-pictogram-button,
   .student-pictogram-button::before,
   .student-pictogram-image,
-  .student-actions ion-button {
+  .student-volver-boton,
+  .student-borrar-boton,
+  .student-avance-boton {
     transition: none !important;
   }
 
   .student-pictogram-button:hover,
   .student-pictogram-button:active {
-    transform: none !important;
-  }
-
-  .student-actions ion-button:hover,
-  .student-actions ion-button:active {
     transform: none !important;
   }
 }
@@ -446,13 +433,11 @@ ion-button .button-native ion-icon[slot="start"] {
     filter: drop-shadow(0 8px 28px rgba(16, 185, 129, 0.8));
   }
 
-  .student-pictogram-button:focus-visible {
+  .student-pictogram-button:focus-visible,
+  .student-volver-boton:focus-visible,
+  .student-borrar-boton:focus-visible,
+  .student-avance-boton:focus-visible {
     outline: 6px solid #10b981;
     outline-offset: 10px;
-  }
-
-  .student-actions ion-button:focus-visible {
-    outline: 6px solid #10b981;
-    outline-offset: 6px;
   }
 }

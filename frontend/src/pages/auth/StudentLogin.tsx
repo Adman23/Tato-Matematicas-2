@@ -16,13 +16,10 @@ import {
   IonPage,
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonContent,
   IonButton,
   IonText,
-  IonIcon,
 } from '@ionic/react';
-import { arrowBackOutline, trashOutline } from 'ionicons/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -39,7 +36,7 @@ const PICTOGRAMS = [
 
 /** Longitud mínima requerida para validar la secuencia. */
 const REQUIRED_LENGTH = 3; // Longitud mínima de la secuencia
-
+const MAX_LENGTH = 4;
 
 /**
  * Pantalla de login de estudiante por secuencia de pictogramas.
@@ -69,10 +66,18 @@ export default function StudentLogin() {
  * Añade un pictograma a la secuencia seleccionada.
  * @param pictogramId Identificador del pictograma elegido.
  */
-  const addPicto = (pictogramId: string) => {
-    setSelected([...selected, pictogramId]);
+// Añade un pictograma si no se ha alcanzado el máximo
+const addPicto = (pictogramId: string) => {
+  setSelected(prev => {
+    if (prev.length >= MAX_LENGTH) {
+      setError(`Máximo ${MAX_LENGTH} imágenes`);
+      return prev; // no añade más
+    }
     setError('');
-  };
+    return [...prev, pictogramId];
+  });
+};
+
 
   /** Limpia la secuencia actual y cualquier error mostrado. */
   const clearSequence = () => {
@@ -89,7 +94,7 @@ export default function StudentLogin() {
    */
   const handleLogin = async () => {
     // Validación: secuencia incompleta
-    if (selected.length < REQUIRED_LENGTH) {
+    if (selected.length < REQUIRED_LENGTH ) {
       setError('Aún faltan imágenes');
       return;
     }
@@ -114,43 +119,73 @@ export default function StudentLogin() {
     <IonPage>
       <IonHeader>
         <IonToolbar color="secondary">
-          <IonTitle className="student-login-title" >Acceso Estudiante</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="student-login-content">
         <div className="student-login-container">
-          {/* Título */}
+          <IonButton
+            fill="clear"
+            className="student-volver-boton"
+            onClick={() => history.goBack()}
+          >
+            <img
+              src="/assets/pictograms/boton_volver.png"
+              alt="Volver"
+              className="student-boton-imagen"
+            />
+          </IonButton>
+
+          {/* Título y arriba */}
           <div className="student-login-header">
-            <h1 className="student-login-title">¡Hola! Selecciona tu clave</h1>
+            <img
+              src="/assets/pictograms/contrasena.png"
+              alt="imagen de contraseña"
+              className="student-login-image"
+            />
+
+            <h1 className="student-login-title">Selecciona tu clave</h1>
             <p className="student-login-subtitle">
               Toca {REQUIRED_LENGTH} animales en el orden correcto
             </p>
           </div>
 
-          {/* Secuencia seleccionada */}
-          <div className="student-sequence-display">
-            {selected.length === 0 ? (
-              <p className="student-sequence-placeholder">
-                Tu secuencia aparecerá aquí...
-              </p>
-            ) : (
-              <div className="student-sequence-items">
-                {selected.map((pictogramId, index) => {
-                  const picto = PICTOGRAMS.find(p => p.id === pictogramId);
-                  return (
-                    <div key={`${pictogramId}-${index}`} className="student-sequence-item">
-                      <img
-                        src={picto?.image}
-                        alt={picto?.name}
-                        className="student-sequence-image"
-                      />
-                      {/* <span className="student-sequence-number">{index + 1}</span> */}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+          {/* Secuencia seleccionada con botón borrar a la derecha */}
+          <div className="student-sequence-row">
+            <div className="student-sequence-display">
+              {selected.length === 0 ? (
+                <p className="student-sequence-placeholder">
+                  Tu secuencia aparecerá aquí...
+                </p>
+              ) : (
+                <div className="student-sequence-items">
+                  {selected.map((pictogramId, index) => {
+                    const picto = PICTOGRAMS.find(p => p.id === pictogramId);
+                    return (
+                      <div key={`${pictogramId}-${index}`} className="student-sequence-item">
+                        <img
+                          src={picto?.image}
+                          alt={picto?.name}
+                          className="student-sequence-image"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <IonButton
+              fill="clear"
+              className="student-borrar-boton"
+              onClick={clearSequence}
+            >
+              <img
+                src="/assets/pictograms/boton_borrar.png"
+                alt="Borrar"
+                className="student-boton-imagen"
+              />
+            </IonButton>
           </div>
 
           {/* Grid de pictogramas */}
@@ -159,7 +194,7 @@ export default function StudentLogin() {
               <button
                 key={picto.id}
                 onClick={() => addPicto(picto.id)}
-                disabled={loading}
+                disabled={loading || selected.length >= MAX_LENGTH}
                 className="student-pictogram-button"
                 aria-label={picto.name}
               >
@@ -184,39 +219,16 @@ export default function StudentLogin() {
           {/* Botones de acción */}
           <div className="student-actions">
             <IonButton
-              expand="block"
-              onClick={handleLogin}
-              disabled={loading || selected.length === 0}
-              size="large"
-              className="student-login-button"
-              aria-label={loading ? 'Verificando credenciales' : 'Entrar como estudiante'}
-
-            >
-              {loading ? 'Verificando...' : '✓ Entrar'}
-            </IonButton>
-
-            <IonButton
-              expand="block"
-              color="medium"
-              fill="outline"
-              onClick={clearSequence}
-              disabled={loading || selected.length === 0}
-              size="large"
-            >
-              <IonIcon icon={trashOutline} slot="start" />
-              Borrar
-            </IonButton>
-
-
-            {/* Botón volver */}
-            <IonButton
-              expand="block"
               fill="clear"
-              onClick={() => history.push('/')}
-              className="student-back-button"
+              className="student-avance-boton"
+              onClick={handleLogin}
+              disabled={loading}
             >
-              <IonIcon icon={arrowBackOutline} slot="start" />
-              Volver
+              <img
+                src="/assets/pictograms/boton_volver.png"
+                alt="Avanzar"
+                className="student-boton-imagen"
+              />
             </IonButton>
           </div>
         </div>
