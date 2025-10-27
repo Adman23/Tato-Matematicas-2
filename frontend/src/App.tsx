@@ -26,6 +26,9 @@ import StudentLogin from './pages/auth/StudentLogin';
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
 
+// === Páginas de admin ===
+import LinkProfiles from './pages/admin/LinkProfiles';
+import AdminDashboard from './pages/admin/MenuAdmin';
 import teacherManagement from './pages/admin/teacherManagement';
 
 
@@ -59,6 +62,8 @@ export default function App() {
             <Route path="/student-login" exact component={StudentLogin} />
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+            <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
+            <Route path="/admin-dashboard" exact component={AdminDashboard} />
             <Route path="/admin-teacher-management" exact component={teacherManagement} />
             <Redirect to="/" />
           </IonRouterOutlet>
