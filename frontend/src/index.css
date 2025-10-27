@@ -208,5 +208,55 @@ ion-title {
   width: 180px;
   height: 180px;
   object-fit: contain;
+  transition: transform var(--transition-bounce);
+}
 
+.tatomaths-button:hover .tatomaths-image {
+  transform: scale(1.1);
+}
+
+/* Etiquetas de texto */
+.tatomaths-label {
+  font-size: var(--font-size-xxlarge);
+  font-weight: var(--font-weight-bold);
+  color: var(--tatomaths-text);
+  transition: color var(--transition-normal);
+}
+
+/* ========================================
+   ACCESIBILIDAD GLOBAL
+   ======================================== */
+
+/* Reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+
+  .tatomaths-button,
+  .tatomaths-image,
+  .tatomaths-label {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .tatomaths-button:hover {
+    transform: none !important;
+  }
+
+  .tatomaths-button:hover .tatomaths-image {
+    transform: none !important;
+  }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  .tatomaths-button {
+    border-width: 4px;
+  }
+
+  .tatomaths-label {
+    font-weight: var(--font-weight-black);
+  }
+
+  .tatomaths-button:focus {
+    border-width: 6px;
+  }
 }
