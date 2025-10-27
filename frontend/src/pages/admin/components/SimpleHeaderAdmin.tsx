@@ -1,39 +1,70 @@
-import React from "react";
-import { IonHeader, IonButton, IonIcon, IonTitle, IonToolbar } from "@ionic/react";
-import { homeOutline } from "ionicons/icons";
-import './SimpleHeaderAdmin.css'
+import {
+    IonTitle,
+    IonToolbar,
+    IonButton,
+    IonHeader,
+    IonButtons,
+    IonIcon,
+} from '@ionic/react';
 
-interface Props{
+import './SimpleHeaderAdmin.css';
+import { homeOutline } from 'ionicons/icons';
+import { useHistory } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { setupIonicReact } from '@ionic/react';
 
+setupIonicReact();
+
+interface Props {
     adminName: String;
 }
 
 const SimpleHeaderAdmin: React.FC<Props> = ({
-
     adminName
-
 }) => {
 
-    return(
+    const history = useHistory();
+    const { logout } = useAuth();
 
-        <IonHeader className="simpleHeader-header">
+    /**
+* Cierra la sesión del usuario y redirige a la página principal.
+*/
+    const handleLogout = async () => {
+        await logout();
+        history.replace('/');
+    };
 
-            <IonToolbar color="#50BFE6" className="simpleHeader-toolbar">
+    const handleHome = () => {
+        if (history.location.pathname !== '/admin-dashboard') {
+            history.replace('/admin-dashboard');
+        }
+        else {
+            history.replace('/admin-dashboard');
+        }
+    }
 
-                <IonButton className="simpleHeader-homeButton">
-
-                    <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
-
-                </IonButton>
-
-                <IonTitle className="simpleHeader-adminName">{adminName}</IonTitle>
-
-                <IonButton slot="end" className="simpleHeader-logoutButton">Cerrar sesión</IonButton>
-
+    return (
+        <IonHeader>
+            <IonToolbar className="toolbar-link-profiles">
+                <IonButtons slot='start'>
+                    <IonButton className='homeButton-link-profiles' onClick={handleHome} >
+                        <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
+                    </IonButton>
+                </IonButtons>
+                <IonTitle className='title-link-profiles'>{adminName}</IonTitle>
+                <IonButtons slot="end">
+                    <IonButton
+                        className='logout-button'
+                        expand="block"
+                        fill="clear"
+                        onClick={handleLogout}
+                    >
+                        Cerrar sesión
+                    </IonButton>
+                </IonButtons>
             </IonToolbar>
-
         </IonHeader>
-    )
-};
+    );
+}
 
 export default SimpleHeaderAdmin;

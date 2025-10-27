@@ -7,9 +7,9 @@ import {
 
 import './LinkProfiles.css';
 import { useState } from 'react';
-import HeaderAdmin from './HeaderAdmin';
+import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
-import TeacherSelect from './TeacherSelect';
+import TeacherSelect from './components/TeacherSelect';
 
 export default function LinkProfiles() {
 
@@ -42,7 +42,7 @@ export default function LinkProfiles() {
 
     return (
         <IonPage>
-            <HeaderAdmin />
+            <SimpleHeaderAdmin adminName="Admin" />
             <IonContent className="ion-padding">
                 <TeacherSelect
                     teachers={teachers}

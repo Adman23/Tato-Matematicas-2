@@ -1,54 +1,82 @@
-.simpleHeader-header {
-  background: #50BFE6;
-  height: 105px;
-  width: 100%;
+ion-toolbar.toolbar-link-profiles {
+  --background: var(--ion-color-primary);
+  height: 120px;
   display: flex;
-  align-items: center;      /* centra verticalmente el contenido */
-  justify-content: center;  /* centra el toolbar dentro del header */
+  align-items: center;
+  padding: 10px 30px;
+
 }
 
-.simpleHeader-toolbar {
-    
+ion-buttons[slot="start"],
+ion-buttons[slot="end"] {
+  width: 160px;
+  flex-shrink: 0;
   display: flex;
-  flex-direction: row;
-  justify-content: space-around; /* crea espacio igual entre elementos */
-  align-items: center;           /* centra verticalmente los elementos dentro del toolbar */
-  width: 100%;                    /* margen lateral dentro del header */
-
+  align-items: center;
 }
 
-ion-button.simpleHeader-homeButton::part(native){
-
-    background: white;
-    border-radius: 10px;
-    border: none;
+ion-buttons[slot="start"] {
+  justify-content: flex-start;
 }
 
-ion-button.simpleHeader-homeButton ion-icon{
-
-    color: #50BFE6;
-    background-color: white;
-    width: 30px;
-    height: 30px;
+ion-buttons[slot="end"] {
+  justify-content: flex-end;
 }
 
-.simpleHeader-adminName{
-
-    font-size: 40px;
-    font-weight: 600;
-    color: white;
+ion-button.homeButton-link-profiles {
+  align-self: center;
 }
 
-ion-button.simpleHeader-logoutButton::part(native){
+ion-button.homeButton-link-profiles::part(native) {
+  background: white;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  --background-hover: white;
+}
 
-    border-radius: 40px;
-    height: 36px;
-    padding: 0 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    color:#50BFE6;
-    border: none;
+ion-button.homeButton-link-profiles ion-icon {
+  color: var(--ion-color-primary);
+  background-color: white;
+  width: 50px;
+  height: 50px;
+}
 
+ion-title.title-link-profiles {
+  font-family: var(--ion-font-family);
+  font-weight: var(--ion-weight-regular);
+  color: white;
+  font-size: 3rem;
+
+  text-align: center;
+  flex-grow: 1;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  overflow: visible;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+ion-button.logout-button::part(native) {
+  width: 150px;
+  height: 48px;
+  background-color: white;
+  color: var(--ion-color-primary);
+  border-radius: 40px;
+  border: none;
+  font-family: var(--ion-font-family);
+  font-weight: var(--ion-weight-regular);
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-button.logout-button::part(native):hover {
+  background-color: var(--ion-color-light);
 }

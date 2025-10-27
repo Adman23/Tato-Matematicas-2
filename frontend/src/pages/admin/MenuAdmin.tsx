@@ -10,7 +10,7 @@ import {
 
 import './MenuAdmin.css';
 import { useHistory } from 'react-router-dom';
-import HeaderAdmin from './HeaderAdmin';
+import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function AdminDashboard() {
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
 
     return (
         <IonPage>
-            <HeaderAdmin />
+            <SimpleHeaderAdmin adminName={"Admin"} />
             <IonContent className="ion-padding">
                 <div className="admin-dashboard-outer-container">
                     <IonCard className="admin-dashboard-card">
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
                                     expand="block"
                                     type="submit"
                                     className='admin-dashboard-button'
-                                //onClick={() => history.push('/list-teachers')}
+                                    onClick={() => history.push('/admin-teacher-management')}
                                 >
                                     Ver profesores
                                 </IonButton>

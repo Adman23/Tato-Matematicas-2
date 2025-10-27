@@ -1,4 +1,4 @@
-import {setupIonicReact} from '@ionic/react'
+import { setupIonicReact } from '@ionic/react'
 
 setupIonicReact();
 
@@ -28,71 +28,71 @@ export default function teacherManagement() {
     return <Redirect to="/login" />;
   }*/
 
-    const teacher = [
-  {
-    teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-    teacherName: 'Lucas Marín',
+  const teacher = [
+    {
+      teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+      teacherName: 'Lucas Marín',
 
-  },
-  {
-    teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-    teacherName: 'Ana rodríguez',
+    },
+    {
+      teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+      teacherName: 'Ana rodríguez',
 
-  },
-  {
-    teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-    teacherName: 'Lucas Marín',
+    },
+    {
+      teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+      teacherName: 'Lucas Marín',
 
-  },
-  {
-    teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-    teacherName: 'Ana rodríguez',
+    },
+    {
+      teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+      teacherName: 'Ana rodríguez',
 
-  },
-  {
-    teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-    teacherName: 'Lucas Marín',
+    },
+    {
+      teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+      teacherName: 'Lucas Marín',
 
-  },
-  {
-    teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-    teacherName: 'Ana rodríguez',
+    },
+    {
+      teacherAvatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+      teacherName: 'Ana rodríguez',
 
-  },
-  
-  // agrega más estudiantes o tráelos del backend
-];
+    },
+
+    // agrega más estudiantes o tráelos del backend
+  ];
 
   // Usuario autenticado - muestra contenido
   return (
     <IonPage>
 
-      <SimpleHeaderAdmin adminName="administrador" />
+      <SimpleHeaderAdmin adminName="Admin" />
       <IonContent>
 
         <div className='teacherManagement-MainContainer'>
 
-            <div className='teacherManagement-TextAddButton'>
+          <div className='teacherManagement-TextAddButton'>
 
-                <IonLabel className='teacherManagement-TextTeacher'><h2>Profesores</h2></IonLabel>
+            <IonLabel className='teacherManagement-TextTeacher'><h2>Profesores</h2></IonLabel>
 
-                <IonButton className='teacherManagement-AddButoon'>Añadir nuevo profesor</IonButton>
+            <IonButton className='teacherManagement-AddButoon'>Añadir nuevo profesor</IonButton>
 
-            </div>
+          </div>
 
-            <div className='teacherManagement-teacherTable'>
+          <div className='teacherManagement-teacherTable'>
 
-                <IonList>
-                    {teacher.map(teacher => (
-                        <TeacherManagementItem
-                        teacherAvatar={teacher.teacherAvatar}
-                        teacherName={teacher.teacherName}
-                        />
-                    ))}
-                </IonList>
+            <IonList>
+              {teacher.map(teacher => (
+                <TeacherManagementItem
+                  teacherAvatar={teacher.teacherAvatar}
+                  teacherName={teacher.teacherName}
+                />
+              ))}
+            </IonList>
 
-            </div>
-          
+          </div>
+
         </div>
 
       </IonContent>
