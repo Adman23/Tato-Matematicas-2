@@ -1,3 +1,7 @@
+import {setupIonicReact} from '@ionic/react'
+
+setupIonicReact();
+
 import { IonPage, IonContent, IonSpinner, IonList } from '@ionic/react';
 import { useHistory, Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
