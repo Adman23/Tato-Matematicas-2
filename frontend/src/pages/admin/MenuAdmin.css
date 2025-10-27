@@ -47,6 +47,7 @@ ion-button.admin-dashboard-button::part(native) {
     margin-bottom: 20px;
     font-family: var(--ion-font-family);
     font-weight: var(--ion-weight-regular);
+    box-shadow: none;
 }
 
 ion-button.admin-dashboard-button::part(native):hover {

@@ -100,6 +100,7 @@ ion-button.login-button {
     --background: white;
     --color: var(--ion-color-primary);
     --border-radius: 40px;
+    box-shadow: none;
 }
 
 ion-button.login-button::part(native):hover {
@@ -109,6 +110,15 @@ ion-button.login-button::part(native):hover {
 /*
 Toast
 */
+
+.custom-form-toast {
+    max-width: 360px;
+    min-width: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 10px;
+}
+
 .custom-form-toast::part(container) {
     background-color: var(--ion-color-danger);
     border-radius: 4px;
