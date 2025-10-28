@@ -1,0 +1,147 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  transform: scale(1.4);
+  transform-origin: top center; 
+}
+
+.title h1 {
+  color: #000000;
+  text-align: center;
+  font-size: 3rem;
+}
+
+.form-container-header {
+  text-align: center;
+}
+
+.form-container-header h1 {
+  font-size:xx-large;
+  color: white;
+}
+.form-container-header h2 {
+  font-size:large;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-rows: auto 1fr; 
+  gap: 2rem;
+  border-radius: 32px;
+  width: 100%;
+  max-width: 600px;
+  background-color: #50BFE6;
+  padding: 2rem;
+}
+
+.grid-content {
+  display: grid;
+  grid-template-columns: 2fr 2fr; /* form left, image right */
+  gap: 2rem;
+}
+
+/* Form left & right alignment */
+.form-left, .form-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-right p {
+  text-align: center;
+  margin: 0;
+}
+
+
+/* Profile image container */
+.profile-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-icon-label {
+  position: relative;
+  cursor: pointer;
+}
+
+.selected-image, .profile-placeholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #50BFE6;
+  font-size: 120px;
+  color: #ffffff;
+}
+
+/* Hide the file input */
+.profile-icon-label input {
+  display: none;
+}
+
+/* Responsive: stack columns in mobile */
+@media (max-width: 768px) {
+  .grid-content {
+    grid-template-columns: 1fr;
+  }
+
+  .form-right {
+    margin-top: 2rem;
+  }
+}
+
+.form-button-container {
+  display: flex;
+  justify-content: center; 
+}
+
+ion-button.confirm-button::part(native) {
+  border-radius: 30px;        
+  background-color: #ffffff;  
+  color: #50BFE6;            
+  font-weight: bold;
+  padding: 0.8rem 2rem;       
+  max-width: 600px;           
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+  border: none;   
+  outline: none;               
+}
+
+.confirm-button:hover::part(native) {
+  background-color: #f0f0f0; 
+}
+
+.input-with-icon {
+  display: flex;
+  align-items: center;   
+}
+
+.input-with-icon ion-icon {
+  padding-top: 20px;
+  font-size: 1.4rem;     
+}
+
+.input-with-icon ion-item {
+  border-radius: 30px;        
+  background-color: #ffffff;  
+}
+
+ion-input.input::part(native) {
+  border-radius: 30px;
+}
+
+.toast::part(container) {
+  background-color: #f44336;
+  border-radius: 4px;
+}
+
+.toast {
+  margin:850px auto auto auto;
+}
+
+
+

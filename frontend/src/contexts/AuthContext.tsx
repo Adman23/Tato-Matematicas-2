@@ -26,6 +26,7 @@ interface AuthContextType {
   login: (data: LoginData) => Promise<void>;
   loginStudent: (data: StudentLoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
+  registerTutor: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   isStudent: boolean;
@@ -138,6 +139,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setStudent(null); // Asegurar que no hay estudiante activo
   };
 
+  const registerTutor = async (data: RegisterData) => {
+    // Reusa tu API existente
+    const response = await authAPI.register(data); 
+    localStorage.setItem('access_token', response.access_token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    setUser(response.user);
+    setStudent(null);
+  };
+
+  // const registerStudent = async (data: { full_name: string; pin_code: string }) => {
+  //   const response = await authAPI.registerStudent(data); // <-- necesitas este endpoint en tu API
+  //   localStorage.setItem('token', response.token);
+  //   localStorage.setItem('student_id', response.student_id);
+  //   localStorage.setItem('student', JSON.stringify(response.student));
+  //   setStudent(response.student);
+  //   setUser(null);
+  // };
+
   /**
    * Cierra sesión (usuario o estudiante).
    * Limpia localStorage y estado local.
@@ -175,6 +194,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         loginStudent,
         register,
+        registerTutor,
         logout,
         isAuthenticated: !!user || !!student,
         isStudent: !!student,

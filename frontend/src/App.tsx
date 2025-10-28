@@ -20,8 +20,9 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 
 // === Páginas de autenticación ===
-import Login from './pages/auth/Login';
+import Login from './pages/auth/TutorLogin';
 import StudentLogin from './pages/auth/StudentLogin';
+import RegisterTutor from './pages/auth/RegisterTutor';
 
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
@@ -57,6 +58,8 @@ export default function App() {
             <Route path="/student-login" exact component={StudentLogin} />
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+            {/* Nueva ruta de registro de tutores */}
+            <Route path="/register-tutor" exact component={RegisterTutor} />
             <Redirect to="/" />
           </IonRouterOutlet>
         </IonReactRouter>

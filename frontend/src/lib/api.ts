@@ -138,7 +138,6 @@ export interface StudentAuthResponse {
  */
 export interface RegisterData {
   username: string;
-  email: string;
   password: string;
   full_name: string;
   role: 'admin' | 'tutor';
