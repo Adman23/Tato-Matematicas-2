@@ -94,3 +94,59 @@ class MessageResponse(BaseModel):
     Generic response
     """
     message: str
+
+
+# === STUDENT LOGIN MODELS ===
+
+class Group(BaseModel):
+    """
+    Group data model
+    """
+    id: int
+    alias: str
+
+    class Config:
+        from_attributes = True
+
+
+class StudentBasicInfo(BaseModel):
+    """
+    Basic student information for selection
+    """
+    id: str
+    username: str
+    photo_url: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class StudentLoginRequest(BaseModel):
+    """
+    Student login request with group_id, username and password (pictogram sequence)
+    Password format: "perro-gato-león"
+    """
+    group_id: str
+    username: str
+    password: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "group_id": "group-uuid",
+                "username": "student1",
+                "password": "perro-gato-león"
+            }
+        }
+
+
+class StudentAuthResponse(BaseModel):
+    """
+    Student authentication response
+    """
+    access_token: str
+    token_type: str = "bearer"
+    student: UserProfile
+
+    class Config:
+        from_attributes = True
