@@ -1,0 +1,311 @@
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA
+   ========================================================================== */
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.main-container h1 {
+  color: #000000;
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* =============================================================================
+   TARJETA DEL FORMULARIO (fondo azul)
+   ========================================================================== */
+
+.form-card {
+  width: 90%;
+  max-width: 400px;
+  background-color: #50BFE6;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-card h2 {
+  text-align: center;
+  color: white;
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+}
+
+/* =============================================================================
+   SECCIÓN DE AVATAR (icono grande + campo de selección)
+   ========================================================================== */
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0.6rem;
+}
+
+.avatar-icon {
+  font-size: 4rem;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.avatar-icon:hover {
+  transform: scale(1.1);
+}
+
+/* =============================================================================
+   ESTILOS COMUNES PARA TODOS LOS CAMPOS (usuario, avatar, código acceso)
+   ========================================================================== */
+
+.field-wrapper {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label {
+  color: #000000;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* =============================================================================
+   CAMPO DE SELECCIÓN DE AVATAR (IonSelect personalizado)
+   ========================================================================== */
+
+.avatar-select {
+  --background: white;
+  --border-radius: 20px;
+  --padding-start: 1rem;
+  --padding-end: 2.5rem; /* Espacio para el icono de despliegue */
+  --placeholder-color: #888;
+  --icon-color: #50BFE6;
+  --color: #333;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  text-align: center;
+}
+
+/* Texto dentro del select (valor seleccionado o placeholder) */
+.avatar-select::part(text),
+.avatar-select::part(placeholder) {
+  text-align: center;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Icono de despliegue (triángulo) */
+.avatar-select::part(icon) {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #50BFE6;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+/* Animación del icono al abrir el popover */
+.avatar-select.md.select-interface-popover-open::part(icon) {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* =============================================================================
+   CAMPO DE TEXTO PARA USUARIO (IonInput)
+   ========================================================================== */
+
+.input-item {
+  --background: white;
+  --border-radius: 20px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  width: 100%;
+  border: none;
+  margin: 0;
+}
+
+.input-item ion-input::part(native) {
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* =============================================================================
+   SECCIÓN DE CÓDIGO DE ACCESO (pictogramas)
+   ========================================================================== */
+
+.pictogram-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: white;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  min-height: 50px;
+  width: 100%;
+}
+
+.pictogram-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pictogram-box ion-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.pictogram-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 14px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.pictogram-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #50BFE6;
+  border-radius: 8px;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pictogram-add:hover {
+  background-color: #3a9bc7;
+}
+
+.pictogram-add.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   BOTÓN DE CONFIRMAR
+   ========================================================================== */
+
+.confirm-button {
+  --background: white;
+  --color: #50BFE6;
+  --border-radius: 20px;
+  --padding: 0.8rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.confirm-button::part(native) {
+  box-shadow: none;
+}
+
+/* =============================================================================
+   TOAST (mensajes de error/éxito)
+   ========================================================================== */
+
+.toast::part(container) {
+  background-color: #f44336;
+  border-radius: 4px;
+}
+
+.toast {
+  margin: 850px auto auto auto;
+}
+
+/* =============================================================================
+   MODAL DE SELECCIÓN DE PICTOGRAMAS
+   ========================================================================== */
+
+.picto-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.picto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.picto-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 12px;
+  transition: background-color 0.2s;
+}
+
+.picto-option:hover {
+  background-color: #f0f9ff;
+}
+
+.picto-option ion-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.picto-option span {
+  font-size: 0.8rem;
+  color: #333;
+}
+
+/* =============================================================================
+   ESTILOS DEL POPOVER DE AVATAR
+   ========================================================================== */
+
+.avatar-popover {
+  --width: 280px;
+  --max-height: 200px;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  --background: white;
+}
