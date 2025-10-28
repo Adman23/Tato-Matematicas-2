@@ -58,6 +58,7 @@ async def register( data: RegisterRequest,
             }
         })
 
+
         # Returns user
         return User(
             id=new_user.user.id,
