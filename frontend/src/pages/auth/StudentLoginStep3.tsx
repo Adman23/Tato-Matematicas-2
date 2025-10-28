@@ -19,6 +19,7 @@ import {
   IonContent,
   IonButton,
   IonText,
+  useIonViewWillEnter,
 } from '@ionic/react';
 import { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
@@ -55,6 +56,12 @@ export default function StudentLoginStep3() {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
   const { loginStudent } = useAuth();
+
+  // Resetear secuencia cada vez que la vista se muestra
+  useIonViewWillEnter(() => {
+    setSelected([]);
+    setError('');
+  });
 
   /**
  * Añade un pictograma a la secuencia seleccionada.

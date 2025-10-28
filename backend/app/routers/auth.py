@@ -16,7 +16,7 @@ from ..schemas.auth import (
     Group,
     StudentBasicInfo,
     StudentLoginRequest,
-    StudentAuthResponse
+    StudentAuthResponse,
     ExistsResponse
 )
 from ..services.supabase import supabase
