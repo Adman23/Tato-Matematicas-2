@@ -3,17 +3,18 @@ Dependencias de autenticación para FastAPI.
 
 Este módulo define las dependencias que se utilizan para autenticar y autorizar
 a los usuarios dentro de la aplicación. Se incluyen funciones que validan los
-tokens JWT tanto de administradores/tutores (emitidos por Supabase) como de
-estudiantes (emitidos por la propia aplicación).
+tokens JWT
 
 Las dependencias se integran en los endpoints mediante el parámetro
 `Depends()` de FastAPI.
 """
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from .config import settings
-from .services.supabase import supabase
+from .services.supabase import supabase, supabase_admin
+
 
 #: Dependencia de seguridad HTTP Bearer utilizada para extraer el token JWT
 security = HTTPBearer()
@@ -21,7 +22,7 @@ security = HTTPBearer()
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
-):
+    ):
     """
     Obtiene la información del usuario autenticado a partir del token JWT de Supabase.
 
@@ -39,7 +40,7 @@ async def get_current_user(
         HTTPException: Si ocurre un error interno al verificar el token (`500 INTERNAL SERVER ERROR`).
 
     Returns:
-        dict: Diccionario con los datos del usuario autenticado (id, email, rol, full_name).
+        dict: Diccionario con los datos del usuario autenticado (id, email, rol).
     """
     token = credentials.credentials
     
@@ -47,9 +48,8 @@ async def get_current_user(
     if settings.DEV_MODE:
         return {
             "id": "dev-user-id",
-            "email": "dev@tatomaths.com",
-            "role": "admin",
-            "full_name": "Admin Dev"
+            "username": "dev@tatomaths.com",
+            "role": "admin"
         }
     
     try:
@@ -69,31 +69,45 @@ async def get_current_user(
             )
         
         # Obtener perfil del usuario desde la BD
-        response = supabase.table("user_profiles").select("*").eq("id", user_id).execute()
+        responseAuth = supabase_admin.auth.admin.get_user_by_id(user_id)
+        responsePublic = supabase_admin.table("users").select("*").eq("id", user_id).execute()
+
+#
         
-        if not response.data or len(response.data) == 0:
+        # Validar si existe el usuario en Auth
+        if not responseAuth or not responseAuth.user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Usuario no encontrado"
+                detail="User not found"
+            )
+
+        # Validar si existe en la tabla pública
+        if not responsePublic.data or len(responsePublic.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User public not found"
             )
         
-        return response.data[0]
+        return  {
+                "id": responseAuth.user.id,
+                "username": responseAuth.user.email.split("@")[0],
+                "role": responsePublic.data[0]["role"]
+                }
+        
         
     except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido o expirado"
+            detail="Expired or invalid token"
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al verificar token: {str(e)}"
+            detail=f"Error verifiying the token: {str(e)}"
         )
 
 
-async def get_current_admin(
-    current_user: dict = Depends(get_current_user)
-):
+async def get_current_admin(current_user: dict = Depends(get_current_user)):
     """
     Verifica que el usuario autenticado tenga rol de administrador.
 
@@ -109,92 +123,9 @@ async def get_current_admin(
     Returns:
         dict: Datos del usuario autenticado con rol de administrador.
     """
-    if current_user.get("role") != "admin":
+    if current_user["role"] != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Solo administradores pueden acceder"
         )
     return current_user
-
-
-async def get_current_student(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-):
-    """
-    Obtiene la información del estudiante autenticado a partir del token JWT de la aplicación.
-
-    Esta función valida el token JWT emitido por la propia aplicación (no por Supabase)
-    para autenticar a los estudiantes. Si el modo desarrollo está activado,
-    devuelve un estudiante de prueba (fake).
-
-    Args:
-        credentials (HTTPAuthorizationCredentials): Token JWT del estudiante enviado
-            en la cabecera `Authorization: Bearer <token>`.
-
-    Raises:
-        HTTPException: Si el token es inválido o no corresponde a un estudiante (`401 UNAUTHORIZED`).
-        HTTPException: Si el estudiante no se encuentra en la base de datos (`404 NOT FOUND`).
-        HTTPException: Si ocurre un error durante la verificación (`500 INTERNAL SERVER ERROR`).
-
-    Returns:
-        dict: Datos del estudiante autenticado (id, username, full_name, etc.).
-    """
-    token = credentials.credentials
-
-    # Modo desarrollo: devolver estudiante fake
-    if settings.DEV_MODE:
-        return {
-            "id": "dev-student-id",
-            "username": "estudiante_dev",
-            "full_name": "Estudiante Dev"
-        }
-
-    try:
-        # Verificar token JWT con el secreto de la aplicación
-        payload = jwt.decode(
-            token,
-            settings.APP_JWT_SECRET,
-            algorithms=["HS256"],
-            audience=settings.APP_JWT_AUDIENCE
-        )
-
-        # Verificar que sea un token de estudiante
-        if payload.get("type") != "student":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token no válido para estudiante"
-            )
-
-        student_id = payload.get("sub")
-        if not student_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token inválido"
-            )
-
-        # Obtener datos del estudiante desde la BD
-        response = supabase.table("students").select("*").eq("id", student_id).execute()
-
-        if not response.data or len(response.data) == 0:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Estudiante no encontrado"
-            )
-
-        return response.data[0]
-
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token expirado"
-        )
-    except jwt.InvalidTokenError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido o expirado"
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al verificar token de estudiante: {str(e)}"
-        )

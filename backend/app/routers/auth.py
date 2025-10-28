@@ -8,110 +8,88 @@ import jwt
 from ..schemas.auth import (
     RegisterRequest,
     LoginRequest,
-    StudentLoginRequest,
-    AuthResponse,
-    StudentAuthResponse,
+    User,
     UserProfile,
+    UserResponse,
+    AuthResponse,
     MessageResponse
 )
 from ..services.supabase import supabase
-from ..dependencies import get_current_user
+from ..services.supabase import supabase_admin
+from ..dependencies import get_current_user, get_current_admin
 from ..config import settings
 
-router = APIRouter(prefix="/auth", tags=["Autenticación"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-async def register(data: RegisterRequest):
+@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
+async def register( data: RegisterRequest, 
+                    current_admin: dict = Depends(get_current_admin)):
     """
-    Registra un nuevo usuario (admin o tutor).
+    Register new user
 
-    Este endpoint permite crear un nuevo usuario en el sistema.
-    - Solo un administrador puede crear otros administradores (validación en frontend).
-    - Crea un usuario en Supabase Auth.
-    - Inserta un perfil asociado en la tabla `user_profiles` con un nombre de usuario único.
-
+    This endpoint allows the sing up of any type of user.
+    
     Args:
-        data (RegisterRequest): Objeto con los datos de registro, incluyendo:
-            - email (str): Correo electrónico del usuario.
-            - password (str): Contraseña del usuario.
-            - username (str): Nombre de usuario único.
-            - role (str): Rol asignado ("admin" o "tutor").
-            - full_name (str): Nombre completo del usuario.
+        data (RegisterRequest) INCLUDES:
+            - username (str): Username of the new user (should be unique).
+            - password (str): Password.
+            - role (str): "teacher" "student" "admin" -> Last one should be rare.
 
     Raises:
-        HTTPException: Si el nombre de usuario ya existe (`400 BAD REQUEST`).
-        HTTPException: Si el email ya está registrado o no se puede crear el usuario (`400 BAD REQUEST`).
-        HTTPException: Si ocurre un error inesperado durante el registro (`500 INTERNAL SERVER ERROR`).
+        HTTPException: Username exists or error while creating the user(`400 BAD REQUEST`).
+        HTTPException: Unknown exception (`500 INTERNAL SERVER ERROR`).
 
     Returns:
-        AuthResponse: Objeto con el token de acceso y el perfil de usuario creado.
+        User: The user data, without the password.
     """
     try:
-        # 1. Verificar que el username no esté en uso
-        username_check = supabase.table("user_profiles")\
-            .select("username")\
-            .eq("username", data.username)\
-            .execute()
-
-        if username_check.data and len(username_check.data) > 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="El nombre de usuario ya está en uso"
-            )
-
-        # 2. Crear usuario en Supabase Auth
-        auth_response = supabase.auth.sign_up({
-            "email": data.email,
+        # Create the new user in Supabase Auth
+        # The trigger in the database will create the tuple in public.users
+        new_user = supabase_admin.auth.admin.create_user({
+            "email":  f"{data.username}@tatomaths.local",
             "password": data.password,
+            "email_confirm": True,
             "options": {
-                "data": {
-                    "username": data.username,
-                    "role": data.role,
-                    "full_name": data.full_name
+                "data":{
+                    "role": data.role
+                    # Add other user metadata for public.users tuple
                 }
             }
         })
 
-        if not auth_response.user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No se pudo crear el usuario. El email podría estar en uso."
-            )
 
-        # 3. Crear perfil en user_profiles
-        profile_data = {
-            "id": auth_response.user.id,
-            "username": data.username,
-            "email": data.email,
-            "role": data.role,
-            "full_name": data.full_name
-        }
-
-        supabase.table("user_profiles").insert(profile_data).execute()
-
-        # 4. Retornar tokens y perfil
-        return AuthResponse(
-            access_token=auth_response.session.access_token,
-            user=UserProfile(**profile_data)
+        # Returns user
+        return User(
+            id=new_user.user.id,
+            username=data.username,
+            role=data.role
         )
 
-    except HTTPException:
-        raise
     except Exception as e:
+        # Parse known Supabase errors (duplicate email, etc.)
+        error_message = str(e)
+
+        if "duplicate key value violates unique constraint" in error_message or "User already registered" in error_message or "already exists" in error_message:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username in use"
+            )
+
+        # Generic catch-all for any other error
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error en registro: {str(e)}"
+            detail=f"Error en registro: {error_message}"
         )
 
 
 @router.post("/login", response_model=AuthResponse)
 async def login(data: LoginRequest):
     """
-    Inicia sesión para administradores y tutores mediante username y contraseña.
+    Log in
 
-    El endpoint valida las credenciales del usuario utilizando Supabase Auth
-    y devuelve un token de autenticación junto con el perfil del usuario.
+    This endpoint allows users to log in with their credentials.
+    It returns a JWT token and the user profile data.
 
     Args:
         data (LoginRequest): Objeto con las credenciales de inicio de sesión:
@@ -127,31 +105,19 @@ async def login(data: LoginRequest):
         AuthResponse: Objeto con el token de acceso y la información del perfil autenticado.
     """
     try:
-        # 1. Buscar usuario por username en user_profiles
-        profile_response = supabase.table("user_profiles")\
-            .select("*")\
-            .eq("username", data.username)\
-            .execute()
 
-        if not profile_response.data or len(profile_response.data) == 0:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="El usuario no existe"
-            )
-
-        user_profile = profile_response.data[0]
-
-        # 2. Autenticar con Supabase usando el email del perfil
+        # Log in the user
+        
         try:
             auth_response = supabase.auth.sign_in_with_password({
-                "email": user_profile["email"],
+                "email": f"{data.username}@tatomaths.local",
                 "password": data.password
             })
 
             if not auth_response.user or not auth_response.session:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="La contraseña es incorrecta"
+                    detail="El usuario o la contraseña son incorrectos"
                 )
         except Exception as auth_error:
             # Si Supabase devuelve error de autenticación, es contraseña incorrecta
@@ -159,12 +125,52 @@ async def login(data: LoginRequest):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="La contraseña es incorrecta"
             )
+            
+        
+        # Fetch public.users data and then user_profiles
+        response_user_public = supabase.table("users")\
+            .select("*")\
+            .eq("id", auth_response.user.id)\
+            .execute()
+        
+        if not response_user_public.data or len(response_user_public.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User public not found"
+            )
+            
+        response_user_profile = supabase.table("user_profiles")\
+            .select("*")\
+            .eq("user_id", auth_response.user.id)\
+            .execute()
 
-        # 3. Retornar tokens y perfil
-        return AuthResponse(
-            access_token=auth_response.session.access_token,
-            user=UserProfile(**user_profile)
-        )
+        if response_user_profile.data and len(response_user_profile.data) > 0:
+            # User with complete profile
+            user = {
+                "id": auth_response.user.id,
+                "username": auth_response.user.email.split("@")[0],
+                "role": response_user_public.data[0]["role"],
+                "notes": response_user_profile.data[0].get("notes"),
+                "visual_preferences": response_user_profile.data[0].get("visual_preferences"),
+                "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
+                "accessibility_settings": response_user_profile.data[0].get("accessibility_settings"),
+                "game_preferences": response_user_profile.data[0].get("game_preferences"),
+            }
+            return AuthResponse(
+                access_token=auth_response.session.access_token,
+                user=UserProfile(**user)
+            )
+        else:
+            # User without profile (teachers(puede tener perfil), admins)
+            user = {
+                "id": auth_response.user.id,
+                "username": auth_response.user.email.split("@")[0],
+                "role": response_user_public.data[0]["role"],
+            }
+            return AuthResponse(
+                access_token=auth_response.session.access_token,
+                user=User(**user)
+            )
 
     except HTTPException:
         raise
@@ -175,7 +181,7 @@ async def login(data: LoginRequest):
         )
 
 
-@router.get("/me", response_model=UserProfile)
+@router.get("/me", response_model=User)
 async def get_me(current_user: dict = Depends(get_current_user)):
     """
     Obtiene la información del usuario autenticado actual.
@@ -190,7 +196,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
     Returns:
         UserProfile: Perfil del usuario autenticado (id, username, email, role, full_name).
     """
-    return UserProfile(**current_user)
+    return User(**current_user)
 
 
 @router.post("/logout", response_model=MessageResponse)
@@ -212,85 +218,3 @@ async def logout(current_user: dict = Depends(get_current_user)):
     # En Supabase, el logout se hace desde el cliente
     # Aquí solo confirmamos que el token es válido
     return MessageResponse(message="Sesión cerrada correctamente")
-
-
-@router.post("/student", response_model=StudentAuthResponse)
-async def student_login(data: StudentLoginRequest):
-    """
-    Inicia sesión de un estudiante utilizando una secuencia de pictogramas.
-
-    Este endpoint permite a los estudiantes autenticarse mediante una secuencia
-    de pictogramas almacenada en la base de datos. Si la secuencia coincide con
-    la registrada en el sistema, se genera un token JWT válido por 24 horas.
-
-    Args:
-        data (StudentLoginRequest): Objeto con los datos de inicio de sesión, incluyendo:
-            - pictos (list[str]): Secuencia de pictogramas seleccionados por el estudiante.
-
-    Raises:
-        HTTPException: Si no se encuentra ningún estudiante con la secuencia proporcionada (`401 UNAUTHORIZED`).
-        HTTPException: Si ocurre un error inesperado durante la autenticación (`500 INTERNAL SERVER ERROR`).
-
-    Returns:
-        StudentAuthResponse: Objeto con el token JWT generado y los datos del estudiante autenticado.
-    """
-    try:
-        # Obtener todos los estudiantes y comparar en Python
-        # (PostgREST no soporta comparación de arrays directamente)
-        response = supabase.table("students")\
-            .select("id, username, full_name, photo_url, pictogram_login_sequence")\
-            .execute()
-
-        if not response.data:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Secuencia de pictogramas incorrecta"
-            )
-
-        # Buscar el estudiante cuya secuencia coincida
-        student = None
-        for s in response.data:
-            if s.get('pictogram_login_sequence') == data.pictos:
-                student = s
-                break
-
-        if not student:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Secuencia de pictogramas incorrecta"
-            )
-
-        # Generar token JWT para el estudiante
-        token_payload = {
-            "sub": student['id'],  # Subject: ID del estudiante
-            "type": "student",     # Tipo de usuario
-            "aud": settings.APP_JWT_AUDIENCE,  # Audience
-            "iss": settings.APP_JWT_ISSUER,    # Issuer
-            "exp": datetime.now(timezone.utc) + timedelta(hours=24),  # Expira en 24 horas
-            "iat": datetime.now(timezone.utc)  # Issued at
-        }
-
-        token = jwt.encode(
-            token_payload,
-            settings.APP_JWT_SECRET,
-            algorithm="HS256"
-        )
-
-        return StudentAuthResponse(
-            token=token,
-            student_id=student['id'],
-            student={
-                "id": student['id'],
-                "username": student['username'],
-                "full_name": student['full_name'],
-                "photo_url": student.get('photo_url')
-            }
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error en login de estudiante: {str(e)}"
-        )
