@@ -70,18 +70,27 @@ async def get_current_user(
         
         # Obtener perfil del usuario desde la BD
         responseAuth = supabase_admin.auth.admin.get_user_by_id(user_id)
-        responsePublic = supabase.table("users").select("*").eq("id", user_id).execute()
+        responsePublic = supabase_admin.table("users").select("*").eq("id", user_id).execute()
 
+#
         
-        if not responseAuth or len(responseAuth.users) == 0:
+        # Validar si existe el usuario en Auth
+        if not responseAuth or not responseAuth.user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found"
             )
+
+        # Validar si existe en la tabla pública
+        if not responsePublic.data or len(responsePublic.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User public not found"
+            )
         
         return  {
                 "id": responseAuth.user.id,
-                "username": responseAuth.user.email,
+                "username": responseAuth.user.email.split("@")[0],
                 "role": responsePublic.data[0]["role"]
                 }
         
@@ -98,9 +107,7 @@ async def get_current_user(
         )
 
 
-async def get_current_admin(
-    current_user: dict = Depends(get_current_user)
-    ):
+async def get_current_admin(current_user: dict = Depends(get_current_user)):
     """
     Verifica que el usuario autenticado tenga rol de administrador.
 
@@ -116,7 +123,7 @@ async def get_current_admin(
     Returns:
         dict: Datos del usuario autenticado con rol de administrador.
     """
-    if current_user.role != "admin":
+    if current_user["role"] != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Solo administradores pueden acceder"

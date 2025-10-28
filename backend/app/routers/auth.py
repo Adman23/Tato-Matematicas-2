@@ -9,6 +9,7 @@ from ..schemas.auth import (
     RegisterRequest,
     LoginRequest,
     User,
+    UserProfile,
     UserResponse,
     AuthResponse,
     MessageResponse
@@ -21,7 +22,7 @@ from ..config import settings
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register( data: RegisterRequest, 
                     current_admin: dict = Depends(get_current_admin)):
     """
@@ -46,7 +47,7 @@ async def register( data: RegisterRequest,
         # Create the new user in Supabase Auth
         # The trigger in the database will create the tuple in public.users
         new_user = supabase_admin.auth.admin.create_user({
-            "email": data.username,
+            "email":  f"{data.username}@tatomaths.local",
             "password": data.password,
             "email_confirm": True,
             "options": {
@@ -108,7 +109,7 @@ async def login(data: LoginRequest):
         
         try:
             auth_response = supabase.auth.sign_in_with_password({
-                "email": data.username,
+                "email": f"{data.username}@tatomaths.local",
                 "password": data.password
             })
 
@@ -139,33 +140,36 @@ async def login(data: LoginRequest):
             
         response_user_profile = supabase.table("user_profiles")\
             .select("*")\
-            .eq("id", auth_response.user.id)\
+            .eq("user_id", auth_response.user.id)\
             .execute()
 
-        if response_user_profile.data and len(response_user_profile.data) > 0: 
+        if response_user_profile.data and len(response_user_profile.data) > 0:
+            # User with complete profile
             user = {
                 "id": auth_response.user.id,
-                "username": auth_response.user.email,
+                "username": auth_response.user.email.split("@")[0],
                 "role": response_user_public.data[0]["role"],
                 "notes": response_user_profile.data[0].get("notes"),
                 "visual_preferences": response_user_profile.data[0].get("visual_preferences"),
                 "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
-                "accesibility_settings": response_user_profile.data[0].get("accessibility_settings"),
+                "accessibility_settings": response_user_profile.data[0].get("accessibility_settings"),
                 "game_preferences": response_user_profile.data[0].get("game_preferences"),
             }
+            return AuthResponse(
+                access_token=auth_response.session.access_token,
+                user=UserProfile(**user)
+            )
         else:
+            # User without profile (teachers(puede tener perfil), admins)
             user = {
                 "id": auth_response.user.id,
-                "username": auth_response.user.email,
+                "username": auth_response.user.email.split("@")[0],
                 "role": response_user_public.data[0]["role"],
             }
-        
-
-        # Return the data
-        return AuthResponse(
-            access_token=auth_response.session.access_token,
-            user=User(**user) # TODO MODIFY THIS SO EVERYTHING IS INCLUDED
-        )
+            return AuthResponse(
+                access_token=auth_response.session.access_token,
+                user=User(**user)
+            )
 
     except HTTPException:
         raise

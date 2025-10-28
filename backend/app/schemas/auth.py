@@ -43,8 +43,8 @@ class LoginRequest(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "username": "admin@example.com", # Currently we can enter emails as usernames
-                "password": "password123"
+                "username": "admin", # Currently we can enter emails as usernames
+                "password": "admin123"
             }
         }
 
@@ -54,7 +54,7 @@ class LoginRequest(BaseModel):
 
 class User(BaseModel):
     """
-    Users data model
+    Users data model (basic info from public.users and auth.users)
     """
     id: str
     username: str
@@ -64,10 +64,24 @@ class User(BaseModel):
         from_attributes = True
 
 
+class UserProfile(User):
+    """
+    Complete user profile including preferences from user_profiles table
+    """
+    notes: str | None = None
+    visual_preferences: dict | None = None
+    audio_preferences: dict | None = None
+    accessibility_settings: dict | None = None
+    game_preferences: dict | None = None
+
+    class Config:
+        from_attributes = True
+
+
 class AuthResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    user: User
+    user: User | UserProfile  # Can be basic User or full UserProfile
     
 class UserResponse(BaseModel):
     """

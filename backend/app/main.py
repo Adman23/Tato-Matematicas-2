@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .routers import auth
 from .services.supabase import supabase
+from .services.supabase import supabase_admin
 
 # === Inicialización de la aplicación ===
 
@@ -96,8 +97,8 @@ def health_check():
     # Intentar verificar la conexión a la base de datos
     try:
         # Realizar una consulta simple para verificar conectividad
-        # Intentamos obtener el primer registro de user_profiles (o cualquier tabla)
-        response = supabase.table("user_profiles").select("id").limit(1).execute()
+        # Intentamos obtener el primer registro de users (o cualquier tabla)
+        response = supabase_admin.table("users").select("id").limit(1).execute()
 
         # Si no hay error, la BD está operativa
         db_status = "operational"
@@ -115,6 +116,7 @@ def health_check():
         "version": "1.1.0",
         "services": {
             "api": "operational",
-            "database": db_status
+            "database": db_status,
+            "response": response
         }
     }
