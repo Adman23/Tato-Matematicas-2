@@ -81,19 +81,33 @@ Campos del formulario
 .login-custom-input {
     --background: white;
     --padding-start: 15px;
-    --padding-end: 15px;
+    --padding-end: 50px;
+    /* dejar espacio para el icono dentro del input */
     --border-radius: 40px;
     margin-top: 20px;
     height: 50px;
     text-align: left;
 }
 
-/*
-Icono dentro del input
-*/
+/* Icono visualmente dentro del input: posicionamos el icono como overlay */
+.input-item {
+    position: relative;
+    z-index: 10;
+    overflow: visible;
+    /* permitir que el icono se muestre por encima del input */
+}
+
 .input-icon {
     color: black;
-    margin-right: 5px;
+    position: absolute;
+    right: 30px;
+    /* alineado dentro del padding-end */
+    top: 65%;
+    transform: translateY(-50%);
+    pointer-events: auto;
+    /* permitir clicks en el icono (ej. mostrar/ocultar contraseña) */
+    z-index: 20;
+    /* asegurar que el icono quede por encima del input */
 }
 
 /*

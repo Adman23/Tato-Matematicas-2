@@ -94,3 +94,10 @@ class MessageResponse(BaseModel):
     Generic response
     """
     message: str
+
+
+class ExistsResponse(BaseModel):
+    """
+    Response for username existence checks
+    """
+    exists: bool

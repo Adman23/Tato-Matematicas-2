@@ -22,9 +22,10 @@ import {
   IonToast,
 } from '@ionic/react';
 import { eyeOutline, eyeOffOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { authAPI } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 
 import './Login.css';
@@ -123,7 +124,44 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
-  const isUsernameValid = username.trim().length > 3;
+  // Estado para existencia del username: null = desconocido/vacío, true = existe, false = no existe
+  const [isUsernameValid, setIsUsernameValid] = useState<boolean | null>(null);
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    const trimmed = username.trim();
+
+    // Resetear si campo vacío
+    if (trimmed.length === 0) {
+      setIsUsernameValid(false);
+      return;
+    }
+
+    // Validación rápida local: evitar peticiones para nombres muy cortos
+    if (trimmed.length < 3) {
+      setIsUsernameValid(false);
+      return;
+    }
+
+    const currentId = ++requestIdRef.current;
+
+    const handler = setTimeout(() => {
+      authAPI.checkUsername(trimmed)
+        .then(res => {
+          if (currentId === requestIdRef.current) {
+            setIsUsernameValid(Boolean(res.exists));
+          }
+        })
+        .catch(() => {
+          if (currentId === requestIdRef.current) {
+            // En caso de error de red, dejamos como inválido para no dar falsas esperanzas
+            setIsUsernameValid(false);
+          }
+        })
+    }, 400); // debounce
+
+    return () => clearTimeout(handler);
+  }, [username]);
 
   return (
     <IonPage>
@@ -153,13 +191,14 @@ export default function Login() {
                   required
                   autocomplete="username"
                   placeholder="Escriba aquí"
-                >
-                  <IonIcon
-                    icon={isUsernameValid ? checkmarkOutline : closeOutline}
-                    slot='end'
-                    className="input-icon"
-                  />
-                </IonInput>
+                />
+
+                <IonIcon
+                  icon={isUsernameValid ? checkmarkOutline : closeOutline}
+                  slot='end'
+                  className="input-icon"
+                />
+
               </IonItem>
 
               <IonItem lines="none" className="input-item">
@@ -171,15 +210,14 @@ export default function Login() {
                   onIonInput={(e) => setPassword(e.detail.value!)}
                   required
                   autocomplete="current-password"
-                >
-                  <IonIcon
-                    icon={showPassword ? eyeOffOutline : eyeOutline}
-                    onClick={togglePasswordVisibility}
-                    slot='end'
-                    className="input-icon"
-                    style={{ cursor: 'pointer' }}
-                  />
-                </IonInput>
+                />
+                <IonIcon
+                  icon={showPassword ? eyeOffOutline : eyeOutline}
+                  onClick={togglePasswordVisibility}
+                  slot='end'
+                  className="input-icon"
+                  style={{ cursor: 'pointer' }}
+                />
               </IonItem>
 
               <IonButton
