@@ -99,22 +99,7 @@ export default function RegisterTutor() {
               <IonList>
                 <div className="input-with-icon">
                   <IonInput
-                    label="Nombre completo *"
-                    labelPlacement="floating"
-                    placeholder="Escribir aquí..."
-                    value={fullName}
-                    onIonInput={(e) => setFullName(e.detail.value!)}
-                    required
-                    className='input'
-                  />
-                  <IonIcon
-                    icon={isFullNameValid ? checkmarkOutline : closeOutline}
-                  />
-                </div>
-
-                <div className="input-with-icon">
-                  <IonInput
-                    label="Nombre de usuario *"
+                    label="Usuario *"
                     labelPlacement="floating"
                     placeholder="Escribir aquí..."
                     value={userName}
