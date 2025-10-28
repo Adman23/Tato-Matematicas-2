@@ -12,6 +12,7 @@ import {
   IonButton,
   IonText,
   IonSpinner,
+  useIonViewWillEnter,
 } from '@ionic/react';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -37,6 +38,12 @@ export default function StudentLoginStep1() {
   useEffect(() => {
     loadGroups();
   }, []);
+
+  // Resetear selección cada vez que la vista se muestra
+  useIonViewWillEnter(() => {
+    setSelectedGroup(null);
+    setError('');
+  });
 
   const loadGroups = async () => {
     try {
