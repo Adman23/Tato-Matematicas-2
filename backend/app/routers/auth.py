@@ -12,7 +12,8 @@ from ..schemas.auth import (
     UserProfile,
     UserResponse,
     AuthResponse,
-    MessageResponse
+    MessageResponse,
+    ExistsResponse
 )
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
@@ -197,6 +198,32 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         UserProfile: Perfil del usuario autenticado (id, username, email, role, full_name).
     """
     return User(**current_user)
+
+
+
+@router.get("/exists/{username}", response_model=ExistsResponse)
+async def username_exists(username: str):
+    """
+    Comprueba si existe un usuario con el username dado en la tabla public.users.
+
+    Busca por la columna `username` en `users` y devuelve { exists: bool }.
+    """
+    try:
+        # Buscamos en la tabla pública `users` por la columna `username`.
+        response = supabase_admin.table("users")\
+            .select("id")\
+            .ilike("username", username)\
+            .limit(1)\
+            .execute()
+
+        exists = bool(response.data and len(response.data) > 0)
+        return ExistsResponse(exists=exists)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error checking username existence: {str(e)}"
+        )
 
 
 @router.post("/logout", response_model=MessageResponse)

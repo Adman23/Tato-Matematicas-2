@@ -187,6 +187,16 @@ export const authAPI = {
   },
 
   /**
+   * Comprueba si un username existe en la base de datos (tabla public.users).
+   * @param username - Nombre de usuario a comprobar
+   * @returns { exists: boolean }
+   */
+  checkUsername: async (username: string): Promise<{ exists: boolean }> => {
+    const response = await api.get<{ exists: boolean }>(`/auth/exists/${encodeURIComponent(username)}`);
+    return response.data;
+  },
+
+  /**
    * Obtener información del usuario autenticado actual.
    * @returns Perfil del usuario actual.
    */

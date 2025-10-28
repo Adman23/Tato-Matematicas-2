@@ -12,12 +12,7 @@
 
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
-  IonCard,
-  IonCardContent,
   IonItem,
   IonLabel,
   IonInput,
@@ -27,9 +22,10 @@ import {
   IonToast,
 } from '@ionic/react';
 import { eyeOutline, eyeOffOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { authAPI } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 
 import './Login.css';
@@ -66,6 +62,10 @@ export default function Login() {
   const { login } = useAuth();
   const history = useHistory();
 
+  const clearForm = () => {
+    setUsername('');
+    setPassword('');
+  };
   /**
  * Maneja el envío del formulario de inicio de sesión.
  *
@@ -83,6 +83,7 @@ export default function Login() {
 
     try {
       await login({ username, password });
+      clearForm();
       history.push('/dashboard');
     } catch (err: any) {
 
@@ -123,53 +124,93 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
-  const isUsernameValid = username.trim().length > 0;
+  // Estado para existencia del username: null = desconocido/vacío, true = existe, false = no existe
+  const [isUsernameValid, setIsUsernameValid] = useState<boolean | null>(null);
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    const trimmed = username.trim();
+
+    // Resetear si campo vacío
+    if (trimmed.length === 0) {
+      setIsUsernameValid(false);
+      return;
+    }
+
+    // Validación rápida local: evitar peticiones para nombres muy cortos
+    if (trimmed.length < 3) {
+      setIsUsernameValid(false);
+      return;
+    }
+
+    const currentId = ++requestIdRef.current;
+
+    const handler = setTimeout(() => {
+      authAPI.checkUsername(trimmed)
+        .then(res => {
+          if (currentId === requestIdRef.current) {
+            setIsUsernameValid(Boolean(res.exists));
+          }
+        })
+        .catch(() => {
+          if (currentId === requestIdRef.current) {
+            // En caso de error de red, dejamos como inválido para no dar falsas esperanzas
+            setIsUsernameValid(false);
+          }
+        })
+    }, 400); // debounce
+
+    return () => clearTimeout(handler);
+  }, [username]);
 
   return (
     <IonPage>
       <IonContent fullscreen className="ion-padding login-background">
-        <div className="main-title">
-          <IonText>
-            <h1>Tato Matemáticas 2</h1>
-          </IonText>
-        </div>
 
-        <div className="login-card">
-          <IonText>
-            <h2> Inicio de sesión</h2>
-            <p>Ingrese sus datos, por favor</p>
-          </IonText>
+        <div className="login-container">
+          <div className="main-title">
+            <IonText>
+              <h1>Tato Matemáticas 2</h1>
+            </IonText>
+          </div>
 
-          <form onSubmit={handleLogin} className="login-form">
-            <IonItem lines="none" className="input-item">
-              <IonLabel position="stacked">Usuario</IonLabel>
-              <IonInput
-                className='login-custom-input'
-                type="text"
-                value={username}
-                onIonInput={(e) => setUsername(e.detail.value!)}
-                required
-                autocomplete="username"
-                placeholder="Escriba aquí"
-              >
+          <div className="login-card">
+            <IonText>
+              <h2> Inicio de sesión</h2>
+              <p>Ingrese sus datos, por favor</p>
+            </IonText>
+
+            <form onSubmit={handleLogin} className="login-form">
+              <IonItem lines="none" className="input-item">
+                <IonLabel position="stacked">Usuario</IonLabel>
+                <IonInput
+                  className='login-custom-input'
+                  type="text"
+                  value={username}
+                  onIonInput={(e) => setUsername(e.detail.value!)}
+                  required
+                  autocomplete="username"
+                  placeholder="Escriba aquí"
+                />
+
                 <IonIcon
                   icon={isUsernameValid ? checkmarkOutline : closeOutline}
                   slot='end'
                   className="input-icon"
                 />
-              </IonInput>
-            </IonItem>
 
-            <IonItem lines="none" className="input-item">
-              <IonLabel position="stacked">Contraseña</IonLabel>
-              <IonInput
-                className='login-custom-input'
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onIonInput={(e) => setPassword(e.detail.value!)}
-                required
-                autocomplete="current-password"
-              >
+              </IonItem>
+
+              <IonItem lines="none" className="input-item">
+                <IonLabel position="stacked">Contraseña</IonLabel>
+                <IonInput
+                  className='login-custom-input'
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onIonInput={(e) => setPassword(e.detail.value!)}
+                  required
+                  autocomplete="current-password"
+                />
                 <IonIcon
                   icon={showPassword ? eyeOffOutline : eyeOutline}
                   onClick={togglePasswordVisibility}
@@ -177,35 +218,38 @@ export default function Login() {
                   className="input-icon"
                   style={{ cursor: 'pointer' }}
                 />
-              </IonInput>
-            </IonItem>
+              </IonItem>
 
-            <IonButton
-              expand="block"
-              type="submit"
-              className='login-button'
-            >
-              {loading ? 'Accediendo...' : 'Acceder'}
-            </IonButton>
+              <IonButton
+                expand="block"
+                type="submit"
+                className='login-button'
+              >
+                {loading ? 'Accediendo...' : 'Acceder'}
+              </IonButton>
 
-            <IonButton
-              className='login-button'
-              expand="block"
-              fill="clear"
-              onClick={() => history.push('/')}
-            >
-              Volver al inicio
-            </IonButton>
-            <IonToast
-              isOpen={showToast}
-              onDidDismiss={() => setShowToast(false)}
-              message={toastMessage}
-              duration={2000}
-              color={toastColor}
-              position="top"
-              cssClass={'custom-form-toast'}
-            />
-          </form>
+              <IonButton
+                className='login-button'
+                expand="block"
+                fill="clear"
+                onClick={() => {
+                  clearForm();
+                  history.push('/');
+                }}
+              >
+                Volver al inicio
+              </IonButton>
+              <IonToast
+                isOpen={showToast}
+                onDidDismiss={() => setShowToast(false)}
+                message={toastMessage}
+                duration={2000}
+                color={toastColor}
+                position="top"
+                cssClass={'custom-form-toast'}
+              />
+            </form>
+          </div >
         </div >
       </IonContent >
     </IonPage >
