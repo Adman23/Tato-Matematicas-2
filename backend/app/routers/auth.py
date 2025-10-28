@@ -13,6 +13,10 @@ from ..schemas.auth import (
     UserResponse,
     AuthResponse,
     MessageResponse,
+    Group,
+    StudentBasicInfo,
+    StudentLoginRequest,
+    StudentAuthResponse
     ExistsResponse
 )
 from ..services.supabase import supabase
@@ -245,3 +249,125 @@ async def logout(current_user: dict = Depends(get_current_user)):
     # En Supabase, el logout se hace desde el cliente
     # Aquí solo confirmamos que el token es válido
     return MessageResponse(message="Sesión cerrada correctamente")
+
+
+# === STUDENT LOGIN ENDPOINTS ===
+
+@router.get("/groups", response_model=list[Group])
+async def get_groups():
+    """
+    Get all available groups for student login
+
+    Returns:
+        list[Group]: List of all groups with id and alias
+    """
+    try:
+        response = supabase_admin.table("groups").select("*").execute()
+
+        if not response.data:
+            return []
+
+        return [Group(**group) for group in response.data]
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching groups: {str(e)}"
+        )
+
+
+@router.get("/groups/{group_id}/students", response_model=list[StudentBasicInfo])
+async def get_students_by_group(group_id: int):
+    try:
+        resp = supabase_admin.table("users") \
+                             .select("id, username, photo_url") \
+                             .eq("group_id", group_id) \
+                             .execute()
+        return resp.data or []
+    except Exception as e:
+        raise HTTPException(500, detail=f"Error fetching students: {e}")
+
+
+
+
+@router.post("/student/login", response_model=StudentAuthResponse)
+async def login_student(data: StudentLoginRequest):
+    """
+    Student login with group_id, username and password (pictogram sequence)
+
+    Args:
+        data (StudentLoginRequest): Login credentials
+            - group_id: UUID of the student's group
+            - username: Student's username
+            - password: Pictogram sequence as string (e.g., "perro-gato-león")
+
+    Returns:
+        StudentAuthResponse: Access token and student profile
+    """
+    try:
+        # Use unified login endpoint
+        auth_response = supabase.auth.sign_in_with_password({
+            "email": f"{data.username}@tatomaths.local",
+            "password": data.password
+        })
+
+        if not auth_response.user or not auth_response.session:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Credenciales incorrectas"
+            )
+
+        # Verify the user is a student and belongs to the specified group
+        response_user = supabase.table("users")\
+            .select("*")\
+            .eq("id", auth_response.user.id)\
+            .eq("role", "student")\
+            .eq("group_id", data.group_id)\
+            .execute()
+
+        if not response_user.data or len(response_user.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes permiso para acceder con este grupo"
+            )
+
+        # Get student profile
+        response_profile = supabase.table("user_profiles")\
+            .select("*")\
+            .eq("user_id", auth_response.user.id)\
+            .execute()
+
+        if response_profile.data and len(response_profile.data) > 0:
+            student_data = {
+                "id": auth_response.user.id,
+                "username": data.username,
+                "role": "student",
+                "notes": response_profile.data[0].get("notes"),
+                "visual_preferences": response_profile.data[0].get("visual_preferences"),
+                "audio_preferences": response_profile.data[0].get("audio_preferences"),
+                "accessibility_settings": response_profile.data[0].get("accessibility_settings"),
+                "game_preferences": response_profile.data[0].get("game_preferences"),
+            }
+            return StudentAuthResponse(
+                access_token=auth_response.session.access_token,
+                student=UserProfile(**student_data)
+            )
+        else:
+            # Student without profile
+            student_data = {
+                "id": auth_response.user.id,
+                "username": data.username,
+                "role": "student",
+            }
+            return StudentAuthResponse(
+                access_token=auth_response.session.access_token,
+                student=UserProfile(**student_data)
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error en login de estudiante: {str(e)}"
+        )

@@ -79,7 +79,7 @@ export default function StudentDashboard() {
     <IonPage>
       <IonHeader>
         <IonToolbar color="secondary">
-          <IonTitle>TatoMaths - {student.full_name}</IonTitle>
+          <IonTitle>TatoMaths - {student.username || student.name}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -90,7 +90,7 @@ export default function StudentDashboard() {
             {student.photo_url ? (
               <img
                 src={student.photo_url}
-                alt={student.full_name}
+                alt={student.username || student.name}
                 style={{
                   width: '120px',
                   height: '120px',
@@ -115,11 +115,11 @@ export default function StudentDashboard() {
                   color: 'white'
                 }}
               >
-                {student.full_name.charAt(0).toUpperCase()}
+                {(student.username || student.name).charAt(0).toUpperCase()}
               </div>
             )}
             <h1 style={{ fontSize: '32px', margin: '0 0 8px 0' }}>
-              ¡Hola, {student.full_name}!
+              ¡Hola, {student.username || student.name}!
             </h1>
             <p style={{ color: 'var(--ion-color-medium)', fontSize: '18px' }}>
               ¿Qué quieres hacer hoy?

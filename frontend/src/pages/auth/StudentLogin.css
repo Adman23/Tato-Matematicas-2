@@ -3,7 +3,8 @@
    ======================================== */
 
 .student-login-content {
- --background: white ;
+  --background: white;
+  overflow: hidden;
 }
 
 .student-login-container {
@@ -17,24 +18,39 @@
   overflow: hidden;
 }
 
+/* ========================================
+   BOTONES DE NAVEGACIÓN
+   ======================================== */
+
 .student-volver-boton {
   --padding-start: 0;
   --padding-end: 0;
   margin: 30px;
   width: 100px;
   height: 100px;
-    
 }
 
 .student-volver-boton::part(native) {
   border-radius: 16px;
   padding: 0.5rem;
-
 }
 
 .student-volver-boton::part(native):hover,
 .student-volver-boton::part(native):focus-visible {
   background-color: var(--ion-color-primary);
+}
+
+.student-volver-boton-small {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.student-volver-boton-small::part(native) {
+  border-radius: 12px;
+  padding: 0.5rem;
 }
 
 .student-boton-imagen {
@@ -43,6 +59,48 @@
   object-fit: contain;
 }
 
+.student-borrar-boton {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.student-borrar-boton::part(native) {
+  border-radius: 16px;
+  padding: 0.5rem;
+}
+
+.student-borrar-boton::part(native):hover,
+.student-borrar-boton::part(native):focus-visible {
+  background-color: var(--ion-color-primary);
+}
+
+.student-avance-boton {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 100px;
+  height: 100px;
+  background: transparent;
+}
+
+.student-avance-boton::part(native) {
+  border-radius: 16px;
+  padding: 0.5rem;
+}
+
+.student-avance-boton::part(native):hover,
+.student-avance-boton::part(native):focus-visible {
+  background-color: var(--ion-color-primary);
+}
+
+.student-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 12px;
+}
 
 /* ========================================
    HEADER
@@ -64,11 +122,11 @@
   color: #000000;
   margin: 0;
 }
+
 .student-login-image {
   width: 200px;
   height: 200px;
 }
-
 
 /* ========================================
    SECUENCIA SELECCIONADA
@@ -107,7 +165,7 @@
 
 .student-sequence-item {
   position: relative;
-  width: 200px; /* TAMANIO DE LA SECUENCIA*/
+  width: 200px;
   height: 200px;
   padding: 0.5rem;
   display: flex;
@@ -122,7 +180,7 @@
 }
 
 /* ========================================
-   GRID DE PICTOGRAMAS (5 en 1 fila)
+   GRID DE PICTOGRAMAS
    ======================================== */
 
 .student-pictograms-grid {
@@ -132,15 +190,14 @@
   flex: 0.5;
   align-content: center;
 }
+
 .student-pictogram-button {
   position: relative;
   border: 10px solid transparent;
   background: transparent;
   cursor: pointer;
-
   border-radius: 16px;
   padding: 0.5rem;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,10 +208,8 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  position: relative ;
 }
 
-/* Efecto al pasar o enfocar (ratón o Tab) */
 .student-pictogram-button:hover:not(:disabled),
 .student-pictogram-button:focus-visible:not(:disabled) {
   border-color: var(--ion-color-primary);
@@ -162,6 +217,11 @@
   outline: 2px solid black;
 }
 
+.student-pictogram-button.selected {
+  border-color: var(--ion-color-success);
+  background-color: var(--ion-color-success);
+  outline: 2px solid black;
+}
 
 /* ========================================
    ERROR
@@ -183,58 +243,222 @@
 }
 
 /* ========================================
-   BOTONES
+   LOADING & ERROR STATES
    ======================================== */
 
-.student-borrar-boton {
-  --padding-start: 0;
-  --padding-end: 0;
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.student-borrar-boton::part(native) {
-  border-radius: 16px;
-  padding: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.student-borrar-boton::part(native):hover,
-.student-borrar-boton::part(native):focus-visible {
-  background-color: var(--ion-color-primary);
-}
-
-.student-avance-boton {
-  --padding-start: 0;
-  --padding-end: 0;
-  width: 100px;
-  height: 100px;
-  background: transparent;
-}
-
-.student-avance-boton::part(native) {
-  border-radius: 16px;
-  padding: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.student-avance-boton::part(native):hover,
-.student-avance-boton::part(native):focus-visible {
-  background-color: var(--ion-color-primary);
-}
-
-.student-actions {
+.student-loading,
+.student-error {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
   align-items: center;
-  padding-right: 12px;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
 }
 
-
+.student-loading p,
+.student-error p {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000000;
+}
 
 /* ========================================
-   TABLET (< 1024px)
+   SELECCIÓN DE GRUPO Y USUARIO
+   ======================================== */
+
+.student-selection-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.student-selection-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.student-selection-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #000000;
+  margin: 0;
+  flex: 1;
+}
+
+.student-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  overflow-y: auto;
+  padding: 0.5rem;
+  align-content: start;
+}
+
+.student-selection-card {
+  position: relative;
+  aspect-ratio: 1;
+  background: white;
+  border: 4px solid #4a90e2;
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.student-selection-card:hover,
+.student-selection-card:focus-visible {
+  background: #f0f9ff;
+}
+
+.student-selection-letter {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #4a90e2;
+  line-height: 1;
+}
+
+.student-selection-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+.student-selection-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-selection-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+.student-selection-check {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  opacity: 0;
+}
+
+.student-selection-check img {
+  width: 100%;
+  height: 100%;
+}
+
+.student-selection-card:hover .student-selection-check,
+.student-selection-card:focus-visible .student-selection-check {
+  opacity: 1;
+}
+
+/* ========================================
+   DISPLAY DE GRUPO Y USUARIO SELECCIONADO
+   ======================================== */
+
+.student-group-display {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #4a90e2;
+  text-align: center;
+  padding: 1rem;
+}
+
+.student-user-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.student-selected-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.student-user-display span {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0a1c36;
+}
+
+.student-group-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(119, 114, 114, 0.5);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.student-group-card h2 {
+  color: black;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+}
+
+.student-user-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.student-user-photo {
+  width: 200px;
+  height: 200px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+}
+
+.student-user-card h3 {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+/* ========================================
+   MEDIA QUERIES - TABLET (< 1024px)
    ======================================== */
 
 @media (max-width: 1024px) {
@@ -264,10 +488,21 @@
   .student-pictogram-button {
     padding: 0.4rem;
   }
+
+  .student-borrar-boton {
+    width: 130px;
+    height: 130px;
+  }
+
+  .student-volver-boton,
+  .student-avance-boton {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 /* ========================================
-   MÓVIL (< 768px)
+   MEDIA QUERIES - MÓVIL (< 768px)
    ======================================== */
 
 @media (max-width: 768px) {
@@ -302,13 +537,42 @@
     padding: 0.35rem;
   }
 
-  .student-pictogram-button::before {
-    inset: -6px;
+  .student-borrar-boton {
+    width: 110px;
+    height: 110px;
+  }
+
+  .student-volver-boton,
+  .student-avance-boton {
+    width: 70px;
+    height: 70px;
+  }
+
+  .student-selection-grid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .student-selection-title {
+    font-size: 1.5rem;
+  }
+
+  .student-selection-letter {
+    font-size: 2.5rem;
+  }
+
+  .student-selection-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .student-selection-label {
+    font-size: 0.8rem;
   }
 }
 
 /* ========================================
-   MÓVIL PEQUEÑO (< 480px)
+   MEDIA QUERIES - MÓVIL PEQUEÑO (< 480px)
    ======================================== */
 
 @media (max-width: 480px) {
@@ -331,30 +595,50 @@
   }
 
   .student-sequence-item {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
   }
 
   .student-pictograms-grid {
     gap: 0.5rem;
-    grid-template-columns: repeat(5, 1fr);
   }
 
   .student-pictogram-button {
     padding: 0.3rem;
   }
 
-  .student-pictogram-button::before {
-    inset: -5px;
-  }
-
   .student-error-message p {
     font-size: 1.05rem;
+  }
+
+  .student-borrar-boton {
+    width: 100px;
+    height: 100px;
+  }
+
+  .student-volver-boton,
+  .student-avance-boton {
+    width: 60px;
+    height: 60px;
+  }
+
+  .student-selection-grid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .student-selection-letter {
+    font-size: 2rem;
+  }
+
+  .student-selection-image {
+    width: 50px;
+    height: 50px;
   }
 }
 
 /* ========================================
-   LANDSCAPE (< 650px altura)
+   MEDIA QUERIES - LANDSCAPE (< 650px altura)
    ======================================== */
 
 @media (max-height: 650px) and (orientation: landscape) {
@@ -396,48 +680,15 @@
     padding: 0.3rem;
   }
 
-  .student-pictogram-button::before {
-    inset: -5px;
+  .student-borrar-boton {
+    width: 90px;
+    height: 90px;
   }
-}
 
-/* ========================================
-   ACCESIBILIDAD
-   ======================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  .student-pictogram-button,
-  .student-pictogram-button::before,
-  .student-pictogram-image,
   .student-volver-boton,
-  .student-borrar-boton,
   .student-avance-boton {
-    transition: none !important;
-  }
-
-  .student-pictogram-button:hover,
-  .student-pictogram-button:active {
-    transform: none !important;
+    width: 60px;
+    height: 60px;
   }
 }
 
-@media (prefers-contrast: high) {
-  .student-pictogram-button::before {
-    background: rgba(16, 185, 129, 0.6);
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.4),
-                0 0 30px 12px rgba(16, 185, 129, 0.5);
-  }
-
-  .student-pictogram-button:hover:not(:disabled) .student-pictogram-image,
-  .student-pictogram-button:focus:not(:disabled) .student-pictogram-image {
-    filter: drop-shadow(0 8px 28px rgba(16, 185, 129, 0.8));
-  }
-
-  .student-pictogram-button:focus-visible,
-  .student-volver-boton:focus-visible,
-  .student-borrar-boton:focus-visible,
-  .student-avance-boton:focus-visible {
-    outline: 6px solid #10b981;
-    outline-offset: 10px;
-  }
-}
