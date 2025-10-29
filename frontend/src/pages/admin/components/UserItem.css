@@ -7,16 +7,17 @@
 .userItem-mainContainer {
 
     display: flex;
+    flex-direction: row;
     align-items: center;
     width: 100%;
     padding: 15px 15px;
     border-bottom: 1px solid gray;
-    justify-content: space-between;
     align-items: center;
+    gap: 15px;
 }
 
 .userItem-checkbox {
-    margin-right: 20px;
+    margin-right: 5px;
 }
 
 .userItem-avatar {
@@ -27,7 +28,6 @@
     min-width: 56px;
     min-height: 56px;
     border-radius: 50%;
-    margin-right: 100px;
 }
 
 .userItem-avatar img {
@@ -47,12 +47,14 @@
     text-overflow: ellipsis;
     overflow: hidden;
     flex-grow: 1;
-    text-align: left;
-    margin-right: 15px;
+    flex-shrink: 0;
+    text-align: center;
 }
 
 .userItem-class {
     display: flex;
     flex-direction: column;
     text-align: right;
+    flex-shrink: 0;
+    min-width: 80px;
 }
