@@ -78,10 +78,7 @@ export default function StudentLoginStep2() {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="secondary">
-        </IonToolbar>
-      </IonHeader>
+
 
       <IonContent className="student-login-content">
         <div className="student-login-container">

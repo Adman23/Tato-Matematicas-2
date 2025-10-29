@@ -278,6 +278,53 @@ async def get_groups():
 
 @router.get("/groups/{group_id}/students", response_model=list[StudentBasicInfo])
 async def get_students_by_group(group_id: int):
+    """
+    Get all students from a specific group
+
+    Returns:
+        list[StudentBasicInfo]: List of students with id, username (extracted from email), and photo_url
+    """
+    try:
+        # Get students from public.users (id and photo_url)
+        resp = supabase_admin.table("users") \
+                             .select("id, photo_url") \
+                             .eq("group_id", group_id) \
+                             .eq("role", "student") \
+                             .execute()
+
+        if not resp.data:
+            return []
+
+        # Get username from auth.users email for each student
+        students = []
+        for user in resp.data:
+            try:
+                # Get email from auth.users
+                auth_user = supabase_admin.auth.admin.get_user_by_id(user["id"])
+                # Extract username from email (before @)
+                username = auth_user.user.email.split("@")[0]
+
+                students.append({
+                    "id": user["id"],
+                    "username": username,
+                    "photo_url": user.get("photo_url")
+                })
+            except Exception as user_error:
+                # If we can't get auth user, skip this student
+                print(f"Warning: Could not get username for user {user['id']}: {user_error}")
+                continue
+
+        return students
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching students: {str(e)}"
+        )
+"""
+
+@router.get("/groups/{group_id}/students", response_model=list[StudentBasicInfo])
+async def get_students_by_group(group_id: int):
     try:
         resp = supabase_admin.table("users") \
                              .select("id, username, photo_url") \
@@ -286,7 +333,7 @@ async def get_students_by_group(group_id: int):
         return resp.data or []
     except Exception as e:
         raise HTTPException(500, detail=f"Error fetching students: {e}")
-
+"""
 
 
 

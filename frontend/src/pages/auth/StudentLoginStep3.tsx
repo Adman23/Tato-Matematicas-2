@@ -14,8 +14,6 @@
 
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
   IonContent,
   IonButton,
   IonText,
@@ -128,24 +126,35 @@ const addPicto = (pictogramId: string) => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="secondary">
-        </IonToolbar>
-      </IonHeader>
-
       <IonContent className="student-login-content">
         <div className="student-login-container">
-          <IonButton
-            fill="clear"
-            className="student-volver-boton"
-            onClick={() => history.goBack()}
-          >
-            <img
-              src="/assets/pictograms/boton_volver.png"
-              alt="Volver"
-              className="student-boton-imagen"
-            />
-          </IonButton>
+          {/* Fila de botones superior */}
+          <div className="student-button-row">
+            <IonButton
+              fill="clear"
+              className="student-volver-boton"
+              onClick={() => history.goBack()}
+            >
+              <img
+                src="/assets/pictograms/boton_volver.png"
+                alt="Volver"
+                className="student-boton-imagen"
+              />
+            </IonButton>
+
+            <IonButton
+              fill="clear"
+              className="student-avance-boton"
+              onClick={handleLogin}
+              disabled={loading}
+            >
+              <img
+                src="/assets/pictograms/correcto.png"
+                alt="Avanzar"
+                className="student-boton-imagen"
+              />
+            </IonButton>
+          </div>
 
           {/* Título y arriba */}
           <div className="student-login-header">
@@ -227,21 +236,7 @@ const addPicto = (pictogramId: string) => {
             </IonText>
           )}
 
-          {/* Botones de acción */}
-          <div className="student-actions">
-            <IonButton
-              fill="clear"
-              className="student-avance-boton"
-              onClick={handleLogin}
-              disabled={loading}
-            >
-              <img
-                src="/assets/pictograms/correcto.png"
-                alt="Avanzar"
-                className="student-boton-imagen"
-              />
-            </IonButton>
-          </div>
+
         </div>
       </IonContent>
     </IonPage>
