@@ -33,84 +33,56 @@
   gap: 0.5rem;
 }
 
-.student-volver-boton {
+/* Estilos comunes para todos los botones de navegación */
+.student-volver-boton,
+.student-avance-boton,
+.student-borrar-boton {
   --padding-start: 0;
   --padding-end: 0;
-  margin: 0;
-  width: 80px;
-  height: 80px;
   flex-shrink: 0;
 }
 
-/* Cuando el botón volver está fuera de button-row (páginas anteriores) */
-.student-login-container > .student-volver-boton {
-  margin: 20px;
-}
-
-.student-volver-boton::part(native) {
+.student-volver-boton::part(native),
+.student-avance-boton::part(native),
+.student-borrar-boton::part(native) {
   border-radius: 16px;
   padding: 0.5rem;
 }
 
 .student-volver-boton::part(native):hover,
-.student-volver-boton::part(native):focus-visible {
+.student-volver-boton::part(native):focus-visible,
+.student-avance-boton::part(native):hover,
+.student-avance-boton::part(native):focus-visible,
+.student-borrar-boton::part(native):hover,
+.student-borrar-boton::part(native):focus-visible {
   background-color: var(--ion-color-primary);
 }
 
-.student-volver-boton-small {
-  --padding-start: 0;
-  --padding-end: 0;
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
+.student-volver-boton {
+  margin: 0;
+  width: 80px;
+  height: 80px;
 }
 
-.student-volver-boton-small::part(native) {
-  border-radius: 12px;
-  padding: 0.5rem;
+.student-login-container > .student-volver-boton {
+  margin: 20px;
+}
+
+.student-avance-boton {
+  width: 80px;
+  height: 80px;
+  background: transparent;
+}
+
+.student-borrar-boton {
+  width: 100px;
+  height: 100px;
 }
 
 .student-boton-imagen {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.student-borrar-boton {
-  --padding-start: 0;
-  --padding-end: 0;
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-}
-
-.student-borrar-boton::part(native) {
-  border-radius: 16px;
-  padding: 0.5rem;
-}
-
-.student-borrar-boton::part(native):hover,
-.student-borrar-boton::part(native):focus-visible {
-  background-color: var(--ion-color-primary);
-}
-
-.student-avance-boton {
-  --padding-start: 0;
-  --padding-end: 0;
-  width: 80px;
-  height: 80px;
-  background: transparent;
-  flex-shrink: 0;
-}
-
-.student-avance-boton::part(native) {
-  border-radius: 16px;
-  padding: 0.5rem;
-}
-
-.student-avance-boton::part(native):hover,
-.student-avance-boton::part(native):focus-visible {
-  background-color: var(--ion-color-primary);
 }
 
 .student-actions {
@@ -194,7 +166,9 @@
   justify-content: center;
 }
 
-.student-sequence-image {
+.student-sequence-image,
+.student-pictogram-image,
+.student-boton-imagen {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -211,6 +185,7 @@
   flex: 1;
   align-content: center;
   max-height: 35vh;
+  width: 100%;
 }
 
 .student-pictogram-button {
@@ -227,12 +202,11 @@
   aspect-ratio: 1;
   min-height: 0;
   min-width: 0;
-}
-
-.student-pictogram-image {
+  max-width: min(20vh, 180px);
+  max-height: min(20vh, 180px);
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  margin: 0 auto;
 }
 
 .student-pictogram-button:hover:not(:disabled),
@@ -249,7 +223,7 @@
 }
 
 /* ========================================
-   ERROR
+   MENSAJES DE ERROR Y CARGA
    ======================================== */
 
 .student-error-message {
@@ -266,10 +240,6 @@
   color: #000000;
   margin: 0;
 }
-
-/* ========================================
-   LOADING & ERROR STATES
-   ======================================== */
 
 .student-loading,
 .student-error {
@@ -402,36 +372,8 @@
 }
 
 /* ========================================
-   DISPLAY DE GRUPO Y USUARIO SELECCIONADO
+   CARDS DE GRUPO Y USUARIO
    ======================================== */
-
-.student-group-display {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #4a90e2;
-  text-align: center;
-  padding: 1rem;
-}
-
-.student-user-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.student-selected-photo {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.student-user-display span {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0a1c36;
-}
 
 .student-group-card {
   width: 100%;
@@ -441,15 +383,23 @@
   justify-content: center;
   background: rgba(119, 114, 114, 0.5);
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.5rem;
+  overflow: hidden;
 }
 
 .student-group-card h2 {
   color: black;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
   text-align: center;
   margin: 0;
+  max-height: 3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding: 0.2rem;
 }
 
 .student-user-card {
@@ -458,35 +408,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   background: #ffffff;
   border: 2px solid #ddd;
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 0.4rem;
+  gap: 0.4rem;
+  overflow: hidden;
 }
 
 .student-user-photo {
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: auto;
+  max-width: min(70%, 120px);
+  max-height: min(70%, 120px);
+  aspect-ratio: 1;
   border-radius: 6px;
   border: 1px solid #ccc;
   background: #f9f9f9;
+  object-fit: cover;
+  flex: 0 1 auto;
 }
 
 .student-user-card h3 {
-  color: #333;
-  font-size: 0.9rem;
+  color: #000000;
+  font-size: 0.85rem;
   font-weight: 700;
   text-align: center;
   text-transform: uppercase;
-  margin-top: 0.5rem;
+  margin: 0;
+  width: 100%;
+  min-height: 1.5em;
+  overflow: hidden;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  flex: 0 0 auto;
+  padding: 0.1rem 0.2rem;
 }
 
 /* ========================================
-   MEDIA QUERIES - TABLET (< 1024px)
+   MEDIA QUERIES
    ======================================== */
 
-@media (max-width: 1024px) {
+/* Pantalla Mediana: < 1024px ancho O < 768px alto */
+@media (max-width: 1024px), (max-height: 768px) {
   .student-login-container {
     padding: 0.6rem;
     gap: 0.6rem;
@@ -536,23 +503,18 @@
     height: 65px;
   }
 
-  /* Solo botón volver directo en container (no en button-row) */
   .student-login-container > .student-volver-boton {
     margin: 15px;
   }
 }
 
-/* ========================================
-   MEDIA QUERIES - MÓVIL (< 768px)
-   ======================================== */
-
-@media (max-width: 768px) {
+/* Pantalla Pequeña: < 768px ancho O < 650px alto */
+@media (max-width: 768px), (max-height: 650px) {
   .student-login-container {
     padding: 0.5rem;
     gap: 0.5rem;
   }
 
-  /* Ocultar imagen de contraseña en móviles */
   .student-login-image {
     display: none;
   }
@@ -578,7 +540,7 @@
 
   .student-pictograms-grid {
     gap: 0.5rem;
-    max-height: 30vh;
+    max-height: 28vh;
   }
 
   .student-pictogram-button {
@@ -598,7 +560,6 @@
     height: 55px;
   }
 
-  /* Solo botón volver directo en container (no en button-row) */
   .student-login-container > .student-volver-boton {
     margin: 12px;
   }
@@ -632,19 +593,28 @@
   .student-error-message p {
     font-size: 0.95rem;
   }
+
+  .student-user-card h3 {
+    font-size: 0.5rem;
+  }
+
+  .student-user-photo {
+    max-width: min(65%, 100px);
+    max-height: min(65%, 100px);
+  }
+
+  .student-group-card h2 {
+    font-size: 1.1rem;
+  }
 }
 
-/* ========================================
-   MEDIA QUERIES - MÓVIL PEQUEÑO (< 480px)
-   ======================================== */
-
-@media (max-width: 480px) {
+/* Pantalla Muy Pequeña: < 480px ancho O < 520px alto */
+@media (max-width: 480px), (max-height: 520px) {
   .student-login-container {
     padding: 0.4rem;
     gap: 0.4rem;
   }
 
-  /* Asegurar que imagen está oculta */
   .student-login-image {
     display: none;
   }
@@ -674,7 +644,7 @@
 
   .student-pictograms-grid {
     gap: 0.35rem;
-    max-height: 28vh;
+    max-height: 25vh;
   }
 
   .student-pictogram-button {
@@ -702,7 +672,6 @@
     height: 45px;
   }
 
-  /* Solo botón volver directo en container (no en button-row) */
   .student-login-container > .student-volver-boton {
     margin: 8px;
   }
@@ -724,100 +693,26 @@
   .student-selection-label {
     font-size: 0.75rem;
   }
-}
 
-/* ========================================
-   MEDIA QUERIES - LANDSCAPE (< 650px altura)
-   ======================================== */
-
-@media (max-height: 650px) and (orientation: landscape) {
-  .student-login-container {
-    padding: 0.3rem;
-    gap: 0.3rem;
+  .student-user-card h3 {
+    font-size: 0.5rem;
   }
 
-  /* Ocultar imagen en landscape */
-  .student-login-image {
-    display: none;
+  .student-user-photo {
+    max-width: min(60%, 90px);
+    max-height: min(60%, 90px);
   }
 
-  .student-login-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .student-login-title {
-    font-size: 1rem;
-    margin: 0;
-  }
-
-  .student-login-subtitle {
-    font-size: 0.8rem;
-  }
-
-  .student-sequence-display {
-    min-height: 45px;
-    padding: 0.35rem;
-  }
-
-  .student-sequence-placeholder {
-    font-size: 0.8rem;
-  }
-
-  .student-sequence-item {
-    width: 50px;
-    height: 50px;
-  }
-
-  .student-pictograms-grid {
-    gap: 0.35rem;
-    max-height: 25vh;
-  }
-
-  .student-pictogram-button {
-    padding: 0.15rem;
-    border-width: 3px;
-    border-radius: 8px;
-  }
-
-  .student-borrar-boton {
-    width: 60px;
-    height: 60px;
-  }
-
-  .student-volver-boton,
-  .student-avance-boton {
-    width: 45px;
-    height: 45px;
-  }
-
-  /* Solo botón volver directo en container (no en button-row) */
-  .student-login-container > .student-volver-boton {
-    margin: 8px;
-  }
-
-  .student-error-message {
-    padding: 0.5rem;
-  }
-
-  .student-error-message p {
-    font-size: 0.85rem;
+  .student-group-card h2 {
+    font-size: 0.7rem;
   }
 }
 
-/* ========================================
-   MEDIA QUERIES - LANDSCAPE MUY PEQUEÑO (< 500px altura)
-   ======================================== */
-
-@media (max-height: 500px) and (orientation: landscape) {
+/* Pantalla Crítica: < 400px ancho O < 420px alto */
+@media (max-width: 400px), (max-height: 420px) {
   .student-login-container {
     padding: 0.25rem;
     gap: 0.25rem;
-  }
-
-  .student-login-image {
-    display: none;
   }
 
   .student-login-title {
@@ -849,22 +744,21 @@
 
   .student-pictogram-button {
     padding: 0.1rem;
-    border-width: 3px;
+    border-width: 2px;
     border-radius: 6px;
   }
 
   .student-borrar-boton {
-    width: 55px;
-    height: 55px;
+    width: 50px;
+    height: 50px;
   }
 
   .student-volver-boton,
   .student-avance-boton {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
   }
 
-  /* Solo botón volver directo en container (no en button-row) */
   .student-login-container > .student-volver-boton {
     margin: 6px;
   }
@@ -876,5 +770,35 @@
   .student-error-message p {
     font-size: 0.8rem;
   }
-}
 
+  .student-selection-grid {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 0.3rem;
+  }
+
+  .student-selection-letter {
+    font-size: 1.5rem;
+  }
+
+  .student-selection-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .student-selection-label {
+    font-size: 0.7rem;
+  }
+
+  .student-user-card h3 {
+    font-size: 0.4rem;
+  }
+
+  .student-group-card h2 {
+    font-size: 0.6rem;
+  }
+
+  .student-user-photo {
+    max-width: min(55%, 80px);
+    max-height: min(55%, 80px);
+  }
+}
