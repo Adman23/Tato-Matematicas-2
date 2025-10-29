@@ -65,17 +65,17 @@ export default function StudentLoginStep3() {
  * Añade un pictograma a la secuencia seleccionada.
  * @param pictogramId Identificador del pictograma elegido.
  */
-// Añade un pictograma si no se ha alcanzado el máximo
-const addPicto = (pictogramId: string) => {
-  setSelected(prev => {
-    if (prev.length >= MAX_LENGTH) {
-      setError(`Máximo ${MAX_LENGTH} imágenes`);
-      return prev; // no añade más
-    }
-    setError('');
-    return [...prev, pictogramId];
-  });
-};
+  // Añade un pictograma si no se ha alcanzado el máximo
+  const addPicto = (pictogramId: string) => {
+    setSelected(prev => {
+      if (prev.length >= MAX_LENGTH) {
+        setError(`Máximo ${MAX_LENGTH} imágenes`);
+        return prev; // no añade más
+      }
+      setError('');
+      return [...prev, pictogramId];
+    });
+  };
 
 
   /** Limpia la secuencia actual y cualquier error mostrado. */
@@ -93,7 +93,7 @@ const addPicto = (pictogramId: string) => {
    */
   const handleLogin = async () => {
     // Validación: secuencia incompleta
-    if (selected.length < REQUIRED_LENGTH ) {
+    if (selected.length < REQUIRED_LENGTH) {
       setError('Aún faltan imágenes');
       return;
     }
@@ -128,6 +128,7 @@ const addPicto = (pictogramId: string) => {
     <IonPage>
       <IonContent className="student-login-content">
         <div className="student-login-container">
+
           {/* Fila de botones superior */}
           <div className="student-button-row">
             <IonButton
@@ -194,7 +195,7 @@ const addPicto = (pictogramId: string) => {
                 </div>
               )}
             </div>
-
+            {/* Boton borrar */}
             <IonButton
               fill="clear"
               className="student-borrar-boton"
