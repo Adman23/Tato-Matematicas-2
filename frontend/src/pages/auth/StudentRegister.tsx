@@ -10,12 +10,10 @@ import {
   IonToast,
   IonSelect,
   IonSelectOption,
-  IonModal,
-  IonList,
   IonImg,
 } from '@ionic/react';
 import { personOutline, addOutline, closeOutline } from 'ionicons/icons';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -36,13 +34,16 @@ export default function StudentRegister() {
   const { registerStudent } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pictoContainerRef = useRef<HTMLDivElement>(null);
+  const pictoPickerRef = useRef<HTMLDivElement>(null);
 
   const [fullName, setFullName] = useState('');
   const [userName, setUserName] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState('Imagen_de_monigote');
+  const [selectedAvatar, setSelectedAvatar] = useState<string>('Perfil.png');
+  const [avatarPreview, setAvatarPreview] = useState<string>('/assets/perfiles/Perfil.png');
   const [pictograms, setPictograms] = useState<string[]>([]);
 
-  // Modal de selección de pictogramas
+  // Picker flotante de pictogramas
   const [showPictoModal, setShowPictoModal] = useState(false);
 
   // Toast
@@ -50,18 +51,33 @@ export default function StudentRegister() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
 
-  const avatarOptions = [
-    'Imagen_de_monigote',
-    'Imagen_de_monigote0',
-    'Imagen_de_monigote1',
-    'Imagen_de_monigote2',
-    'Imagen_de_monigote3',
-    'Imagen_de_monigote4',
-    'Imagen_de_monigote5',
-    'Imagen_de_monigote6',
-    'Imagen_de_monigote7',
-    'Imagen_de_monigote8',
-  ];
+  const AVATAR_OPTIONS = [
+    'Perfil.png',
+    'Aventurero.png',
+    'Batman.png',
+    'Bufón.png',
+    'Centauro.png',
+    'Dragón.png',
+    'Gato.png',
+    'Hércules.png',
+    'Lobo.png',
+    'Mago.png',
+    'Maga.png',
+    'Olentzero.png',
+    'Pinocho.png',
+    'Presidenta.png',
+    'Presidente.png',
+    'Princesa.png',
+    'Sirena.png',
+    'Spiderman.png',
+    'Supermán.png',
+    'Tutankhamon.png',
+    'Vampiro.png',
+  ].map(file => ({
+    id: file,
+    name: file.replace('.png', '').replace(/_/g, ' '),
+    image: `/assets/perfiles/${file}`,
+  }));
 
   const isUserNameValid = userName.trim().length >= 3;
   const hasAtLeastOnePictogram = pictograms.length > 0;
@@ -119,8 +135,13 @@ export default function StudentRegister() {
   };
 
   const selectPictogram = (id: string) => {
-    setPictograms([...pictograms, id]);
-    setShowPictoModal(false);
+    const newPictograms = [...pictograms, id];
+    setPictograms(newPictograms);
+
+    // Cerrar el picker solo si ya se alcanzó el máximo
+    if (newPictograms.length >= MAX_PICTOGRAMS) {
+      setShowPictoModal(false);
+    }
   };
 
   const removePictogram = (index: number) => {
@@ -130,13 +151,51 @@ export default function StudentRegister() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+
+      if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+
       setSelectedAvatar(file.name);
+      setAvatarPreview(URL.createObjectURL(file));
     }
+  };
+
+  const handleAvatarSelect = (avatarId: string) => {
+    if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
+      URL.revokeObjectURL(avatarPreview);
+    }
+
+    setSelectedAvatar(avatarId);
+    setAvatarPreview(`/assets/perfiles/${avatarId}`);
   };
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
+
+  // Posicionar el picker justo debajo del campo de pictogramas
+  useEffect(() => {
+    if (showPictoModal && pictoContainerRef.current && pictoPickerRef.current) {
+      const containerRect = pictoContainerRef.current.getBoundingClientRect();
+      const picker = pictoPickerRef.current;
+
+      picker.style.position = 'absolute';
+      picker.style.left = `${containerRect.left}px`;
+      picker.style.top = `${containerRect.bottom + 8}px`;
+      picker.style.width = `${containerRect.width}px`;
+      picker.style.zIndex = '1001';
+    }
+  }, [showPictoModal]);
+
+  // Limpiar URL de avatar personalizado al desmontar
+  useEffect(() => {
+    return () => {
+      if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+    };
+  }, [avatarPreview]);
 
   return (
     <IonPage>
@@ -148,30 +207,32 @@ export default function StudentRegister() {
 
           {/* Avatar */}
           <div className="avatar-section">
-            <IonIcon
-              icon={personOutline}
-              className="avatar-icon"
-              onClick={triggerFileInput}
-            />
+            <div className="avatar-preview" onClick={triggerFileInput}>
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="Avatar" className="avatar-image" />
+              ) : (
+                <IonIcon icon={personOutline} className="avatar-icon" />
+              )}
+            </div>
 
             <div className="field-wrapper">
               <div className="field-label">Avatar *</div>
               <IonSelect
                 value={selectedAvatar}
-                onIonChange={(e) => setSelectedAvatar(e.detail.value)}
+                onIonChange={(e) => handleAvatarSelect(e.detail.value)}
                 placeholder="Seleccionar avatar"
                 interface="popover"
                 interfaceOptions={{
-                    alignment: 'center',        // ← Centra el popover horizontalmente
-                    showBackdrop: false,        // ← Opcional: quita el fondo oscuro
-                    cssClass: 'avatar-popover'  // ← Opcional: clase CSS personalizada
+                  alignment: 'center',
+                  showBackdrop: false,
+                  cssClass: 'avatar-popover'
                 }}
                 className="avatar-select"
-                >
-                {avatarOptions.map((avatar, index) => (
-                    <IonSelectOption key={index} value={avatar}>
-                    {avatar}
-                    </IonSelectOption>
+              >
+                {AVATAR_OPTIONS.map((avatar) => (
+                  <IonSelectOption key={avatar.id} value={avatar.id}>
+                    {avatar.name}
+                  </IonSelectOption>
                 ))}
               </IonSelect>
             </div>
@@ -192,7 +253,7 @@ export default function StudentRegister() {
           {/* Código acceso */}
           <div className="field-wrapper">
             <div className="field-label">Código acceso *</div>
-            <div className="pictogram-container">
+            <div className="pictogram-container" ref={pictoContainerRef}>
               {pictograms.map((pictoId, index) => {
                 const picto = PICTOGRAMS.find(p => p.id === pictoId);
                 return (
@@ -219,25 +280,31 @@ export default function StudentRegister() {
           </div>
         </div>
 
-        {/* Modal de selección de pictogramas */}
-        <IonModal isOpen={showPictoModal} onDidDismiss={() => setShowPictoModal(false)}>
-          <div className="picto-modal-header">
-            <h3>Selecciona un pictograma</h3>
-            <IonButton fill="clear" onClick={() => setShowPictoModal(false)}>
-              Cerrar
-            </IonButton>
-          </div>
-          <IonList>
-            <div className="picto-grid">
-              {PICTOGRAMS.map((picto) => (
-                <div key={picto.id} className="picto-option" onClick={() => selectPictogram(picto.id)}>
-                  <IonImg src={picto.image} alt={picto.name} />
-                  <span>{picto.name}</span>
-                </div>
-              ))}
+        {/* Picker flotante de pictogramas */}
+        {showPictoModal && (
+          <div className="picto-picker-overlay" onClick={() => setShowPictoModal(false)}>
+            <div
+              className="picto-picker"
+              onClick={(e) => e.stopPropagation()}
+              ref={pictoPickerRef}
+            >
+              <div className="picto-picker-header">
+                <h3>Selecciona un pictograma</h3>
+                <IonButton fill="clear" size="small" onClick={() => setShowPictoModal(false)}>
+                  Cerrar
+                </IonButton>
+              </div>
+              <div className="picto-grid">
+                {PICTOGRAMS.map((picto) => (
+                  <div key={picto.id} className="picto-option" onClick={() => selectPictogram(picto.id)}>
+                    <IonImg src={picto.image} alt={picto.name} />
+                    <span>{picto.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </IonList>
-        </IonModal>
+          </div>
+        )}
 
         {/* Input oculto para avatar */}
         <input

@@ -43,7 +43,7 @@
 }
 
 /* =============================================================================
-   SECCIÓN DE AVATAR (icono grande + campo de selección)
+   SECCIÓN DE AVATAR
    ========================================================================== */
 
 .avatar-section {
@@ -54,19 +54,39 @@
   gap: 0.6rem;
 }
 
-.avatar-icon {
-  font-size: 4rem;
-  color: white;
+.avatar-preview {
+  width: 4rem;
+  height: 4rem;
+  border: 2px solid black; /* ✅ Borde negro */
+  border-radius: 5px; /* ✅ Forma cuadrada (sin redondeo) */
+  overflow: hidden;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  margin: 0 auto 1rem;
   transition: transform 0.2s;
 }
 
-.avatar-icon:hover {
+.avatar-preview:hover {
   transform: scale(1.1);
 }
 
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block; /* evita espacios extra si hay line-height */
+}
+
+.avatar-icon {
+  font-size: 2.5rem;
+  color: white;
+}
+
 /* =============================================================================
-   ESTILOS COMUNES PARA TODOS LOS CAMPOS (usuario, avatar, código acceso)
+   ESTILOS COMUNES PARA TODOS LOS CAMPOS
    ========================================================================== */
 
 .field-wrapper {
@@ -86,14 +106,14 @@
 }
 
 /* =============================================================================
-   CAMPO DE SELECCIÓN DE AVATAR (IonSelect personalizado)
+   CAMPO DE SELECCIÓN DE AVATAR
    ========================================================================== */
 
 .avatar-select {
   --background: white;
   --border-radius: 20px;
   --padding-start: 1rem;
-  --padding-end: 2.5rem; /* Espacio para el icono de despliegue */
+  --padding-end: 2.5rem;
   --placeholder-color: #888;
   --icon-color: #50BFE6;
   --color: #333;
@@ -106,7 +126,6 @@
   text-align: center;
 }
 
-/* Texto dentro del select (valor seleccionado o placeholder) */
 .avatar-select::part(text),
 .avatar-select::part(placeholder) {
   text-align: center;
@@ -116,7 +135,6 @@
   white-space: nowrap;
 }
 
-/* Icono de despliegue (triángulo) */
 .avatar-select::part(icon) {
   position: absolute;
   right: 12px;
@@ -127,13 +145,8 @@
   transition: transform 0.2s ease;
 }
 
-/* Animación del icono al abrir el popover */
-.avatar-select.md.select-interface-popover-open::part(icon) {
-  transform: translateY(-50%) rotate(180deg);
-}
-
 /* =============================================================================
-   CAMPO DE TEXTO PARA USUARIO (IonInput)
+   CAMPO DE TEXTO PARA USUARIO
    ========================================================================== */
 
 .input-item {
@@ -165,8 +178,10 @@
   background-color: white;
   border-radius: 20px;
   padding: 0.5rem 1rem;
-  min-height: 50px;
+  height: 72px; /* Altura fija para evitar reescalado */
   width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .pictogram-box {
@@ -241,23 +256,42 @@
 }
 
 /* =============================================================================
-   TOAST (mensajes de error/éxito)
+   TOAST
    ========================================================================== */
 
-.toast::part(container) {
-  background-color: #f44336;
-  border-radius: 4px;
-}
-
-.toast {
-  margin: 850px auto auto auto;
+ion-toast {
+  --background: #f44336;
+  --color: white;
 }
 
 /* =============================================================================
-   MODAL DE SELECCIÓN DE PICTOGRAMAS
+   PICKER FLOTANTE DE PICTOGRAMAS (reemplaza IonModal)
    ========================================================================== */
 
-.picto-modal-header {
+.picto-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  z-index: 1000;
+  padding-top: 60px;
+}
+
+.picto-picker {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  max-height: 70vh;
+  overflow: hidden;
+  min-width: 280px;
+}
+
+.picto-picker-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -265,11 +299,19 @@
   border-bottom: 1px solid #eee;
 }
 
+.picto-picker-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
 .picto-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   padding: 1rem;
+  max-height: calc(70vh - 60px);
+  overflow-y: auto;
 }
 
 .picto-option {
@@ -299,13 +341,72 @@
 }
 
 /* =============================================================================
-   ESTILOS DEL POPOVER DE AVATAR
+   ESTILOS DEL POPOVER DE AVATAR (CORREGIDOS Y FORZADOS)
    ========================================================================== */
 
 .avatar-popover {
-  --width: 280px;
   --max-height: 200px;
   --border-radius: 12px;
   --box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   --background: white;
 }
+
+/* ============================================================================= */
+/* ESTILOS ESPECÍFICOS PARA CENTRAR TEXTO EN ION-SELECT POPOVER */
+/* ============================================================================= */
+
+/* Forzar el texto del select a centrarse */
+.avatar-select::part(text),
+.avatar-select::part(placeholder) {
+  text-align: center;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Eliminar padding innecesario en el wrapper interno del select */
+.avatar-select .select-wrapper {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  justify-content: center;
+}
+
+/* Asegurar que el contenido del select esté centrado */
+.avatar-select .select-placeholder,
+.avatar-select .select-text {
+  text-align: center;
+  width: 100%;
+}
+
+/* Corregir el ícono de flecha para que no afecte el centro */
+.avatar-select::part(icon) {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #50BFE6;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.avatar-select {
+  --background: white;
+  --border-radius: 20px;
+  --padding-start: 1rem;
+  --padding-end: 2.5rem;
+  --placeholder-color: #888;
+  --icon-color: #50BFE6;
+  --color: #333;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  text-align: center;
+  /* Añadido: asegura que el contenido interno no se desplace */
+  overflow: visible;
+}
+
+
