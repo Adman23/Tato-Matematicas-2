@@ -8,16 +8,14 @@ import {
   IonButton,
   IonIcon,
   IonToast,
-  IonSelect,
-  IonSelectOption,
   IonImg,
+  IonText,
 } from '@ionic/react';
 import { personOutline, addOutline, closeOutline } from 'ionicons/icons';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-// ✅ MISMO ARRAY DE PICTOGRAMAS QUE EN StudentLoginStep3.tsx
 const PICTOGRAMS = [
   { id: 'perro', name: 'Perro', image: '/assets/pictograms/perro.png' },
   { id: 'gato', name: 'Gato', image: '/assets/pictograms/gato.png' },
@@ -34,8 +32,9 @@ export default function StudentRegister() {
   const { registerStudent } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const pictoContainerRef = useRef<HTMLDivElement>(null);
   const pictoPickerRef = useRef<HTMLDivElement>(null);
+  const avatarPickerRef = useRef<HTMLDivElement>(null);
+  const formCardRef = useRef<HTMLDivElement>(null);
 
   const [fullName, setFullName] = useState('');
   const [userName, setUserName] = useState('');
@@ -43,10 +42,12 @@ export default function StudentRegister() {
   const [avatarPreview, setAvatarPreview] = useState<string>('/assets/perfiles/Perfil.png');
   const [pictograms, setPictograms] = useState<string[]>([]);
 
-  // Picker flotante de pictogramas
   const [showPictoModal, setShowPictoModal] = useState(false);
+  const [isPictoModalVisible, setIsPictoModalVisible] = useState(false);
 
-  // Toast
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
+
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
@@ -97,7 +98,7 @@ export default function StudentRegister() {
     }
 
     try {
-      const password = pictograms.join('-'); // ej: "perro-gato"
+      const password = pictograms.join('-');
 
       await registerStudent({
         full_name: fullName,
@@ -124,9 +125,32 @@ export default function StudentRegister() {
     }
   };
 
+  // === PICTOGRAMAS ===
+  const openPictoModal = () => {
+    setShowPictoModal(true);
+    requestAnimationFrame(() => {
+      setIsPictoModalVisible(true);
+    });
+  };
+
+  const closePictoModal = () => {
+    setIsPictoModalVisible(false);
+    setTimeout(() => {
+      setShowPictoModal(false);
+    }, 200);
+  };
+
+  const selectPictogram = (id: string) => {
+    const newPictograms = [...pictograms, id];
+    setPictograms(newPictograms);
+    if (newPictograms.length >= MAX_PICTOGRAMS) {
+      closePictoModal();
+    }
+  };
+
   const handleAddPictogram = () => {
     if (pictograms.length < MAX_PICTOGRAMS) {
-      setShowPictoModal(true);
+      openPictoModal();
     } else {
       setToastMessage(`Máximo ${MAX_PICTOGRAMS} pictogramas permitidos`);
       setToastColor('danger');
@@ -134,28 +158,17 @@ export default function StudentRegister() {
     }
   };
 
-  const selectPictogram = (id: string) => {
-    const newPictograms = [...pictograms, id];
-    setPictograms(newPictograms);
-
-    // Cerrar el picker solo si ya se alcanzó el máximo
-    if (newPictograms.length >= MAX_PICTOGRAMS) {
-      setShowPictoModal(false);
-    }
-  };
-
   const removePictogram = (index: number) => {
     setPictograms(pictograms.filter((_, i) => i !== index));
   };
 
+  // === AVATAR ===
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-
       if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
         URL.revokeObjectURL(avatarPreview);
       }
-
       setSelectedAvatar(file.name);
       setAvatarPreview(URL.createObjectURL(file));
     }
@@ -165,47 +178,93 @@ export default function StudentRegister() {
     if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
       URL.revokeObjectURL(avatarPreview);
     }
-
     setSelectedAvatar(avatarId);
     setAvatarPreview(`/assets/perfiles/${avatarId}`);
+    closeAvatarModal();
   };
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
 
-  // Posicionar el picker justo debajo del campo de pictogramas
-  useEffect(() => {
-    if (showPictoModal && pictoContainerRef.current && pictoPickerRef.current) {
-      const containerRect = pictoContainerRef.current.getBoundingClientRect();
-      const picker = pictoPickerRef.current;
+  const openAvatarModal = () => {
+    setShowAvatarModal(true);
+    requestAnimationFrame(() => {
+      setIsAvatarModalVisible(true);
+    });
+  };
 
-      picker.style.position = 'absolute';
-      picker.style.left = `${containerRect.left}px`;
-      picker.style.top = `${containerRect.bottom + 8}px`;
-      picker.style.width = `${containerRect.width}px`;
-      picker.style.zIndex = '1001';
+  const closeAvatarModal = () => {
+    setIsAvatarModalVisible(false);
+    setTimeout(() => {
+      setShowAvatarModal(false);
+    }, 200);
+  };
+
+  // === POSICIONAMIENTO MODAL PICTOGRAMAS ===
+  const updatePictoModalPosition = useCallback(() => {
+    if (showPictoModal && formCardRef.current && pictoPickerRef.current) {
+      const cardRect = formCardRef.current.getBoundingClientRect();
+      const modal = pictoPickerRef.current;
+      // ✅ Reducido de 0.7 a 0.6 para no tapar "Código acceso *"
+      const modalHeight = Math.min(cardRect.height * 0.62, 360); // máximo 360px
+      modal.style.position = 'fixed';
+      modal.style.left = `${cardRect.left + window.scrollX}px`;
+      modal.style.top = `${cardRect.top + window.scrollY}px`;
+      modal.style.width = `${cardRect.width}px`;
+      modal.style.height = `${modalHeight}px`;
+      modal.style.zIndex = '1001';
     }
   }, [showPictoModal]);
 
-  // Limpiar URL de avatar personalizado al desmontar
-  useEffect(() => {
-    return () => {
-      if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
-        URL.revokeObjectURL(avatarPreview);
-      }
-    };
-  }, [avatarPreview]);
+  useLayoutEffect(() => {
+    if (showPictoModal) {
+      const id = requestAnimationFrame(updatePictoModalPosition);
+      const handleResize = () => updatePictoModalPosition();
+      window.addEventListener('resize', handleResize);
+      return () => {
+        cancelAnimationFrame(id);
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, [showPictoModal, updatePictoModalPosition]);
+
+  // === POSICIONAMIENTO MODAL AVATAR ===
+  const updateAvatarModalPosition = useCallback(() => {
+    if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
+      const cardRect = formCardRef.current.getBoundingClientRect();
+      const modal = avatarPickerRef.current;
+      modal.style.position = 'fixed';
+      modal.style.left = `${cardRect.left + window.scrollX}px`;
+      modal.style.top = `${cardRect.top + window.scrollY}px`;
+      modal.style.width = `${cardRect.width}px`;
+      modal.style.height = `${cardRect.height}px`;
+      modal.style.zIndex = '1002';
+    }
+  }, [showAvatarModal]);
+
+  useLayoutEffect(() => {
+    if (showAvatarModal) {
+      const id = requestAnimationFrame(updateAvatarModalPosition);
+      const handleResize = () => updateAvatarModalPosition();
+      window.addEventListener('resize', handleResize);
+      return () => {
+        cancelAnimationFrame(id);
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, [showAvatarModal, updateAvatarModalPosition]);
+
+  const avatarDisplayName = AVATAR_OPTIONS.find(a => a.id === selectedAvatar)?.name || 'Selecciona un avatar...';
 
   return (
     <IonPage>
       <div className="main-container">
         <h1>Tato matemáticas 2</h1>
 
-        <div className="form-card">
+        <div className="form-card" ref={formCardRef}>
           <h2>Registro Alumno</h2>
 
-          {/* Avatar */}
           <div className="avatar-section">
             <div className="avatar-preview" onClick={triggerFileInput}>
               {avatarPreview ? (
@@ -217,28 +276,12 @@ export default function StudentRegister() {
 
             <div className="field-wrapper">
               <div className="field-label">Avatar *</div>
-              <IonSelect
-                value={selectedAvatar}
-                onIonChange={(e) => handleAvatarSelect(e.detail.value)}
-                placeholder="Seleccionar avatar"
-                interface="popover"
-                interfaceOptions={{
-                  alignment: 'center',
-                  showBackdrop: false,
-                  cssClass: 'avatar-popover'
-                }}
-                className="avatar-select"
-              >
-                {AVATAR_OPTIONS.map((avatar) => (
-                  <IonSelectOption key={avatar.id} value={avatar.id}>
-                    {avatar.name}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
+              <div className="avatar-select-field" onClick={openAvatarModal}>
+                <IonText>{avatarDisplayName}</IonText>
+              </div>
             </div>
           </div>
 
-          {/* Usuario */}
           <div className="field-wrapper">
             <div className="field-label">Usuario *</div>
             <IonInput
@@ -246,14 +289,12 @@ export default function StudentRegister() {
               placeholder="Escribir aquí..."
               value={userName}
               onIonInput={(e) => setUserName(e.detail.value || '')}
-              required
             />
           </div>
 
-          {/* Código acceso */}
           <div className="field-wrapper">
             <div className="field-label">Código acceso *</div>
-            <div className="pictogram-container" ref={pictoContainerRef}>
+            <div className="pictogram-container">
               {pictograms.map((pictoId, index) => {
                 const picto = PICTOGRAMS.find(p => p.id === pictoId);
                 return (
@@ -272,25 +313,26 @@ export default function StudentRegister() {
             </div>
           </div>
 
-          {/* Botón Confirmar */}
           <div className="field-wrapper">
-            <IonButton expand="block" type="submit" className="confirm-button" onClick={handleSubmit}>
+            <IonButton expand="block" className="confirm-button" onClick={handleSubmit}>
               Confirmar
             </IonButton>
           </div>
         </div>
 
-        {/* Picker flotante de pictogramas */}
+        {/* Modal de pictogramas - tapa parte superior del formulario */}
         {showPictoModal && (
-          <div className="picto-picker-overlay" onClick={() => setShowPictoModal(false)}>
+          <div className="picto-picker-overlay" onClick={closePictoModal}>
             <div
-              className="picto-picker"
-              onClick={(e) => e.stopPropagation()}
               ref={pictoPickerRef}
+              className={`picto-picker-custom ${
+                isPictoModalVisible ? 'picto-picker-visible' : ''
+              }`}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="picto-picker-header">
                 <h3>Selecciona un pictograma</h3>
-                <IonButton fill="clear" size="small" onClick={() => setShowPictoModal(false)}>
+                <IonButton fill="clear" size="small" onClick={closePictoModal}>
                   Cerrar
                 </IonButton>
               </div>
@@ -306,7 +348,38 @@ export default function StudentRegister() {
           </div>
         )}
 
-        {/* Input oculto para avatar */}
+        {/* Modal de avatares - tapa todo el formulario */}
+        {showAvatarModal && (
+          <div className="avatar-picker-overlay" onClick={closeAvatarModal}>
+            <div
+              ref={avatarPickerRef}
+              className={`avatar-picker ${
+                isAvatarModalVisible ? 'avatar-picker-visible' : ''
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="picto-picker-header">
+                <h3>Selecciona un avatar</h3>
+                <IonButton fill="clear" size="small" onClick={closeAvatarModal}>
+                  Cerrar
+                </IonButton>
+              </div>
+              <div className="picto-grid">
+                {AVATAR_OPTIONS.map((avatar) => (
+                  <div
+                    key={avatar.id}
+                    className="picto-option"
+                    onClick={() => handleAvatarSelect(avatar.id)}
+                  >
+                    <IonImg src={avatar.image} alt={avatar.name} />
+                    <span>{avatar.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         <input
           type="file"
           accept="image/*"

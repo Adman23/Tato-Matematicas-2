@@ -6,40 +6,58 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem;
   font-family: 'Atkinson Hyperlegible', sans-serif;
   background-color: #ffffff;
   min-height: 100vh;
+  position: relative;
 }
 
 .main-container h1 {
   color: #000000;
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.8rem;
   margin-bottom: 1rem;
 }
 
+@media (min-width: 768px) {
+  .main-container h1 {
+    font-size: 2rem;
+  }
+}
+
 /* =============================================================================
-   TARJETA DEL FORMULARIO (fondo azul)
+   TARJETA DEL FORMULARIO
    ========================================================================== */
 
 .form-card {
-  width: 90%;
+  width: 95%;
   max-width: 400px;
   background-color: #50BFE6;
   border-radius: 24px;
-  padding: 2rem;
+  padding: 1.8rem 1.5rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .form-card h2 {
   text-align: center;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin: 0 0 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .form-card {
+    padding: 2rem;
+  }
+  .form-card h2 {
+    font-size: 1.5rem;
+  }
 }
 
 /* =============================================================================
@@ -57,8 +75,8 @@
 .avatar-preview {
   width: 4rem;
   height: 4rem;
-  border: 2px solid black; /* ✅ Borde negro */
-  border-radius: 5px; /* ✅ Forma cuadrada (sin redondeo) */
+  border: 2px solid black;
+  border-radius: 5px;
   overflow: hidden;
   cursor: pointer;
   display: flex;
@@ -77,7 +95,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block; /* evita espacios extra si hay line-height */
+  display: block;
 }
 
 .avatar-icon {
@@ -86,7 +104,7 @@
 }
 
 /* =============================================================================
-   ESTILOS COMUNES PARA TODOS LOS CAMPOS
+   CAMPOS COMUNES
    ========================================================================== */
 
 .field-wrapper {
@@ -105,49 +123,29 @@
   margin: 0;
 }
 
-/* =============================================================================
-   CAMPO DE SELECCIÓN DE AVATAR
-   ========================================================================== */
-
-.avatar-select {
-  --background: white;
-  --border-radius: 20px;
-  --padding-start: 1rem;
-  --padding-end: 2.5rem;
-  --placeholder-color: #888;
-  --icon-color: #50BFE6;
-  --color: #333;
+.avatar-select-field {
+  background: white;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
   width: 100%;
-  position: relative;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 48px;
+  min-height: 48px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #333;
   text-align: center;
-}
-
-.avatar-select::part(text),
-.avatar-select::part(placeholder) {
-  text-align: center;
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: background-color 0.2s;
 }
 
-.avatar-select::part(icon) {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #50BFE6;
-  font-size: 1.2rem;
-  transition: transform 0.2s ease;
+.avatar-select-field:hover {
+  background-color: #e2e2e2;
 }
-
-/* =============================================================================
-   CAMPO DE TEXTO PARA USUARIO
-   ========================================================================== */
 
 .input-item {
   --background: white;
@@ -168,7 +166,7 @@
 }
 
 /* =============================================================================
-   SECCIÓN DE CÓDIGO DE ACCESO (pictogramas)
+   PICTOGRAMAS (vista previa)
    ========================================================================== */
 
 .pictogram-container {
@@ -178,7 +176,7 @@
   background-color: white;
   border-radius: 20px;
   padding: 0.5rem 1rem;
-  height: 72px; /* Altura fija para evitar reescalado */
+  height: 72px;
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
@@ -238,7 +236,7 @@
 }
 
 /* =============================================================================
-   BOTÓN DE CONFIRMAR
+   BOTÓN
    ========================================================================== */
 
 .confirm-button {
@@ -265,37 +263,83 @@ ion-toast {
 }
 
 /* =============================================================================
-   PICKER FLOTANTE DE PICTOGRAMAS (reemplaza IonModal)
+   MODAL DE PICTOGRAMAS - tapa parte superior del formulario
    ========================================================================== */
 
 .picto-picker-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.25);
+  width: 100%;
+  height: 100%;
+  background: transparent;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
+  padding-top: env(safe-area-inset-top);
   z-index: 1000;
-  padding-top: 60px;
 }
 
-.picto-picker {
+.picto-picker-custom {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  max-height: 70vh;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  min-width: 280px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
 }
+
+.picto-picker-custom.picto-picker-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* =============================================================================
+   MODAL DE AVATAR - tapa todo el formulario
+   ========================================================================== */
+
+.avatar-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.avatar-picker {
+  background: white;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.avatar-picker.avatar-picker-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* =============================================================================
+   ESTILOS COMPARTIDOS POR AMBOS MODALES
+   ========================================================================== */
 
 .picto-picker-header {
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
   border-bottom: 1px solid #eee;
 }
 
@@ -308,105 +352,30 @@ ion-toast {
 .picto-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  padding: 1rem;
-  max-height: calc(70vh - 60px);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 16px;
+  padding: 16px;
   overflow-y: auto;
+  flex: 1;
+  place-items: center;
 }
 
 .picto-option {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 12px;
-  transition: background-color 0.2s;
-}
-
-.picto-option:hover {
-  background-color: #f0f9ff;
+  text-align: center;
 }
 
 .picto-option ion-img {
   width: 60px;
   height: 60px;
   object-fit: contain;
+  margin-bottom: 4px;
 }
 
 .picto-option span {
-  font-size: 0.8rem;
+  font-size: 12px;
   color: #333;
 }
-
-/* =============================================================================
-   ESTILOS DEL POPOVER DE AVATAR (CORREGIDOS Y FORZADOS)
-   ========================================================================== */
-
-.avatar-popover {
-  --max-height: 200px;
-  --border-radius: 12px;
-  --box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  --background: white;
-}
-
-/* ============================================================================= */
-/* ESTILOS ESPECÍFICOS PARA CENTRAR TEXTO EN ION-SELECT POPOVER */
-/* ============================================================================= */
-
-/* Forzar el texto del select a centrarse */
-.avatar-select::part(text),
-.avatar-select::part(placeholder) {
-  text-align: center;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Eliminar padding innecesario en el wrapper interno del select */
-.avatar-select .select-wrapper {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  justify-content: center;
-}
-
-/* Asegurar que el contenido del select esté centrado */
-.avatar-select .select-placeholder,
-.avatar-select .select-text {
-  text-align: center;
-  width: 100%;
-}
-
-/* Corregir el ícono de flecha para que no afecte el centro */
-.avatar-select::part(icon) {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #50BFE6;
-  font-size: 1.2rem;
-  transition: transform 0.2s ease;
-}
-
-.avatar-select {
-  --background: white;
-  --border-radius: 20px;
-  --padding-start: 1rem;
-  --padding-end: 2.5rem;
-  --placeholder-color: #888;
-  --icon-color: #50BFE6;
-  --color: #333;
-  width: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  text-align: center;
-  /* Añadido: asegura que el contenido interno no se desplace */
-  overflow: visible;
-}
-
-
