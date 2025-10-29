@@ -209,17 +209,46 @@ async def username_exists(username: str):
     """
     Comprueba si existe un usuario con el username dado en la tabla public.users.
 
-    Busca por la columna `username` en `users` y devuelve { exists: bool }.
+    Busca por email en auth.users y toma el username del correo, y devuelve { exists: bool }.
     """
     try:
-        # Buscamos en la tabla pública `users` por la columna `username`.
-        response = supabase_admin.table("users")\
-            .select("id")\
-            .ilike("username", username)\
-            .limit(1)\
-            .execute()
 
-        exists = bool(response.data and len(response.data) > 0)
+        # Use the admin API to list auth users and check for the email that
+        # corresponds to the provided username (the part before the @)
+        try:
+            users = supabase_admin.auth.admin.list_users(page=1, per_page=1000)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error fetching auth users: {str(e)}"
+            )
+
+        exists = False
+        if users:
+            for u in users:
+                # Try attribute access first
+                try:
+                    user_email = getattr(u, "email", None)
+                except Exception:
+                    user_email = None
+
+                # If it's a dict-like
+                if not user_email and isinstance(u, dict):
+                    user_email = u.get("email")
+
+                if not user_email:
+                    continue
+
+                # Derive username from the auth email (part before @)
+                try:
+                    username_from_email = user_email.split("@")[0]
+                except Exception:
+                    continue
+
+                if username_from_email and username_from_email.lower() == username.lower():
+                    exists = True
+                    break
+
         return ExistsResponse(exists=exists)
 
     except Exception as e:
