@@ -10,11 +10,13 @@ Incluye:
     - Inclusión de routers (por ejemplo, autenticación).
     - Rutas básicas de estado y diagnóstico (raíz y health check).
 """
+
 from fastapi import FastAPI, status as http_status
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .routers import auth
 from .services.supabase import supabase
+from .services.supabase import supabase_admin
 
 # === Inicialización de la aplicación ===
 
@@ -25,7 +27,7 @@ from .services.supabase import supabase
 app = FastAPI(
     title="TatoMaths API",
     description="API para la aplicación TatoMaths - Juegos educativos accesibles",
-    version="1.0.0"
+    version="1.1.0"
 ) 
 
 # === Configuración de CORS ===
@@ -64,7 +66,7 @@ def read_root():
     return {
         "message": "TatoMaths API ",
         "status": "online",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "docs": "/docs"
     }
 
@@ -95,8 +97,8 @@ def health_check():
     # Intentar verificar la conexión a la base de datos
     try:
         # Realizar una consulta simple para verificar conectividad
-        # Intentamos obtener el primer registro de user_profiles (o cualquier tabla)
-        response = supabase.table("user_profiles").select("id").limit(1).execute()
+        # Intentamos obtener el primer registro de users (o cualquier tabla)
+        response = supabase_admin.table("users").select("id").limit(1).execute()
 
         # Si no hay error, la BD está operativa
         db_status = "operational"
@@ -111,9 +113,10 @@ def health_check():
 
     return {
         "status": overall_status,
-        "version": "1.0.0",
+        "version": "1.1.0",
         "services": {
             "api": "operational",
-            "database": db_status
+            "database": db_status,
+            "response": response
         }
     }
