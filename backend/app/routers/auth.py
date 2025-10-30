@@ -57,17 +57,19 @@ async def register( data: RegisterRequest,
             "email_confirm": True,
             "options": {
                 "data":{
-                    "role": data.role
+                    "role": data.role,
+                    "photo_url": data.photo_url,
                     # Add other user metadata for public.users tuple
                 }
             }
         })
 
-        # Returns user
+        # Returns user without password
         return User(
             id=new_user.user.id,
             username=data.username,
-            role=data.role
+            role=data.role,
+            photo_url=data.photo_url
         )
 
     except Exception as e:
