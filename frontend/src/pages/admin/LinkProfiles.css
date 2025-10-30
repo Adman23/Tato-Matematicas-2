@@ -1,0 +1,67 @@
+.LinkProfiles-items {
+
+    border: 3px solid #50BFE6;
+    overflow-y: auto;
+    border-radius: 20px;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.LinkProfiles-tables {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    text-align: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+
+    flex-grow: 1;
+
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 0;
+    margin-bottom: 20px;
+}
+
+.LinkProfiles-title {
+    font-family: var(--ion-font-family);
+    color: var(--ion-color-primary);
+    margin-bottom: 10px;
+}
+
+.LinkProfiles-table {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-grow: 1 1;
+    width: 40%;
+}
+
+/*
+Botones
+*/
+ion-button.LinkProfiles-button::part(native) {
+    width: 170px;
+    height: 48px;
+    background-color: var(--ion-color-primary);
+    color: white;
+    border-radius: 40px;
+    border: none;
+    font-family: var(--ion-font-family);
+    font-weight: var(--ion-weight-regular);
+    box-shadow: none;
+}
+
+ion-button.LinkProfiles-button::part(native):hover {
+    background-color: var(--ion-color-light);
+}
+
+.LinkProfiles-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    padding-bottom: 20px;
+}

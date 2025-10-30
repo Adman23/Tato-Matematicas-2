@@ -69,6 +69,7 @@ export default function App() {
 
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+
             <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin-dashboard" exact component={AdminDashboard} />
             <Route path="/admin/:tipo" exact component={userManagement} />
