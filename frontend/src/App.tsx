@@ -62,8 +62,8 @@ export default function App() {
             <Route path="/student-login" exact component={StudentLogin} />
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
-            <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
-            <Route path="/admin-dashboard" exact component={AdminDashboard} />
+            <Route path="/admin/link-profiles" exact component={LinkProfiles} />
+            <Route path="/admin" exact component={AdminDashboard} />
             <Route path="/admin-teacher-management" exact component={teacherManagement} />
             <Redirect to="/" />
           </IonRouterOutlet>
