@@ -5,7 +5,6 @@ import {
     IonHeader,
     IonButtons,
     IonIcon,
-    IonAvatar
 
 } from '@ionic/react';
 

@@ -13,19 +13,15 @@
 
 import {
   IonPage,
+  IonContent,
+  IonButton,
+  IonSpinner,
   IonHeader,
   IonToolbar,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardContent,
-  IonButton,
-  IonIcon,
-  IonSpinner,
 } from '@ionic/react';
-import { gameControllerOutline, trophyOutline, logOutOutline } from 'ionicons/icons';
 import { Redirect, useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import '../auth/StudentLogin.css';
 
 /**
  * Componente funcional que representa el panel del estudiante.
@@ -78,93 +74,63 @@ export default function StudentDashboard() {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="secondary">
-          <IonTitle>TatoMaths - {student.username || student.name}</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+        <IonToolbar>          {/* Fila de botones superior */}
+          <div className="student-button-row">
 
-      <IonContent className="ion-padding">
-        <div style={{ maxWidth: '800px', margin: '40px auto' }}>
-          {/* Bienvenida */}
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-            {student.photo_url ? (
+
+            {/* Botón Perfil/Usuario */}
+            <IonButton
+              fill="clear"
+              className="default-action-button"
+              onClick={() => {/* TODO: Implementar perfil */ }}
+              aria-label="Perfil"
+            >
               <img
-                src={student.photo_url}
-                alt={student.username || student.name}
-                style={{
-                  width: '120px',
-                  height: '120px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: '4px solid var(--ion-color-secondary)',
-                  marginBottom: '16px'
-                }}
+                src="/assets/pictograms/user_default.png"
+                alt="Perfil"
+                className="student-boton-imagen"
               />
-            ) : (
-              <div
-                style={{
-                  width: '120px',
-                  height: '120px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--ion-color-secondary)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '48px',
-                  marginBottom: '16px',
-                  color: 'white'
-                }}
-              >
-                {(student.username || student.name).charAt(0).toUpperCase()}
-              </div>
-            )}
-            <h1 style={{ fontSize: '32px', margin: '0 0 8px 0' }}>
+            </IonButton>
+
+            {/* Botón Logout - cierra sesión */}
+            <IonButton
+              fill="clear"
+              className="default-action-button"
+              onClick={handleLogout}
+              disabled={loading}
+              aria-label="Cerrar sesión"
+            >
+              <img
+                src="/assets/pictograms/boton_borrar.png"
+                alt="Cerrar sesión"
+                className="student-boton-imagen"
+              />
+            </IonButton>
+          </div>
+
+        </IonToolbar>
+
+      </IonHeader>
+      <IonContent className="student-login-content">
+        <div className="student-login-container">
+
+
+
+          {/* Título */}
+          <div className="student-login-header">
+            <h1 className="student-login-title">
               ¡Hola, {student.username || student.name}!
             </h1>
-            <p style={{ color: 'var(--ion-color-medium)', fontSize: '18px' }}>
-              ¿Qué quieres hacer hoy?
+            <p className="student-login-subtitle">
+              Bienvenido a TatoMaths
             </p>
           </div>
 
-          {/* Opciones de juegos */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-            <IonCard button style={{ margin: 0 }}>
-              <IonCardContent style={{ padding: '32px', textAlign: 'center' }}>
-                <IonIcon
-                  icon={gameControllerOutline}
-                  style={{ fontSize: '64px', color: 'var(--ion-color-primary)' }}
-                />
-                <h2 style={{ margin: '16px 0 8px 0' }}>Jugar</h2>
-                <p style={{ margin: 0, color: 'var(--ion-color-medium)', fontSize: '14px' }}>
-                  Juegos de matemáticas
-                </p>
-              </IonCardContent>
-            </IonCard>
-
-            <IonCard button style={{ margin: 0 }}>
-              <IonCardContent style={{ padding: '32px', textAlign: 'center' }}>
-                <IonIcon
-                  icon={trophyOutline}
-                  style={{ fontSize: '64px', color: 'var(--ion-color-warning)' }}
-                />
-                <h2 style={{ margin: '16px 0 8px 0' }}>Mi Progreso</h2>
-                <p style={{ margin: 0, color: 'var(--ion-color-medium)', fontSize: '14px' }}>
-                  Ver mis logros
-                </p>
-              </IonCardContent>
-            </IonCard>
+          {/* Contenido del dashboard - TODO: Agregar secciones de juegos, progreso, etc. */}
+          <div className="student-dashboard-content">
+            <p>Dashboard en construcción...</p>
           </div>
 
-          {/* Botón de salir */}
-          <IonButton
-            expand="block"
-            color="medium"
-            onClick={handleLogout}
-            size="large"
-          >
-            <IonIcon icon={logOutOutline} slot="start" />
-            Salir
-          </IonButton>
         </div>
       </IonContent>
     </IonPage>

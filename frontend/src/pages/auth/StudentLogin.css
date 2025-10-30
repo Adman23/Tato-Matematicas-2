@@ -22,6 +22,12 @@
 /* ========================================
    BOTONES DE NAVEGACIÓN
    ======================================== */
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 
 .student-button-row {
   display: flex;
@@ -34,63 +40,55 @@
 }
 
 /* Estilos comunes para todos los botones de navegación */
-.student-volver-boton,
-.student-avance-boton,
-.student-borrar-boton {
+.default-action-button{
   --padding-start: 0;
   --padding-end: 0;
   flex-shrink: 0;
+  height: auto;
+
 }
 
-.student-volver-boton::part(native),
-.student-avance-boton::part(native),
-.student-borrar-boton::part(native) {
+.default-action-button::part(native){
+  display: flex;             /* añade display flex */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;                  /* espacio icono-texto */
   border-radius: 16px;
   padding: 0.5rem;
 }
 
-.student-volver-boton::part(native):hover,
-.student-volver-boton::part(native):focus-visible,
-.student-avance-boton::part(native):hover,
-.student-avance-boton::part(native):focus-visible,
-.student-borrar-boton::part(native):hover,
-.student-borrar-boton::part(native):focus-visible {
+.default-action-button::part(native):hover,
+.default-action-button::part(native):focus-visible {
   background-color: var(--ion-color-primary);
 }
 
-.student-volver-boton {
+.default-action-button {
   margin: 0;
   width: 80px;
   height: 80px;
 }
 
-.student-login-container > .student-volver-boton {
+.student-login-container > .default-action-button {
   margin: 20px;
 }
 
-.student-avance-boton {
-  width: 80px;
-  height: 80px;
-  background: transparent;
-}
-
-.student-borrar-boton {
-  width: 100px;
-  height: 100px;
-}
 
 .student-boton-imagen {
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   object-fit: contain;
 }
 
-.student-actions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-right: 12px;
+.default-action-button-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.1;
+  text-align: center;
+  pointer-events: none; /* evita interferencias con el clic */
 }
+
 
 /* ========================================
    HEADER
@@ -492,18 +490,12 @@
     border-width: 5px;
   }
 
-  .student-borrar-boton {
-    width: 80px;
-    height: 80px;
-  }
-
-  .student-volver-boton,
-  .student-avance-boton {
+  .default-action-button{
     width: 65px;
     height: 65px;
   }
 
-  .student-login-container > .student-volver-boton {
+  .student-login-container > .default-action-button {
     margin: 15px;
   }
 }
@@ -549,18 +541,13 @@
     border-radius: 10px;
   }
 
-  .student-borrar-boton {
-    width: 70px;
-    height: 70px;
-  }
 
-  .student-volver-boton,
-  .student-avance-boton {
+  .default-action-button{
     width: 55px;
     height: 55px;
   }
 
-  .student-login-container > .student-volver-boton {
+  .student-login-container > .default-action-button {
     margin: 12px;
   }
 
@@ -661,18 +648,12 @@
     font-size: 0.9rem;
   }
 
-  .student-borrar-boton {
-    width: 65px;
-    height: 65px;
-  }
-
-  .student-volver-boton,
-  .student-avance-boton {
+  .default-action-button{
     width: 45px;
     height: 45px;
   }
 
-  .student-login-container > .student-volver-boton {
+  .student-login-container > .default-action-button {
     margin: 8px;
   }
 
@@ -748,18 +729,12 @@
     border-radius: 6px;
   }
 
-  .student-borrar-boton {
+  .default-action-button{
     width: 50px;
     height: 50px;
   }
 
-  .student-volver-boton,
-  .student-avance-boton {
-    width: 50px;
-    height: 50px;
-  }
-
-  .student-login-container > .student-volver-boton {
+  .student-login-container > .default-action-button {
     margin: 6px;
   }
 
