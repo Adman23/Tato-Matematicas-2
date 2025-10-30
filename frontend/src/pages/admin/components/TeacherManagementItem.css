@@ -1,0 +1,63 @@
+.teacherManagementItem-item{
+
+    --padding-start: 12px;
+    --inner-padding-end: 12px;
+}
+
+.teacherManagementItem-mainContainer{
+
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px 15px;
+    border-bottom: 1px solid gray;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.teacherManagementItem-avatar{
+
+    width: 56px;
+    height: 56px;
+    overflow: hidden;
+    min-width: 56px;
+    min-height: 56px;
+    border-radius: 50%;
+}
+
+.teacherManagementItem-avatar img{
+
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin: 0;
+}
+
+.teacherManagementItem-name{
+
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+ion-button.teacherManagementItme-EditButton::part(native){
+
+    background-color: white;
+    --width: 20px;
+    --height: 20px;
+    border-radius: 10px;
+    border: 2px solid #50BFE6;
+    box-shadow: none;
+    padding: 3px 3px;
+}
+
+ion-button.teacherManagementItme-EditButton ion-icon{
+
+    color: #50BFE6;
+    background-color: white;
+    width: 30px;
+    height: 30px;
+}

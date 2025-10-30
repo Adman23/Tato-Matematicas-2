@@ -18,6 +18,8 @@ from .routers import auth
 from .services.supabase import supabase
 from .services.supabase import supabase_admin
 
+from .routers import admin
+
 # === Inicialización de la aplicación ===
 
 #: Instancia principal de la aplicación FastAPI.
@@ -120,3 +122,5 @@ def health_check():
             "response": response
         }
     }
+
+app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
