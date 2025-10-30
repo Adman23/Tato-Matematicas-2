@@ -13,7 +13,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authAPI } from '../lib/api';
-import type { User, Student, LoginData, RegisterData, StudentRegisterData, StudentLoginData } from '../lib/api';
+import type { User, Student, LoginData, RegisterData, StudentLoginData } from '../lib/api';
 
 /**
  * Estructura del contexto de autenticación.
@@ -26,7 +26,6 @@ interface AuthContextType {
   login: (data: LoginData) => Promise<void>;
   loginStudent: (data: StudentLoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  registerStudent: (data: StudentRegisterData) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   isStudent: boolean;
@@ -140,19 +139,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   /**
-   * Registra un nuevo alumno.
-   * Deja la sesión iniciada tras el registro.
-   */
-  const registerStudent = async (data: StudentRegisterData) => {
-    const response = await authAPI.registerStudent(data);
-    localStorage.setItem('access_token', response.access_token);
-    localStorage.setItem('student', JSON.stringify(response.student));
-    localStorage.setItem('student_id', response.student.id);
-    setStudent(response.student);
-    setUser(null); // Asegurar que no hay estudiante activo
-  };
-
-  /**
    * Cierra sesión (usuario o estudiante).
    * Limpia localStorage y estado local.
    */
@@ -188,7 +174,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         loginStudent,
         register,
-        registerStudent,
         logout,
         isAuthenticated: !!user || !!student,
         isStudent: !!student,

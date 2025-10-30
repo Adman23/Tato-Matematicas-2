@@ -129,20 +129,8 @@ export interface StudentAuthResponse {
  */
 export interface RegisterData {
   username: string;
-  email: string;
   password: string;
-  full_name: string;
-  role: 'admin' | 'tutor';
-}
-
-/**
- * Datos requeridos para registrar un nuevo usuario.
- */
-export interface StudentRegisterData {
-  full_name: string;
-  username: string;
-  password: string;        
-  group_id: string;        
+  role: 'admin' | 'teacher' | 'student';
 }
 
 /**
@@ -193,11 +181,6 @@ export const authAPI = {
    */
   register: async (data: RegisterData): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
-  },
-
-  registerStudent: async (data: StudentRegisterData): Promise<StudentAuthResponse> => {
-    const response = await api.post<StudentAuthResponse>('/auth/student/register', data);
     return response.data;
   },
 

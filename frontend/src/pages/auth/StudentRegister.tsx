@@ -15,6 +15,9 @@ import { personOutline, addOutline, closeOutline } from 'ionicons/icons';
 import { useState, useRef, useLayoutEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { setupIonicReact } from '@ionic/react';
+setupIonicReact();
+
 
 const PICTOGRAMS = [
   { id: 'perro', name: 'Perro', image: '/assets/pictograms/perro.png' },
@@ -22,14 +25,13 @@ const PICTOGRAMS = [
   { id: 'tortuga', name: 'Tortuga', image: '/assets/pictograms/tortuga.png' },
   { id: 'león', name: 'León', image: '/assets/pictograms/león.png' },
   { id: 'elefante', name: 'Elefante', image: '/assets/pictograms/elefante.png' },
-  { id: 'mariquita', name: 'Mariquita', image: '/assets/pictograms/mariquita.png' },
 ];
 
 const MAX_PICTOGRAMS = 3;
 
 export default function StudentRegister() {
   const history = useHistory();
-  const { registerStudent } = useAuth();
+  const { register } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pictoPickerRef = useRef<HTMLDivElement>(null);
@@ -100,11 +102,10 @@ export default function StudentRegister() {
     try {
       const password = pictograms.join('-');
 
-      await registerStudent({
-        full_name: fullName,
+      await register({
         username: userName,
         password: password,
-        group_id: '1',
+        role: "student",
       });
 
       setToastMessage('Estudiante registrado correctamente 🎉');
