@@ -14,8 +14,6 @@
 
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
   IonContent,
   IonButton,
   IonText,
@@ -67,17 +65,17 @@ export default function StudentLoginStep3() {
  * Añade un pictograma a la secuencia seleccionada.
  * @param pictogramId Identificador del pictograma elegido.
  */
-// Añade un pictograma si no se ha alcanzado el máximo
-const addPicto = (pictogramId: string) => {
-  setSelected(prev => {
-    if (prev.length >= MAX_LENGTH) {
-      setError(`Máximo ${MAX_LENGTH} imágenes`);
-      return prev; // no añade más
-    }
-    setError('');
-    return [...prev, pictogramId];
-  });
-};
+  // Añade un pictograma si no se ha alcanzado el máximo
+  const addPicto = (pictogramId: string) => {
+    setSelected(prev => {
+      if (prev.length >= MAX_LENGTH) {
+        setError(`Máximo ${MAX_LENGTH} imágenes`);
+        return prev; // no añade más
+      }
+      setError('');
+      return [...prev, pictogramId];
+    });
+  };
 
 
   /** Limpia la secuencia actual y cualquier error mostrado. */
@@ -95,7 +93,7 @@ const addPicto = (pictogramId: string) => {
    */
   const handleLogin = async () => {
     // Validación: secuencia incompleta
-    if (selected.length < REQUIRED_LENGTH ) {
+    if (selected.length < REQUIRED_LENGTH) {
       setError('Aún faltan imágenes');
       return;
     }
@@ -128,24 +126,36 @@ const addPicto = (pictogramId: string) => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="secondary">
-        </IonToolbar>
-      </IonHeader>
-
       <IonContent className="student-login-content">
         <div className="student-login-container">
-          <IonButton
-            fill="clear"
-            className="student-volver-boton"
-            onClick={() => history.goBack()}
-          >
-            <img
-              src="/assets/pictograms/boton_volver.png"
-              alt="Volver"
-              className="student-boton-imagen"
-            />
-          </IonButton>
+
+          {/* Fila de botones superior */}
+          <div className="student-button-row">
+            <IonButton
+              fill="clear"
+              className="student-volver-boton"
+              onClick={() => history.goBack()}
+            >
+              <img
+                src="/assets/pictograms/boton_volver.png"
+                alt="Volver"
+                className="student-boton-imagen"
+              />
+            </IonButton>
+
+            <IonButton
+              fill="clear"
+              className="student-avance-boton"
+              onClick={handleLogin}
+              disabled={loading}
+            >
+              <img
+                src="/assets/pictograms/correcto.png"
+                alt="Avanzar"
+                className="student-boton-imagen"
+              />
+            </IonButton>
+          </div>
 
           {/* Título y arriba */}
           <div className="student-login-header">
@@ -185,7 +195,7 @@ const addPicto = (pictogramId: string) => {
                 </div>
               )}
             </div>
-
+            {/* Boton borrar */}
             <IonButton
               fill="clear"
               className="student-borrar-boton"
@@ -227,21 +237,7 @@ const addPicto = (pictogramId: string) => {
             </IonText>
           )}
 
-          {/* Botones de acción */}
-          <div className="student-actions">
-            <IonButton
-              fill="clear"
-              className="student-avance-boton"
-              onClick={handleLogin}
-              disabled={loading}
-            >
-              <img
-                src="/assets/pictograms/correcto.png"
-                alt="Avanzar"
-                className="student-boton-imagen"
-              />
-            </IonButton>
-          </div>
+
         </div>
       </IonContent>
     </IonPage>

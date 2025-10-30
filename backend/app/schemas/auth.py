@@ -19,13 +19,15 @@ class RegisterRequest(BaseModel):
     username: str = Field(..., min_length=3, pattern="^[A-Za-z0-9_-]+$")
     password: str
     role: str = "student"  # Default is student
+    photo_url: str | None = None  # Optional photo URL, it has to be uploaded previously to a storage
 
     class Config:
         json_schema_extra = {
             "example": {
                 "username": "username",
-                "password": "password123", # Should this be the hashed password?
-                "role": "tutor"
+                "password": "password123", 
+                "role": "tutor",
+                "photo_url": "https://example.com/photo.jpg"
             }
         }
 

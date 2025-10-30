@@ -6,8 +6,6 @@
 
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
   IonContent,
   IonButton,
   IonText,
@@ -78,24 +76,42 @@ export default function StudentLoginStep2() {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="secondary">
-        </IonToolbar>
-      </IonHeader>
+
 
       <IonContent className="student-login-content">
         <div className="student-login-container">
-          <IonButton
-            fill="clear"
-            className="student-volver-boton"
-            onClick={() => history.goBack()}
-          >
-            <img
-              src="/assets/pictograms/boton_volver.png"
-              alt="Volver"
-              className="student-boton-imagen"
-            />
-          </IonButton>
+
+          {/* Fila de botones superior */}
+          <div className="student-button-row">
+            <IonButton
+              fill="clear"
+              className="student-volver-boton"
+              onClick={() => history.goBack()}
+            >
+              <img
+                src="/assets/pictograms/boton_volver.png"
+                alt="Volver"
+                className="student-boton-imagen"
+              />
+            </IonButton>
+
+            {/* Botón de avanzar */}
+            <div className="student-actions">
+              <IonButton
+                fill="clear"
+                className="student-avance-boton"
+                onClick={handleAdvance}
+                disabled={loading}
+              >
+                <img
+                  src="/assets/pictograms/correcto.png"
+                  alt="Avanzar"
+                  className="student-boton-imagen student-boton-rotado"
+                />
+              </IonButton>
+            </div>
+
+          </div>
 
           {/* Título y arriba */}
           <div className="student-login-header">
@@ -158,21 +174,7 @@ export default function StudentLoginStep2() {
             </IonText>
           )}
 
-          {/* Botón de avanzar */}
-          <div className="student-actions">
-            <IonButton
-              fill="clear"
-              className="student-avance-boton"
-              onClick={handleAdvance}
-              disabled={loading}
-            >
-              <img
-                src="/assets/pictograms/correcto.png"
-                alt="Avanzar"
-                className="student-boton-imagen student-boton-rotado"
-              />
-            </IonButton>
-          </div>
+
         </div>
       </IonContent>
     </IonPage>

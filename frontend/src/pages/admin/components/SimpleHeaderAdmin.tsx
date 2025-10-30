@@ -5,19 +5,23 @@ import {
     IonHeader,
     IonButtons,
     IonIcon,
-    IonAvatar
-
 } from '@ionic/react';
 
-import './HeaderAdmin.css';
+import './SimpleHeaderAdmin.css';
 import { homeOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { setupIonicReact } from '@ionic/react';
 
 setupIonicReact();
 
-const HeaderAdmin: React.FC = () => {
+interface Props {
+    adminName: String;
+}
+
+const SimpleHeaderAdmin: React.FC<Props> = ({
+    adminName
+}) => {
 
     const history = useHistory();
     const { logout } = useAuth();
@@ -32,7 +36,7 @@ const HeaderAdmin: React.FC = () => {
 
     const handleHome = () => {
         if (history.location.pathname !== '/admin-dashboard') {
-            history.goBack();
+            history.replace('/admin-dashboard');
         }
         else {
             history.replace('/admin-dashboard');
@@ -47,7 +51,7 @@ const HeaderAdmin: React.FC = () => {
                         <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
                     </IonButton>
                 </IonButtons>
-                <IonTitle className='title-link-profiles'>Admin</IonTitle>
+                <IonTitle className='title-link-profiles'>{adminName}</IonTitle>
                 <IonButtons slot="end">
                     <IonButton
                         className='logout-button'
@@ -63,4 +67,4 @@ const HeaderAdmin: React.FC = () => {
     );
 }
 
-export default HeaderAdmin;
+export default SimpleHeaderAdmin;

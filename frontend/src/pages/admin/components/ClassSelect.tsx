@@ -1,33 +1,36 @@
 import {
-    IonItem,
     IonSelect,
     IonSelectOption,
     IonLabel
 
 } from '@ionic/react';
 
-import './TeacherSelect.css';
+import './ClassSelect.css';
 import { setupIonicReact } from '@ionic/react';
 
 setupIonicReact();
 
-interface Teacher {
+interface Class {
     id: string;
-    username: string;
+    name: string;
 }
 
-interface TeacherSelectProps {
-    teachers: Teacher[];
+interface ClassSelectProps {
+    classes: Class[];
     value?: string;
     onChange?: (value: string) => void;
     label?: string;
+    max_width?: string;
+    placeholder_text?: string;
 }
 
-const TeacherSelect: React.FC<TeacherSelectProps> = ({
-    teachers,
+const ClassSelect: React.FC<ClassSelectProps> = ({
+    classes,
     value,
     onChange,
-    label = "Profesor:",
+    label,
+    max_width = "50%",
+    placeholder_text = "Selecciona un usuario"
 }) => {
 
     return (
@@ -36,12 +39,13 @@ const TeacherSelect: React.FC<TeacherSelectProps> = ({
             <IonSelect
                 className='select-teacher'
                 value={value}
-                placeholder="Selecciona un profesor"
+                placeholder={placeholder_text}
                 onIonChange={e => onChange && onChange(e.detail.value)}
+                style={{ maxWidth: max_width }}
             >
-                {teachers.map(teacher => (
-                    <IonSelectOption key={teacher.id} value={teacher.id}>
-                        {teacher.username}
+                {classes.map(c => (
+                    <IonSelectOption key={c.id} value={c.id}>
+                        {c.name}
                     </IonSelectOption>
                 ))}
             </IonSelect>
@@ -49,4 +53,4 @@ const TeacherSelect: React.FC<TeacherSelectProps> = ({
     );
 }
 
-export default TeacherSelect;
+export default ClassSelect;

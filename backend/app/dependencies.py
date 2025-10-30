@@ -70,9 +70,8 @@ async def get_current_user(
         
         # Obtener perfil del usuario desde la BD
         responseAuth = supabase_admin.auth.admin.get_user_by_id(user_id)
-        responsePublic = supabase_admin.table("users").select("*").eq("id", user_id).execute()
+        responsePublic = supabase.table("users").select("*").eq("id", user_id).execute()
 
-#
         
         # Validar si existe el usuario en Auth
         if not responseAuth or not responseAuth.user:

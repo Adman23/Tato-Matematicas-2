@@ -254,6 +254,15 @@ export const authAPI = {
 };
 
 // === OTROS ENDPOINTS ===
+export async function fetchTeachers() {
+  const response = await api.get("/api/admin/teachers");
+  return response.data;
+}
+
+export async function fetchStudents() {
+  const response = await api.get("/api/admin/students");
+  return response.data;
+}
 
 
 // ==== EXPORTACIÓN PRINCIPAL ====
