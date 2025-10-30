@@ -5,19 +5,21 @@ import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton } from '@
 import { Redirect, useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
+import { fetchStudents, fetchTeachers } from '../../lib/api';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import TeacherManagementItem from './components/TeacherManagementItem';
 import './userManagement.css';
 
 interface User {
-  userAvatar: string;
-  userName: string;
+  id: string;
+  username: string;
+  photo_url: string;
 }
 
 export default function UserManagement() {
 
   const { tipo } = useParams<{ tipo: string }>();
-  const { loading: authLoading } = useAuth();
+  const {user, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
@@ -27,7 +29,7 @@ export default function UserManagement() {
     return <Redirect to="/admin-dashboard" />;
   }
 
-  useEffect(() => {
+  /*useEffect(() => {
     let isMounted = true; // evita actualizar estado si se desmonta
 
     const loadData = async () => {
@@ -58,6 +60,32 @@ export default function UserManagement() {
     return () => {
       isMounted = false; // limpia el efecto al desmontar
     };
+  }, [tipo]);*/
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+
+      try {
+        if (tipo === "profesores") {
+          const teachers = await fetchTeachers();
+          console.log("Profesores recibidos:", teachers);
+          setUsers(teachers);
+        } else {
+          const students = await fetchStudents();
+          console.log("Estudiantes recibidos:", students);
+          setUsers(students);
+        }
+      } catch (error) {
+        console.error("Error cargando usuarios:", error);
+      }finally{
+
+        setLoading(false);
+      }
+
+    };
+
+    loadData();
   }, [tipo]);
 
   if (authLoading || loading) {
@@ -71,13 +99,13 @@ export default function UserManagement() {
   }
 
   // Redirige si no está autenticado 
-  // /*if (!user) { 
-  //  return <Redirect to="/login" />; 
-  // }*/
+   if (!user || user.role !== 'admin') { 
+    return <Redirect to="/login" />; 
+  }
 
   return (
     <IonPage>
-      <SimpleHeaderAdmin adminName="Admin" />
+      <SimpleHeaderAdmin adminName={user.username} />
       <IonContent>
         <div className="teacherManagement-MainContainer">
           <div className="teacherManagement-TextAddButton">
@@ -90,11 +118,11 @@ export default function UserManagement() {
           </div>
           <div className="teacherManagement-teacherTable">
             <IonList>
-              {users.map((user, index) => (
+              {users.map((user) => (
                 <TeacherManagementItem
-                  key={index}
-                  teacherAvatar={user.userAvatar}
-                  teacherName={user.userName}
+                  key={user.id}
+                  teacherAvatar={user.photo_url}
+                  teacherName={user.username}
                 />
               ))}
             </IonList>
