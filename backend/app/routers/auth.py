@@ -51,23 +51,25 @@ async def register( data: RegisterRequest,
     try:
         # Create the new user in Supabase Auth
         # The trigger in the database will create the tuple in public.users
-        new_user = supabase_admin.auth.admin.create_user({
+        new_user = supabase_admin.auth.singUp({
             "email":  f"{data.username}@tatomaths.local",
             "password": data.password,
             "email_confirm": True,
             "options": {
                 "data":{
-                    "role": data.role
+                    "role": data.role,
+                    "photo_url": data.photo_url,
                     # Add other user metadata for public.users tuple
                 }
             }
         })
 
-        # Returns user
+        # Returns user without password
         return User(
             id=new_user.user.id,
             username=data.username,
-            role=data.role
+            role=data.role,
+            photo_url=data.photo_url
         )
 
     except Exception as e:
