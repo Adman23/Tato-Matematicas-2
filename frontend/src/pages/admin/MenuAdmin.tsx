@@ -47,7 +47,7 @@ export default function AdminDashboard() {
                                     expand="block"
                                     type="submit"
                                     className='admin-dashboard-button'
-                                    onClick={() => history.push('/admin-teacher-management')}
+                                    onClick={() => history.push('/admin/profesores')}
                                 >
                                     Ver profesores
                                 </IonButton>
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
                                     className='admin-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                //onClick={() => history.push('/list-students')}
+                                    onClick={() => history.push('/admin/alumnos')}
                                 >
                                     Ver alumnos
                                 </IonButton>

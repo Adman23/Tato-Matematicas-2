@@ -173,58 +173,35 @@ ion-title {
 
 /* Botones grandes accesibles - Reutilizables en toda la app */
 .tatomaths-button {
-  background: #ffffff;
-  border: 3px solid var(--color-border);
+  background: transparent;
   border-radius: var(--border-radius-xl);
+
   padding: var(--spacing-xxl) var(--spacing-xl);
   cursor: pointer;
-  box-shadow: var(--box-shadow-md);
-  transition: all var(--transition-bounce);
-  min-height: var(--min-touch-target);
+
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-family-primary);
+
 }
 
 .tatomaths-button:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: var(--box-shadow-lg);
+  background-color: var(--ion-color-primary);
+  outline: 2px solid black;
 }
 
 .tatomaths-button:active {
-  transform: translateY(-2px) scale(0.98);
-  box-shadow: var(--box-shadow-sm);
+  background-color: var(--ion-color-primary);
+  outline: 2px solid black;
 }
 
 .tatomaths-button:focus {
-  outline: none;
-  border-color: var(--color-focus);
-  box-shadow:
-    var(--box-shadow-md),
-    0 0 0 var(--focus-outline) rgba(255, 215, 0, 0.3);
+  background-color: var(--ion-color-primary);
+  outline: 2px solid black;
 }
 
-/* Variantes de botones por rol */
-.tatomaths-button-tutor {
-  border-color: var(--color-tutor-primary);
-}
 
-.tatomaths-button-tutor:hover {
-  background: linear-gradient(135deg, var(--color-tutor-primary) 0%, var(--color-tutor-secondary) 100%);
-  border-color: var(--color-tutor-primary);
-  color: #ffffff;
-}
-
-.tatomaths-button-student {
-  border-color: var(--color-student-primary);
-}
-
-.tatomaths-button-student:hover {
-  background: linear-gradient(135deg, var(--color-student-primary) 0%, var(--color-student-secondary) 100%);
-  border-color: var(--color-student-primary);
-  color: #ffffff;
-}
 
 /* Contenedores de imágenes accesibles */
 .tatomaths-image {

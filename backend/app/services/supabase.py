@@ -1,26 +1,27 @@
 """
 Cliente de Supabase.
 
-Este módulo inicializa y expone una instancia del cliente de Supabase que
-permite interactuar con la base de datos y los servicios asociados.
+Este módulo inicializa y expone dos instancias del cliente de Supabase:
+- `supabase`: para operaciones normales (respeta RLS).
+- `supabase_admin`: para operaciones administrativas (ignora RLS).
 
-El cliente se crea utilizando las credenciales del rol de servicio
-(`SERVICE_ROLE`), lo que le otorga permisos completos en la base de datos.
- Por seguridad, este cliente solo debe utilizarse en el backend del servidor,
-ya que ignora las políticas de Row-Level Security (RLS) de Supabase.
+Por seguridad, `supabase_admin` solo debe usarse en endpoints que lo requieran
+explícitamente (ej. creación de usuarios por admins).
 """
-from supabase import create_client, Client
+
+from supabase import create_client
 from ..config import settings
 
-#: Instancia global del cliente de Supabase.
-#: 
-#: Se inicializa con el rol de servicio (`SERVICE_ROLE`), lo que permite
-#: realizar operaciones administrativas y saltar las políticas RLS.
-#: 
-#: Attributes:
-#:     settings.SUPABASE_URL (str): URL del proyecto Supabase.
-#:     settings.SUPABASE_SERVICE_ROLE (str): Clave de servicio con permisos elevados.
-supabase: Client = create_client(
+# Cliente normal (con ANON_KEY) → respeta RLS
+# Usado en la mayoría de endpoints (login, /me, etc.)
+supabase = create_client(
+    settings.SUPABASE_URL,
+    settings.SUPABASE_ANON_KEY  # ← Cambia a ANON_KEY
+)
+
+# Cliente de administración (con SERVICE_ROLE) → ignora RLS
+# Usado solo en endpoints de administración (ej. /admin/register)
+supabase_admin = create_client(
     settings.SUPABASE_URL,
     settings.SUPABASE_SERVICE_ROLE
 )

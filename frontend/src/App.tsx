@@ -21,7 +21,9 @@ import Dashboard from './pages/Dashboard';
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
-import StudentLogin from './pages/auth/StudentLogin';
+import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
+import StudentLoginStep2 from './pages/auth/StudentLoginStep2';
+import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
 
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
@@ -29,7 +31,7 @@ import StudentDashboard from './pages/student/Dashboard';
 // === Páginas de admin ===
 import LinkProfiles from './pages/admin/LinkProfiles';
 import AdminDashboard from './pages/admin/MenuAdmin';
-import teacherManagement from './pages/admin/teacherManagement';
+import userManagement from './pages/admin/userManagement';
 
 
 /**
@@ -59,12 +61,18 @@ export default function App() {
           <IonRouterOutlet>
             <Route path="/" exact component={Home} />
             <Route path="/login" exact component={Login} />
-            <Route path="/student-login" exact component={StudentLogin} />
+
+            {/* Rutas del login de estudiante en 3 pasos */}
+            <Route path="/student-login" exact component={StudentLoginStep1} />
+            <Route path="/student-login/step2/:groupId" exact component={StudentLoginStep2} />
+            <Route path="/student-login/step3/:groupId/:username" exact component={StudentLoginStep3} />
+
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+
             <Route path="/admin/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin" exact component={AdminDashboard} />
-            <Route path="/admin-teacher-management" exact component={teacherManagement} />
+            <Route path="/admin/:tipo" exact component={userManagement} />
             <Redirect to="/" />
           </IonRouterOutlet>
         </IonReactRouter>
