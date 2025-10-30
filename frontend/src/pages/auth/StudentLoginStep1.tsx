@@ -84,7 +84,7 @@ export default function StudentLoginStep1() {
           <div className="student-button-row">
             <IonButton
               fill="clear"
-              className="student-volver-boton"
+              className="default-action-button"
               onClick={() => history.push('/')}
             >
               <img
@@ -94,11 +94,24 @@ export default function StudentLoginStep1() {
               />
             </IonButton>
 
+              <IonButton
+              fill="clear"
+              className="default-action-button"
+              onClick={() => history.push('/')}
+            >
+              <img
+                src="/assets/pictograms/home.png"
+                alt="Volver a la pagina principal"
+                className="student-boton-imagen"
+              />
+             
+            </IonButton>
+
             {/* Botón de avanzar */}
-            <div className="student-actions">
+            
               <IonButton
                 fill="clear"
-                className="student-avance-boton"
+                className="default-action-button"
                 onClick={handleAdvance}
                 disabled={loading}
               >
@@ -108,16 +121,17 @@ export default function StudentLoginStep1() {
                   className="student-boton-imagen student-boton-rotado"
                 />
               </IonButton>
-            </div>
+           
 
           </div>
 
           {/* Título y arriba */}
           <div className="student-login-header">
 
-            <h1 className="student-login-title">Selecciona tu clase</h1>
+            <h1 className="student-login-title">Seleccion de grupo</h1>
             <p className="student-login-subtitle">
-              Toca tu grupo
+                    Selecciona un grupo y pulsa avanzar
+
             </p>
           </div>
 
