@@ -31,6 +31,8 @@ import StudentDashboard from './pages/student/Dashboard';
 // === Páginas de admin ===
 import LinkProfiles from './pages/admin/LinkProfiles';
 import AdminDashboard from './pages/admin/MenuAdmin';
+import userManagement from './pages/admin/userManagement';
+
 
 /**
  * Componente raíz de la aplicación.
@@ -67,8 +69,10 @@ export default function App() {
 
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+
             <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin-dashboard" exact component={AdminDashboard} />
+            <Route path="/admin/:tipo" exact component={userManagement} />
             <Redirect to="/" />
           </IonRouterOutlet>
         </IonReactRouter>
