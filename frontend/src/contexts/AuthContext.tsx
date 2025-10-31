@@ -127,17 +127,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null); // Asegurar que no hay usuario activo
   };
 
-  /**
-   * Registra un nuevo tutor o administrador.
-   * Deja la sesión iniciada tras el registro.
-   */
-  const register = async (data: RegisterData) => {
-    const response = await authAPI.register(data);
-    localStorage.setItem('access_token', response.access_token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    setUser(response.user);
-    setStudent(null); // Asegurar que no hay estudiante activo
-  };
+ /**
+ * Registra un nuevo usuario (tutor, admin o estudiante).
+ * NO inicia sesión ni modifica el estado de autenticación actual.
+ * Ideal para uso desde el panel de administración.
+ */
+const register = async (data: RegisterData) => {
+  await authAPI.register(data);
+};
 
   /**
    * Cierra sesión (usuario o estudiante).

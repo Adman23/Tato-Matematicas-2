@@ -131,6 +131,7 @@ export interface RegisterData {
   username: string;
   password: string;
   role: 'admin' | 'teacher' | 'student';
+  photo_url?: string; // 👈 Añadido
 }
 
 /**
@@ -179,9 +180,8 @@ export const authAPI = {
    * @param data - Datos de registro.
    * @returns Información del usuario y tokens de acceso.
    */
-  register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
+  register: (data: RegisterData) => {
+    return api.post('/auth/register', data);
   },
 
   /**
