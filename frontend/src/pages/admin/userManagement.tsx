@@ -116,10 +116,14 @@ export default function UserManagement() {
             <IonLabel className="teacherManagement-TextTeacher">
               <h2>{tipo === 'profesores' ? 'Profesores' : 'Alumnos'}</h2>
             </IonLabel>
-            <IonButton  className="teacherManagement-AddButoon" 
-                        onClick={() => history.push('/student-register')}>
-                          
-
+            <IonButton
+              className="teacherManagement-AddButoon"
+              onClick={() =>
+                tipo === 'profesores'
+                  ? history.push('/tutor-register')
+                  : history.push('/student-register')
+              }
+            >
               Añadir nuevo {tipo === 'profesores' ? 'profesor' : 'alumno'}
             </IonButton>
           </div>
