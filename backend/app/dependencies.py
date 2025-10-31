@@ -70,8 +70,6 @@ async def get_current_user(
         
         # Obtener perfil del usuario desde la BD
         responseAuth = supabase_admin.auth.admin.get_user_by_id(user_id)
-        responsePublic = supabase.table("users").select("*").eq("id", user_id).execute()
-
         
         # Validar si existe el usuario en Auth
         if not responseAuth or not responseAuth.user:
@@ -79,9 +77,13 @@ async def get_current_user(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found"
             )
+        
+        responsePublic = supabase_admin.table("users").select("*").eq("id", user_id).execute()
 
         # Validar si existe en la tabla pública
         if not responsePublic.data or len(responsePublic.data) == 0:
+            #print(responseAuth)
+            #print(responsePublic)
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User public not found"
