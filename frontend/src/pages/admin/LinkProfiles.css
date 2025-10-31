@@ -24,6 +24,11 @@
     margin-bottom: 20px;
 }
 
+.LinkProfiles-searchbar {
+    display: flex;
+    flex-direction: row;
+}
+
 .LinkProfiles-title {
     font-family: var(--ion-font-family);
     color: var(--ion-color-primary);

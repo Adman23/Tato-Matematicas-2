@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
+from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
 router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
@@ -92,3 +93,46 @@ async def list_students():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener los estudiantes: {str(e)}"
         )
+        
+
+@router.post("/upload_image", summary="Upload any image to supabase "+
+                                    "storage, to use for avatars or other things")
+async def upload_image(file: UploadFile = File(...), filename: str = Form(...)):
+    
+    """_summary_
+    Args:
+        file: The route to the file
+        filename (str): the name of the file, its needed to fetch the url later
+    
+    Raises:
+        HTTPException: 500 internal server error if the upload fails
+
+    Returns:
+        string: the public url of the uploaded image, you can use it directly
+                to show the image (for example in the register page you have the list
+                of avatars to choose from, and you can upload a new one, it will have
+                the image from local and the url its what will be stored in the user
+                tuple)
+    """
+    try:
+        # "user_photo" is the storage bucket, its already created in supabase
+        
+        file_content = await file.read()
+        response = supabase_admin.storage.from_("user_photo").upload(filename, file_content)
+        if response.status_code >= 400:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error uploading image"
+            )
+            
+        url_response = supabase_admin.storage.from_("user_photo").get_public_url(filename)
+        return {"url": url_response}
+    
+    except Exception as e:
+        print("Upload exception:", repr(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error uploading image"
+        )
+    
+    

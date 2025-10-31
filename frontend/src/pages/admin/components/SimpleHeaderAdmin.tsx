@@ -4,7 +4,7 @@ import {
     IonButton,
     IonHeader,
     IonButtons,
-    IonIcon,
+    IonIcon
 } from '@ionic/react';
 
 import './SimpleHeaderAdmin.css';

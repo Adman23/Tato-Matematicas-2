@@ -133,7 +133,7 @@ export default function StudentLoginStep3() {
           <div className="student-button-row">
             <IonButton
               fill="clear"
-              className="student-volver-boton"
+              className="default-action-button"
               onClick={() => history.goBack()}
             >
               <img
@@ -141,11 +141,24 @@ export default function StudentLoginStep3() {
                 alt="Volver"
                 className="student-boton-imagen"
               />
+             
+            </IonButton>
+
+              <IonButton
+              fill="clear"
+              className="default-action-button"
+              onClick={() => history.push('/')}
+            >
+              <img
+                src="/assets/pictograms/home.png"
+                alt="Volver a la pagina principal"
+                className="student-boton-imagen"
+              />
             </IonButton>
 
             <IonButton
               fill="clear"
-              className="student-avance-boton"
+              className="default-action-button"
               onClick={handleLogin}
               disabled={loading}
             >
@@ -154,6 +167,7 @@ export default function StudentLoginStep3() {
                 alt="Avanzar"
                 className="student-boton-imagen"
               />
+
             </IonButton>
           </div>
 
@@ -165,7 +179,7 @@ export default function StudentLoginStep3() {
               className="student-login-image"
             />
 
-            <h1 className="student-login-title">Selecciona tu clave</h1>
+            <h1 className="student-login-title">Selección de clave</h1>
             <p className="student-login-subtitle">
               Toca {REQUIRED_LENGTH} animales en el orden correcto
             </p>
@@ -198,7 +212,7 @@ export default function StudentLoginStep3() {
             {/* Boton borrar */}
             <IonButton
               fill="clear"
-              className="student-borrar-boton"
+              className="default-action-button"
               onClick={clearSequence}
             >
               <img

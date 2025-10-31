@@ -4,11 +4,13 @@ import {
     IonPage,
     IonList,
     IonTitle,
-    IonButton
+    IonButton,
+    IonSearchbar
 
 } from '@ionic/react';
 
 import './LinkProfiles.css';
+import { Redirect } from 'react-router-dom';
 import { useState } from 'react';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
@@ -17,7 +19,7 @@ import UserItem from './components/UserItem';
 
 export default function LinkProfiles() {
 
-    const { loading } = useAuth();
+    const { user, loading } = useAuth();
 
     // Mostrar spinner mientras carga
     if (loading) {
@@ -31,9 +33,9 @@ export default function LinkProfiles() {
     }
 
     // Redirigir si no hay usuario autenticado
-    // if (!user) {
-    //     return <Redirect to="/login" />;
-    // }
+    if (!user) {
+        return <Redirect to="/login" />;
+    }
 
 
     const [selectedTeacher, setSelectedTeacher] = useState<string>("");
@@ -107,7 +109,10 @@ export default function LinkProfiles() {
 
                 <div className='LinkProfiles-tables'>
                     <div className='LinkProfiles-table'>
-                        <IonTitle className='LinkProfiles-title'>Alumnos</IonTitle>
+                        <div className='LinkProfiles-searchbar'>
+                            <IonTitle className='LinkProfiles-title'>Alumnos</IonTitle>
+                            <IonSearchbar placeholder="Buscar alumno"></IonSearchbar>
+                        </div>
                         <div className='LinkProfiles-items'>
 
                             <IonList>
@@ -124,7 +129,10 @@ export default function LinkProfiles() {
                     </div>
 
                     <div className='LinkProfiles-table'>
-                        <IonTitle className='LinkProfiles-title'>Profesores</IonTitle>
+                        <div className='LinkProfiles-searchbar'>
+                            <IonTitle className='LinkProfiles-title'>Profesores</IonTitle>
+                            <IonSearchbar placeholder="Buscar profesor"></IonSearchbar>
+                        </div>
                         <div className='LinkProfiles-items'>
 
                             <IonList>

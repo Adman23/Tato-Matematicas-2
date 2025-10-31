@@ -60,10 +60,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
    */
   useEffect(() => {
     const loadAuth = async () => {
-      // Intentar cargar tutor/admin
       const token = localStorage.getItem('access_token');
       const savedUser = localStorage.getItem('user');
+      const savedStudent = localStorage.getItem('student');
 
+      // Priorizar la carga de estudiante si existe (los estudiantes también tienen access_token)
+      if (savedStudent) {
+        try {
+          setStudent(JSON.parse(savedStudent));
+          setLoading(false);
+          return; // Salir temprano, es un estudiante
+        } catch (error) {
+          console.error('Error loading student:', error);
+          localStorage.removeItem('student');
+          localStorage.removeItem('student_id');
+          setStudent(null);
+        }
+      }
+
+      // Si no hay estudiante, intentar cargar tutor/admin
       if (token && savedUser) {
         try {
           setUser(JSON.parse(savedUser));
@@ -76,20 +91,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           localStorage.removeItem('access_token');
           localStorage.removeItem('user');
           setUser(null);
-        }
-      }
-
-      // Intentar cargar estudiante (si no hay usuario ya cargado)
-      const savedStudent = localStorage.getItem('student');
-
-      if (!token && savedStudent) {
-        try {
-          setStudent(JSON.parse(savedStudent));
-        } catch (error) {
-          console.error('Error loading student:', error);
-          localStorage.removeItem('student');
-          localStorage.removeItem('student_id');
-          setStudent(null);
         }
       }
 

@@ -82,10 +82,15 @@ export default function StudentLoginStep2() {
         <div className="student-login-container">
 
           {/* Fila de botones superior */}
+
+
           <div className="student-button-row">
+
+
+
             <IonButton
               fill="clear"
-              className="student-volver-boton"
+              className="default-action-button"
               onClick={() => history.goBack()}
             >
               <img
@@ -94,22 +99,38 @@ export default function StudentLoginStep2() {
                 className="student-boton-imagen"
               />
             </IonButton>
-
-            {/* Botón de avanzar */}
-            <div className="student-actions">
+            <div className='action-card'>
               <IonButton
                 fill="clear"
-                className="student-avance-boton"
-                onClick={handleAdvance}
-                disabled={loading}
+                className="default-action-button"
+                onClick={() => history.push('/')}
               >
                 <img
-                  src="/assets/pictograms/correcto.png"
-                  alt="Avanzar"
-                  className="student-boton-imagen student-boton-rotado"
+                  src="/assets/pictograms/home.png"
+                  alt="Volver a la pagina principal"
+                  className="student-boton-imagen"
                 />
+
               </IonButton>
+              <span className="default-action-button-label">Ir a inicio</span>
             </div>
+
+
+            {/* Botón de avanzar */}
+
+            <IonButton
+              fill="clear"
+              className="default-action-button"
+              onClick={handleAdvance}
+              disabled={loading}
+            >
+              <img
+                src="/assets/pictograms/correcto.png"
+                alt="Avanzar"
+                className="student-boton-imagen student-boton-rotado"
+              />
+            </IonButton>
+
 
           </div>
 
@@ -117,9 +138,9 @@ export default function StudentLoginStep2() {
           <div className="student-login-header">
 
 
-            <h1 className="student-login-title">¿Quién eres?</h1>
+            <h1 className="student-login-title">Selección de usuario</h1>
             <p className="student-login-subtitle">
-              Toca tu foto o nombre
+              Toca tu foto o nombre y pulsa avanzar
             </p>
           </div>
 
