@@ -9,13 +9,13 @@ import {
 } from '@ionic/react';
 
 import './MenuAdmin.css';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function AdminDashboard() {
 
-    const { loading } = useAuth();
+    const { user, loading } = useAuth();
     const history = useHistory();
 
     // Mostrar spinner mientras carga
@@ -30,9 +30,9 @@ export default function AdminDashboard() {
     }
 
     // Redirigir si no hay usuario autenticado
-    // if (!user) {
-    //     return <Redirect to="/login" />;
-    // }
+    if (!user) {
+        return <Redirect to="/login" />;
+    }
 
     return (
         <IonPage>
