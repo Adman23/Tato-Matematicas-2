@@ -10,6 +10,8 @@ import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import TeacherManagementItem from './components/TeacherManagementItem';
 import './userManagement.css';
 
+import { useHistory } from 'react-router-dom';
+
 interface User {
   id: string;
   username: string;
@@ -23,6 +25,8 @@ export default function UserManagement() {
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
+  
+  const history = useHistory();
 
   // Redirige si el tipo no es válido
   if (tipo !== 'profesores' && tipo !== 'alumnos') {
@@ -112,7 +116,10 @@ export default function UserManagement() {
             <IonLabel className="teacherManagement-TextTeacher">
               <h2>{tipo === 'profesores' ? 'Profesores' : 'Alumnos'}</h2>
             </IonLabel>
-            <IonButton className="teacherManagement-AddButoon">
+            <IonButton  className="teacherManagement-AddButoon" 
+                        onClick={() => history.push('/student-register')}>
+                          
+
               Añadir nuevo {tipo === 'profesores' ? 'profesor' : 'alumno'}
             </IonButton>
           </div>
