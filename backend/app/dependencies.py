@@ -12,6 +12,7 @@ Las dependencias se integran en los endpoints mediante el parámetro
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
+import traceback
 from .config import settings
 from .services.supabase import supabase, supabase_admin
 
@@ -100,6 +101,9 @@ async def get_current_user(
             detail="Expired or invalid token"
         )
     except Exception as e:
+        # Print full traceback to help debugging in development
+        print("Error in get_current_user:", str(e))
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error verifiying the token: {str(e)}"

@@ -15,7 +15,7 @@ interface Props {
 const UserItem: React.FC<Props> = ({
     avatar,
     alias,
-    classes = [],
+    classes = [[]],
     isChecked = false,
     onCheckChange
 

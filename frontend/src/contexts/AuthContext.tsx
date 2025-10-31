@@ -87,7 +87,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setUser(currentUser);
           localStorage.setItem('user', JSON.stringify(currentUser));
         } catch (error) {
-          console.error('Error loading user:', error);
+          // Mostrar también la respuesta del servidor (si la hay) para facilitar el debug
+          console.error('Error loading user:', error, (error as any)?.response?.data);
           localStorage.removeItem('access_token');
           localStorage.removeItem('user');
           setUser(null);

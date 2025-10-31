@@ -10,100 +10,110 @@ import {
 } from '@ionic/react';
 
 import './LinkProfiles.css';
-import { Redirect } from 'react-router-dom';
-import { useState } from 'react';
+import { Redirect, useHistory } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 import ClassSelect from './components/ClassSelect';
 import UserItem from './components/UserItem';
+import { fetchStudents, fetchTeachers, authAPI } from '../../lib/api';
+import type { Group } from '../../lib/api';
+
+interface User {
+    id: string;
+    username: string;
+    photo_url: string;
+}
 
 export default function LinkProfiles() {
 
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
+
+    const [students, setStudents] = useState<User[]>([]);
+    const [teachers, setTeachers] = useState<User[]>([]);
+    const [groups, setGroups] = useState<Group[]>([]);
+    const [error, setError] = useState('');
+    const history = useHistory();
+
+
+
+    // Estado para la selección del profesor (mover aquí para mantener orden de Hooks)
+    const [selectedTeacher, setSelectedTeacher] = useState<string>("");
+    // Flags de carga por recurso para evitar que un fetch independiente apague
+    // el spinner global antes de que todos los recursos hayan terminado.
+    const [loadingGroups, setLoadingGroups] = useState<boolean>(true);
+    const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
+
+    useEffect(() => {
+        const loadGroups = async () => {
+            try {
+                setLoadingGroups(true);
+                const groupsData = await authAPI.getGroups();
+                setGroups(groupsData);
+                setError('');
+            } catch (err: any) {
+                setError('Error al cargar los grupos');
+                console.error(err);
+            } finally {
+                setLoadingGroups(false);
+            }
+        };
+        loadGroups();
+    }, []);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                setLoadingUsers(true);
+
+                const teachers = await fetchTeachers();
+                console.log("Profesores recibidos:", teachers);
+                setTeachers(teachers);
+
+                const students = await fetchStudents();
+                console.log("Estudiantes recibidos:", students);
+                setStudents(students);
+
+            } catch (error) {
+                console.error("Error cargando usuarios:", error);
+            } finally {
+                setLoadingUsers(false);
+            }
+
+        };
+
+        loadData();
+    }, []);
+
 
     // Mostrar spinner mientras carga
-    if (loading) {
+    if (loadingGroups || loadingUsers) {
         return (
             <IonPage>
-                <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <IonSpinner name="crescent" />
+                <IonContent>
+                    <div className='LinkProfiles-spinner'>
+                        <IonSpinner name="crescent" />
+                    </div>
                 </IonContent>
             </IonPage>
         );
     }
 
     // Redirigir si no hay usuario autenticado
-    if (!user) {
+    if (!user || user.role !== 'admin') {
         return <Redirect to="/login" />;
     }
-
-
-    const [selectedTeacher, setSelectedTeacher] = useState<string>("");
-
-    const classes = [
-        { id: '1', name: 'Clase A' },
-        { id: '2', name: 'Clase B' },
-        { id: '3', name: 'Clase C' },
-    ]
-
-    const students = [
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['Clase B']
-        },
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['Clase A']
-        },
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['Clase A']
-        },
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['-']
-        },
-        // agrega más estudiantes o tráelos del backend
-    ];
-
-    const teachers = [
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['Clase B']
-        },
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['Clase A', 'Clase B']
-        },
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['Clase A']
-        },
-        {
-            avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-            alias: "Alias",
-            classes: ['-']
-        },
-        // agrega más estudiantes o tráelos del backend
-    ];
 
     return (
         <IonPage>
             <SimpleHeaderAdmin adminName="Admin" />
             <IonContent className="ion-padding">
                 <ClassSelect
-                    classes={classes}
+                    classes={groups}
                     value={selectedTeacher}
                     onChange={setSelectedTeacher}
                     label='Clase:'
-                    max_width='30%'
+                    max_width='40%'
                     placeholder_text='Selecciona una clase'
                 />
 
@@ -118,9 +128,10 @@ export default function LinkProfiles() {
                             <IonList>
                                 {students.map(student => (
                                     <UserItem
-                                        avatar={student.avatar}
-                                        alias={student.alias}
-                                        classes={student.classes}
+                                        key={student.id}
+                                        avatar={student.photo_url}
+                                        alias={student.username}
+                                        classes={[]}
                                     />
                                 ))}
                             </IonList>
@@ -138,9 +149,10 @@ export default function LinkProfiles() {
                             <IonList>
                                 {teachers.map(teacher => (
                                     <UserItem
-                                        avatar={teacher.avatar}
-                                        alias={teacher.alias}
-                                        classes={teacher.classes}
+                                        key={teacher.id}
+                                        avatar={teacher.photo_url}
+                                        alias={teacher.username}
+                                        classes={[]}
                                     />
                                 ))}
                             </IonList>
@@ -163,7 +175,7 @@ export default function LinkProfiles() {
                         expand="block"
                         type="submit"
                         className='LinkProfiles-button'
-                    //onClick={() => history.push('/admin-teacher-management')}
+                        onClick={() => history.push('/admin-dashboard')}
                     >
                         Cancelar
                     </IonButton>
