@@ -84,7 +84,7 @@ export default function Login() {
     try {
       await login({ username, password });
       clearForm();
-      history.push('/dashboard');
+      history.push('/admin-dashboard');
     } catch (err: any) {
 
       // Manejar diferentes tipos de errores
