@@ -41,8 +41,8 @@ const UserItem: React.FC<Props> = ({
                 <div className="userItem-name">{alias}</div>
 
                 <div className='userItem-class'>
-                    {classes.map((className) => (
-                        <div className="userItem-classItem">{className}</div>
+                    {classes.map((className, idx) => (
+                        <div key={`${className}-${idx}`} className="userItem-classItem">{className}</div>
                     ))}
 
                 </div>

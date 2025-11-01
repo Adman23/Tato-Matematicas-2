@@ -266,6 +266,46 @@ export async function fetchStudents() {
   return response.data;
 }
 
+export async function fetchTeachersWithGroups() {
+  const response = await api.get("/api/teacher/all");
+  return response.data;
+}
+
+export async function fetchStudentsWithGroups() {
+  const response = await api.get("/api/student/all");
+  return response.data;
+}
+
+export async function assignStudentsToGroup(groupId: number, studentIds: string[]) {
+  const response = await api.post('/api/admin/students/assign', {
+    group_id: groupId,
+    student_ids: studentIds,
+  });
+  return response.data;
+}
+
+export async function assignTeachersToGroup(groupId: number, teacherIds: string[]) {
+  const response = await api.post('/api/admin/teachers/assign', {
+    group_id: groupId,
+    teacher_ids: teacherIds,
+  });
+  return response.data;
+}
+
+export async function unassignStudentsFromGroup(studentIds: string[]) {
+  const response = await api.post('/api/admin/students/unassign', {
+    student_ids: studentIds,
+  });
+  return response.data;
+}
+
+export async function unassignTeachersFromGroup(groupId: number, teacherIds: string[]) {
+  const response = await api.post('/api/admin/teachers/unassign', {
+    group_id: groupId,
+    teacher_ids: teacherIds,
+  });
+  return response.data;
+}
 
 // ==== EXPORTACIÓN PRINCIPAL ====
 

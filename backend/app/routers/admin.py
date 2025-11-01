@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
+from ..dependencies import get_current_admin
+from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
 router = APIRouter()
 
@@ -93,7 +96,171 @@ async def list_students():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener los estudiantes: {str(e)}"
         )
+
+class AssignStudentsPayload(BaseModel):
+    group_id: int
+    student_ids: list[str]
+
+
+class AssignTeachersPayload(BaseModel):
+    group_id: int
+    teacher_ids: list[str]
+
+
+class UnassignStudentsPayload(BaseModel):
+    student_ids: list[str]
+
+
+class UnassignTeachersPayload(BaseModel):
+    group_id: int
+    teacher_ids: list[str]
+
+
+@router.post("/students/assign", summary="Asignar alumnos a un grupo")
+async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends(get_current_admin)):
+    """
+    Asigna una lista de estudiantes a un grupo (actualiza group_id en public.users).
+
+    Body:
+      - group_id (int): id del grupo al que asignar
+      - student_ids (list[str]): lista de ids de usuario (UUID)
+
+    Requiere autenticación de admin.
+    """
+    try:
+        if not payload.group_id or not payload.student_ids:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="group_id and student_ids required")
+
+        # Usamos la operación 'in' para actualizar múltiples filas a la vez
+        resp = supabase_admin.table("users") \
+            .update({"group_id": payload.group_id}) \
+            .in_("id", payload.student_ids) \
+            .execute()
+
+        return {"updated": resp.data or []}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("Assign students error:", repr(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error assigning students: {str(e)}")
         
+
+
+@router.post("/teachers/assign", summary="Asignar profesores a un grupo")
+async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends(get_current_admin)):
+    """
+    Asigna una lista de profesores a un grupo creando entradas en la tabla
+    `teacher_group_relations` con (teacher_id, group_id).
+
+    Body:
+      - group_id (int): id del grupo al que asignar
+      - teacher_ids (list[str]): lista de ids de usuario (UUID)
+
+    Requiere autenticación de admin.
+    """
+    try:
+        if not payload.group_id or not payload.teacher_ids:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="group_id and teacher_ids required")
+
+        # Consultar las relaciones ya existentes para evitar duplicados
+        existing_resp = supabase_admin.table("teacher_group_relations") \
+            .select("teacher_id") \
+            .eq("group_id", payload.group_id) \
+            .in_("teacher_id", payload.teacher_ids) \
+            .execute()
+
+        existing_teacher_ids = set()
+        if existing_resp.data:
+            for row in existing_resp.data:
+                # row puede ser {'teacher_id': '...'}
+                tid = row.get("teacher_id")
+                if tid:
+                    existing_teacher_ids.add(tid)
+
+        # Filtrar los teacher_ids que no estén ya relacionados
+        to_insert = [
+            {"teacher_id": tid, "group_id": payload.group_id}
+            for tid in payload.teacher_ids
+            if tid not in existing_teacher_ids
+        ]
+
+        inserted = []
+        if to_insert:
+            insert_resp = supabase_admin.table("teacher_group_relations").insert(to_insert).execute()
+            inserted = insert_resp.data or []
+
+        return {
+            "inserted": inserted,
+            "skipped_existing": list(existing_teacher_ids)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("Assign teachers error:", repr(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error assigning teachers: {str(e)}")
+
+
+@router.post("/students/unassign", summary="Desmatricular alumnos de un grupo")
+async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=Depends(get_current_admin)):
+    """
+    Desmatricula una lista de estudiantes sus correspondientes grupos estableciendo
+    `group_id` a NULL en la tabla `users` para esos usuarios.
+
+    Body:
+      - student_ids (list[str]): lista de ids de usuario (UUID)
+
+    Requiere autenticación de admin.
+    """
+    try:
+        if not payload.student_ids:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="student_ids required")
+
+        # Actualizar solo los usuarios que pertenecen al grupo indicado
+        resp = supabase_admin.table("users") \
+            .update({"group_id": None}) \
+            .in_("id", payload.student_ids) \
+            .execute()
+
+        return {"updated": resp.data or []}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("Unassign students error:", repr(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error unassigning students: {str(e)}")
+
+
+@router.post("/teachers/unassign", summary="Desasignar profesores de un grupo")
+async def unassign_teachers_from_group(payload: UnassignTeachersPayload, admin=Depends(get_current_admin)):
+    """
+    Elimina las relaciones (teacher_id, group_id) de la tabla `teacher_group_relations`.
+
+    Body:
+      - group_id (int): id del grupo del que desasignar
+      - teacher_ids (list[str]): lista de ids de usuario (UUID)
+
+    Requiere autenticación de admin.
+    """
+    try:
+        if not payload.group_id or not payload.teacher_ids:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="group_id and teacher_ids required")
+
+        # Borrar las relaciones que coincidan con group_id y los teacher_ids dados
+        resp = supabase_admin.table("teacher_group_relations") \
+            .delete() \
+            .eq("group_id", payload.group_id) \
+            .in_("teacher_id", payload.teacher_ids) \
+            .execute()
+
+        return {"deleted": resp.data or []}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("Unassign teachers error:", repr(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error unassigning teachers: {str(e)}")
 
 @router.post("/upload_image", summary="Upload any image to supabase "+
                                     "storage, to use for avatars or other things")

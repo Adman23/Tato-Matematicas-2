@@ -14,8 +14,8 @@ setupIonicReact();
 
 interface ClassSelectProps {
     classes: Group[];
-    value?: string;
-    onChange?: (value: string) => void;
+    value?: number | null;
+    onChange?: (value: number | null) => void;
     label?: string;
     max_width?: string;
     placeholder_text?: string;
