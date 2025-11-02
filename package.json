@@ -7,7 +7,14 @@
     "dev:backend": "cd backend && ../.venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
     "dev:frontend": "cd frontend && npm run dev"
   },
-  "keywords": ["tatomaths", "educacion", "accesibilidad"],
+  "keywords": [
+    "tatomaths",
+    "educacion",
+    "accesibilidad"
+  ],
   "author": "TatoMaths Team",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.78.0"
+  }
 }
