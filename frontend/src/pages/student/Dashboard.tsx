@@ -21,7 +21,9 @@ import {
 } from '@ionic/react';
 import { Redirect, useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import '../auth/StudentLogin.css';
+
+import SimpleHeaderUser from './components/SimpleHeaderUser';
+
 
 /**
  * Componente funcional que representa el panel del estudiante.
@@ -73,44 +75,9 @@ export default function StudentDashboard() {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>          {/* Fila de botones superior */}
-          <div className="student-button-row">
 
+  <SimpleHeaderUser userName={"user"} />
 
-            {/* Botón Perfil/Usuario */}
-            <IonButton
-              fill="clear"
-              className="default-action-button"
-              onClick={() => {/* TODO: Implementar perfil */ }}
-              aria-label="Perfil"
-            >
-              <img
-                src="/assets/pictograms/user_default.png"
-                alt="Perfil"
-                className="student-boton-imagen"
-              />
-            </IonButton>
-
-            {/* Botón Logout - cierra sesión */}
-            <IonButton
-              fill="clear"
-              className="default-action-button"
-              onClick={handleLogout}
-              disabled={loading}
-              aria-label="Cerrar sesión"
-            >
-              <img
-                src="/assets/pictograms/boton_borrar.png"
-                alt="Cerrar sesión"
-                className="student-boton-imagen"
-              />
-            </IonButton>
-          </div>
-
-        </IonToolbar>
-
-      </IonHeader>
       <IonContent className="student-login-content">
         <div className="student-login-container">
 
