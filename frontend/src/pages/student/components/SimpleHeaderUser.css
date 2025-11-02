@@ -64,7 +64,7 @@ ion-toolbar.toolbar-link-profiles ion-buttons[slot="end"] {
 
 /* Separación: imagen → texto (izquierda) */
 ion-toolbar.toolbar-link-profiles ion-buttons[slot="start"] .user-dashborad-img {
-  margin-right: clamp(200px, 4vw, 60px);
+  margin-right: clamp(100px, 4vw, 60px);
 }
 
 /* Separación: texto → imagen (derecha) */

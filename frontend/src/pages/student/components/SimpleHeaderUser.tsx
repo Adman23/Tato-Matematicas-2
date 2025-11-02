@@ -1,5 +1,4 @@
 import {
-    IonTitle,
     IonToolbar,
     IonButton,
     IonHeader,
@@ -13,11 +12,13 @@ import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
 
 interface Props {
-    userName: String;
+    userName: string;
+    photoUrl?: string;
 }
 
 const SimpleHeaderUser: React.FC<Props> = ({
-    userName
+    userName,
+    photoUrl
 }) => {
 
     const history = useHistory();
@@ -38,12 +39,12 @@ const SimpleHeaderUser: React.FC<Props> = ({
   <IonToolbar className="toolbar-link-profiles">
     <IonButtons slot="start">
       <img
-        src="/assets/pictograms/user_default.png"
-        alt="Ir a mi perfil"
+        src={photoUrl || "/assets/pictograms/user_default.png"}
+        alt="tu avatar"
         className="user-dashborad-img"
       />
 
-      <div className="header-text">{userName}</div> 
+      <div className="header-text">{userName}</div>
     </IonButtons>
 
     <IonButtons slot="end">

@@ -93,7 +93,8 @@ async def get_current_user(
         return  {
                 "id": responseAuth.user.id,
                 "username": responseAuth.user.email.split("@")[0],
-                "role": responsePublic.data[0]["role"]
+                "role": responsePublic.data[0]["role"],
+                "photo_url": responsePublic.data[0].get("photo_url")
                 }
         
         

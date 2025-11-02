@@ -179,7 +179,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logout,
         isAuthenticated: !!user || !!student,
         isStudent: !!student,
-        isTutor: user?.role === 'tutor',
+        isTutor: user?.role === 'teacher',
         isAdmin: user?.role === 'admin',
       }}
     >

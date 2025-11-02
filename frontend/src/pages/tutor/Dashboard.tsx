@@ -1,5 +1,4 @@
 
-
 import {
   IonPage,
   IonContent,
@@ -8,36 +7,14 @@ import {
 } from '@ionic/react';
 import { Redirect, useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import SimpleHeaderUser from '../student/components/SimpleHeaderUser';
+import '../student/Dashboard.css';
 
-import SimpleHeaderUser from './components/SimpleHeaderUser';
-import './Dashboard.css';
 
 
-/**
- * Componente funcional que representa el panel del estudiante.
- *
- * Permite al alumno autenticado:
- * - Ver su nombre y foto (o inicial si no tiene imagen).
- * - Acceder a las secciones de juegos y progreso.
- * - Cerrar sesión y volver a la página principal.
- *
- * Muestra un *spinner* mientras se carga el estado de autenticación
- * y redirige a `/student-login` si no hay sesión activa.
- *
- * @returns {JSX.Element} Interfaz del panel principal del estudiante.
- *
- * @example
- * ```tsx
- * import StudentDashboard from "./pages/student/Dashboard";
- *
- * <Route path="/student-dashboard" component={StudentDashboard} />
- * ```
- */
-export default function StudentDashboard() {
-  const { student, loading } = useAuth();
+export default function TutorDashboard() {
+  const { user, loading } = useAuth();
   const history = useHistory();
-
-
 
   // Mostrar spinner mientras carga
   if (loading) {
@@ -50,16 +27,17 @@ export default function StudentDashboard() {
     );
   }
 
-  // Redirigir si no hay estudiante autenticado
-  if (!student) {
-    return <Redirect to="/student-login" />;
+  // Redirigir si no hay usuario autenticado o no es tutor
+  if (!user || user.role !== 'teacher') {
+    return <Redirect to="/login" />;
   }
+
 
   return (
     <IonPage>
-      <SimpleHeaderUser userName={student.username} photoUrl={student.photo_url} />
+      <SimpleHeaderUser userName={user.username} photoUrl={user.photo_url} />
 
-      <IonContent className="student-dashboard-content">
+       <IonContent className="student-dashboard-content">
         <div className="games-container">
           <div className="game-button-wrapper">
             <IonButton
@@ -113,3 +91,4 @@ export default function StudentDashboard() {
     </IonPage>
   );
 }
+

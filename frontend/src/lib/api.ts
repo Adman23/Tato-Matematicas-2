@@ -89,7 +89,8 @@ export interface User {
   username: string;
   email: string;
   full_name: string;
-  role: 'admin' | 'tutor';
+  role: 'admin' | 'teacher';
+  photo_url?: string;
 }
 
 
@@ -98,12 +99,14 @@ export interface User {
  */
 export interface Student {
   id: string;
-  name: string;
-  username?: string;
-  full_name: string;
-  picto_sequence: string[];
-  tutor_id: string;
+  username: string;
+  role: string;
   photo_url?: string;
+  notes?: string;
+  visual_preferences?: any;
+  audio_preferences?: any;
+  accessibility_settings?: any;
+  game_preferences?: any;
 }
 
 /**
