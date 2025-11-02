@@ -21,6 +21,7 @@ import Dashboard from './pages/Dashboard';
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
+import StudentRegister from './pages/auth/StudentRegister';
 import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
 import StudentLoginStep2 from './pages/auth/StudentLoginStep2';
 import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
@@ -72,7 +73,9 @@ export default function App() {
 
             <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin-dashboard" exact component={AdminDashboard} />
+            <Route path="/student-register" exact component={StudentRegister} />
             <Route path="/admin/:tipo" exact component={userManagement} />
+
             <Redirect to="/" />
           </IonRouterOutlet>
         </IonReactRouter>

@@ -129,10 +129,9 @@ export interface StudentAuthResponse {
  */
 export interface RegisterData {
   username: string;
-  email: string;
   password: string;
-  full_name: string;
-  role: 'admin' | 'tutor';
+  role: 'admin' | 'teacher' | 'student';
+  photo_url?: string; 
 }
 
 /**
@@ -181,9 +180,8 @@ export const authAPI = {
    * @param data - Datos de registro.
    * @returns Información del usuario y tokens de acceso.
    */
-  register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
+  register: (data: RegisterData) => {
+    return api.post('/auth/register', data);
   },
 
   /**
@@ -306,6 +304,27 @@ export async function unassignTeachersFromGroup(groupId: number, teacherIds: str
   });
   return response.data;
 }
+// === SUBIDA DE IMÁGENES ===
+
+/**
+ * Sube una imagen al backend (Supabase Storage).
+ * @param file - Archivo de imagen a subir
+ * @param filename - Nombre único para el archivo
+ * @returns URL pública de la imagen subida
+ */
+export const uploadImage = async (file: File, filename: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('filename', filename);
+
+  const response = await api.post<{ url: string }>('/upload_image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data.url;
+};
 
 // ==== EXPORTACIÓN PRINCIPAL ====
 

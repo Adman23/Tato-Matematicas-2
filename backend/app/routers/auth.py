@@ -51,7 +51,7 @@ async def register( data: RegisterRequest,
     try:
         # Create the new user in Supabase Auth
         # The trigger in the database will create the tuple in public.users
-        new_user = supabase_admin.auth.singUp({
+        new_user = supabase_admin.auth.sign_up({
             "email":  f"{data.username}@tatomaths.local",
             "password": data.password,
             "email_confirm": True,
