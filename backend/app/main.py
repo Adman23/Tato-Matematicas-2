@@ -20,6 +20,7 @@ from .services.supabase import supabase_admin
 
 from .routers import admin
 from .routers import teacher
+from .routers import student
 
 # === Inicialización de la aplicación ===
 
@@ -126,3 +127,4 @@ def health_check():
 
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(teacher.router, prefix="/api/teacher", tags=["teacher"])
+app.include_router(student.router, prefix="/api/student", tags=["student"])

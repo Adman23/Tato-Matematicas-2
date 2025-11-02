@@ -7,18 +7,15 @@ import {
 
 import './ClassSelect.css';
 import { setupIonicReact } from '@ionic/react';
+import type { Group } from '../../../lib/api';
 
 setupIonicReact();
 
-interface Class {
-    id: string;
-    name: string;
-}
 
 interface ClassSelectProps {
-    classes: Class[];
-    value?: string;
-    onChange?: (value: string) => void;
+    classes: Group[];
+    value?: number | null;
+    onChange?: (value: number | null) => void;
     label?: string;
     max_width?: string;
     placeholder_text?: string;
@@ -45,7 +42,7 @@ const ClassSelect: React.FC<ClassSelectProps> = ({
             >
                 {classes.map(c => (
                     <IonSelectOption key={c.id} value={c.id}>
-                        {c.name}
+                        {c.alias}
                     </IonSelectOption>
                 ))}
             </IonSelect>
