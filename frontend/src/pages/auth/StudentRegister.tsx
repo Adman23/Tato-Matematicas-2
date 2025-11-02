@@ -15,6 +15,7 @@ import { personOutline, addOutline, closeOutline } from 'ionicons/icons';
 import { useState, useRef, useLayoutEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { authAPI, uploadImage } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 setupIonicReact();
@@ -28,6 +29,8 @@ const PICTOGRAMS = [
 ];
 
 const MAX_PICTOGRAMS = 3;
+
+const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function StudentRegister() {
   const history = useHistory();
@@ -104,11 +107,29 @@ export default function StudentRegister() {
 
     try {
       const password = pictograms.join('-');
+      let photoUrl = '';
 
-      await register({
+      // Caso 1: Avatar predefinido
+      if (AVATAR_OPTIONS.some(a => a.id === selectedAvatar)) {
+        photoUrl = `/assets/perfiles/${selectedAvatar}`;
+      }
+      // Caso 2: Imagen subida por el usuario
+      else if (fileInputRef.current?.files?.[0]) {
+        const file = fileInputRef.current.files[0];
+        const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
+        photoUrl = await uploadImage(file, uniqueFilename);
+      }
+      // Caso 3: Fallback (no debería ocurrir)
+      else {
+        photoUrl = DEFAULT_AVATAR;
+      }
+
+      // Registrar con photo_url
+      await authAPI.register({
         username: userName,
         password: password,
         role: "student",
+        photo_url: photoUrl,
       });
 
       setToastMessage('Estudiante registrado correctamente 🎉');
@@ -116,7 +137,6 @@ export default function StudentRegister() {
       setIsToastOpen(true);
 
       setTimeout(() => {
-        // 👇 Elimina el foco antes de navegar
         (document.activeElement as HTMLElement)?.blur();
         history.push('/admin/alumnos');
       }, 1500);

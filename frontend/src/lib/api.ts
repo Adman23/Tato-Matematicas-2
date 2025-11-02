@@ -264,6 +264,27 @@ export async function fetchStudents() {
   return response.data;
 }
 
+// === SUBIDA DE IMÁGENES ===
+
+/**
+ * Sube una imagen al backend (Supabase Storage).
+ * @param file - Archivo de imagen a subir
+ * @param filename - Nombre único para el archivo
+ * @returns URL pública de la imagen subida
+ */
+export const uploadImage = async (file: File, filename: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('filename', filename);
+
+  const response = await api.post<{ url: string }>('/upload_image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data.url;
+};
 
 // ==== EXPORTACIÓN PRINCIPAL ====
 
