@@ -5,6 +5,8 @@ Endpoints: /auth/register, /auth/login, /auth/me
 from fastapi import APIRouter, HTTPException, status, Depends
 from datetime import datetime, timedelta, timezone
 import jwt
+from ..config import settings
+from supabase import create_client
 from ..schemas.auth import (
     RegisterRequest,
     LoginRequest,
@@ -51,16 +53,15 @@ async def register( data: RegisterRequest,
     try:
         # Create the new user in Supabase Auth
         # The trigger in the database will create the tuple in public.users
-        new_user = supabase_admin.auth.sign_up({
+        
+        new_user = supabase_admin.auth.admin.create_user({
             "email":  f"{data.username}@tatomaths.local",
             "password": data.password,
             "email_confirm": True,
-            "options": {
-                "data":{
-                    "role": data.role,
-                    "photo_url": data.photo_url,
-                    # Add other user metadata for public.users tuple
-                }
+            "user_metadata": {
+                "role": data.role,
+                "photo_url": data.photo_url,
+                # Add other user metadata for public.users tuple
             }
         })
 
