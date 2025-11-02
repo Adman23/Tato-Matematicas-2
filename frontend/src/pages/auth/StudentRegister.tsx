@@ -87,7 +87,6 @@ export default function StudentRegister() {
 
   const isUserNameValid = userName.trim().length >= 3;
   const hasExactlyThreePictograms = pictograms.length === 3;
-  // Avatar requerido: si selectedAvatar está vacío, no se ha elegido nada
   const isAvatarSelected = selectedAvatar !== '';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,22 +108,16 @@ export default function StudentRegister() {
       const password = pictograms.join('-');
       let photoUrl = '';
 
-      // Caso 1: Avatar predefinido
       if (AVATAR_OPTIONS.some(a => a.id === selectedAvatar)) {
         photoUrl = `/assets/perfiles/${selectedAvatar}`;
-      }
-      // Caso 2: Imagen subida por el usuario
-      else if (fileInputRef.current?.files?.[0]) {
+      } else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
         const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
         photoUrl = await uploadImage(file, uniqueFilename);
-      }
-      // Caso 3: Fallback (no debería ocurrir)
-      else {
+      } else {
         photoUrl = DEFAULT_AVATAR;
       }
 
-      // Registrar con photo_url
       await authAPI.register({
         username: userName,
         password: password,
@@ -158,11 +151,8 @@ export default function StudentRegister() {
     setSelectedAvatar('');
     setAvatarPreview('/assets/perfiles/Perfil.png');
     setPictograms([]);
-    
-    // Opcional: cerrar modales si están abiertos
     if (showPictoModal) closePictoModal();
     if (showAvatarModal) closeAvatarModal();
-
     history.push('/admin-dashboard');
   };
 
@@ -212,7 +202,7 @@ export default function StudentRegister() {
       }
       setSelectedAvatar(file.name);
       setAvatarPreview(URL.createObjectURL(file));
-      closeAvatarModal(); // Cierra el modal tras subir
+      closeAvatarModal();
     }
   };
 
@@ -297,21 +287,17 @@ export default function StudentRegister() {
   }, [showAvatarModal, updateAvatarModalPosition]);
 
   const getAvatarDisplayName = () => {
-    // Si es un avatar predefinido
     const predefined = AVATAR_OPTIONS.find(a => a.id === selectedAvatar);
     if (predefined) {
       return predefined.name;
     }
-    // Si es una imagen subida (no empieza con '/assets/')
     if (selectedAvatar && !selectedAvatar.startsWith('/assets/')) {
-      return selectedAvatar; // nombre del archivo
+      return selectedAvatar;
     }
-    // Por defecto
     return 'Seleccionar imagen...';
   };
 
   const handleConfirmClick = () => {
-    // Validaciones
     let errorMsg = '';
     if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
     if (!hasExactlyThreePictograms) errorMsg += 'Debes seleccionar exactamente 3 pictogramas. ';
@@ -324,7 +310,6 @@ export default function StudentRegister() {
       return;
     }
 
-    // Si todo está bien, envía el formulario
     handleSubmit({ preventDefault: () => {} } as React.FormEvent);
   };
 
@@ -335,53 +320,51 @@ export default function StudentRegister() {
       {user && user.role === 'admin' && (
         <SimpleHeaderAdmin adminName={user.username} />
       )}
-      <div className="main-container">
-        {/* resto del contenido */}
-        <div className="form-card" ref={formCardRef}>
+      <div className="student-register-main-container">
+        <div className="student-register-form-card" ref={formCardRef}>
           <h2>Registro Alumno</h2>
 
-          {/* Sección de avatar sin clic para subir */}
-          <div className="avatar-section">
-            <div className="avatar-preview">
+          <div className="student-register-avatar-section">
+            <div className="student-register-avatar-preview">
               {avatarPreview ? (
-                <img src={avatarPreview} alt="Avatar" className="avatar-image" />
+                <img src={avatarPreview} alt="Avatar" className="student-register-avatar-image" />
               ) : (
-                <IonIcon icon={personOutline} className="avatar-icon" />
+                <IonIcon icon={personOutline} className="student-register-avatar-icon" />
               )}
             </div>
 
-            <div className="field-wrapper">
-              <div className="field-label">Avatar *</div>
-              <div className="avatar-select-field" onClick={openAvatarModal}>
+            <div className="student-register-field-wrapper">
+              <div className="student-register-field-label">Avatar *</div>
+              <div className="student-register-avatar-select-field" onClick={openAvatarModal}>
                 <IonText>{avatarDisplayName}</IonText>
               </div>
             </div>
           </div>
 
-          <div className="field-wrapper">
-            <div className="field-label">Usuario *</div>
+          <div className="student-register-field-wrapper">
+            <div className="student-register-field-label">Usuario *</div>
             <IonInput
-              className="input-item"
+              className="student-register-input-item"
               placeholder="Escribir aquí..."
               value={userName}
               onIonInput={(e) => setUserName(e.detail.value || '')}
             />
           </div>
 
-          <div className="field-wrapper">
-            <div className="field-label">Código acceso *</div>
-            <div className="pictogram-container">
+          <div className="student-register-field-wrapper">
+            <div className="student-register-field-label">Código acceso *</div>
+            <div className="student-register-pictogram-container">
               {pictograms.map((pictoId, index) => {
                 const picto = PICTOGRAMS.find(p => p.id === pictoId);
                 return (
-                  <div key={index} className="pictogram-box" onClick={() => removePictogram(index)}>
+                  <div key={index} className="student-register-pictogram-box" onClick={() => removePictogram(index)}>
                     <IonImg src={picto?.image} alt={picto?.name} />
-                    <IonIcon icon={closeOutline} className="pictogram-remove" />
+                    <IonIcon icon={closeOutline} className="student-register-pictogram-remove" />
                   </div>
                 );
               })}
               <div 
-                className={`pictogram-add ${pictograms.length >= MAX_PICTOGRAMS ? 'disabled' : ''}`} 
+                className={`student-register-pictogram-add ${pictograms.length >= MAX_PICTOGRAMS ? 'disabled' : ''}`} 
                 onClick={handleAddPictogram}
               >
                 <IonIcon icon={addOutline} />
@@ -389,19 +372,19 @@ export default function StudentRegister() {
             </div>
           </div>
 
-          <div className="field-wrapper-buttons">
+          <div className="student-register-field-wrapper-buttons">
             <IonButton 
               expand="block" 
-              className={`confirm-button ${
+              className={`student-register-confirm-button ${
                 !isUserNameValid || !hasExactlyThreePictograms || !isAvatarSelected 
-                  ? 'confirm-button--disabled' 
+                  ? 'student-register-confirm-button--disabled' 
                   : ''
               }`}
               onClick={handleConfirmClick}
             >
               Confirmar
             </IonButton>
-            <IonButton expand="block" className="cancel-button" onClick={handleCancel}>
+            <IonButton expand="block" className="student-register-cancel-button" onClick={handleCancel}>
               Cancelar
             </IonButton>
           </div>
@@ -409,23 +392,23 @@ export default function StudentRegister() {
 
         {/* Modal de pictogramas */}
         {showPictoModal && (
-          <div className="picto-picker-overlay" onClick={closePictoModal}>
+          <div className="student-register-picto-picker-overlay" onClick={closePictoModal}>
             <div
               ref={pictoPickerRef}
-              className={`picto-picker-custom ${
-                isPictoModalVisible ? 'picto-picker-visible' : ''
+              className={`student-register-picto-picker-custom ${
+                isPictoModalVisible ? 'student-register-picto-picker-visible' : ''
               }`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="picto-picker-header">
+              <div className="student-register-picto-picker-header">
                 <h3>Selecciona un pictograma</h3>
                 <IonButton fill="clear" size="small" onClick={closePictoModal}>
                   Cerrar
                 </IonButton>
               </div>
-              <div className="picto-grid">
+              <div className="student-register-picto-grid">
                 {PICTOGRAMS.map((picto) => (
-                  <div key={picto.id} className="picto-option" onClick={() => selectPictogram(picto.id)}>
+                  <div key={picto.id} className="student-register-picto-option" onClick={() => selectPictogram(picto.id)}>
                     <IonImg src={picto.image} alt={picto.name} />
                     <span>{picto.name}</span>
                   </div>
@@ -435,36 +418,34 @@ export default function StudentRegister() {
           </div>
         )}
 
-        {/* Modal de avatares con botón "+" al inicio */}
+        {/* Modal de avatares */}
         {showAvatarModal && (
-          <div className="avatar-picker-overlay" onClick={closeAvatarModal}>
+          <div className="student-register-avatar-picker-overlay" onClick={closeAvatarModal}>
             <div
               ref={avatarPickerRef}
-              className={`avatar-picker ${
-                isAvatarModalVisible ? 'avatar-picker-visible' : ''
+              className={`student-register-avatar-picker ${
+                isAvatarModalVisible ? 'student-register-avatar-picker-visible' : ''
               }`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="picto-picker-header">
+              <div className="student-register-picto-picker-header">
                 <h3>Selecciona un avatar</h3>
                 <IonButton fill="clear" size="small" onClick={closeAvatarModal}>
                   Cerrar
                 </IonButton>
               </div>
-              <div className="picto-grid">
-                {/* Botón para subir imagen personalizada */}
-                <div className="picto-option" onClick={triggerFileInput}>
-                  <div className="upload-avatar-placeholder">
-                    <IonIcon icon={addOutline} className="upload-icon" />
+              <div className="student-register-picto-grid">
+                <div className="student-register-picto-option" onClick={triggerFileInput}>
+                  <div className="student-register-upload-avatar-placeholder">
+                    <IonIcon icon={addOutline} className="student-register-upload-icon" />
                   </div>
                   <span>Subir imagen</span>
                 </div>
 
-                {/* Avatares predefinidos */}
                 {AVATAR_OPTIONS.map((avatar) => (
                   <div
                     key={avatar.id}
-                    className="picto-option"
+                    className="student-register-picto-option"
                     onClick={() => handleAvatarSelect(avatar.id)}
                   >
                     <IonImg src={avatar.image} alt={avatar.name} />
@@ -476,7 +457,6 @@ export default function StudentRegister() {
           </div>
         )}
 
-        {/* Input de archivo oculto */}
         <input
           type="file"
           accept="image/*"
@@ -485,14 +465,15 @@ export default function StudentRegister() {
           style={{ display: 'none' }}
         />
 
-        {/* Toast */}
-        <IonToast
-          isOpen={isToastOpen}
-          message={toastMessage}
-          color={toastColor}
-          duration={3000}
-          onDidDismiss={() => setIsToastOpen(false)}
-        />
+        <div className="student-register-toast">
+          <IonToast
+            isOpen={isToastOpen}
+            message={toastMessage}
+            color={toastColor}
+            duration={3000}
+            onDidDismiss={() => setIsToastOpen(false)}
+          />
+        </div>
       </div>
     </IonPage>
   );
