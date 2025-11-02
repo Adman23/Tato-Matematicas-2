@@ -49,7 +49,7 @@ export default function Home() {
           {/* Botones de acceso */}
           <div className="home-buttons">
             <button
-              className="home-button tatomaths-button tatomaths-button-tutor"
+              className=" tatomaths-button"
               onClick={() => history.push('/login')}
               aria-label="Acceso para tutores y administradores"
             >
@@ -64,7 +64,7 @@ export default function Home() {
             </button>
 
             <button
-              className="home-button tatomaths-button tatomaths-button-student"
+              className=" tatomaths-button "
               onClick={() => history.push('/student-login')}
               aria-label="Acceso para estudiantes"
             >
