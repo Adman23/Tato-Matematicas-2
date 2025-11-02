@@ -120,7 +120,7 @@ export default function UserManagement() {
               className="teacherManagement-AddButoon"
               onClick={() =>
                 tipo === 'profesores'
-                  ? history.push('/tutor-register')
+                  ? history.push('/teacher-register')
                   : history.push('/student-register')
               }
             >

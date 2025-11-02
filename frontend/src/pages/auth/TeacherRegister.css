@@ -1,4 +1,4 @@
-.main-container {
+.teacher-register-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,25 +8,26 @@
   transform-origin: top center; 
 }
 
-.title h1 {
+.teacher-register-title h1 {
   color: #000000;
   text-align: center;
   font-size: 3rem;
 }
 
-.form-container-header {
+.teacher-register-form-container-header {
   text-align: center;
 }
 
-.form-container-header h1 {
-  font-size:xx-large;
+.teacher-register-form-container-header h1 {
+  font-size: xx-large;
   color: white;
 }
-.form-container-header h2 {
-  font-size:large;
+
+.teacher-register-form-container-header h2 {
+  font-size: large;
 }
 
-.grid-container {
+.teacher-register-grid-container {
   display: grid;
   grid-template-rows: auto 1fr; 
   gap: 2rem;
@@ -37,38 +38,37 @@
   padding: 2rem;
 }
 
-.grid-content {
+.teacher-register-grid-content {
   display: grid;
-  grid-template-columns: 2fr 2fr; /* form left, image right */
+  grid-template-columns: 2fr 2fr;
   gap: 2rem;
 }
 
-/* Form left & right alignment */
-.form-left, .form-right {
+.teacher-register-form-left,
+.teacher-register-form-right {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.form-right p {
+.teacher-register-form-right p {
   text-align: center;
   margin: 0;
 }
 
-
-/* Profile image container */
-.profile-image-container {
+.teacher-register-profile-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.profile-icon-label {
+.teacher-register-profile-icon-label {
   position: relative;
   cursor: pointer;
 }
 
-.selected-image, .profile-placeholder {
+.teacher-register-selected-image,
+.teacher-register-profile-placeholder {
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -78,28 +78,26 @@
   color: #ffffff;
 }
 
-/* Hide the file input */
-.profile-icon-label input {
+.teacher-register-profile-icon-label input {
   display: none;
 }
 
-/* Responsive: stack columns in mobile */
 @media (max-width: 768px) {
-  .grid-content {
+  .teacher-register-grid-content {
     grid-template-columns: 1fr;
   }
 
-  .form-right {
+  .teacher-register-form-right {
     margin-top: 2rem;
   }
 }
 
-.form-button-container {
+.teacher-register-form-button-container {
   display: flex;
   justify-content: center; 
 }
 
-ion-button.confirm-button::part(native) {
+.teacher-register-confirm-button::part(native) {
   border-radius: 30px;        
   background-color: #ffffff;  
   color: #50BFE6;            
@@ -111,39 +109,34 @@ ion-button.confirm-button::part(native) {
   outline: none;               
 }
 
-.confirm-button:hover::part(native) {
+.teacher-register-confirm-button:hover::part(native) {
   background-color: #f0f0f0; 
 }
 
-.input-with-icon {
+.teacher-register-input-with-icon {
   display: flex;
   align-items: center;   
 }
 
-.input-with-icon ion-icon {
+.teacher-register-input-with-icon ion-icon {
   padding-top: 20px;
   font-size: 1.4rem;     
 }
 
-.input-with-icon ion-item {
+.teacher-register-input-with-icon ion-item {
   border-radius: 30px;        
   background-color: #ffffff;  
 }
 
-ion-input.input::part(native) {
+.teacher-register-input::part(native) {
   border-radius: 30px;
 }
 
-.toast::part(container) {
+.teacher-register-toast::part(container) {
   background-color: #f44336;
   border-radius: 4px;
 }
 
-.toast {
-  margin:850px auto auto auto;
+.teacher-register-toast {
+  margin: 850px auto auto auto;
 }
-
-
-
-
-

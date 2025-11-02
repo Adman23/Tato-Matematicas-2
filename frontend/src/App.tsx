@@ -33,7 +33,7 @@ import StudentDashboard from './pages/student/Dashboard';
 import LinkProfiles from './pages/admin/LinkProfiles';
 import AdminDashboard from './pages/admin/MenuAdmin';
 import userManagement from './pages/admin/userManagement';
-import TeacherRegister from './pages/auth/RegisterTutor';
+import TeacherRegister from './pages/auth/TeacherRegister';
 
 /**
  * Componente raíz de la aplicación.
