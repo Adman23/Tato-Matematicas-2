@@ -21,12 +21,19 @@ import Dashboard from './pages/Dashboard';
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/TutorLogin';
-import StudentLogin from './pages/auth/StudentLogin';
-import RegisterTutor from './pages/auth/RegisterTutor';
+import StudentRegister from './pages/auth/StudentRegister';
+import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
+import StudentLoginStep2 from './pages/auth/StudentLoginStep2';
+import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
 
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
 
+// === Páginas de admin ===
+import LinkProfiles from './pages/admin/LinkProfiles';
+import AdminDashboard from './pages/admin/MenuAdmin';
+import userManagement from './pages/admin/userManagement';
+import TeacherRegister from './pages/auth/RegisterTutor';
 
 /**
  * Componente raíz de la aplicación.
@@ -55,11 +62,22 @@ export default function App() {
           <IonRouterOutlet>
             <Route path="/" exact component={Home} />
             <Route path="/login" exact component={Login} />
-            <Route path="/student-login" exact component={StudentLogin} />
+
+            {/* Rutas del login de estudiante en 3 pasos */}
+            <Route path="/student-login" exact component={StudentLoginStep1} />
+            <Route path="/student-login/step2/:groupId" exact component={StudentLoginStep2} />
+            <Route path="/student-login/step3/:groupId/:username" exact component={StudentLoginStep3} />
+
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
             {/* Nueva ruta de registro de tutores */}
-            <Route path="/register-tutor" exact component={RegisterTutor} />
+            <Route path="/teacher-register" exact component={TeacherRegister} />
+
+            <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
+            <Route path="/admin-dashboard" exact component={AdminDashboard} />
+            <Route path="/student-register" exact component={StudentRegister} />
+            <Route path="/admin/:tipo" exact component={userManagement} />
+
             <Redirect to="/" />
           </IonRouterOutlet>
         </IonReactRouter>

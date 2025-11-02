@@ -12,50 +12,60 @@
 
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
-  IonCard,
-  IonCardContent,
   IonItem,
   IonLabel,
   IonInput,
   IonButton,
   IonText,
   IonIcon,
+  IonToast,
 } from '@ionic/react';
-import { logInOutline, arrowBackOutline } from 'ionicons/icons';
-import { useState } from 'react';
+import { eyeOutline, eyeOffOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
+import { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { authAPI } from '../../lib/api';
+import { setupIonicReact } from '@ionic/react';
 
+import './Login.css';
+
+setupIonicReact();
 
 /**
- * Componente funcional de la pantalla de inicio de sesión.
- *
- * Permite al tutor o administrador autenticarse ingresando su nombre de usuario
- * y contraseña. Realiza validaciones básicas en frontend y muestra errores en caso
- * de credenciales inválidas o problemas de conexión.
- *
- * @returns {JSX.Element} Interfaz del formulario de inicio de sesión.
- *
- * @example
- * ```tsx
- * import Login from "./pages/auth/Login";
- *
- * <Route path="/login" component={Login} />
- * ```
- */
+* Componente funcional de la pantalla de inicio de sesión.
+*
+* Permite al tutor o administrador autenticarse ingresando su nombre de usuario
+* y contraseña. Realiza validaciones básicas en frontend y muestra errores en caso
+* de credenciales inválidas o problemas de conexión.
+*
+* @returns {JSX.Element} Interfaz del formulario de inicio de sesión.
+*
+* @example
+* ```tsx
+* import Login from "./pages/auth/Login";
+*
+* <Route path="/login" component={Login} />
+* ```
+*/
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastColor, setToastColor] = useState<'danger' | 'success'>('danger');
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
   const history = useHistory();
 
+  const clearForm = () => {
+    setUsername('');
+    setPassword('');
+  };
   /**
  * Maneja el envío del formulario de inicio de sesión.
  *
@@ -66,21 +76,16 @@ export default function Login() {
  */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-
-    // Validación frontend antes de enviar
-    if (username.length < 3) {
-      setError('El nombre de usuario debe tener al menos 3 caracteres');
-      return;
-    }
-
+    setToastMessage('');
     setLoading(true);
+
+    let current_error = '';
 
     try {
       await login({ username, password });
-      history.push('/dashboard');
+      clearForm();
+      history.push('/admin-dashboard');
     } catch (err: any) {
-      console.error('Login error:', err);
 
       // Manejar diferentes tipos de errores
       if (err.response) {
@@ -88,109 +93,163 @@ export default function Login() {
         const detail = err.response.data?.detail;
 
         if (status === 404) {
-          setError('El usuario no existe');
+          current_error = ' El usuario es incorrecto ';
         } else if (status === 401) {
-          setError('La contraseña es incorrecta');
-        } else if (status === 422) {
-          setError('El nombre de usuario debe tener al menos 3 caracteres');
-        } else {
-          setError(detail || 'Error al iniciar sesión');
+          current_error = ' La contraseña es incorrecta ';
+        }
+        else {
+          current_error = detail || ' Error al iniciar sesión ';
         }
       } else {
-        setError('Error de conexión. Verifica que el servidor esté activo.');
+        current_error = (' Error de conexión. Verifica que el servidor esté activo. ');
       }
+      console.error('Login error:', current_error);
+
+      // Mostramos el toast con el error
+      setToastMessage(current_error);
+      setToastColor('danger');
+      setShowToast(true);
+
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+* Alterna la visibilidad de la contraseña.
+*/
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  // Estado para existencia del username: null = desconocido/vacío, true = existe, false = no existe
+  const [isUsernameValid, setIsUsernameValid] = useState<boolean | null>(null);
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    const trimmed = username.trim();
+
+    // Resetear si campo vacío
+    if (trimmed.length === 0) {
+      setIsUsernameValid(false);
+      return;
+    }
+
+    // Validación rápida local: evitar peticiones para nombres muy cortos
+    if (trimmed.length < 3) {
+      setIsUsernameValid(false);
+      return;
+    }
+
+    const currentId = ++requestIdRef.current;
+
+    const handler = setTimeout(() => {
+      authAPI.checkUsername(trimmed)
+        .then(res => {
+          if (currentId === requestIdRef.current) {
+            setIsUsernameValid(Boolean(res.exists));
+          }
+        })
+        .catch(() => {
+          if (currentId === requestIdRef.current) {
+            // En caso de error de red, dejamos como inválido para no dar falsas esperanzas
+            setIsUsernameValid(false);
+          }
+        })
+    }, 400); // debounce
+
+    return () => clearTimeout(handler);
+  }, [username]);
+
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Iniciar Sesión - TatoMaths</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      <IonContent fullscreen className="ion-padding login-background">
 
-      <IonContent className="ion-padding">
-        <div style={{ maxWidth: '500px', margin: '40px auto' }}>
-          <IonCard>
-            <IonCardContent>
-              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                <IonIcon
-                  icon={logInOutline}
-                  style={{ fontSize: '64px', color: 'var(--ion-color-primary)' }}
+        <div className="login-container">
+          <div className="main-title">
+            <IonText>
+              <h1>Tato Matemáticas 2</h1>
+            </IonText>
+          </div>
+
+          <div className="login-card">
+            <IonText>
+              <h2> Inicio de sesión</h2>
+              <p>Ingrese sus datos, por favor</p>
+            </IonText>
+
+            <form onSubmit={handleLogin} className="login-form">
+              <IonItem lines="none" className="input-item">
+                <IonLabel position="stacked">Usuario</IonLabel>
+                <IonInput
+                  className='login-custom-input'
+                  type="text"
+                  value={username}
+                  onIonInput={(e) => setUsername(e.detail.value!)}
+                  required
+                  autocomplete="username"
+                  placeholder="Escriba aquí"
                 />
-                <h2 style={{ margin: '16px 0 8px 0' }}>Tutor / Administrador</h2>
-                <p style={{ color: 'var(--ion-color-medium)', margin: 0 }}>
-                  Introduce tus credenciales
-                </p>
-              </div>
 
-              <form onSubmit={handleLogin}>
-                <IonItem>
-                  <IonLabel position="floating">Nombre de usuario</IonLabel>
-                  <IonInput
-                    type="text"
-                    value={username}
-                    onIonInput={(e) => setUsername(e.detail.value!)}
-                    required
-                    minlength={3}
-                    autocomplete="username"
-                    placeholder="Mínimo 3 caracteres"
-                  />
-                </IonItem>
+                <IonIcon
+                  icon={isUsernameValid ? checkmarkOutline : closeOutline}
+                  slot='end'
+                  className="input-icon"
+                />
 
-                {username && username.length < 3 && (
-                  <IonText color="warning">
-                    <p style={{ padding: '4px 16px', margin: 0, fontSize: '12px' }}>
-                      El nombre de usuario debe tener al menos 3 caracteres
-                    </p>
-                  </IonText>
-                )}
+              </IonItem>
 
-                <IonItem style={{ marginTop: '12px' }}>
-                  <IonLabel position="floating">Contraseña</IonLabel>
-                  <IonInput
-                    type="password"
-                    value={password}
-                    onIonInput={(e) => setPassword(e.detail.value!)}
-                    required
-                    autocomplete="current-password"
-                  />
-                </IonItem>
+              <IonItem lines="none" className="input-item">
+                <IonLabel position="stacked">Contraseña</IonLabel>
+                <IonInput
+                  className='login-custom-input'
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onIonInput={(e) => setPassword(e.detail.value!)}
+                  required
+                  autocomplete="current-password"
+                />
+                <IonIcon
+                  icon={showPassword ? eyeOffOutline : eyeOutline}
+                  onClick={togglePasswordVisibility}
+                  slot='end'
+                  className="input-icon"
+                  style={{ cursor: 'pointer' }}
+                />
+              </IonItem>
 
-                {error && (
-                  <IonText color="danger">
-                    <p style={{ padding: '12px 16px', margin: 0, fontSize: '14px' }}>
-                      {error}
-                    </p>
-                  </IonText>
-                )}
+              <IonButton
+                expand="block"
+                type="submit"
+                className='login-button'
+              >
+                {loading ? 'Accediendo...' : 'Acceder'}
+              </IonButton>
 
-                <IonButton
-                  expand="block"
-                  type="submit"
-                  disabled={loading || !username || username.length < 3 || !password}
-                  style={{ marginTop: '24px' }}
-                >
-                  {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-                </IonButton>
-              </form>
-            </IonCardContent>
-          </IonCard>
-
-          <IonButton
-            expand="block"
-            fill="clear"
-            onClick={() => history.push('/')}
-            style={{ marginTop: '16px' }}
-          >
-            <IonIcon icon={arrowBackOutline} slot="start" />
-            Volver al inicio
-          </IonButton>
-        </div>
-      </IonContent>
-    </IonPage>
+              <IonButton
+                className='login-button'
+                expand="block"
+                fill="clear"
+                onClick={() => {
+                  clearForm();
+                  history.push('/');
+                }}
+              >
+                Volver al inicio
+              </IonButton>
+              <IonToast
+                isOpen={showToast}
+                onDidDismiss={() => setShowToast(false)}
+                message={toastMessage}
+                duration={2000}
+                color={toastColor}
+                position="top"
+                cssClass={'custom-form-toast'}
+              />
+            </form>
+          </div >
+        </div >
+      </IonContent >
+    </IonPage >
   );
 }

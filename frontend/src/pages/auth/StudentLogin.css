@@ -3,19 +3,92 @@
    ======================================== */
 
 .student-login-content {
-  --background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  --background: white;
+  overflow: hidden;
 }
 
 .student-login-container {
   max-width: 1200px;
   margin: 0 auto;
   height: 100vh;
-  padding: 2rem;
+  max-height: 100vh;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.8rem;
   overflow: hidden;
 }
+
+/* ========================================
+   BOTONES DE NAVEGACIÓN
+   ======================================== */
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.student-button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  gap: 0.5rem;
+}
+
+/* Estilos comunes para todos los botones de navegación */
+.default-action-button{
+  --padding-start: 0;
+  --padding-end: 0;
+  flex-shrink: 0;
+  height: auto;
+
+}
+
+.default-action-button::part(native){
+  display: flex;             /* añade display flex */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;                  /* espacio icono-texto */
+  border-radius: 16px;
+  padding: 0.5rem;
+}
+
+.default-action-button::part(native):hover,
+.default-action-button::part(native):focus-visible {
+  background-color: var(--ion-color-primary);
+}
+
+.default-action-button {
+  margin: 0;
+  width: 80px;
+  height: 80px;
+}
+
+.student-login-container > .default-action-button {
+  margin: 20px;
+}
+
+
+.student-boton-imagen {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.default-action-button-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.1;
+  text-align: center;
+  pointer-events: none; /* evita interferencias con el clic */
+}
+
 
 /* ========================================
    HEADER
@@ -27,37 +100,49 @@
 }
 
 .student-login-title {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: #000000;
-  margin: 0 0 0.5rem 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 0.3rem 0;
 }
 
 .student-login-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #801616;
+  color: #000000;
   margin: 0;
+}
+
+.student-login-image {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
 }
 
 /* ========================================
    SECUENCIA SELECCIONADA
    ======================================== */
 
+.student-sequence-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .student-sequence-display {
-  background: rgba(216, 206, 206, 0.95);
+  background: rgba(119, 114, 114, 0.5);
   border-radius: 16px;
-  padding: 1rem;
-  min-height: 100px;
+  padding: 0.8rem;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  flex: 1;
 }
 
 .student-sequence-placeholder {
-  color: #94a3b8;
+  color: #0a1c36;
   font-size: 1.1rem;
   font-weight: 600;
 }
@@ -71,126 +156,72 @@
 
 .student-sequence-item {
   position: relative;
-  width: 200px;
-  height: 200px;
-  background: white;
-  border: 3px solid #f093fb;
-  border-radius: 12px;
-  padding: 0.5rem;
+  width: 120px;
+  height: 120px;
+  padding: 0.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.student-sequence-image {
+.student-sequence-image,
+.student-pictogram-image,
+.student-boton-imagen {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
-/*
-.student-sequence-number {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 50px;
-  height: 50px;
-  background: #e5ff00;
-  color: rgb(0, 0, 0);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 0.9rem;
-}
-*/
+
 /* ========================================
-   GRID DE PICTOGRAMAS (5 en 1 fila)
+   GRID DE PICTOGRAMAS
    ======================================== */
 
 .student-pictograms-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-  flex: 0.5;
+  gap: 0.8rem;
+  flex: 1;
   align-content: center;
+  max-height: 35vh;
+  width: 100%;
 }
 
 .student-pictogram-button {
+  position: relative;
+  border: 6px solid transparent;
   background: transparent;
-  border: none;
-  border-radius: 20px;
-  padding: 0.5rem;
   cursor: pointer;
+  border-radius: 12px;
+  padding: 0.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  outline: none;
   aspect-ratio: 1;
-  position: relative;
-  outline: 3px solid transparent;
-  outline-offset: 4px;
-}
-
-.student-pictogram-button::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  background: rgba(16, 185, 129, 0.4);
-  border-radius: 24px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.3),
-              0 0 25px 10px rgba(16, 185, 129, 0.35);
-}
-
-.student-pictogram-button:hover:not(:disabled)::before,
-.student-pictogram-button:focus:not(:disabled)::before,
-.student-pictogram-button:focus-visible:not(:disabled)::before {
-  opacity: 1;
-}
-
-.student-pictogram-button:focus-visible {
-  outline: 5px solid #10b981;
-  outline-offset: 8px;
-}
-
-.student-pictogram-button:hover:not(:disabled) {
-  transform: scale(1.15);
-}
-
-.student-pictogram-button:active:not(:disabled) {
-  transform: scale(1.05);
-}
-
-.student-pictogram-button:active:not(:disabled)::before {
-  background: rgba(16, 185, 129, 0.55);
-  box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.4),
-              0 0 35px 15px rgba(16, 185, 129, 0.5);
-}
-
-.student-pictogram-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.student-pictogram-image {
+  min-height: 0;
+  min-width: 0;
+  max-width: min(20vh, 180px);
+  max-height: min(20vh, 180px);
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
-  transition: filter 0.3s ease;
-  position: relative;
-  z-index: 1;
+  margin: 0 auto;
 }
 
-.student-pictogram-button:hover:not(:disabled) .student-pictogram-image,
-.student-pictogram-button:focus:not(:disabled) .student-pictogram-image {
-  filter: drop-shadow(0 6px 20px rgba(16, 185, 129, 0.6));
+.student-pictogram-button:hover:not(:disabled),
+.student-pictogram-button:focus-visible:not(:disabled) {
+  border-color: var(--ion-color-primary);
+  background-color: var(--ion-color-primary);
+  outline: 2px solid black;
+}
+
+.student-pictogram-button.selected {
+  border-color: var(--ion-color-success);
+  background-color: var(--ion-color-success);
+  outline: 2px solid black;
 }
 
 /* ========================================
-   ERROR
+   MENSAJES DE ERROR Y CARGA
    ======================================== */
 
 .student-error-message {
@@ -208,174 +239,240 @@
   margin: 0;
 }
 
-/* ========================================
-   BOTONES
-   ======================================== */
-
-/* Layout de acciones: 2/1 en desktop, 1/1 en móvil */
-.student-actions {
-  display: grid;
-  grid-template-columns: 2fr 2fr 2fr;
-  gap: 1.5rem;
-  flex-shrink: 0;
-}
-@media (max-width: 640px) {
-  .student-actions {
-    grid-template-columns: 1fr;
-  }
+.student-loading,
+.student-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
 }
 
-/* Botones dentro de .student-actions */
-.student-actions ion-button {
-  /* Tamaño y forma (usar variables de Ionic) */
-  --border-radius: 20px;
-  --box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  --padding-top: 1.5rem;
-  --padding-bottom: 1.5rem;
-  --padding-start: 1.25rem;
-  --padding-end: 1.25rem;
-  --min-height: 72px;                 /* en lugar de min-height “normal” */
-
-  /* Estados accesibles */
-  --background-focused: var(--background);   /* mantiene el gradiente al enfocar */
-  --background-activated: rgba(0,0,0,0.06);  /* toque/pulsación */
-  --ripple-color: rgba(0,0,0,0.12);
-
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-/* Tipografía dentro del Shadow DOM del botón */
-.student-actions ion-button::part(native) {
-  font-weight: 800;
-  font-size: 1.25rem;  /* grande y legible */
-  text-transform: none;
-  letter-spacing: 0.5px;
-  
-}
-/* Efecto hover: solo remarcar el botón real */
-.student-actions ion-button:hover:not([disabled])::part(native) {
-  outline: 10px solid #10b981;
-  outline-offset: 2px;
-  border-radius: 16px;
-  transition: outline 0.2s ease;
-}
-
-.student-actions ion-button:active:not([disabled]) {
-  transform: translateY(-1px) scale(1.005);
-}
-
-/* Focus visible accesible (teclado/lectores) */
-.student-actions ion-button::part(native):focus-visible {
-  outline: 10px solid #10b981;
-  outline-offset: 3px;
-  border-radius: 16px;
-}
-
-/* LOGIN — gradiente y contraste */
-ion-button.student-login-button {
-  --color: #ffffff;
-  --background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  --background-focused: linear-gradient(135deg, #0fb07d 0%, #058a61 100%);
-  --background-activated: linear-gradient(135deg, #059669 0%, #047857 100%);
-}
-ion-button.student-login-button:hover:not([disabled]) {
-  --background: linear-gradient(135deg, #059669 0%, #047857 100%);
-}
-ion-button.student-login-button[disabled] {
-  --opacity: 0.6;
-}
-
-/* BOTÓN BORRAR (outline): borde grueso y legible */
-.student-actions ion-button[fill="outline"] {
-  --color: #374151;
-  --border-color: #9ca3af;
-  --border-width: 2px;
-  --min-height: 64px;
-}
-.student-actions ion-button[fill="outline"]::part(native) {
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-/* VOLVER (clear): grande y con buen contraste */
-ion-button.student-back-button {
-  --color: rgba(207, 35, 35, 0.98);
-  --padding-top: 1rem;
-  --padding-bottom: 1rem;
-  --min-height: 64px;
-  --border-radius: 40px;
-  margin-top: 0.5rem;
-}
-ion-button.student-back-button::part(native) {
+.student-loading p,
+.student-error p {
   font-size: 1.2rem;
-  font-weight: 900;
-}
-
-/* Iconos un poco más grandes y con separación */
-ion-button .button-native ion-icon[slot="start"] {
-  font-size: 1.25rem;
-  margin-inline-end: 8px;
+  font-weight: 600;
+  color: #000000;
 }
 
 /* ========================================
-   TABLET (< 1024px)
+   SELECCIÓN DE GRUPO Y USUARIO
    ======================================== */
 
-@media (max-width: 1024px) {
+.student-selection-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.student-selection-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.student-selection-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #000000;
+  margin: 0;
+  flex: 1;
+}
+
+.student-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  overflow-y: auto;
+  padding: 0.5rem;
+  align-content: start;
+}
+
+.student-selection-card {
+  position: relative;
+  aspect-ratio: 1;
+  background: white;
+  border: 4px solid #4a90e2;
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.student-selection-card:hover,
+.student-selection-card:focus-visible {
+  background: #f0f9ff;
+}
+
+.student-selection-letter {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #4a90e2;
+  line-height: 1;
+}
+
+.student-selection-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+.student-selection-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-selection-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+.student-selection-check {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  opacity: 0;
+}
+
+.student-selection-check img {
+  width: 100%;
+  height: 100%;
+}
+
+.student-selection-card:hover .student-selection-check,
+.student-selection-card:focus-visible .student-selection-check {
+  opacity: 1;
+}
+
+/* ========================================
+   CARDS DE GRUPO Y USUARIO
+   ======================================== */
+
+.student-group-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(119, 114, 114, 0.5);
+  border-radius: 12px;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+.student-group-card h2 {
+  color: black;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  max-height: 3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding: 0.2rem;
+}
+
+.student-user-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 0.4rem;
+  gap: 0.4rem;
+  overflow: hidden;
+}
+
+.student-user-photo {
+  width: 100%;
+  height: auto;
+  max-width: min(70%, 120px);
+  max-height: min(70%, 120px);
+  aspect-ratio: 1;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  object-fit: cover;
+  flex: 0 1 auto;
+}
+
+.student-user-card h3 {
+  color: #000000;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+  width: 100%;
+  min-height: 1.5em;
+  overflow: hidden;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  flex: 0 0 auto;
+  padding: 0.1rem 0.2rem;
+}
+
+/* ========================================
+   MEDIA QUERIES
+   ======================================== */
+
+/* Pantalla Mediana: < 1024px ancho O < 768px alto */
+@media (max-width: 1024px), (max-height: 768px) {
   .student-login-container {
-    padding: 1rem;
-    gap: 1rem;
+    padding: 0.6rem;
+    gap: 0.6rem;
   }
 
-  .student-login-title {
-    font-size: 1.8rem;
-  }
-
-  .student-login-subtitle {
-    font-size: 1.15rem;
-  }
-
-  .student-sequence-display {
-    min-height: 100px;
-    padding: 0.8rem;
-  }
-
-  .student-sequence-item {
+  .student-login-image {
     width: 100px;
     height: 100px;
   }
 
-  .student-pictogram-button {
-    padding: 0.4rem;
-  }
-
-  .student-actions ion-button {
-    font-size: 1.4rem;
-    min-height: 65px;
-  }
-}
-
-/* ========================================
-   MÓVIL (< 768px)
-   ======================================== */
-
-@media (max-width: 768px) {
-  .student-login-container {
-    padding: 0.8rem;
-    gap: 0.8rem;
-  }
-
   .student-login-title {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 
   .student-login-subtitle {
-    font-size: 1.05rem;
+    font-size: 1rem;
   }
 
   .student-sequence-display {
-    min-height: 85px;
-    padding: 0.6rem;
+    min-height: 65px;
+    padding: 0.5rem;
   }
 
   .student-sequence-item {
@@ -383,121 +480,49 @@ ion-button .button-native ion-icon[slot="start"] {
     height: 80px;
   }
 
-  .student-sequence-number {
-    width: 28px;
-    height: 28px;
-    font-size: 0.85rem;
-  }
-
   .student-pictograms-grid {
     gap: 0.6rem;
-  }
-
-  .student-pictogram-button {
-    padding: 0.35rem;
-  }
-
-  .student-pictogram-button::before {
-    inset: -6px;
-  }
-
-  .student-actions {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .student-actions ion-button {
-    font-size: 1.3rem;
-    min-height: 60px;
-  }
-}
-
-/* ========================================
-   MÓVIL PEQUEÑO (< 480px)
-   ======================================== */
-
-@media (max-width: 480px) {
-  .student-login-container {
-    padding: 0.6rem;
-    gap: 0.6rem;
-  }
-
-  .student-login-title {
-    font-size: 1.4rem;
-  }
-
-  .student-login-subtitle {
-    font-size: 0.95rem;
-  }
-
-  .student-sequence-display {
-    min-height: 75px;
-    padding: 0.5rem;
-  }
-
-  .student-sequence-item {
-    width: 70px;
-    height: 70px;
-    border-width: 2px;
-  }
-
-  .student-sequence-number {
-    width: 26px;
-    height: 26px;
-    font-size: 0.8rem;
-  }
-
-  .student-pictograms-grid {
-    gap: 0.5rem;
-    grid-template-columns: repeat(5, 1fr);
+    max-height: 32vh;
   }
 
   .student-pictogram-button {
     padding: 0.3rem;
+    border-width: 5px;
   }
 
-  .student-pictogram-button::before {
-    inset: -5px;
+  .default-action-button{
+    width: 65px;
+    height: 65px;
   }
 
-  .student-error-message p {
-    font-size: 1.05rem;
-  }
-
-  .student-actions ion-button {
-    font-size: 1.2rem;
-    min-height: 55px;
+  .student-login-container > .default-action-button {
+    margin: 15px;
   }
 }
 
-/* ========================================
-   LANDSCAPE (< 650px altura)
-   ======================================== */
-
-@media (max-height: 650px) and (orientation: landscape) {
+/* Pantalla Pequeña: < 768px ancho O < 650px alto */
+@media (max-width: 768px), (max-height: 650px) {
   .student-login-container {
-    padding: 0.6rem;
+    padding: 0.5rem;
     gap: 0.5rem;
   }
 
-  .student-login-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .student-login-image {
+    display: none;
   }
 
   .student-login-title {
     font-size: 1.3rem;
-    margin: 0;
+    margin: 0.2rem 0;
   }
 
   .student-login-subtitle {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .student-sequence-display {
-    min-height: 65px;
-    padding: 0.5rem;
+    min-height: 55px;
+    padding: 0.4rem;
   }
 
   .student-sequence-item {
@@ -505,82 +530,250 @@ ion-button .button-native ion-icon[slot="start"] {
     height: 65px;
   }
 
-  .student-sequence-number {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-  }
-
   .student-pictograms-grid {
     gap: 0.5rem;
+    max-height: 28vh;
   }
 
   .student-pictogram-button {
-    padding: 0.3rem;
+    padding: 0.2rem;
+    border-width: 4px;
+    border-radius: 10px;
   }
 
-  .student-pictogram-button::before {
-    inset: -5px;
+
+  .default-action-button{
+    width: 55px;
+    height: 55px;
   }
 
-  .student-back-button {
+  .student-login-container > .default-action-button {
+    margin: 12px;
+  }
+
+  .student-selection-grid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .student-selection-title {
+    font-size: 1.5rem;
+  }
+
+  .student-selection-letter {
+    font-size: 2.5rem;
+  }
+
+  .student-selection-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .student-selection-label {
+    font-size: 0.8rem;
+  }
+
+  .student-error-message {
+    padding: 0.6rem;
+  }
+
+  .student-error-message p {
+    font-size: 0.95rem;
+  }
+
+  .student-user-card h3 {
+    font-size: 0.5rem;
+  }
+
+  .student-user-photo {
+    max-width: min(65%, 100px);
+    max-height: min(65%, 100px);
+  }
+
+  .student-group-card h2 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Pantalla Muy Pequeña: < 480px ancho O < 520px alto */
+@media (max-width: 480px), (max-height: 520px) {
+  .student-login-container {
+    padding: 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .student-login-image {
     display: none;
   }
 
-  .student-actions {
-    grid-template-columns: 2fr 1fr;
-  }
-
-  .student-actions ion-button {
+  .student-login-title {
     font-size: 1.1rem;
+    margin: 0.15rem 0;
+  }
+
+  .student-login-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .student-sequence-display {
     min-height: 50px;
-    --padding-top: 0.8rem;
-    --padding-bottom: 0.8rem;
+    padding: 0.35rem;
+  }
+
+  .student-sequence-placeholder {
+    font-size: 0.85rem;
+  }
+
+  .student-sequence-item {
+    width: 55px;
+    height: 55px;
+  }
+
+  .student-pictograms-grid {
+    gap: 0.35rem;
+    max-height: 25vh;
+  }
+
+  .student-pictogram-button {
+    padding: 0.15rem;
+    border-width: 3px;
+    border-radius: 8px;
+  }
+
+  .student-error-message {
+    padding: 0.5rem;
+  }
+
+  .student-error-message p {
+    font-size: 0.9rem;
+  }
+
+  .default-action-button{
+    width: 45px;
+    height: 45px;
+  }
+
+  .student-login-container > .default-action-button {
+    margin: 8px;
+  }
+
+  .student-selection-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.4rem;
+  }
+
+  .student-selection-letter {
+    font-size: 1.8rem;
+  }
+
+  .student-selection-image {
+    width: 45px;
+    height: 45px;
+  }
+
+  .student-selection-label {
+    font-size: 0.75rem;
+  }
+
+  .student-user-card h3 {
+    font-size: 0.5rem;
+  }
+
+  .student-user-photo {
+    max-width: min(60%, 90px);
+    max-height: min(60%, 90px);
+  }
+
+  .student-group-card h2 {
+    font-size: 0.7rem;
   }
 }
 
-/* ========================================
-   ACCESIBILIDAD
-   ======================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  .student-pictogram-button,
-  .student-pictogram-button::before,
-  .student-pictogram-image,
-  .student-actions ion-button {
-    transition: none !important;
+/* Pantalla Crítica: < 400px ancho O < 420px alto */
+@media (max-width: 400px), (max-height: 420px) {
+  .student-login-container {
+    padding: 0.25rem;
+    gap: 0.25rem;
   }
 
-  .student-pictogram-button:hover,
-  .student-pictogram-button:active {
-    transform: none !important;
+  .student-login-title {
+    font-size: 0.95rem;
   }
 
-  .student-actions ion-button:hover,
-  .student-actions ion-button:active {
-    transform: none !important;
-  }
-}
-
-@media (prefers-contrast: high) {
-  .student-pictogram-button::before {
-    background: rgba(16, 185, 129, 0.6);
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.4),
-                0 0 30px 12px rgba(16, 185, 129, 0.5);
+  .student-login-subtitle {
+    font-size: 0.7rem;
   }
 
-  .student-pictogram-button:hover:not(:disabled) .student-pictogram-image,
-  .student-pictogram-button:focus:not(:disabled) .student-pictogram-image {
-    filter: drop-shadow(0 8px 28px rgba(16, 185, 129, 0.8));
+  .student-sequence-display {
+    min-height: 40px;
+    padding: 0.25rem;
   }
 
-  .student-pictogram-button:focus-visible {
-    outline: 6px solid #10b981;
-    outline-offset: 10px;
+  .student-sequence-placeholder {
+    font-size: 0.7rem;
   }
 
-  .student-actions ion-button:focus-visible {
-    outline: 6px solid #10b981;
-    outline-offset: 6px;
+  .student-sequence-item {
+    width: 45px;
+    height: 45px;
+  }
+
+  .student-pictograms-grid {
+    gap: 0.25rem;
+    max-height: 22vh;
+  }
+
+  .student-pictogram-button {
+    padding: 0.1rem;
+    border-width: 2px;
+    border-radius: 6px;
+  }
+
+  .default-action-button{
+    width: 50px;
+    height: 50px;
+  }
+
+  .student-login-container > .default-action-button {
+    margin: 6px;
+  }
+
+  .student-error-message {
+    padding: 0.4rem;
+  }
+
+  .student-error-message p {
+    font-size: 0.8rem;
+  }
+
+  .student-selection-grid {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 0.3rem;
+  }
+
+  .student-selection-letter {
+    font-size: 1.5rem;
+  }
+
+  .student-selection-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .student-selection-label {
+    font-size: 0.7rem;
+  }
+
+  .student-user-card h3 {
+    font-size: 0.4rem;
+  }
+
+  .student-group-card h2 {
+    font-size: 0.6rem;
+  }
+
+  .student-user-photo {
+    max-width: min(55%, 80px);
+    max-height: min(55%, 80px);
   }
 }

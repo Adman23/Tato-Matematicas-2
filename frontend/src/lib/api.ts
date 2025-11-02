@@ -32,16 +32,10 @@ export const api = axios.create({
  * en el encabezado `Authorization` de cada petición.
  */
 api.interceptors.request.use((config) => {
-  // Primero intenta con el token de tutor/admin
+  // Todos los usuarios (tutor/admin/estudiante) ahora usan access_token
   const accessToken = localStorage.getItem('access_token');
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
-  } else {
-    // Si no hay access_token, intenta con el token de estudiante
-    const studentToken = localStorage.getItem('token');
-    if (studentToken) {
-      config.headers.Authorization = `Bearer ${studentToken}`;
-    }
   }
   return config;
 });
@@ -60,25 +54,22 @@ api.interceptors.response.use(
       // Solo redirigir si NO es un endpoint de login/auth
       // Los endpoints de login pueden devolver 401 por credenciales incorrectas
       const isAuthEndpoint = error.config?.url?.includes('/auth/login') ||
-                            error.config?.url?.includes('/auth/student') ||
-                            error.config?.url?.includes('/auth/register');
+        error.config?.url?.includes('/auth/student') ||
+        error.config?.url?.includes('/auth/register');
 
       if (!isAuthEndpoint) {
-        // Token inválido o expirado, determinar qué tipo de usuario y limpiar
-        const hasAccessToken = localStorage.getItem('access_token');
-        const hasStudentToken = localStorage.getItem('token');
+        // Token inválido o expirado, limpiar todo
+        const isStudent = !!localStorage.getItem('student');
 
-        // Limpiar tokens y datos
         localStorage.removeItem('access_token');
         localStorage.removeItem('user');
-        localStorage.removeItem('token');
         localStorage.removeItem('student_id');
         localStorage.removeItem('student');
 
         // Redirigir según el tipo de usuario
-        if (hasStudentToken) {
+        if (isStudent) {
           window.location.href = '/student-login';
-        } else if (hasAccessToken) {
+        } else {
           window.location.href = '/login';
         }
       }
@@ -128,8 +119,8 @@ export interface AuthResponse {
  * Respuesta de autenticación de estudiante.
  */
 export interface StudentAuthResponse {
-  token: string;
-  student_id: string;
+  access_token: string;
+  token_type: string;
   student: Student;
 }
 
@@ -139,8 +130,8 @@ export interface StudentAuthResponse {
 export interface RegisterData {
   username: string;
   password: string;
-  full_name: string;
-  role: 'admin' | 'tutor';
+  role: 'admin' | 'teacher' | 'student';
+  photo_url?: string; 
 }
 
 /**
@@ -155,7 +146,26 @@ export interface LoginData {
  * Datos requeridos para el login de estudiante (pictogramas).
  */
 export interface StudentLoginData {
-  pictos: string[];
+  group_id: string;
+  username: string;
+  password: string; // formato: "perro-gato-león"
+}
+
+/**
+ * Representa un grupo de estudiantes.
+ */
+export interface Group {
+  id: number;
+  alias: string;
+}
+
+/**
+ * Información básica de estudiante para selección.
+ */
+export interface StudentBasicInfo {
+  id: string;
+  username: string;
+  photo_url?: string;
 }
 
 // === ENDPOINTS DE AUTENTICACIÓN ===
@@ -170,9 +180,8 @@ export const authAPI = {
    * @param data - Datos de registro.
    * @returns Información del usuario y tokens de acceso.
    */
-  register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
+  register: (data: RegisterData) => {
+    return api.post('/auth/register', data);
   },
 
   /**
@@ -182,6 +191,16 @@ export const authAPI = {
    */
   login: async (data: LoginData): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/login', data);
+    return response.data;
+  },
+
+  /**
+   * Comprueba si un username existe en la base de datos (tabla public.users).
+   * @param username - Nombre de usuario a comprobar
+   * @returns { exists: boolean }
+   */
+  checkUsername: async (username: string): Promise<{ exists: boolean }> => {
+    const response = await api.get<{ exists: boolean }>(`/auth/exists/${encodeURIComponent(username)}`);
     return response.data;
   },
 
@@ -210,13 +229,102 @@ export const authAPI = {
    * @returns Token y perfil del estudiante autenticado.
    */
   loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
-    const response = await api.post<StudentAuthResponse>('/auth/student', data);
+    const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
+    return response.data;
+  },
+
+  /**
+   * Obtener todos los grupos disponibles.
+   * @returns Lista de grupos.
+   */
+  getGroups: async (): Promise<Group[]> => {
+    const response = await api.get<Group[]>('/auth/groups');
+    return response.data;
+  },
+
+  /**
+   * Obtener estudiantes de un grupo específico.
+   * @param groupId - ID del grupo.
+   * @returns Lista de estudiantes del grupo.
+   */
+  getStudentsByGroup: async (groupId: string): Promise<StudentBasicInfo[]> => {
+    const response = await api.get<StudentBasicInfo[]>(`/auth/groups/${groupId}/students`);
     return response.data;
   },
 };
 
 // === OTROS ENDPOINTS ===
+export async function fetchTeachers() {
+  const response = await api.get("/api/admin/teachers");
+  return response.data;
+}
 
+export async function fetchStudents() {
+  const response = await api.get("/api/admin/students");
+  return response.data;
+}
+
+export async function fetchTeachersWithGroups() {
+  const response = await api.get("/api/teacher/all");
+  return response.data;
+}
+
+export async function fetchStudentsWithGroups() {
+  const response = await api.get("/api/student/all");
+  return response.data;
+}
+
+export async function assignStudentsToGroup(groupId: number, studentIds: string[]) {
+  const response = await api.post('/api/admin/students/assign', {
+    group_id: groupId,
+    student_ids: studentIds,
+  });
+  return response.data;
+}
+
+export async function assignTeachersToGroup(groupId: number, teacherIds: string[]) {
+  const response = await api.post('/api/admin/teachers/assign', {
+    group_id: groupId,
+    teacher_ids: teacherIds,
+  });
+  return response.data;
+}
+
+export async function unassignStudentsFromGroup(studentIds: string[]) {
+  const response = await api.post('/api/admin/students/unassign', {
+    student_ids: studentIds,
+  });
+  return response.data;
+}
+
+export async function unassignTeachersFromGroup(groupId: number, teacherIds: string[]) {
+  const response = await api.post('/api/admin/teachers/unassign', {
+    group_id: groupId,
+    teacher_ids: teacherIds,
+  });
+  return response.data;
+}
+// === SUBIDA DE IMÁGENES ===
+
+/**
+ * Sube una imagen al backend (Supabase Storage).
+ * @param file - Archivo de imagen a subir
+ * @param filename - Nombre único para el archivo
+ * @returns URL pública de la imagen subida
+ */
+export const uploadImage = async (file: File, filename: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('filename', filename);
+
+  const response = await api.post<{ url: string }>('/upload_image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data.url;
+};
 
 // ==== EXPORTACIÓN PRINCIPAL ====
 

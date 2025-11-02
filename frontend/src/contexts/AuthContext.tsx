@@ -61,10 +61,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
    */
   useEffect(() => {
     const loadAuth = async () => {
-      // Intentar cargar tutor/admin
       const token = localStorage.getItem('access_token');
       const savedUser = localStorage.getItem('user');
+      const savedStudent = localStorage.getItem('student');
 
+      // Priorizar la carga de estudiante si existe (los estudiantes también tienen access_token)
+      if (savedStudent) {
+        try {
+          setStudent(JSON.parse(savedStudent));
+          setLoading(false);
+          return; // Salir temprano, es un estudiante
+        } catch (error) {
+          console.error('Error loading student:', error);
+          localStorage.removeItem('student');
+          localStorage.removeItem('student_id');
+          setStudent(null);
+        }
+      }
+
+      // Si no hay estudiante, intentar cargar tutor/admin
       if (token && savedUser) {
         try {
           setUser(JSON.parse(savedUser));
@@ -73,26 +88,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setUser(currentUser);
           localStorage.setItem('user', JSON.stringify(currentUser));
         } catch (error) {
-          console.error('Error loading user:', error);
+          // Mostrar también la respuesta del servidor (si la hay) para facilitar el debug
+          console.error('Error loading user:', error, (error as any)?.response?.data);
           localStorage.removeItem('access_token');
           localStorage.removeItem('user');
           setUser(null);
-        }
-      }
-
-      // Intentar cargar estudiante
-      const studentToken = localStorage.getItem('token');
-      const savedStudent = localStorage.getItem('student');
-
-      if (studentToken && savedStudent) {
-        try {
-          setStudent(JSON.parse(savedStudent));
-        } catch (error) {
-          console.error('Error loading student:', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('student');
-          localStorage.removeItem('student_id');
-          setStudent(null);
         }
       }
 
@@ -117,27 +117,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   /**
    * Inicia sesión de estudiante mediante pictogramas.
    * Guarda su token y datos básicos.
+   * Ahora usa el nuevo flujo: group_id + username + password (pictogramas unidos por guiones).
    */
   const loginStudent = async (data: StudentLoginData) => {
     const response = await authAPI.loginStudent(data);
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('student_id', response.student_id);
+    // El backend ahora devuelve access_token (no token) y student (UserProfile)
+    localStorage.setItem('access_token', response.access_token);
     localStorage.setItem('student', JSON.stringify(response.student));
+    localStorage.setItem('student_id', response.student.id);
     setStudent(response.student);
     setUser(null); // Asegurar que no hay usuario activo
   };
 
-  /**
-   * Registra un nuevo tutor o administrador.
-   * Deja la sesión iniciada tras el registro.
-   */
-  const register = async (data: RegisterData) => {
-    const response = await authAPI.register(data);
-    localStorage.setItem('access_token', response.access_token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    setUser(response.user);
-    setStudent(null); // Asegurar que no hay estudiante activo
-  };
+ /**
+ * Registra un nuevo usuario (tutor, admin o estudiante).
+ * NO inicia sesión ni modifica el estado de autenticación actual.
+ * Ideal para uso desde el panel de administración.
+ */
+const register = async (data: RegisterData) => {
+  await authAPI.register(data);
+};
 
   const registerTutor = async (data: RegisterData) => {
     // Reusa tu API existente
@@ -170,7 +169,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setStudent(null);
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
     localStorage.removeItem('student_id');
     localStorage.removeItem('student');
 
