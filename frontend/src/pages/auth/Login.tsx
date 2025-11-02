@@ -96,8 +96,6 @@ export default function Login() {
           current_error = ' El usuario es incorrecto ';
         } else if (status === 401) {
           current_error = ' La contraseña es incorrecta ';
-        } else if (status === 422) {
-          current_error = 'El usuario o la contraseña son incorrectos '
         }
         else {
           current_error = detail || ' Error al iniciar sesión ';

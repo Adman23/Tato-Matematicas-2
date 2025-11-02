@@ -12,6 +12,7 @@ Las dependencias se integran en los endpoints mediante el parámetro
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
+import traceback
 from .config import settings
 from .services.supabase import supabase, supabase_admin
 
@@ -70,8 +71,6 @@ async def get_current_user(
         
         # Obtener perfil del usuario desde la BD
         responseAuth = supabase_admin.auth.admin.get_user_by_id(user_id)
-        responsePublic = supabase.table("users").select("*").eq("id", user_id).execute()
-
         
         # Validar si existe el usuario en Auth
         if not responseAuth or not responseAuth.user:
@@ -79,9 +78,13 @@ async def get_current_user(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found"
             )
+        
+        responsePublic = supabase_admin.table("users").select("*").eq("id", user_id).execute()
 
         # Validar si existe en la tabla pública
         if not responsePublic.data or len(responsePublic.data) == 0:
+            #print(responseAuth)
+            #print(responsePublic)
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User public not found"
@@ -100,6 +103,9 @@ async def get_current_user(
             detail="Expired or invalid token"
         )
     except Exception as e:
+        # Print full traceback to help debugging in development
+        print("Error in get_current_user:", str(e))
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error verifiying the token: {str(e)}"
