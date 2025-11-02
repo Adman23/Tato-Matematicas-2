@@ -131,7 +131,7 @@ export interface RegisterData {
   username: string;
   password: string;
   role: 'admin' | 'teacher' | 'student';
-  photo_url?: string; // 👈 Añadido
+  photo_url?: string; 
 }
 
 /**
