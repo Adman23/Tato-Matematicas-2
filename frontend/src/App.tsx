@@ -17,7 +17,7 @@ import { AuthProvider } from './contexts/AuthContext';
 
 // === Páginas principales ===
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
+
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
@@ -29,10 +29,15 @@ import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
 
+// == Paginas de tutor ====
+
+import TutorDashboard from './pages/tutor/Dashboard';
+
 // === Páginas de admin ===
 import LinkProfiles from './pages/admin/LinkProfiles';
 import AdminDashboard from './pages/admin/MenuAdmin';
 import userManagement from './pages/admin/userManagement';
+
 
 
 /**
@@ -68,8 +73,8 @@ export default function App() {
             <Route path="/student-login/step2/:groupId" exact component={StudentLoginStep2} />
             <Route path="/student-login/step3/:groupId/:username" exact component={StudentLoginStep3} />
 
-            <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+            <Route path="/tutor-dashboard" exact component={TutorDashboard} />
 
             <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin-dashboard" exact component={AdminDashboard} />

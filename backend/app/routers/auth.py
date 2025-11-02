@@ -156,6 +156,7 @@ async def login(data: LoginRequest):
                 "id": auth_response.user.id,
                 "username": auth_response.user.email.split("@")[0],
                 "role": response_user_public.data[0]["role"],
+                "photo_url": response_user_public.data[0].get("photo_url"),
                 "notes": response_user_profile.data[0].get("notes"),
                 "visual_preferences": response_user_profile.data[0].get("visual_preferences"),
                 "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
@@ -172,6 +173,7 @@ async def login(data: LoginRequest):
                 "id": auth_response.user.id,
                 "username": auth_response.user.email.split("@")[0],
                 "role": response_user_public.data[0]["role"],
+                "photo_url": response_user_public.data[0].get("photo_url"),
             }
             return AuthResponse(
                 access_token=auth_response.session.access_token,
@@ -419,6 +421,7 @@ async def login_student(data: StudentLoginRequest):
                 "id": auth_response.user.id,
                 "username": data.username,
                 "role": "student",
+                "photo_url": response_user.data[0].get("photo_url"),
                 "notes": response_profile.data[0].get("notes"),
                 "visual_preferences": response_profile.data[0].get("visual_preferences"),
                 "audio_preferences": response_profile.data[0].get("audio_preferences"),
@@ -435,6 +438,7 @@ async def login_student(data: StudentLoginRequest):
                 "id": auth_response.user.id,
                 "username": data.username,
                 "role": "student",
+                "photo_url": response_user.data[0].get("photo_url"),
             }
             return StudentAuthResponse(
                 access_token=auth_response.session.access_token,

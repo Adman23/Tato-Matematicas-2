@@ -1,0 +1,82 @@
+/* Header adaptativo */
+ion-header {
+  height: clamp(80px, 20vh, 200px);
+  background: var(--ion-color-primary);
+}
+
+/* Toolbar */
+ion-toolbar.toolbar-link-profiles {
+  --background: var(--ion-color-primary);
+  --border-width: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: clamp(8px, 2vw, 16px);
+  --padding-end: clamp(8px, 2vw, 16px);
+  height: 100%;
+  min-height: clamp(80px, 20vh, 200px);
+}
+
+/* Slot izquierdo - toma menos espacio */
+ion-toolbar.toolbar-link-profiles ion-buttons[slot="start"] {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  flex: 0 1 auto;
+}
+
+/* Slot derecho - ocupa más espacio para "MI PERFIL" + imagen */
+ion-toolbar.toolbar-link-profiles ion-buttons[slot="end"] {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* Botón de perfil */
+.header-profile-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  height: 100%;
+  margin: 0;
+}
+
+/* Contenedor del botón */
+.profile-button-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  background-color: green;
+  border-radius: 20%;
+}
+
+/* Imágenes de avatar */
+.user-dashborad-img {
+  height: clamp(50px, 14vh, 120px);
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Separación: imagen → texto (izquierda) */
+ion-toolbar.toolbar-link-profiles ion-buttons[slot="start"] .user-dashborad-img {
+  margin-right: clamp(100px, 4vw, 60px);
+}
+
+/* Separación: texto → imagen (derecha) */
+.profile-button-content .header-text {
+  margin-right: clamp(27px, 4vw, 60px);
+  font-size: clamp(0.9rem, 3vmin, 1.5rem);
+}
+
+/* Texto del header */
+.header-text {
+  color: white;
+  font-weight: 700;
+  font-size: clamp(1.2rem, 4vmin, 2.5rem);
+  white-space: nowrap;
+}
