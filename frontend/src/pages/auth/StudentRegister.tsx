@@ -153,7 +153,7 @@ export default function StudentRegister() {
     setPictograms([]);
     if (showPictoModal) closePictoModal();
     if (showAvatarModal) closeAvatarModal();
-    history.push('/admin-dashboard');
+    history.push('/admin/alumnos');
   };
 
   // === PICTOGRAMAS ===
