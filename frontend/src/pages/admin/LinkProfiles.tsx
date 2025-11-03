@@ -187,7 +187,7 @@ export default function LinkProfiles() {
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName="Admin" />
+            <SimpleHeaderAdmin adminName={user.username} />
             <IonContent className="ion-padding">
                 <ClassSelect
                     classes={groups}
