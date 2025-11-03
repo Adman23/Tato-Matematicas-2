@@ -17,6 +17,8 @@ import {
 import { useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authAPI, uploadImage } from '../../lib/api';
+import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
+import { useAuth } from '../../contexts/AuthContext';
 
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
@@ -24,7 +26,6 @@ export default function TeacherRegister() {
   const history = useHistory();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [fullName, setFullName] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -36,16 +37,15 @@ export default function TeacherRegister() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
 
-  const isFullNameValid = fullName.trim().length >= 3;
   const isUserNameValid = userName.trim().length >= 3;
   const isPasswordValid = password.length >= 6;
   const doPasswordsMatch = password === confirmPassword;
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let errorMsg = '';
-    if (!isFullNameValid) errorMsg += 'El nombre debe tener al menos 3 caracteres. ';
     if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
     if (!isPasswordValid) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
     if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
@@ -102,87 +102,90 @@ export default function TeacherRegister() {
 
   return (
     <IonPage>
+      {user && user.role === 'admin' && (
+        <SimpleHeaderAdmin adminName={user.username} />
+      )}
       <div className="teacher-register-main-container">
-        <div className="teacher-register-title">
-          <h1>Tato matematicas 2</h1>
-        </div>
-
-        <form className="teacher-register-grid-container" onSubmit={handleSubmit}>
+        <div className="teacher-register-form-card">
           <div className="teacher-register-form-container-header">
-            <h1>Registro</h1>
-            <h2>Rellene los siguientes campos, por favor</h2>
+            <h2>Registro</h2>
+            <p>Rellene los siguientes campos, por favor</p>
           </div>
 
           <div className="teacher-register-grid-content">
             <div className="teacher-register-form-left">
-              <div className="teacher-register-input-with-icon">
-                <IonInput
-                  label="Usuario *"
-                  labelPlacement="floating"
-                  placeholder="Escribir aquí..."
-                  value={userName}
-                  onIonInput={(e) => setUserName(e.detail.value || '')}
-                  required
-                  className="teacher-register-input"
-                />
-                <IonIcon icon={isUserNameValid ? checkmarkOutline : closeOutline} />
+              <div className="teacher-register-field-wrapper">
+                <div className="teacher-register-field-label">Usuario *</div>
+                <div className="teacher-register-input-with-icon">
+                  <IonInput
+                    placeholder="Escribir aquí..."
+                    value={userName}
+                    onIonInput={(e) => setUserName(e.detail.value || '')}
+                    className="teacher-register-input-item"
+                  />
+                  <IonIcon icon={isUserNameValid ? checkmarkOutline : closeOutline} />
+                </div>
               </div>
 
-              <div className="teacher-register-input-with-icon">
-                <IonInput
-                  label="Contraseña *"
-                  labelPlacement="floating"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onIonInput={(e) => setPassword(e.detail.value || '')}
-                  required
-                />
-                <IonIcon
-                  icon={showPassword ? eyeOffOutline : eyeOutline}
-                  slot="end"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{ cursor: 'pointer' }}
-                />
+              <div className="teacher-register-field-wrapper">
+                <div className="teacher-register-field-label">Contraseña *</div>
+                <div className="teacher-register-input-with-icon">
+                  <IonInput
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onIonInput={(e) => setPassword(e.detail.value || '')}
+                    className="teacher-register-input-item"
+                  />
+                  <IonIcon
+                    icon={showPassword ? eyeOffOutline : eyeOutline}
+                    slot="end"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                </div>
               </div>
 
-              <div className="teacher-register-input-with-icon">
-                <IonInput
-                  label="Repita la contraseña *"
-                  labelPlacement="floating"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onIonInput={(e) => setConfirmPassword(e.detail.value || '')}
-                  required
-                />
-                <IonIcon
-                  icon={showConfirmPassword ? eyeOffOutline : eyeOutline}
-                  slot="end"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  style={{ cursor: 'pointer' }}
-                />
+              <div className="teacher-register-field-wrapper">
+                <div className="teacher-register-field-label">Repita la contraseña *</div>
+                <div className="teacher-register-input-with-icon">
+                  <IonInput
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onIonInput={(e) => setConfirmPassword(e.detail.value || '')}
+                    className="teacher-register-input-item"
+                  />
+                  <IonIcon
+                    icon={showConfirmPassword ? eyeOffOutline : eyeOutline}
+                    slot="end"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                </div>
               </div>
             </div>
 
             <div className="teacher-register-form-right">
-              <p>Seleccione una foto</p>
-              <div className="teacher-register-profile-image-container" onClick={triggerFileInput}>
-                {selectedImage ? (
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Perfil"
-                    className="teacher-register-selected-image"
-                  />
-                ) : (
-                  <IonIcon icon={personCircleOutline} className="teacher-register-profile-placeholder" />
-                )}
+              <div className="teacher-register-field-wrapper">
+                <div className="teacher-register-field-label">Foto de perfil</div>
+                <div className="teacher-register-profile-image-container" onClick={triggerFileInput}>
+                  {selectedImage ? (
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Perfil"
+                      className="teacher-register-selected-image"
+                    />
+                  ) : (
+                    <IonIcon icon={personCircleOutline} className="teacher-register-profile-placeholder" />
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                />
               </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-              />
             </div>
           </div>
 
@@ -191,17 +194,12 @@ export default function TeacherRegister() {
               expand="block"
               type="submit"
               className="teacher-register-confirm-button"
-              disabled={
-                !isFullNameValid ||
-                !isUserNameValid ||
-                !isPasswordValid ||
-                !doPasswordsMatch
-              }
+              disabled={!isUserNameValid || !isPasswordValid || !doPasswordsMatch}
             >
               Confirmar
             </IonButton>
           </div>
-        </form>
+        </div>
 
         <IonToast
           isOpen={isToastOpen}

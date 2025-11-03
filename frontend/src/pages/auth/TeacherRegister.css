@@ -1,47 +1,70 @@
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA - TeacherRegister
+   ========================================================================== */
+
 .teacher-register-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
   font-family: 'Atkinson Hyperlegible', sans-serif;
-  transform: scale(1.4);
-  transform-origin: top center; 
+  background-color: #ffffff;
+  min-height: 100vh;
+  width: 100%;
+  padding: 1.5rem;
 }
 
-.teacher-register-title h1 {
-  color: #000000;
-  text-align: center;
-  font-size: 3rem;
+/* =============================================================================
+   TARJETA DEL FORMULARIO
+   ========================================================================== */
+
+.teacher-register-form-card {
+  width: 95%;
+  max-width: 600px;
+  background-color: #50BFE6;
+  border-radius: 24px;
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .teacher-register-form-container-header {
   text-align: center;
 }
 
-.teacher-register-form-container-header h1 {
-  font-size: xx-large;
-  color: white;
-}
-
 .teacher-register-form-container-header h2 {
-  font-size: large;
+  color: white;
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem 0;
 }
 
-.teacher-register-grid-container {
-  display: grid;
-  grid-template-rows: auto 1fr; 
-  gap: 2rem;
-  border-radius: 32px;
-  width: 100%;
-  max-width: 600px;
-  background-color: #50BFE6;
-  padding: 2rem;
+.teacher-register-form-container-header p {
+  color: white;
+  font-size: 1rem;
+  margin: 0;
 }
+
+@media (min-width: 768px) {
+  .teacher-register-form-card {
+    padding: 2rem;
+  }
+
+  .teacher-register-form-container-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* =============================================================================
+   GRID DE CONTENIDO
+   ========================================================================== */
 
 .teacher-register-grid-content {
   display: grid;
   grid-template-columns: 2fr 2fr;
-  gap: 2rem;
+  gap: 1.2rem;
 }
 
 .teacher-register-form-left,
@@ -51,20 +74,15 @@
   justify-content: center;
 }
 
-.teacher-register-form-right p {
+.teacher-register-form-right .teacher-register-field-label {
   text-align: center;
-  margin: 0;
 }
 
 .teacher-register-profile-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.teacher-register-profile-icon-label {
-  position: relative;
-  cursor: pointer;
+  margin-top: 0.5rem;
 }
 
 .teacher-register-selected-image,
@@ -78,9 +96,100 @@
   color: #ffffff;
 }
 
-.teacher-register-profile-icon-label input {
-  display: none;
+/* =============================================================================
+   CAMPOS COMUNES
+   ========================================================================== */
+
+.teacher-register-field-wrapper {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
+
+.teacher-register-field-label {
+  color: #000000;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.teacher-register-input-item {
+  --background: white;
+  --border-radius: 20px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  width: 100%;
+  border: none;
+  margin: 0;
+}
+
+.teacher-register-input-with-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.teacher-register-input-with-icon ion-icon:last-child {
+  position: absolute;
+  right: 12px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.teacher-register-input-with-icon ion-icon:first-child {
+  padding-left: 12px;
+  font-size: 1.4rem;
+  color: var(--ion-color-medium);
+}
+
+/* =============================================================================
+   BOTÓN
+   ========================================================================== */
+
+.teacher-register-form-button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.teacher-register-confirm-button {
+  --background: white;
+  --color: #50BFE6;
+  --border-radius: 20px;
+  --padding: 0.8rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.teacher-register-confirm-button::part(native) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  outline: none;
+}
+
+.teacher-register-confirm-button:hover::part(native) {
+  background-color: #f0f0f0;
+}
+
+/* =============================================================================
+   TOAST
+   ========================================================================== */
+
+.teacher-register-toast ion-toast {
+  --background: #f44336;
+  --color: white;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ========================================================================== */
 
 @media (max-width: 768px) {
   .teacher-register-grid-content {
@@ -88,55 +197,6 @@
   }
 
   .teacher-register-form-right {
-    margin-top: 2rem;
+    margin-top: 1.2rem;
   }
-}
-
-.teacher-register-form-button-container {
-  display: flex;
-  justify-content: center; 
-}
-
-.teacher-register-confirm-button::part(native) {
-  border-radius: 30px;        
-  background-color: #ffffff;  
-  color: #50BFE6;            
-  font-weight: bold;
-  padding: 0.8rem 2rem;       
-  max-width: 600px;           
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-  border: none;   
-  outline: none;               
-}
-
-.teacher-register-confirm-button:hover::part(native) {
-  background-color: #f0f0f0; 
-}
-
-.teacher-register-input-with-icon {
-  display: flex;
-  align-items: center;   
-}
-
-.teacher-register-input-with-icon ion-icon {
-  padding-top: 20px;
-  font-size: 1.4rem;     
-}
-
-.teacher-register-input-with-icon ion-item {
-  border-radius: 30px;        
-  background-color: #ffffff;  
-}
-
-.teacher-register-input::part(native) {
-  border-radius: 30px;
-}
-
-.teacher-register-toast::part(container) {
-  background-color: #f44336;
-  border-radius: 4px;
-}
-
-.teacher-register-toast {
-  margin: 850px auto auto auto;
 }
