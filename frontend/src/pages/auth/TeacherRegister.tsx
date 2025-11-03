@@ -100,6 +100,29 @@ export default function TeacherRegister() {
     }
   };
 
+  const handleConfirmClick = () => {
+    let errorMsg = '';
+    if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
+    if (!isPasswordValid) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
+    if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
+
+    if (errorMsg) {
+      setToastMessage(errorMsg);
+      setToastColor('danger');
+      setIsToastOpen(true);
+      return;
+    }
+    // Si todo es válido, envía el formulario
+    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+  };
+
+  const handleCancel = () => {
+    setUserName('');
+    setPassword('');
+    setConfirmPassword('');
+    history.push('/admin/profesores');
+  };
+
   return (
     <IonPage>
       {user && user.role === 'admin' && (
@@ -192,11 +215,17 @@ export default function TeacherRegister() {
           <div className="teacher-register-form-button-container">
             <IonButton
               expand="block"
-              type="submit"
-              className="teacher-register-confirm-button"
-              disabled={!isUserNameValid || !isPasswordValid || !doPasswordsMatch}
+              className={`teacher-register-confirm-button ${
+                !isUserNameValid || !isPasswordValid || !doPasswordsMatch
+                  ? 'teacher-register-confirm-button--disabled'
+                  : ''
+              }`}
+              onClick={handleConfirmClick}
             >
               Confirmar
+            </IonButton>
+            <IonButton expand="block" className="student-register-cancel-button" onClick={handleCancel}>
+              Cancelar
             </IonButton>
           </div>
         </div>

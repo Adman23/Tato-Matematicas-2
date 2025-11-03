@@ -42,7 +42,7 @@
 }
 
 .teacher-register-form-container-header p {
-  color: white;
+  color: rgb(0, 0, 0);
   font-size: 1rem;
   margin: 0;
 }
@@ -83,6 +83,7 @@
   justify-content: center;
   align-items: center;
   margin-top: 0.5rem;
+  cursor: pointer;
 }
 
 .teacher-register-selected-image,
@@ -106,14 +107,12 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
 }
 
 .teacher-register-field-label {
   color: #000000;
-  font-weight: bold;
   font-size: 0.9rem;
-  margin: 0;
+  margin: 0.4rem 0; 
 }
 
 .teacher-register-input-item {
@@ -162,7 +161,6 @@
   --color: #50BFE6;
   --border-radius: 20px;
   --padding: 0.8rem 1.5rem;
-  font-weight: bold;
   font-size: 1rem;
   width: 100%;
   max-width: 300px;
@@ -176,6 +174,14 @@
 
 .teacher-register-confirm-button:hover::part(native) {
   background-color: #f0f0f0;
+}
+
+.teacher-register-confirm-button--disabled {
+  opacity: 0.8;
+}
+
+.teacher-register-confirm-button--disabled::part(native) {
+  cursor: not-allowed !important;
 }
 
 /* =============================================================================
@@ -200,3 +206,4 @@
     margin-top: 1.2rem;
   }
 }
+
