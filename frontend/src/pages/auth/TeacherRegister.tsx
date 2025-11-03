@@ -120,6 +120,7 @@ export default function TeacherRegister() {
     setUserName('');
     setPassword('');
     setConfirmPassword('');
+    setSelectedImage(null);
     history.push('/admin/profesores');
   };
 
@@ -224,7 +225,7 @@ export default function TeacherRegister() {
             >
               Confirmar
             </IonButton>
-            <IonButton expand="block" className="student-register-cancel-button" onClick={handleCancel}>
+            <IonButton expand="block" className="teacher-register-cancel-button" onClick={handleCancel}>
               Cancelar
             </IonButton>
           </div>

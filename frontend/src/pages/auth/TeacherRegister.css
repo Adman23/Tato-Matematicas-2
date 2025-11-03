@@ -153,12 +153,24 @@
 
 .teacher-register-form-button-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .teacher-register-confirm-button {
   --background: white;
   --color: #50BFE6;
+  --border-radius: 20px;
+  --padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.teacher-register-cancel-button {
+  --background: rgb(0, 110, 255);
+  --color: #ffffff;
   --border-radius: 20px;
   --padding: 0.8rem 1.5rem;
   font-size: 1rem;
