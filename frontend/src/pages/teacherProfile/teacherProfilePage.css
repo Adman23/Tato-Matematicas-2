@@ -3,7 +3,14 @@
     border: 3px solid var(--ion-color-primary);
     overflow-y: auto;
     width: 80%;
-    height: 95%;
+    height: 85%;
     border-radius: 20px;
     margin: auto auto;
+}
+
+.perfilProfesor-buscador{
+
+    width: 350px;
+    margin: auto auto;
+
 }

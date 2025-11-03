@@ -13,7 +13,7 @@ from ..config import settings
 
 router = APIRouter()
 
-
+DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
 @router.get("/students", summary="Gets all the students of a teacher")
 async def list_students(teacher=Depends(get_current_user)):
@@ -63,7 +63,7 @@ async def list_students(teacher=Depends(get_current_user)):
             students.append({
                 "id": sid,
                 "username": au.user.email.split("@")[0],
-                "photo_url": s.get("photo_url") or None,
+                "photo_url": s.get("photo_url") or DEFAULT_AVATAR,
                 "group_id": s.get("group_id"),
                 "group_alias": group_alias.get(s.get("group_id"))
             })

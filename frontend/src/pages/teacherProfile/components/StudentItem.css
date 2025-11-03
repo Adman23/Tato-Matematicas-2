@@ -46,12 +46,13 @@
 .student-item__name {
   font-size: 16px;
   font-weight: 600;
+  width: 120px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
-.student-item__icons::part(native){
+.student-item__icons{
 
     display: flex;
     gap: 10px;
@@ -63,19 +64,13 @@
   background-color: white;
   width: 30px;
   height: 30px;
+  box-shadow: none;
+  border-radius: 1px;
 }
 
-ion-button.Button::part(native) {
+ion-button.StudentItem_perfilProfesor_Button {
   background: white;   
-  border-radius: 10px; 
-  --width: 20px;
-  --height: 20px;
-  border: none;
-}
-
-ion-button.Button ion-icon {
-  color: #50BFE6;
-  background-color: white;
-  width: 30px;
-  height: 30px;
+  border: 2px solid #50BFE6;
+  border-radius: 10px;
+  box-shadow: none;
 }

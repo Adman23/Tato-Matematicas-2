@@ -3,7 +3,6 @@ ion-header.headerBackground {
   color: white;
   /*padding-bottom: 16px;*/
   box-shadow: none;
-  height: 250px;
   width: 100%;
 }
 
@@ -15,20 +14,22 @@ ion-toolbar.toolbarTransparent {
 }
 
 .profileAvatar{
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     border: 6px solid white;
     border-radius: 50%;
     overflow: hidden;
     margin-left: 50px;
-    margin-top: 120px;
+    /*margin-top: 120px;*/
     flex: 0 0 auto;
 }
 
 .profileAvatar img {
+
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .container {
@@ -70,7 +71,7 @@ ion-button.homeButton ion-icon {
     flex-grow: 2;
     justify-content: space-between;
     align-items: center;
-    margin-top: 110px;
+    /*margin-top: 110px;*/
 }
 
 .profileName{
@@ -81,6 +82,7 @@ ion-button.homeButton ion-icon {
     text-align: left;
     margin-left: 20px;
 }
+
 ion-buttons.actionButtons {
   display: flex;
   gap: 8px;
@@ -93,7 +95,8 @@ ion-buttons.actionButtons {
 ion-button.editButton::part(native),
 ion-button.logoutButton::part(native) {
   border-radius: 18px;
-  height: 36px;
+  height: 50px;
+  width: 100px;
   min-width: 36px;
   padding: 0 10px;
   display: flex;
@@ -103,7 +106,7 @@ ion-button.logoutButton::part(native) {
 
 
 ion-button.editButton::part(native) {
-  --width: 50;
+  --width: 70px;
   --height: 48px;
   background-color: white;
   color: var(--ion-color-primary);

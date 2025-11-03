@@ -38,15 +38,15 @@ const StudentItem: React.FC<Props> = ({
                 
                 <div className='student-item__icons'>
 
-                    <IonButton className='Button' onClick={onStatisticsClick}>
+                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onStatisticsClick}>
                         <IonIcon slot="icon-only" md={trendingUpSharp}></IonIcon>
                     </IonButton>
 
-                    <IonButton className='Button' onClick={onStatisticsClick}>
+                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onStatisticsClick}>
                         <IonIcon slot="icon-only" md={informationCircle}></IonIcon>
                     </IonButton>
 
-                    <IonButton className='Button' onClick={onStatisticsClick}>
+                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onStatisticsClick}>
                         <IonIcon slot="icon-only" md={create}></IonIcon>
                     </IonButton>
 
