@@ -1,19 +1,20 @@
 
-ion-header.headerBackground {
+ion-header.headerBackground-teacherProfile {
   color: white;
   /*padding-bottom: 16px;*/
   box-shadow: none;
   width: 100%;
+  height: 176px;
 }
 
-ion-toolbar.toolbarTransparent {
+ion-toolbar.toolbarTransparent-teacherProfile {
 
   border: none;
   padding: 0;
   width: 100%;
 }
 
-.profileAvatar{
+.profileAvatar-teacherProfile{
     width: 150px;
     height: 150px;
     border: 6px solid white;
@@ -24,7 +25,7 @@ ion-toolbar.toolbarTransparent {
     flex: 0 0 auto;
 }
 
-.profileAvatar img {
+.profileAvatar-teacherProfile img {
 
   width: 100%;
   height: 100%;
@@ -32,7 +33,7 @@ ion-toolbar.toolbarTransparent {
   object-position: center;
 }
 
-.container {
+.container-teacherProfile {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -42,13 +43,13 @@ ion-toolbar.toolbarTransparent {
 
 }
 
-ion-button.homeButton{
+ion-button.homeButton-teacherProfile{
 
     align-self: flex-start;
     margin: 20px 20px;
 }
 
-ion-button.homeButton::part(native) {
+ion-button.homeButton-teacherProfile::part(native) {
   background: white;
   border-radius: 10px; 
   --width: 20px;
@@ -56,14 +57,14 @@ ion-button.homeButton::part(native) {
   border: none;
 }
 
-ion-button.homeButton ion-icon {
+ion-button.homeButton-teacherProfile ion-icon {
   color: #50BFE6;
   background-color: white;
   width: 30px;
   height: 30px;
 }
 
-.infoButtons{
+.infoButtons-teacherProfile{
 
     display: flex;
     flex-direction: row;
@@ -74,7 +75,7 @@ ion-button.homeButton ion-icon {
     /*margin-top: 110px;*/
 }
 
-.profileName{
+.profileName-teacherProfile{
 
     font-size: 50px;
     font-weight: 600;
@@ -83,7 +84,7 @@ ion-button.homeButton ion-icon {
     margin-left: 20px;
 }
 
-ion-buttons.actionButtons {
+ion-buttons.actionButtons-teacherProfile {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
@@ -92,8 +93,8 @@ ion-buttons.actionButtons {
 
 }
 
-ion-button.editButton::part(native),
-ion-button.logoutButton::part(native) {
+ion-button.editButton-teacherProfile::part(native),
+ion-button.logoutButton-teacherProfile::part(native) {
   border-radius: 18px;
   height: 50px;
   width: 100px;
@@ -105,7 +106,7 @@ ion-button.logoutButton::part(native) {
 }
 
 
-ion-button.editButton::part(native) {
+ion-button.editButton-teacherProfile::part(native) {
   --width: 70px;
   --height: 48px;
   background-color: white;
@@ -115,7 +116,7 @@ ion-button.editButton::part(native) {
   margin-bottom: 20px;
 }
 
-ion-button.logoutButton::part(native) {
+ion-button.logoutButton-teacherProfile::part(native) {
   --width: 50;
   --height: 48px;
   background-color: white;

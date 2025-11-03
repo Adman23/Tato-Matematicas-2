@@ -8,6 +8,7 @@ import {
 import './SimpleHeaderUser.css';
 import { useHistory } from 'react-router-dom';
 import { setupIonicReact } from '@ionic/react';
+import { useAuth } from '../../../contexts/AuthContext';
 
 setupIonicReact();
 
@@ -22,17 +23,23 @@ const SimpleHeaderUser: React.FC<Props> = ({
 }) => {
 
   const history = useHistory();
+  const { user } = useAuth();
 
 
 
   const handleProfile = () => {
     //REDIRIGIR AL PERFIL DEL USUARIO
-    if (history.location.pathname !== '/admin-dashboard') {
+    /*if (history.location.pathname !== '/admin-dashboard') {
       history.replace('/admin-dashboard');
     }
     else {
       history.replace('/admin-dashboard');
-    }
+    }*/
+
+      if(user?.role === "teacher"){
+
+        history.replace('/teacher-profile');
+      }
   }
 
   return (

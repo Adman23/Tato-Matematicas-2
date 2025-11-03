@@ -10,7 +10,7 @@ import {
 } from '@ionic/react';
 import { homeOutline } from 'ionicons/icons';
 import './HeaderTeacherItem.css';
-import { useHistory } from 'react-router';
+//import { useHistory } from 'react-router';
 
 interface Props {
   teacherName: string;
@@ -25,34 +25,34 @@ const HeaderItem: React.FC<Props> = ({
   teacherAvatar,
   onEditClick,
   onLogoutClick,
-  onHomeClick
+  //onHomeClick
 }) => {
 
 
     return(
 
-        <IonHeader className="headerBackground">
+        <IonHeader className="headerBackground-teacherProfile">
 
-            <IonToolbar className="toolbarTransparent">
+            <IonToolbar className="toolbarTransparent-teacherProfile">
 
-                <div className='container'>
+                <div className='container-teacherProfile'>
 
-                    <IonButton className='homeButton' >
+                    <IonButton className='homeButton-teacherProfile' >
                         <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
                     </IonButton>
 
-                    <IonAvatar className="profileAvatar">
+                    <IonAvatar className="profileAvatar-teacherProfile">
                         <img src={teacherAvatar} alt="Avatar"/>
                     </IonAvatar>
 
-                    <div className='infoButtons'>
+                    <div className='infoButtons-teacherProfile'>
 
-                        <IonTitle className="profileName">{teacherName}</IonTitle>
-                        <IonButtons slot="end" className="actionButtons">
-                            <IonButton className="editButton" onClick={onEditClick}>
+                        <IonTitle className="profileName-teacherProfile">{teacherName}</IonTitle>
+                        <IonButtons slot="end" className="actionButtons-teacherProfile">
+                            <IonButton className="editButton-teacherProfile" onClick={onEditClick}>
                             Editar
                             </IonButton>
-                            <IonButton className="logoutButton" onClick={onLogoutClick}>
+                            <IonButton className="logoutButton-teacherProfile" onClick={onLogoutClick}>
                             Cerrar sesión
                             </IonButton>
                         </IonButtons>
