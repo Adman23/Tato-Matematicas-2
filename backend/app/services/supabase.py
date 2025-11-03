@@ -11,7 +11,6 @@ explícitamente (ej. creación de usuarios por admins).
 
 from supabase import create_client
 from ..config import settings
-
 # Cliente normal (con ANON_KEY) → respeta RLS
 # Usado en la mayoría de endpoints (login, /me, etc.)
 supabase = create_client(

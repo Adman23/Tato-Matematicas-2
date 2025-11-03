@@ -5,6 +5,8 @@ Endpoints: /auth/register, /auth/login, /auth/me
 from fastapi import APIRouter, HTTPException, status, Depends
 from datetime import datetime, timedelta, timezone
 import jwt
+from ..config import settings
+from supabase import create_client
 from ..schemas.auth import (
     RegisterRequest,
     LoginRequest,
@@ -51,16 +53,15 @@ async def register( data: RegisterRequest,
     try:
         # Create the new user in Supabase Auth
         # The trigger in the database will create the tuple in public.users
-        new_user = supabase_admin.auth.singUp({
+        
+        new_user = supabase_admin.auth.admin.create_user({
             "email":  f"{data.username}@tatomaths.local",
             "password": data.password,
             "email_confirm": True,
-            "options": {
-                "data":{
-                    "role": data.role,
-                    "photo_url": data.photo_url,
-                    # Add other user metadata for public.users tuple
-                }
+            "user_metadata": {
+                "role": data.role,
+                "photo_url": data.photo_url,
+                # Add other user metadata for public.users tuple
             }
         })
 
@@ -156,6 +157,7 @@ async def login(data: LoginRequest):
                 "id": auth_response.user.id,
                 "username": auth_response.user.email.split("@")[0],
                 "role": response_user_public.data[0]["role"],
+                "photo_url": response_user_public.data[0].get("photo_url"),
                 "notes": response_user_profile.data[0].get("notes"),
                 "visual_preferences": response_user_profile.data[0].get("visual_preferences"),
                 "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
@@ -172,6 +174,7 @@ async def login(data: LoginRequest):
                 "id": auth_response.user.id,
                 "username": auth_response.user.email.split("@")[0],
                 "role": response_user_public.data[0]["role"],
+                "photo_url": response_user_public.data[0].get("photo_url"),
             }
             return AuthResponse(
                 access_token=auth_response.session.access_token,
@@ -419,6 +422,7 @@ async def login_student(data: StudentLoginRequest):
                 "id": auth_response.user.id,
                 "username": data.username,
                 "role": "student",
+                "photo_url": response_user.data[0].get("photo_url"),
                 "notes": response_profile.data[0].get("notes"),
                 "visual_preferences": response_profile.data[0].get("visual_preferences"),
                 "audio_preferences": response_profile.data[0].get("audio_preferences"),
@@ -435,6 +439,7 @@ async def login_student(data: StudentLoginRequest):
                 "id": auth_response.user.id,
                 "username": data.username,
                 "role": "student",
+                "photo_url": response_user.data[0].get("photo_url"),
             }
             return StudentAuthResponse(
                 access_token=auth_response.session.access_token,

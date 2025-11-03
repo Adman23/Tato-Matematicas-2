@@ -81,11 +81,17 @@ export default function Login() {
 
     let current_error = '';
 
-    try {
-      await login({ username, password });
-      clearForm();
-      history.push('/admin-dashboard');
-    } catch (err: any) {
+try {
+  await login({ username, password });
+  //En si la funcion no devolvia role, asi qeu lo cojo de localStorage
+  const userData = JSON.parse(localStorage.getItem('user') || '{}');
+  clearForm();
+  if (userData.role === 'admin') {
+    history.push('/admin-dashboard');
+  } else if (userData.role === 'teacher') {
+    history.push('/tutor-dashboard');
+  };
+} catch (err: any) {
 
       // Manejar diferentes tipos de errores
       if (err.response) {
@@ -96,8 +102,6 @@ export default function Login() {
           current_error = ' El usuario es incorrecto ';
         } else if (status === 401) {
           current_error = ' La contraseña es incorrecta ';
-        } else if (status === 422) {
-          current_error = 'El usuario o la contraseña son incorrectos '
         }
         else {
           current_error = detail || ' Error al iniciar sesión ';

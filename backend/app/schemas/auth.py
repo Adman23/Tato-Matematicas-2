@@ -61,6 +61,7 @@ class User(BaseModel):
     id: str
     username: str
     role: str
+    photo_url: str | None = None
 
     class Config:
         from_attributes = True

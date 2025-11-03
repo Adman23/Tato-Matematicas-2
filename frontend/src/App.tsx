@@ -17,16 +17,21 @@ import { AuthProvider } from './contexts/AuthContext';
 
 // === Páginas principales ===
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
+
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
+import StudentRegister from './pages/auth/StudentRegister';
 import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
 import StudentLoginStep2 from './pages/auth/StudentLoginStep2';
 import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
 
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
+
+// == Paginas de tutor ====
+
+import TutorDashboard from './pages/tutor/Dashboard';
 
 // === Páginas de admin ===
 import LinkProfiles from './pages/admin/LinkProfiles';
@@ -35,6 +40,7 @@ import userManagement from './pages/admin/userManagement';
 
 // === Perfil profesor ===
 import TeacherProfilePage from './pages/teacherProfile/teacherProfilePage';
+
 
 
 /**
@@ -70,13 +76,15 @@ export default function App() {
             <Route path="/student-login/step2/:groupId" exact component={StudentLoginStep2} />
             <Route path="/student-login/step3/:groupId/:username" exact component={StudentLoginStep3} />
 
-            <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+            <Route path="/tutor-dashboard" exact component={TutorDashboard} />
 
             <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin-dashboard" exact component={AdminDashboard} />
+            <Route path="/student-register" exact component={StudentRegister} />
             <Route path="/admin/:tipo" exact component={userManagement} />
             <Route path="/teacher-profile" exact component={TeacherProfilePage} />
+
             <Redirect to="/" />
           </IonRouterOutlet>
         </IonReactRouter>

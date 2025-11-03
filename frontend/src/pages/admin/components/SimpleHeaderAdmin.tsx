@@ -35,26 +35,21 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
     };
 
     const handleHome = () => {
-        if (history.location.pathname !== '/admin-dashboard') {
-            history.replace('/admin-dashboard');
-        }
-        else {
-            history.replace('/admin-dashboard');
-        }
+        history.replace('/admin/dashboard');
     }
 
     return (
         <IonHeader>
-            <IonToolbar className="toolbar-link-profiles">
+            <IonToolbar className="toolbar-header-admin">
                 <IonButtons slot='start'>
-                    <IonButton className='homeButton-link-profiles' onClick={handleHome} >
+                    <IonButton className='homeButton-header-admin' onClick={handleHome} >
                         <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
                     </IonButton>
                 </IonButtons>
-                <IonTitle className='title-link-profiles'>{adminName}</IonTitle>
+                <IonTitle className='title-header-admin'>{adminName}</IonTitle>
                 <IonButtons slot="end">
                     <IonButton
-                        className='logout-button'
+                        className='logout-header-admin'
                         expand="block"
                         fill="clear"
                         onClick={handleLogout}

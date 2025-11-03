@@ -89,7 +89,8 @@ export interface User {
   username: string;
   email: string;
   full_name: string;
-  role: 'admin' | 'tutor';
+  role: 'admin' | 'teacher';
+  photo_url?: string;
 }
 
 
@@ -98,12 +99,14 @@ export interface User {
  */
 export interface Student {
   id: string;
-  name: string;
-  username?: string;
-  full_name: string;
-  picto_sequence: string[];
-  tutor_id: string;
+  username: string;
+  role: string;
   photo_url?: string;
+  notes?: string;
+  visual_preferences?: any;
+  audio_preferences?: any;
+  accessibility_settings?: any;
+  game_preferences?: any;
 }
 
 /**
@@ -129,10 +132,9 @@ export interface StudentAuthResponse {
  */
 export interface RegisterData {
   username: string;
-  email: string;
   password: string;
-  full_name: string;
-  role: 'admin' | 'tutor';
+  role: 'admin' | 'teacher' | 'student';
+  photo_url?: string; 
 }
 
 /**
@@ -181,9 +183,8 @@ export const authAPI = {
    * @param data - Datos de registro.
    * @returns Información del usuario y tokens de acceso.
    */
-  register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
+  register: (data: RegisterData) => {
+    return api.post('/auth/register', data);
   },
 
   /**
@@ -288,6 +289,81 @@ export async function fetchStudentsByTeacher() {
   }
 }
 
+/**
+ * Obtener los alumnos de un profesor
+ * @returns Lista de alumnos
+ */
+export async function fetchStudentsByTeacherProfile() {
+  try {
+    const response = await api.get("/api/teacher/students");
+    return response.data;
+  } catch (err) {
+    console.error("Error obteniendo estudiantes:", err);
+    throw err; // opcional, para que el caller maneje el error
+  }
+}
+
+export async function fetchTeachersWithGroups() {
+  const response = await api.get("/api/teacher/all");
+  return response.data;
+}
+
+export async function fetchStudentsWithGroups() {
+  const response = await api.get("/api/student/all");
+  return response.data;
+}
+
+export async function assignStudentsToGroup(groupId: number, studentIds: string[]) {
+  const response = await api.post('/api/admin/students/assign', {
+    group_id: groupId,
+    student_ids: studentIds,
+  });
+  return response.data;
+}
+
+export async function assignTeachersToGroup(groupId: number, teacherIds: string[]) {
+  const response = await api.post('/api/admin/teachers/assign', {
+    group_id: groupId,
+    teacher_ids: teacherIds,
+  });
+  return response.data;
+}
+
+export async function unassignStudentsFromGroup(studentIds: string[]) {
+  const response = await api.post('/api/admin/students/unassign', {
+    student_ids: studentIds,
+  });
+  return response.data;
+}
+
+export async function unassignTeachersFromGroup(groupId: number, teacherIds: string[]) {
+  const response = await api.post('/api/admin/teachers/unassign', {
+    group_id: groupId,
+    teacher_ids: teacherIds,
+  });
+  return response.data;
+}
+// === SUBIDA DE IMÁGENES ===
+
+/**
+ * Sube una imagen al backend (Supabase Storage).
+ * @param file - Archivo de imagen a subir
+ * @param filename - Nombre único para el archivo
+ * @returns URL pública de la imagen subida
+ */
+export const uploadImage = async (file: File, filename: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('filename', filename);
+
+  const response = await api.post<{ url: string }>('/upload_image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data.url;
+};
 
 // ==== EXPORTACIÓN PRINCIPAL ====
 

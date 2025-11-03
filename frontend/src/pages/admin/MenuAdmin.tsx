@@ -36,7 +36,7 @@ export default function AdminDashboard() {
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName={"Admin"} />
+            <SimpleHeaderAdmin adminName={user.username} />
             <IonContent className="ion-padding">
                 <div className="admin-dashboard-outer-container">
                     <IonCard className="admin-dashboard-card">
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
                                     fill="clear"
                                     onClick={() => history.push('/admin-dashboard/link-profiles')}
                                 >
-                                    Vincular perfiles
+                                    Gestionar matrículas
                                 </IonButton>
 
                             </div>
