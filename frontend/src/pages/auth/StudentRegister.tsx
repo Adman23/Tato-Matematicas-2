@@ -85,15 +85,17 @@ export default function StudentRegister() {
     image: `/assets/perfiles/${file}`,
   }));
 
-  const isUserNameValid = userName.trim().length >= 3;
   const hasExactlyThreePictograms = pictograms.length === 3;
   const isAvatarSelected = selectedAvatar !== '';
+  const isUserNameLong = userName.trim().length >= 3;
+  const isUserNameSpaceless = !userName.includes(' ');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let errorMsg = '';
-    if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
+    if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
+    if (!isUserNameSpaceless) errorMsg += 'El nombre de usuario no puede contener espacios. ';
     if (!hasExactlyThreePictograms) errorMsg += 'Debes seleccionar exactamente 3 pictogramas. ';
     if (!isAvatarSelected) errorMsg += 'Debes seleccionar una imagen de perfil. ';
 
@@ -299,7 +301,7 @@ export default function StudentRegister() {
 
   const handleConfirmClick = () => {
     let errorMsg = '';
-    if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
+    if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
     if (!hasExactlyThreePictograms) errorMsg += 'Debes seleccionar exactamente 3 pictogramas. ';
     if (!isAvatarSelected) errorMsg += 'Debes seleccionar una imagen de perfil. ';
 
@@ -376,7 +378,7 @@ export default function StudentRegister() {
             <IonButton 
               expand="block" 
               className={`student-register-confirm-button ${
-                !isUserNameValid || !hasExactlyThreePictograms || !isAvatarSelected 
+                !isUserNameLong || !hasExactlyThreePictograms || !isAvatarSelected || !isUserNameSpaceless
                   ? 'student-register-confirm-button--disabled' 
                   : ''
               }`}
