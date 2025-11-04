@@ -19,7 +19,7 @@ import {
   IonText,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './StudentLogin.css';
@@ -60,6 +60,18 @@ export default function StudentLoginStep3() {
     setSelected([]);
     setError('');
   });
+
+  // Temporizador para ocultar el mensaje de error después de 4 segundos
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError('');
+      }, 4000); // 4 segundos
+
+      // Limpiar el temporizador si el componente se desmonta o el error cambia
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   /**
  * Añade un pictograma a la secuencia seleccionada.
@@ -242,10 +254,11 @@ export default function StudentLoginStep3() {
             ))}
           </div>
 
-          {/* Mensaje de error */}
+          {/* Mensaje de error accesible */}
           {error && (
             <IonText color="danger">
               <div className="student-error-message">
+                <div className="student-error-icon">❌</div>
                 <p>{error}</p>
               </div>
             </IonText>

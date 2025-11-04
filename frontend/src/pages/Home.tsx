@@ -70,7 +70,7 @@ export default function Home() {
             >
               <div className="home-button-content">
                 <img
-                  src="/assets/pictograms/student.png"
+                  src="/assets/pictograms/students.png"
                   alt="Estudiante"
                   className="tatomaths-image"
                 />
