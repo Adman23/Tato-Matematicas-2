@@ -37,8 +37,10 @@ export default function TeacherRegister() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
 
-  const isUserNameValid = userName.trim().length >= 3;
-  const isPasswordValid = password.length >= 6;
+  const isUserNameLong = userName.trim().length >= 3;
+  const isUserNameSpaceless = !userName.includes(' ');
+  const isPasswordLong = password.length >= 6;
+  const isPasswordValid = /\d/.test(password);
   const doPasswordsMatch = password === confirmPassword;
   const { user } = useAuth();
 
@@ -46,8 +48,10 @@ export default function TeacherRegister() {
     e.preventDefault();
 
     let errorMsg = '';
-    if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
-    if (!isPasswordValid) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
+    if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
+    if (!isUserNameSpaceless) errorMsg += 'El nombre de usuario no puede contener espacios. ';
+    if (!isPasswordLong) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
+    if (!isPasswordValid) errorMsg += 'La contraseña debe contener al menos un número. ';
     if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
 
     if (errorMsg) {
@@ -102,8 +106,8 @@ export default function TeacherRegister() {
 
   const handleConfirmClick = () => {
     let errorMsg = '';
-    if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
-    if (!isPasswordValid) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
+    if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
+    if (!isPasswordLong) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
     if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
 
     if (errorMsg) {
@@ -147,7 +151,7 @@ export default function TeacherRegister() {
                     onIonInput={(e) => setUserName(e.detail.value || '')}
                     className="teacher-register-input-item"
                   />
-                  <IonIcon icon={isUserNameValid ? checkmarkOutline : closeOutline} />
+                  <IonIcon icon={isUserNameLong && isUserNameSpaceless ? checkmarkOutline : closeOutline} />
                 </div>
               </div>
 
@@ -217,7 +221,7 @@ export default function TeacherRegister() {
             <IonButton
               expand="block"
               className={`teacher-register-confirm-button ${
-                !isUserNameValid || !isPasswordValid || !doPasswordsMatch
+                !isUserNameLong || !isPasswordLong || !doPasswordsMatch || !isUserNameSpaceless || !isPasswordValid
                   ? 'teacher-register-confirm-button--disabled'
                   : ''
               }`}
