@@ -5,7 +5,7 @@ ion-header {
 }
 
 /* Toolbar */
-ion-toolbar.toolbar-link-profiles {
+ion-toolbar.toolbar-header-user {
   --background: var(--ion-color-primary);
   --border-width: 0;
   --padding-top: 0;
@@ -17,7 +17,7 @@ ion-toolbar.toolbar-link-profiles {
 }
 
 /* Slot izquierdo - toma menos espacio */
-ion-toolbar.toolbar-link-profiles ion-buttons[slot="start"] {
+ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
   display: flex;
   align-items: center;
   height: 100%;
@@ -25,7 +25,7 @@ ion-toolbar.toolbar-link-profiles ion-buttons[slot="start"] {
 }
 
 /* Slot derecho - ocupa más espacio para "MI PERFIL" + imagen */
-ion-toolbar.toolbar-link-profiles ion-buttons[slot="end"] {
+ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
   display: flex;
   align-items: center;
   height: 100%;
@@ -63,8 +63,8 @@ ion-toolbar.toolbar-link-profiles ion-buttons[slot="end"] {
 }
 
 /* Separación: imagen → texto (izquierda) */
-ion-toolbar.toolbar-link-profiles ion-buttons[slot="start"] .user-dashborad-img {
-  margin-right: clamp(100px, 4vw, 60px);
+ion-toolbar.toolbar-header-user ion-buttons[slot="start"] .user-dashborad-img {
+  margin-right: clamp(20px, 4vw, 60px);
 }
 
 /* Separación: texto → imagen (derecha) */

@@ -36,7 +36,7 @@ export default function AdminDashboard() {
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName={"Admin"} />
+            <SimpleHeaderAdmin adminName={user.username} />
             <IonContent className="ion-padding">
                 <div className="admin-dashboard-outer-container">
                     <IonCard className="admin-dashboard-card">

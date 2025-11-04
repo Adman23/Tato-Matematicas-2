@@ -35,6 +35,8 @@ export default function LinkProfiles() {
     const [teachers, setTeachers] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
     const [_error, setError] = useState('');
+    const [studentQuery, setStudentQuery] = useState<string>('');
+    const [teacherQuery, setTeacherQuery] = useState<string>('');
     const history = useHistory();
 
 
@@ -187,7 +189,7 @@ export default function LinkProfiles() {
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName="Admin" />
+            <SimpleHeaderAdmin adminName={user.username} />
             <IonContent className="ion-padding">
                 <ClassSelect
                     classes={groups}
@@ -202,11 +204,25 @@ export default function LinkProfiles() {
                     <div className='LinkProfiles-table'>
                         <div className='LinkProfiles-searchbar'>
                             <IonTitle className='LinkProfiles-title'>Alumnos</IonTitle>
-                            <IonSearchbar placeholder="Buscar alumno"></IonSearchbar>
+                            <IonSearchbar
+                                placeholder="Buscar alumno"
+                                value={studentQuery}
+                                onIonInput={(e) => setStudentQuery(e.detail.value ?? '')}
+                                onIonClear={() => setStudentQuery('')}
+                                onIonCancel={() => setStudentQuery('')}
+                            />
                         </div>
                         <div className='LinkProfiles-items'>
                             <IonList>
-                                {students.map(student => (
+                                {(
+                                    (studentQuery === '' ? students : students.filter(s => {
+                                        const q = studentQuery.toLowerCase();
+                                        const uname = (s.username || '').toLowerCase();
+                                        const inUsername = uname.includes(q);
+                                        const inGroup = (s.group && s.group.alias) ? (s.group.alias || '').toLowerCase().includes(q) : false;
+                                        return inUsername || inGroup;
+                                    }))
+                                ).map(student => (
                                     <UserItem
                                         key={student.id}
                                         avatar={student.photo_url}
@@ -231,12 +247,28 @@ export default function LinkProfiles() {
                     <div className='LinkProfiles-table'>
                         <div className='LinkProfiles-searchbar'>
                             <IonTitle className='LinkProfiles-title'>Profesores</IonTitle>
-                            <IonSearchbar placeholder="Buscar profesor"></IonSearchbar>
+                            <IonSearchbar
+                                placeholder="Buscar profesor"
+                                value={teacherQuery}
+                                onIonInput={(e) => setTeacherQuery(e.detail.value ?? '')}
+                                onIonClear={() => setTeacherQuery('')}
+                                onIonCancel={() => setTeacherQuery('')}
+                            />
                         </div>
                         <div className='LinkProfiles-items'>
 
                             <IonList>
-                                {teachers.map(teacher => (
+                                {(
+                                    // Filter teachers client-side (by username and group alias).
+                                    // Use debounced query for better UX.
+                                    (teacherQuery === '' ? teachers : teachers.filter(t => {
+                                        const q = teacherQuery.toLowerCase();
+                                        const uname = (t.username || '').toLowerCase();
+                                        const inUsername = uname.includes(q);
+                                        const inGroups = (t.groups || []).some(g => (g.alias || '').toLowerCase().includes(q));
+                                        return inUsername || inGroups;
+                                    }))
+                                ).map(teacher => (
                                     <UserItem
                                         key={teacher.id}
                                         avatar={teacher.photo_url}
