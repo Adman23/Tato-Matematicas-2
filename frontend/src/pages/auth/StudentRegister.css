@@ -11,6 +11,8 @@
   background-color: #ffffff;
   min-height: 100vh;
   position: relative;
+  transform: scale(1.283);
+  transform-origin: top center;
 }
 
 .student-register-main-container h1 {
@@ -34,7 +36,7 @@
   width: 95%;
   max-width: 400px;
   background-color: #50BFE6;
-  border-radius: 24px;
+  border-radius: 20px;
   padding: 1.8rem 1.5rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   display: flex;
@@ -127,7 +129,7 @@
 
 .student-register-avatar-select-field {
   background: white;
-  border-radius: 20px;
+  border-radius: 200px;
   padding: 0.5rem 1rem;
   width: 100%;
   cursor: pointer;
@@ -151,7 +153,7 @@
 
 .student-register-input-item {
   --background: white;
-  --border-radius: 20px;
+  --border-radius: 200px;
   --padding-start: 1rem;
   --padding-end: 1rem;
   --padding-top: 0.5rem;
@@ -176,7 +178,7 @@
   align-items: center;
   gap: 0.5rem;
   background-color: white;
-  border-radius: 20px;
+  border-radius: 200px;
   padding: 0.5rem 1rem;
   height: 72px;
   width: 100%;
@@ -441,5 +443,25 @@
 
 .student-register-upload-icon {
   font-size: 24px;
+  color: var(--ion-color-medium);
+}
+
+.student-register-input-with-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.student-register-input-with-icon ion-icon:last-child {
+  position: absolute;
+  right: 12px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.student-register-input-with-icon ion-icon:first-child {
+  padding-left: 12px;
+  font-size: 1.4rem;
   color: var(--ion-color-medium);
 }

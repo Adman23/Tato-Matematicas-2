@@ -89,15 +89,35 @@
   cursor: pointer;
 }
 
-.teacher-register-selected-image,
-.teacher-register-profile-placeholder {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
+/* Imagen subida */
+.teacher-register-selected-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
   object-fit: cover;
-  background: #50BFE6;
-  font-size: 120px;
-  color: #ffffff;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Icono de perfil por defecto — SIN MARGEN INFERIOR */
+.teacher-register-profile-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  background-color: #50BFE6;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: white;
+  font-size: 72px;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Ajuste visual para eliminar espacio inferior del icono */
+  transform: translateY(-1px);
 }
 
 /* =============================================================================
@@ -221,4 +241,3 @@
     margin-top: 1.2rem;
   }
 }
-

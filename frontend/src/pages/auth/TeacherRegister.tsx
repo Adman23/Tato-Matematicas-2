@@ -12,9 +12,9 @@ import {
   closeOutline,
   eyeOutline,
   eyeOffOutline,
-  personCircleOutline,
+  person,
 } from 'ionicons/icons';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authAPI, uploadImage } from '../../lib/api';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
@@ -37,12 +37,54 @@ export default function TeacherRegister() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
 
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
+  const usernameCheckIdRef = useRef(0);
+
+  const { user } = useAuth();
+
+  // Validaciones derivadas
   const isUserNameLong = userName.trim().length >= 3;
   const isUserNameSpaceless = !userName.includes(' ');
   const isPasswordLong = password.length >= 6;
   const isPasswordValid = /\d/.test(password);
   const doPasswordsMatch = password === confirmPassword;
-  const { user } = useAuth();
+
+  // Verificación en tiempo real del nombre de usuario
+  useEffect(() => {
+    const trimmed = userName.trim();
+
+    if (trimmed.length < 3 || trimmed.includes(' ')) {
+      setIsUsernameAvailable(false);
+      return;
+    }
+
+    const currentId = ++usernameCheckIdRef.current;
+
+    const handler = setTimeout(() => {
+      authAPI.checkUsername(trimmed)
+        .then(res => {
+          if (currentId === usernameCheckIdRef.current) {
+            setIsUsernameAvailable(!res.exists); // true = disponible
+          }
+        })
+        .catch(() => {
+          if (currentId === usernameCheckIdRef.current) {
+            setIsUsernameAvailable(false); // por seguridad en fallo de red
+          }
+        });
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [userName]);
+
+  // Determina si se puede enviar el formulario
+  const canSubmit = 
+    isUserNameLong &&
+    isUserNameSpaceless &&
+    isUsernameAvailable === true &&
+    isPasswordLong &&
+    isPasswordValid &&
+    doPasswordsMatch;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +92,7 @@ export default function TeacherRegister() {
     let errorMsg = '';
     if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
     if (!isUserNameSpaceless) errorMsg += 'El nombre de usuario no puede contener espacios. ';
+    if (isUsernameAvailable === false) errorMsg += 'El nombre de usuario ya está en uso. ';
     if (!isPasswordLong) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
     if (!isPasswordValid) errorMsg += 'La contraseña debe contener al menos un número. ';
     if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
@@ -104,28 +147,20 @@ export default function TeacherRegister() {
     }
   };
 
-  const handleConfirmClick = () => {
-    let errorMsg = '';
-    if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
-    if (!isPasswordLong) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
-    if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
-
-    if (errorMsg) {
-      setToastMessage(errorMsg);
-      setToastColor('danger');
-      setIsToastOpen(true);
-      return;
-    }
-    // Si todo es válido, envía el formulario
-    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
-  };
-
   const handleCancel = () => {
     setUserName('');
     setPassword('');
     setConfirmPassword('');
     setSelectedImage(null);
     history.push('/admin/profesores');
+  };
+
+  const getUsernameIcon = () => {
+    const trimmed = userName.trim();
+    if (trimmed.length === 0) return closeOutline;
+    if (trimmed.length < 3 || trimmed.includes(' ')) return closeOutline;
+    if (isUsernameAvailable === true) return checkmarkOutline;
+    return closeOutline;
   };
 
   return (
@@ -151,7 +186,7 @@ export default function TeacherRegister() {
                     onIonInput={(e) => setUserName(e.detail.value || '')}
                     className="teacher-register-input-item"
                   />
-                  <IonIcon icon={isUserNameLong && isUserNameSpaceless ? checkmarkOutline : closeOutline} />
+                  <IonIcon icon={getUsernameIcon()} />
                 </div>
               </div>
 
@@ -166,7 +201,6 @@ export default function TeacherRegister() {
                   />
                   <IonIcon
                     icon={showPassword ? eyeOffOutline : eyeOutline}
-                    slot="end"
                     onClick={() => setShowPassword(!showPassword)}
                     style={{ cursor: 'pointer' }}
                   />
@@ -184,7 +218,6 @@ export default function TeacherRegister() {
                   />
                   <IonIcon
                     icon={showConfirmPassword ? eyeOffOutline : eyeOutline}
-                    slot="end"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     style={{ cursor: 'pointer' }}
                   />
@@ -203,7 +236,7 @@ export default function TeacherRegister() {
                       className="teacher-register-selected-image"
                     />
                   ) : (
-                    <IonIcon icon={personCircleOutline} className="teacher-register-profile-placeholder" />
+                    <IonIcon icon={person} className="teacher-register-profile-placeholder" />
                   )}
                 </div>
                 <input
@@ -221,11 +254,9 @@ export default function TeacherRegister() {
             <IonButton
               expand="block"
               className={`teacher-register-confirm-button ${
-                !isUserNameLong || !isPasswordLong || !doPasswordsMatch || !isUserNameSpaceless || !isPasswordValid
-                  ? 'teacher-register-confirm-button--disabled'
-                  : ''
+                !canSubmit ? 'teacher-register-confirm-button--disabled' : ''
               }`}
-              onClick={handleConfirmClick}
+              onClick={handleSubmit}
             >
               Confirmar
             </IonButton>
