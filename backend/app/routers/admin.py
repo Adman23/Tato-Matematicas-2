@@ -305,30 +305,35 @@ async def upload_image(file: UploadFile = File(...), filename: str = Form(...)):
 @router.get("/get_images", summary="Get all the images (url) from the storage bucket")
 async def get_images():
     """
-    Fetches all the images stored in the "user_photo" bucket in supabase storage.
-    Raises:
-        HTTPException: 500 internal server error if the fetch fails
-        
+    Fetches all image files stored in the "user_photo" bucket in Supabase Storage.
+    Only includes common image extensions: .png, .jpg, .jpeg, .gif.
+    
     Returns:
-        list[string]: list of public urls of the images stored in the bucket
+        dict: { "filename.png": "https://public-url.com/..." }
     """
-    
-    # This returns a list of all the files, doesnt have the data only the attr
-    response = supabase_admin.storage.from_("user_photo").list()
-    
-    # If there is a need to view all the images, its done with the url
-    images = {}
-    for file in response.data:
-        url_response = supabase_admin.storage.from_("user_photo").get_public_url(file.name)
-        images[file.name] = url_response.public_url
-    
-    if response.status_code >= 400:
+    try:
+        # Obtener la lista de archivos del bucket
+        files = supabase_admin.storage.from_("user_photo").list()
+
+        # Filtrar solo archivos de imagen
+        image_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
+        image_files = [
+            f for f in files
+            if isinstance(f, dict) and 'name' in f and
+            any(f['name'].lower().endswith(ext) for ext in image_extensions)
+        ]
+
+        images = {}
+        for file in image_files:
+            filename = file['name']
+            public_url = supabase_admin.storage.from_("user_photo").get_public_url(filename)
+            images[filename] = public_url
+
+        return images
+
+    except Exception as e:
+        print("Error fetching images:", repr(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error fetching images"
+            detail="Error fetching images from storage"
         )
-
-    # In the user you need to store the relative path to the storage bucket
-    # for example "user_photo/my_image.png"
-    # my_image.png is the key of the dict and the value is the public url
-    return images
