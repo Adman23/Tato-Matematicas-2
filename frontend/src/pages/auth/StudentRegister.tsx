@@ -15,7 +15,7 @@ import { personOutline, addOutline, closeOutline, checkmarkOutline } from 'ionic
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { authAPI, uploadImage } from '../../lib/api';
+import { authAPI, uploadImage, getImages } from '../../lib/api'; // ✅ getImages importado
 import { setupIonicReact } from '@ionic/react';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { createPortal } from 'react-dom';
@@ -45,7 +45,7 @@ export default function StudentRegister() {
 
   const [userName, setUserName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState<string>('');
-  const [avatarPreview, setAvatarPreview] = useState<string>('/assets/perfiles/Perfil.png');
+  const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR); // ✅ Usa DEFAULT_AVATAR
   const [pictograms, setPictograms] = useState<string[]>([]);
 
   const [showPictoModal, setShowPictoModal] = useState(false);
@@ -60,32 +60,9 @@ export default function StudentRegister() {
 
   const { user } = useAuth();
 
-  const AVATAR_OPTIONS = [
-    'Aventurero.png',
-    'Batman.png',
-    'Bufón.png',
-    'Centauro.png',
-    'Dragón.png',
-    'Gato.png',
-    'Hércules.png',
-    'Lobo.png',
-    'Mago.png',
-    'Maga.png',
-    'Olentzero.png',
-    'Pinocho.png',
-    'Presidenta.png',
-    'Presidente.png',
-    'Princesa.png',
-    'Sirena.png',
-    'Spiderman.png',
-    'Supermán.png',
-    'Tutankhamon.png',
-    'Vampiro.png',
-  ].map(file => ({
-    id: file,
-    name: file.replace('.png', '').replace(/_/g, ' '),
-    image: `/assets/perfiles/${file}`,
-  }));
+  // Reemplaza AVATAR_OPTIONS con estado dinámico
+  const [avatarOptions, setAvatarOptions] = useState<{ id: string; name: string; imageUrl: string }[]>([]);
+  const [loadingAvatars, setLoadingAvatars] = useState(true);
 
   // Estado para verificación de disponibilidad del nombre de usuario
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
@@ -125,12 +102,35 @@ export default function StudentRegister() {
     return () => clearTimeout(handler);
   }, [userName]);
 
+  // === CARGA DE AVATARES DESDE LA API ===
+  useEffect(() => {
+    const loadAvatars = async () => {
+      try {
+        const imagesMap = await getImages(); // { "Batman.png": "https://...", ... }
+        const options = Object.entries(imagesMap).map(([filename, url]) => ({
+          id: filename,
+          name: filename.replace('.png', '').replace(/_/g, ' '),
+          imageUrl: url as string, // ✅ Corrección de tipo
+        }));
+        setAvatarOptions(options);
+      } catch (err) {
+        console.error('Error al cargar avatares:', err);
+        setToastMessage('No se pudieron cargar los avatares.');
+        setToastColor('danger');
+        setIsToastOpen(true);
+      } finally {
+        setLoadingAvatars(false);
+      }
+    };
+
+    loadAvatars();
+  }, []);
+
   const getUsernameIcon = () => {
-    // Icono por defecto: cruz si está vacío o inválido
     if (userName.trim().length === 0) return closeOutline;
     if (!isUserNameLong) return closeOutline;
     if (isUsernameAvailable === true) return checkmarkOutline;
-    return closeOutline; // incluye caso "cargando" o "no disponible"
+    return closeOutline;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -159,8 +159,8 @@ export default function StudentRegister() {
       const password = pictograms.join('-');
       let photoUrl = '';
 
-      if (AVATAR_OPTIONS.some(a => a.id === selectedAvatar)) {
-        photoUrl = `/assets/perfiles/${selectedAvatar}`;
+      if (avatarOptions.some(a => a.id === selectedAvatar)) {
+        photoUrl = `user_photo/${selectedAvatar}`; // ✅ Ruta relativa al bucket
       } else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
         const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
@@ -182,7 +182,7 @@ export default function StudentRegister() {
 
       setTimeout(() => {
         (document.activeElement as HTMLElement)?.blur();
-        history.push('/admin/alumnos');
+        history.replace('/admin/alumnos');
       }, 1500);
     } catch (err: any) {
       console.error('Error en el registro:', err);
@@ -200,7 +200,7 @@ export default function StudentRegister() {
   const handleCancel = () => {
     setUserName('');
     setSelectedAvatar('');
-    setAvatarPreview('/assets/perfiles/Perfil.png');
+    setAvatarPreview(DEFAULT_AVATAR);
     setPictograms([]);
     if (showPictoModal) closePictoModal();
     if (showAvatarModal) closeAvatarModal();
@@ -248,7 +248,7 @@ export default function StudentRegister() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
+      if (avatarPreview && !avatarPreview.startsWith('http')) {
         URL.revokeObjectURL(avatarPreview);
       }
       setSelectedAvatar(file.name);
@@ -258,11 +258,12 @@ export default function StudentRegister() {
   };
 
   const handleAvatarSelect = (avatarId: string) => {
-    if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
+    if (avatarPreview && !avatarPreview.startsWith('http')) {
       URL.revokeObjectURL(avatarPreview);
     }
+    const selected = avatarOptions.find(a => a.id === avatarId);
     setSelectedAvatar(avatarId);
-    setAvatarPreview(`/assets/perfiles/${avatarId}`);
+    setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
     closeAvatarModal();
   };
 
@@ -337,11 +338,11 @@ export default function StudentRegister() {
   }, [showAvatarModal, updateAvatarModalPosition]);
 
   const getAvatarDisplayName = () => {
-    const predefined = AVATAR_OPTIONS.find(a => a.id === selectedAvatar);
+    const predefined = avatarOptions.find(a => a.id === selectedAvatar);
     if (predefined) {
       return predefined.name;
     }
-    if (selectedAvatar && !selectedAvatar.startsWith('/assets/')) {
+    if (selectedAvatar && !selectedAvatar.includes('http')) {
       return selectedAvatar;
     }
     return 'Seleccionar imagen...';
@@ -531,16 +532,20 @@ export default function StudentRegister() {
                   <span>Subir imagen</span>
                 </div>
 
-                {AVATAR_OPTIONS.map((avatar) => (
-                  <div
-                    key={avatar.id}
-                    className="student-register-picto-option"
-                    onClick={() => handleAvatarSelect(avatar.id)}
-                  >
-                    <IonImg src={avatar.image} alt={avatar.name} />
-                    <span>{avatar.name}</span>
-                  </div>
-                ))}
+                {loadingAvatars ? (
+                  <div className="student-register-avatar-loading">Cargando avatares...</div>
+                ) : (
+                  avatarOptions.map((avatar) => (
+                    <div
+                      key={avatar.id}
+                      className="student-register-picto-option"
+                      onClick={() => handleAvatarSelect(avatar.id)}
+                    >
+                      <IonImg src={avatar.imageUrl} alt={avatar.name} />
+                      <span>{avatar.name}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>,
