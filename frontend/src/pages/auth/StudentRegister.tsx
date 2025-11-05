@@ -15,7 +15,7 @@ import { personOutline, addOutline, closeOutline, checkmarkOutline } from 'ionic
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { authAPI, uploadImage, getImages } from '../../lib/api'; // ✅ getImages importado
+import { authAPI, uploadImage, getImages } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { createPortal } from 'react-dom';
@@ -45,7 +45,7 @@ export default function StudentRegister() {
 
   const [userName, setUserName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState<string>('');
-  const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR); // ✅ Usa DEFAULT_AVATAR
+  const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR);
   const [pictograms, setPictograms] = useState<string[]>([]);
 
   const [showPictoModal, setShowPictoModal] = useState(false);
@@ -60,23 +60,19 @@ export default function StudentRegister() {
 
   const { user } = useAuth();
 
-  // Reemplaza AVATAR_OPTIONS con estado dinámico
   const [avatarOptions, setAvatarOptions] = useState<{ id: string; name: string; imageUrl: string }[]>([]);
   const [loadingAvatars, setLoadingAvatars] = useState(true);
 
-  // Estado para verificación de disponibilidad del nombre de usuario
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const usernameCheckIdRef = useRef(0);
 
-  // Validaciones individuales
   const isUserNameLong = userName.trim().length >= 3;
   const isUserNameSpaceless = !userName.includes(' ');
-  const isUsernameValid = isUserNameLong && isUsernameAvailable && isUserNameSpaceless === true;
-
+  const isUsernameValid = isUserNameLong && isUserNameSpaceless && isUsernameAvailable === true;
   const hasExactlyThreePictograms = pictograms.length === 3;
   const isAvatarSelected = selectedAvatar !== '';
+  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
 
-  // Verificación en tiempo real del nombre de usuario
   useEffect(() => {
     const trimmed = userName.trim();
 
@@ -104,15 +100,14 @@ export default function StudentRegister() {
     return () => clearTimeout(handler);
   }, [userName]);
 
-  // === CARGA DE AVATARES DESDE LA API ===
   useEffect(() => {
     const loadAvatars = async () => {
       try {
-        const imagesMap = await getImages(); // { "Batman.png": "https://...", ... }
+        const imagesMap = await getImages();
         const options = Object.entries(imagesMap).map(([filename, url]) => ({
           id: filename,
           name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
-          imageUrl: url as string, // ✅ Corrección de tipo
+          imageUrl: url as string,
         }));
         setAvatarOptions(options);
       } catch (err) {
@@ -130,8 +125,7 @@ export default function StudentRegister() {
 
   const getUsernameIcon = () => {
     if (userName.trim().length === 0) return closeOutline;
-    if (!isUserNameLong) return closeOutline;
-    if (!isUserNameSpaceless) return closeOutline;
+    if (!isUserNameLong || !isUserNameSpaceless) return closeOutline;
     if (isUsernameAvailable === true) return checkmarkOutline;
     return closeOutline;
   };
@@ -143,14 +137,14 @@ export default function StudentRegister() {
 
     if (!isUserNameLong) {
       errorMsg = 'El nombre de usuario debe tener al menos 3 caracteres.';
+    } else if (!isUserNameSpaceless) {
+      errorMsg = 'El nombre de usuario no puede contener espacios.';
     } else if (isUsernameAvailable === false) {
       errorMsg = 'El nombre de usuario ya está en uso.';
     } else if (!hasExactlyThreePictograms) {
       errorMsg = 'Debes seleccionar exactamente 3 pictogramas.';
     } else if (!isAvatarSelected) {
       errorMsg = 'Debes seleccionar una imagen de perfil.';
-    } else if (!isUserNameSpaceless) {
-      errorMsg = 'El nombre de usuario no puede contener espacios.';
     }
 
     if (errorMsg) {
@@ -162,23 +156,22 @@ export default function StudentRegister() {
 
     try {
       const password = pictograms.join('-');
-      let photoUrl = '';
+      let photoUrl = DEFAULT_AVATAR;
 
+      // 👇 Si se seleccionó un avatar del modal, usamos su URL completa
       if (avatarOptions.some(a => a.id === selectedAvatar)) {
-        photoUrl = `user_photo/${selectedAvatar}`; // ✅ Ruta relativa al bucket
+        photoUrl = selectedAvatarUrl;
       } else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
         const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
         photoUrl = await uploadImage(file, uniqueFilename);
-      } else {
-        photoUrl = DEFAULT_AVATAR;
       }
 
       await authAPI.register({
         username: userName,
         password: password,
         role: "student",
-        photo_url: photoUrl,
+        photo_url: photoUrl, // ✅ Ahora siempre es una URL válida
       });
 
       setToastMessage('Estudiante registrado correctamente 🎉');
@@ -186,8 +179,7 @@ export default function StudentRegister() {
       setIsToastOpen(true);
 
       setTimeout(() => {
-        (document.activeElement as HTMLElement)?.blur();
-        history.replace('/admin/alumnos');
+        window.location.href = '/admin/alumnos';
       }, 1500);
     } catch (err: any) {
       console.error('Error en el registro:', err);
@@ -269,6 +261,7 @@ export default function StudentRegister() {
     const selected = avatarOptions.find(a => a.id === avatarId);
     setSelectedAvatar(avatarId);
     setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
+    setSelectedAvatarUrl(selected?.imageUrl || DEFAULT_AVATAR); // 👈 Guardamos la URL completa aquí
     closeAvatarModal();
   };
 
@@ -358,6 +351,8 @@ export default function StudentRegister() {
 
     if (!isUserNameLong) {
       errorMsg = 'El nombre de usuario debe tener al menos 3 caracteres.';
+    } else if (!isUserNameSpaceless) {
+      errorMsg = 'El nombre de usuario no puede contener espacios.';
     } else if (isUsernameAvailable === false) {
       errorMsg = 'El nombre de usuario ya está en uso.';
     } else if (!hasExactlyThreePictograms) {
@@ -446,7 +441,7 @@ export default function StudentRegister() {
             <IonButton 
               expand="block" 
               className={`student-register-confirm-button ${
-                !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected || !isUserNameSpaceless
+                !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected 
                   ? 'student-register-confirm-button--disabled' 
                   : ''
               }`}

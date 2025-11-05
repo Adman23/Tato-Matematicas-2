@@ -11,7 +11,6 @@
   min-height: 100vh;
   width: 100%;
   padding: 1.5rem;
-  /* Escalar todo un 20% más grande */
   transform: scale(1.5);
   transform-origin: top center;
 }
@@ -89,35 +88,31 @@
   cursor: pointer;
 }
 
-/* Imagen subida */
-.teacher-register-selected-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 20px;
-  object-fit: cover;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Icono de perfil por defecto — SIN MARGEN INFERIOR */
 .teacher-register-profile-placeholder {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
-  border-radius: 20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
   background-color: #50BFE6;
   border: 2px solid white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   color: white;
-  font-size: 72px;
+  font-size: 48px;
   line-height: 1;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  /* Ajuste visual para eliminar espacio inferior del icono */
-  transform: translateY(-1px);
+}
+
+.teacher-register-selected-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* =============================================================================
@@ -168,6 +163,34 @@
   padding-left: 12px;
   font-size: 1.4rem;
   color: var(--ion-color-medium);
+}
+
+/* =============================================================================
+   AVATAR SELECT FIELD
+   ========================================================================== */
+
+.teacher-register-avatar-select-field {
+  background: white;
+  border-radius: 200px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.teacher-register-avatar-select-field:hover {
+  background-color: #e2e2e2;
 }
 
 /* =============================================================================
@@ -229,6 +252,100 @@
 }
 
 /* =============================================================================
+   MODAL DE AVATAR (igual que StudentRegister)
+   ========================================================================== */
+
+.teacher-register-avatar-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.teacher-register-avatar-picker {
+  background: white;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.teacher-register-avatar-picker-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.teacher-register-picto-picker-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.teacher-register-picto-picker-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.teacher-register-picto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+  place-items: center;
+}
+
+.teacher-register-picto-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+}
+
+.teacher-register-picto-option ion-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
+.teacher-register-picto-option span {
+  font-size: 12px;
+  color: #333;
+}
+
+.teacher-register-upload-avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  border: 2px dashed var(--ion-color-medium);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ion-color-light);
+}
+
+.teacher-register-upload-icon {
+  font-size: 24px;
+  color: var(--ion-color-medium);
+}
+
+/* =============================================================================
    RESPONSIVE
    ========================================================================== */
 
@@ -239,5 +356,9 @@
 
   .teacher-register-form-right {
     margin-top: 1.2rem;
+  }
+
+  .teacher-register-picto-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

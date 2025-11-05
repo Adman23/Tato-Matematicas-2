@@ -1,3 +1,5 @@
+// src/pages/TeacherRegister.tsx
+
 import './TeacherRegister.css';
 
 import {
@@ -6,6 +8,8 @@ import {
   IonButton,
   IonIcon,
   IonToast,
+  IonImg,
+  IonText,
 } from '@ionic/react';
 import {
   checkmarkOutline,
@@ -13,25 +17,33 @@ import {
   eyeOutline,
   eyeOffOutline,
   person,
+  addOutline,
 } from 'ionicons/icons';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { authAPI, uploadImage } from '../../lib/api';
+import { authAPI, uploadImage, getImages } from '../../lib/api';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
+import { createPortal } from 'react-dom';
 
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function TeacherRegister() {
   const history = useHistory();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarPickerRef = useRef<HTMLDivElement>(null);
+  const formCardRef = useRef<HTMLDivElement>(null);
 
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedAvatar, setSelectedAvatar] = useState<string>('');
+  const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR);
+
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
 
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -40,16 +52,42 @@ export default function TeacherRegister() {
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const usernameCheckIdRef = useRef(0);
 
+  const [avatarOptions, setAvatarOptions] = useState<{ id: string; name: string; imageUrl: string }[]>([]);
+  const [loadingAvatars, setLoadingAvatars] = useState(true);
+
   const { user } = useAuth();
 
-  // Validaciones derivadas
   const isUserNameLong = userName.trim().length >= 3;
   const isUserNameSpaceless = !userName.includes(' ');
   const isPasswordLong = password.length >= 6;
   const isPasswordValid = /\d/.test(password);
   const doPasswordsMatch = password === confirmPassword;
+  const isAvatarSelected = selectedAvatar !== '';
 
-  // Verificación en tiempo real del nombre de usuario
+  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
+
+  useEffect(() => {
+    const loadAvatars = async () => {
+      try {
+        const imagesMap = await getImages();
+        const options = Object.entries(imagesMap).map(([filename, url]) => ({
+          id: filename,
+          name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
+          imageUrl: url as string,
+        }));
+        setAvatarOptions(options);
+      } catch (err) {
+        console.error('Error al cargar avatares:', err);
+        setToastMessage('No se pudieron cargar los avatares.');
+        setToastColor('danger');
+        setIsToastOpen(true);
+      } finally {
+        setLoadingAvatars(false);
+      }
+    };
+    loadAvatars();
+  }, []);
+
   useEffect(() => {
     const trimmed = userName.trim();
 
@@ -64,12 +102,12 @@ export default function TeacherRegister() {
       authAPI.checkUsername(trimmed)
         .then(res => {
           if (currentId === usernameCheckIdRef.current) {
-            setIsUsernameAvailable(!res.exists); // true = disponible
+            setIsUsernameAvailable(!res.exists);
           }
         })
         .catch(() => {
           if (currentId === usernameCheckIdRef.current) {
-            setIsUsernameAvailable(false); // por seguridad en fallo de red
+            setIsUsernameAvailable(false);
           }
         });
     }, 400);
@@ -77,14 +115,14 @@ export default function TeacherRegister() {
     return () => clearTimeout(handler);
   }, [userName]);
 
-  // Determina si se puede enviar el formulario
   const canSubmit = 
     isUserNameLong &&
     isUserNameSpaceless &&
     isUsernameAvailable === true &&
     isPasswordLong &&
     isPasswordValid &&
-    doPasswordsMatch;
+    doPasswordsMatch &&
+    isAvatarSelected;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +134,7 @@ export default function TeacherRegister() {
     if (!isPasswordLong) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
     if (!isPasswordValid) errorMsg += 'La contraseña debe contener al menos un número. ';
     if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
+    if (!isAvatarSelected) errorMsg += 'Debe seleccionar una imagen de perfil. ';
 
     if (errorMsg) {
       setToastMessage(errorMsg);
@@ -107,9 +146,13 @@ export default function TeacherRegister() {
     try {
       let photoUrl = DEFAULT_AVATAR;
 
-      if (selectedImage) {
-        const uniqueFilename = `${userName.trim()}_${Date.now()}_${selectedImage.name}`;
-        photoUrl = await uploadImage(selectedImage, uniqueFilename);
+      // Si se seleccionó un avatar del modal, usamos su URL completa
+      if (avatarOptions.some(a => a.id === selectedAvatar)) {
+        photoUrl = selectedAvatarUrl;
+      } else if (fileInputRef.current?.files?.[0]) {
+        const file = fileInputRef.current.files[0];
+        const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
+        photoUrl = await uploadImage(file, uniqueFilename);
       }
 
       await authAPI.register({
@@ -123,7 +166,9 @@ export default function TeacherRegister() {
       setToastColor('success');
       setIsToastOpen(true);
 
-      setTimeout(() => history.push('/tutor-dashboard'), 1500);
+      setTimeout(() => {
+        window.location.href = '/admin/profesores';
+      }, 1500);
     } catch (err: any) {
       console.error('Error en el registro:', err);
       const message =
@@ -137,30 +182,82 @@ export default function TeacherRegister() {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (avatarPreview && !avatarPreview.startsWith('http')) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+      setSelectedAvatar(file.name);
+      setAvatarPreview(URL.createObjectURL(file));
+      closeAvatarModal();
+    }
+  };
+
+  const handleAvatarSelect = (avatarId: string) => {
+    if (avatarPreview && !avatarPreview.startsWith('http')) {
+      URL.revokeObjectURL(avatarPreview);
+    }
+    const selected = avatarOptions.find(a => a.id === avatarId);
+    // Guardamos tanto el ID como la URL completa
+    setSelectedAvatar(avatarId);
+    setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
+    // 👇 Añadimos un estado para guardar la URL real que se usará en el registro
+    setSelectedAvatarUrl(selected?.imageUrl || DEFAULT_AVATAR); // <-- Nuevo estado
+    closeAvatarModal();
+  };
+
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0]);
-    }
+  const openAvatarModal = () => {
+    setShowAvatarModal(true);
+    requestAnimationFrame(() => {
+      setIsAvatarModalVisible(true);
+    });
   };
+
+  const closeAvatarModal = () => {
+    setIsAvatarModalVisible(false);
+    setTimeout(() => {
+      setShowAvatarModal(false);
+    }, 200);
+  };
+
+  const updateAvatarModalPosition = useCallback(() => {
+    if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
+      const cardRect = formCardRef.current.getBoundingClientRect();
+      const modal = avatarPickerRef.current;
+      modal.style.position = 'fixed';
+      modal.style.left = `${cardRect.left + window.scrollX}px`;
+      modal.style.top = `${cardRect.top + window.scrollY}px`;
+      modal.style.width = `${cardRect.width}px`;
+      modal.style.height = `${cardRect.height}px`;
+      modal.style.zIndex = '1002';
+    }
+  }, [showAvatarModal]);
+
+  useLayoutEffect(() => {
+    if (showAvatarModal) {
+      const id = requestAnimationFrame(updateAvatarModalPosition);
+      const handleResize = () => updateAvatarModalPosition();
+      window.addEventListener('resize', handleResize);
+      return () => {
+        cancelAnimationFrame(id);
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, [showAvatarModal, updateAvatarModalPosition]);
 
   const handleCancel = () => {
     setUserName('');
     setPassword('');
     setConfirmPassword('');
-    setSelectedImage(null);
-    history.push('/admin/profesores');
-  };
-
-  const getUsernameIcon = () => {
-    const trimmed = userName.trim();
-    if (trimmed.length === 0) return closeOutline;
-    if (trimmed.length < 3 || trimmed.includes(' ')) return closeOutline;
-    if (isUsernameAvailable === true) return checkmarkOutline;
-    return closeOutline;
+    setSelectedAvatar('');
+    setAvatarPreview(DEFAULT_AVATAR);
+    if (showAvatarModal) closeAvatarModal();
+    history.replace('/admin/profesores');
   };
 
   return (
@@ -169,7 +266,7 @@ export default function TeacherRegister() {
         <SimpleHeaderAdmin adminName={user.username} />
       )}
       <div className="teacher-register-main-container">
-        <div className="teacher-register-form-card">
+        <div className="teacher-register-form-card" ref={formCardRef}>
           <div className="teacher-register-form-container-header">
             <h2>Registro</h2>
             <p>Rellene los siguientes campos, por favor</p>
@@ -186,7 +283,11 @@ export default function TeacherRegister() {
                     onIonInput={(e) => setUserName(e.detail.value || '')}
                     className="teacher-register-input-item"
                   />
-                  <IonIcon icon={getUsernameIcon()} />
+                  <IonIcon icon={
+                    userName.trim().length === 0 ? closeOutline :
+                    (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
+                    isUsernameAvailable === true ? checkmarkOutline : closeOutline
+                  } />
                 </div>
               </div>
 
@@ -227,11 +328,11 @@ export default function TeacherRegister() {
 
             <div className="teacher-register-form-right">
               <div className="teacher-register-field-wrapper">
-                <div className="teacher-register-field-label">Foto de perfil</div>
-                <div className="teacher-register-profile-image-container" onClick={triggerFileInput}>
-                  {selectedImage ? (
+                <div className="teacher-register-field-label">Foto de perfil *</div>
+                <div className="teacher-register-profile-image-container" onClick={openAvatarModal}>
+                  {avatarPreview ? (
                     <img
-                      src={URL.createObjectURL(selectedImage)}
+                      src={avatarPreview}
                       alt="Perfil"
                       className="teacher-register-selected-image"
                     />
@@ -239,13 +340,6 @@ export default function TeacherRegister() {
                     <IonIcon icon={person} className="teacher-register-profile-placeholder" />
                   )}
                 </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                />
               </div>
             </div>
           </div>
@@ -266,6 +360,14 @@ export default function TeacherRegister() {
           </div>
         </div>
 
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+        />
+
         <IonToast
           isOpen={isToastOpen}
           message={toastMessage}
@@ -275,6 +377,51 @@ export default function TeacherRegister() {
           className="teacher-register-toast"
         />
       </div>
+
+      {/* Modal de selección de avatar */}
+      {showAvatarModal &&
+        createPortal(
+          <div className="teacher-register-avatar-picker-overlay" onClick={closeAvatarModal}>
+            <div
+              ref={avatarPickerRef}
+              className={`teacher-register-avatar-picker ${
+                isAvatarModalVisible ? 'teacher-register-avatar-picker-visible' : ''
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="teacher-register-picto-picker-header">
+                <h3>Selecciona un avatar</h3>
+                <IonButton fill="clear" size="small" onClick={closeAvatarModal}>
+                  Cerrar
+                </IonButton>
+              </div>
+              <div className="teacher-register-picto-grid">
+                <div className="teacher-register-picto-option" onClick={triggerFileInput}>
+                  <div className="teacher-register-upload-avatar-placeholder">
+                    <IonIcon icon={addOutline} className="teacher-register-upload-icon" />
+                  </div>
+                  <span>Subir imagen</span>
+                </div>
+
+                {loadingAvatars ? (
+                  <div className="teacher-register-avatar-loading">Cargando avatares...</div>
+                ) : (
+                  avatarOptions.map((avatar) => (
+                    <div
+                      key={avatar.id}
+                      className="teacher-register-picto-option"
+                      onClick={() => handleAvatarSelect(avatar.id)}
+                    >
+                      <IonImg src={avatar.imageUrl} alt={avatar.name} />
+                      <span>{avatar.name}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>,
+          document.getElementById('modal-root')!
+        )}
     </IonPage>
   );
 }
