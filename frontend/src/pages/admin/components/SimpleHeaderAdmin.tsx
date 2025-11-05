@@ -1,3 +1,9 @@
+/**
+ * @file SimpleHeaderAdmin.tsx
+ * @description Header simple para vistas de admin. Muestra el nombre del admin,
+ * un botón home y un botón para cerrar sesión.
+ */
+
 import {
     IonTitle,
     IonToolbar,
@@ -15,10 +21,19 @@ import { setupIonicReact } from '@ionic/react';
 
 setupIonicReact();
 
+/**
+ * Props del SimpleHeaderAdmin
+ * @property adminName - Nombre a mostrar en el header
+ */
 interface Props {
     adminName: String;
 }
 
+/**
+ * Componente de encabezado simple para la sección de administración.
+ * - `handleLogout` cierra la sesión y redirige a la raíz.
+ * - `handleHome` redirige al dashboard del admin.
+ */
 const SimpleHeaderAdmin: React.FC<Props> = ({
     adminName
 }) => {

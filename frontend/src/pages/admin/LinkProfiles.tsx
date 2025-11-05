@@ -1,3 +1,11 @@
+/**
+ * @file LinkProfiles.tsx
+ * @description Página de administración para vincular perfiles (alumnos y profesores) a clases.
+ * Provee UI para listar, buscar, seleccionar y (des)asignar usuarios a grupos.
+ *
+ * Componente principal: LinkProfiles
+ */
+
 import {
     IonContent,
     IonSpinner,
@@ -19,14 +27,33 @@ import UserItem from './components/UserItem';
 import { authAPI, fetchTeachersWithGroups, fetchStudentsWithGroups, assignStudentsToGroup, assignTeachersToGroup, unassignStudentsFromGroup, unassignTeachersFromGroup } from '../../lib/api';
 import type { Group } from '../../lib/api';
 
+/**
+ * Representa un usuario en la UI de selección (alumno o profesor).
+ * - `groups` se usa para profesores (lista de grupos asociados).
+ * - `group` se usa para estudiantes (grupo asignado único).
+ */
 interface User {
+    /** UUID del usuario */
     id: string;
+    /** Nombre de usuario (extracto del email) */
     username: string;
+    /** URL de la foto de perfil */
     photo_url: string;
+    /** Grupos asociados (solo profesores) */
     groups?: Group[];
+    /** Grupo asignado (solo estudiantes) */
     group?: Group | null;
 }
 
+/**
+ * Componente principal de la pantalla "Link Profiles".
+ * Permite:
+ * - Cargar la lista de grupos, profesores y alumnos.
+ * - Buscar (filtrar) por nombre/alias de grupo en cliente.
+ * - Seleccionar varios usuarios y asignarlos/desasignarlos a un grupo.
+ *
+ * No recibe props; obtiene el usuario actual del contexto de autenticación.
+ */
 export default function LinkProfiles() {
 
     const { user } = useAuth();
@@ -52,6 +79,10 @@ export default function LinkProfiles() {
     const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
     useEffect(() => {
+        /**
+         * Carga la lista de grupos desde el backend y actualiza el estado `groups`.
+         * Ejecutado una vez al montar el componente.
+         */
         const loadGroups = async () => {
             try {
                 setLoadingGroups(true);
@@ -71,7 +102,12 @@ export default function LinkProfiles() {
     // Carga (o recarga) de usuarios. Se reruneará en mount y cada vez que
     // cambie `selectedClass`, tal y como pide el requisito.
     useEffect(() => {
-        const loadData = async () => {
+    /**
+     * Carga los usuarios (profesores y estudiantes) desde el backend y actualiza
+     * los estados `teachers` y `students`.
+     * Ejecutado al montar el componente y cuando cambia `selectedClass`.
+     */
+    const loadData = async () => {
             try {
                 setLoadingUsers(true);
 
@@ -94,7 +130,11 @@ export default function LinkProfiles() {
         loadData();
     }, []);
 
-    // Handler para asignar los alumnos y profesores seleccionados a la clase seleccionada
+    /**
+     * Asigna los usuarios seleccionados a la clase actualmente seleccionada.
+     * - Valida que exista `selectedClass`.
+     * - Llama a las APIs de asignación y refresca las listas.
+     */
     const handleAssign = async () => {
         if (!selectedClass) {
             setError('Selecciona una clase');
@@ -131,7 +171,10 @@ export default function LinkProfiles() {
         }
     };
 
-    // Handler para desasignar los alumnos y profesores seleccionados de la clase seleccionada
+    /**
+     * Desasigna los usuarios seleccionados de sus clases (o del grupo indicado para profesores).
+     * - Llama a las APIs de desasignación y refresca las listas.
+     */
     const handleUnassign = async () => {
 
         if (selectedStudentIds.length === 0 && selectedTeacherIds.length === 0) {

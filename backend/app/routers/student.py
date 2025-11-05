@@ -15,11 +15,14 @@ router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
+
 @router.get("/all", summary="Gets all students with photo, username and group")
 async def list_students(admin=Depends(get_current_admin)):
     """
-    Returns a list of all students, each one with id, username, photo_url and their
-    single associated group as an object { id, alias } (or null if none).
+    Devuelve una lista de todos los estudiantes con su id, 
+    nombre de usuario (email sin dominio), foto y grupo asignado (id y alias).
+
+    Requiere autenticación de admin.
     """
     try:
         # Get all users with role 'students'
@@ -33,6 +36,8 @@ async def list_students(admin=Depends(get_current_admin)):
             return []
 
         students = []
+
+        # For each student, get id from users table
         for s in resp.data:
             sid = s.get("id")
             if not sid:
@@ -47,6 +52,7 @@ async def list_students(admin=Depends(get_current_admin)):
             except Exception:
                 username = None
 
+            # Get photo_url or default avatar
             photo = s.get("photo_url") or DEFAULT_AVATAR
 
             # Resolve single group for the student (group_id may be None)
@@ -62,6 +68,7 @@ async def list_students(admin=Depends(get_current_admin)):
                     g = gresp.data[0]
                     group = {"id": g.get("id"), "alias": g.get("alias")}
 
+            # Append student info to the list
             students.append({
                 "id": sid,
                 "username": username,

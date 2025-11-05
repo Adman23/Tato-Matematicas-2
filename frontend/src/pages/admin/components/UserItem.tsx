@@ -1,7 +1,20 @@
+/**
+ * @file UserItem.tsx
+ * @description Item reutilizable que muestra avatar, nombre y clases de un usuario
+ * junto a un checkbox para selección.
+ */
 import React from 'react';
 import { IonAvatar, IonItem, IonCheckbox } from '@ionic/react';
 import './UserItem.css';
 
+/**
+ * Props para UserItem
+ * @property avatar - URL de la imagen/avatar
+ * @property alias - Texto a mostrar (nombre/alias)
+ * @property classes - Lista de alias de clase a mostrar
+ * @property isChecked - Estado del checkbox
+ * @property onCheckChange - Callback cuando cambia el checkbox
+ */
 interface Props {
     avatar: string;
     alias: string;
@@ -12,6 +25,10 @@ interface Props {
 
 }
 
+/**
+ * Componente visual para mostrar un usuario con avatar, nombre y lista de clases.
+ * Incluye un checkbox y lanza `onCheckChange` con el nuevo estado.
+ */
 const UserItem: React.FC<Props> = ({
     avatar,
     alias,

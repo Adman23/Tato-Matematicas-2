@@ -1,3 +1,8 @@
+/**
+ * @file ClassSelect.tsx
+ * @description Componente reutilizable para seleccionar una clase (grupo).
+ */
+
 import {
     IonSelect,
     IonSelectOption,
@@ -12,6 +17,15 @@ import type { Group } from '../../../lib/api';
 setupIonicReact();
 
 
+/**
+ * Props del componente ClassSelect
+ * @property classes - Lista de grupos disponibles
+ * @property value - Id del grupo seleccionado
+ * @property onChange - Callback cuando cambia la selección (recibe id o null)
+ * @property label - Etiqueta para el control
+ * @property max_width - Estilo inline para limitar ancho
+ * @property placeholder_text - Texto placeholder
+ */
 interface ClassSelectProps {
     classes: Group[];
     value?: number | null;
@@ -21,6 +35,10 @@ interface ClassSelectProps {
     placeholder_text?: string;
 }
 
+/**
+ * Select control para elegir un grupo. Renderiza una lista de opciones
+ * proveniente de `classes`.
+ */
 const ClassSelect: React.FC<ClassSelectProps> = ({
     classes,
     value,
