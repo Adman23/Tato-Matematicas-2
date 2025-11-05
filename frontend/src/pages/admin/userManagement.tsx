@@ -24,7 +24,7 @@ export default function UserManagement() {
   const {user, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<{ id: string; username: string; photo_url: string }[]>([]);
   
   const history = useHistory();
 
@@ -65,6 +65,7 @@ export default function UserManagement() {
       isMounted = false; // limpia el efecto al desmontar
     };
   }, [tipo]);*/
+  
 
   useEffect(() => {
     const loadData = async () => {
@@ -82,15 +83,13 @@ export default function UserManagement() {
         }
       } catch (error) {
         console.error("Error cargando usuarios:", error);
-      }finally{
-
+      } finally {
         setLoading(false);
       }
-
     };
 
     loadData();
-  }, [tipo]);
+  }, [tipo]); 
 
   if (authLoading || loading) {
     return (
@@ -120,7 +119,7 @@ export default function UserManagement() {
               className="teacherManagement-AddButoon"
               onClick={() =>
                 tipo === 'profesores'
-                  ? history.push('/tutor-register')
+                  ? history.push('/teacher-register')
                   : history.push('/student-register')
               }
             >

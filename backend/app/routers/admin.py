@@ -289,4 +289,38 @@ async def upload_image(file: UploadFile = File(...), filename: str = Form(...)):
             detail="Error uploading image"
         )
     
+@router.get("/get_images", summary="Get all the images (url) from the storage bucket")
+async def get_images():
+    """
+    Fetches all image files stored in the "user_photo" bucket in Supabase Storage.
+    Only includes common image extensions: .png, .jpg, .jpeg, .gif.
     
+    Returns:
+        dict: { "filename.png": "https://public-url.com/..." }
+    """
+    try:
+        # Obtener la lista de archivos del bucket
+        files = supabase_admin.storage.from_("user_photo").list()
+
+        # Filtrar solo archivos de imagen
+        image_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
+        image_files = [
+            f for f in files
+            if isinstance(f, dict) and 'name' in f and
+            any(f['name'].lower().endswith(ext) for ext in image_extensions)
+        ]
+
+        images = {}
+        for file in image_files:
+            filename = file['name']
+            public_url = supabase_admin.storage.from_("user_photo").get_public_url(filename)
+            images[filename] = public_url
+
+        return images
+
+    except Exception as e:
+        print("Error fetching images:", repr(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching images from storage"
+        )
