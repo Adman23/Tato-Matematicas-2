@@ -158,7 +158,6 @@ export default function StudentRegister() {
       const password = pictograms.join('-');
       let photoUrl = DEFAULT_AVATAR;
 
-      // 👇 Si se seleccionó un avatar del modal, usamos su URL completa
       if (avatarOptions.some(a => a.id === selectedAvatar)) {
         photoUrl = selectedAvatarUrl;
       } else if (fileInputRef.current?.files?.[0]) {
@@ -261,7 +260,7 @@ export default function StudentRegister() {
     const selected = avatarOptions.find(a => a.id === avatarId);
     setSelectedAvatar(avatarId);
     setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
-    setSelectedAvatarUrl(selected?.imageUrl || DEFAULT_AVATAR); // 👈 Guardamos la URL completa aquí
+    setSelectedAvatarUrl(selected?.imageUrl || DEFAULT_AVATAR); 
     closeAvatarModal();
   };
 

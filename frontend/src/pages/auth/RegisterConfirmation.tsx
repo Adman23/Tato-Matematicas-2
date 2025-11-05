@@ -21,7 +21,6 @@ const RegisterConfirmation = () => {
   const { tipo } = useParams<{ tipo: string }>();
   const { user, loading } = useAuth();
 
-  // Guard: if auth is still loading, show nothing or a spinner
   if (loading) {
     return (
       <IonPage>
@@ -32,7 +31,6 @@ const RegisterConfirmation = () => {
     );
   }
 
-  // Only admins should be here
   if (!user || user.role !== 'admin') {
     return <Redirect to="/login" />;
   }
