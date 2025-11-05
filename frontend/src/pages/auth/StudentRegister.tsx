@@ -70,7 +70,9 @@ export default function StudentRegister() {
 
   // Validaciones individuales
   const isUserNameLong = userName.trim().length >= 3;
-  const isUsernameValid = isUserNameLong && isUsernameAvailable === true;
+  const isUserNameSpaceless = !userName.includes(' ');
+  const isUsernameValid = isUserNameLong && isUsernameAvailable && isUserNameSpaceless === true;
+
   const hasExactlyThreePictograms = pictograms.length === 3;
   const isAvatarSelected = selectedAvatar !== '';
 
@@ -109,7 +111,7 @@ export default function StudentRegister() {
         const imagesMap = await getImages(); // { "Batman.png": "https://...", ... }
         const options = Object.entries(imagesMap).map(([filename, url]) => ({
           id: filename,
-          name: filename.replace('.png', '').replace(/_/g, ' '),
+          name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
           imageUrl: url as string, // ✅ Corrección de tipo
         }));
         setAvatarOptions(options);
@@ -129,6 +131,7 @@ export default function StudentRegister() {
   const getUsernameIcon = () => {
     if (userName.trim().length === 0) return closeOutline;
     if (!isUserNameLong) return closeOutline;
+    if (!isUserNameSpaceless) return closeOutline;
     if (isUsernameAvailable === true) return checkmarkOutline;
     return closeOutline;
   };
@@ -146,6 +149,8 @@ export default function StudentRegister() {
       errorMsg = 'Debes seleccionar exactamente 3 pictogramas.';
     } else if (!isAvatarSelected) {
       errorMsg = 'Debes seleccionar una imagen de perfil.';
+    } else if (!isUserNameSpaceless) {
+      errorMsg = 'El nombre de usuario no puede contener espacios.';
     }
 
     if (errorMsg) {
@@ -204,7 +209,7 @@ export default function StudentRegister() {
     setPictograms([]);
     if (showPictoModal) closePictoModal();
     if (showAvatarModal) closeAvatarModal();
-    history.push('/admin/alumnos');
+    history.replace('/admin/alumnos');
   };
 
   // === PICTOGRAMAS ===
@@ -441,7 +446,7 @@ export default function StudentRegister() {
             <IonButton 
               expand="block" 
               className={`student-register-confirm-button ${
-                !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected 
+                !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected || !isUserNameSpaceless
                   ? 'student-register-confirm-button--disabled' 
                   : ''
               }`}
