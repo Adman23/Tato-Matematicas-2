@@ -179,8 +179,8 @@ export default function StudentRegister() {
       setIsToastOpen(true);
 
       setTimeout(() => {
-        window.location.href = '/admin/alumnos';
-      }, 1500);
+        history.push('/register/confirmation/alumnos'); 
+      }, 2000); 
     } catch (err: any) {
       console.error('Error en el registro:', err);
       const message =
