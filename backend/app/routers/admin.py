@@ -5,6 +5,7 @@ from ..services.supabase import supabase_admin
 from ..dependencies import get_current_admin
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
+from ..schemas.admin import AssignStudentsPayload, AssignTeachersPayload, UnassignStudentsPayload, UnassignTeachersPayload
 router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
