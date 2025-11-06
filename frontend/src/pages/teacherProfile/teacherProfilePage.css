@@ -1,4 +1,4 @@
-.studentTable{
+.studentTable {
 
     border: 3px solid var(--ion-color-primary);
     overflow-y: auto;
@@ -8,14 +8,21 @@
     margin: auto auto;
 }
 
-.perfilProfesor-buscador{
+.perfilProfesor-buscador {
 
     width: 350px;
     margin: auto auto;
 
 }
 
-.infoButtons-teacherProfile{
+.infoButtons-teacherProfile {
 
     height: auto;
+}
+
+.teacher-profile-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }

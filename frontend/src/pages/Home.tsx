@@ -42,7 +42,7 @@ export default function Home() {
         <div className="home-container">
           {/* Logo y título */}
           <div className="home-header">
-            <h1 className="home-title">TatoMaths</h1>
+            <h1 className="home-title">Tato Matemáticas 2</h1>
             <p className="home-subtitle">¿Quién va a jugar?</p>
           </div>
 
@@ -59,7 +59,7 @@ export default function Home() {
                   alt="Tutor o Administrador"
                   className="tatomaths-image"
                 />
-               {/* <span className="tatomaths-label">Tutor</span> */}
+                {/* <span className="tatomaths-label">Tutor</span> */}
               </div>
             </button>
 

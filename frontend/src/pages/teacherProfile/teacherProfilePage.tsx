@@ -1,8 +1,8 @@
-import {setupIonicReact} from '@ionic/react'
+import { setupIonicReact } from '@ionic/react'
 
 setupIonicReact();
 
-import { IonPage, IonContent, IonSpinner, IonList,IonSearchbar } from '@ionic/react';
+import { IonPage, IonContent, IonSpinner, IonList, IonSearchbar } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState, useEffect } from 'react';
@@ -11,7 +11,7 @@ import StudentItem from './components/StudentItem';
 import HeaderTeacherItem from './components/HeaderTeacherItem';
 import { fetchStudentsByTeacher } from '../../lib/api';
 
-interface Student{
+interface Student {
 
   id: string;
   username: string;
@@ -51,36 +51,38 @@ export default function TeacherProfilePage() {
 
   return (
     <IonPage>
-      {!user || loading || loadingGroups? (
+      {!user || loading || loadingGroups ? (
         <IonContent className="ion-text-center">
-          <IonSpinner />
+          <div className='teacher-profile-spinner'>
+            <IonSpinner name='crescent' />
+          </div>
         </IonContent>
       ) : (
         <>
-          <HeaderTeacherItem 
-            teacherName={user.username} 
-            teacherAvatar={ user.photo_url || "/assets/pictograms/user_default.png"}
+          <HeaderTeacherItem
+            teacherName={user.username}
+            teacherAvatar={user.photo_url || "/assets/pictograms/user_default.png"}
             onLogoutClick={handleLogout}
           />
           <IonContent>
-            
-            <IonSearchbar className='perfilProfesor-buscador' 
-                          placeholder="Buscar alumno"
-                          value={studentQuery}
-                          onIonInput={(e) => setStudentQuery(e.detail.value ?? '')}
-                          onIonClear={() => setStudentQuery('')}
-                          onIonCancel={() => setStudentQuery('')}></IonSearchbar>
-            
+
+            <IonSearchbar className='perfilProfesor-buscador'
+              placeholder="Buscar alumno"
+              value={studentQuery}
+              onIonInput={(e) => setStudentQuery(e.detail.value ?? '')}
+              onIonClear={() => setStudentQuery('')}
+              onIonCancel={() => setStudentQuery('')}></IonSearchbar>
+
             <div className='studentTable'>
               <IonList>
                 {(
-                    (studentQuery === '' ? students : students.filter(s => {
-                        const q = studentQuery.toLowerCase();
-                        const uname = (s.username || '').toLowerCase();
-                        const inUsername = uname.includes(q);
-                        const inGroup = (s.group_id && s.group_alias) ? (s.group_alias || '').toLowerCase().includes(q) : false;
-                        return inUsername || inGroup;
-                    }))
+                  (studentQuery === '' ? students : students.filter(s => {
+                    const q = studentQuery.toLowerCase();
+                    const uname = (s.username || '').toLowerCase();
+                    const inUsername = uname.includes(q);
+                    const inGroup = (s.group_id && s.group_alias) ? (s.group_alias || '').toLowerCase().includes(q) : false;
+                    return inUsername || inGroup;
+                  }))
                 ).map(student => (
                   <StudentItem
                     key={student.id}
