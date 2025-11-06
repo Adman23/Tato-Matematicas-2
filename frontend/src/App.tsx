@@ -20,7 +20,7 @@ import Home from './pages/Home';
 
 
 // === Páginas de autenticación ===
-import Login from './pages/auth/TutorLogin';
+import Login from './pages/auth/Login';
 import StudentRegister from './pages/auth/StudentRegister';
 import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
 import StudentLoginStep2 from './pages/auth/StudentLoginStep2';
