@@ -70,7 +70,7 @@ export default function App() {
       <AuthProvider>
         <IonReactRouter>
           <IonRouterOutlet>
-            <Route path="/" exact component={Home} />
+            <Route path="/home" exact component={Home} />
             <Route path="/login" exact component={Login} />
 
             {/* Rutas del login de estudiante en 3 pasos */}
@@ -89,7 +89,8 @@ export default function App() {
             <Route path="/teacher-profile" exact component={TeacherProfilePage} />
             <Route path="/register/confirmation/:tipo" component={RegisterConfirmation} exact />
 
-            <Redirect to="/" />
+            {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
+            <Redirect to="/student-login" />
           </IonRouterOutlet>
         </IonReactRouter>
       </AuthProvider>

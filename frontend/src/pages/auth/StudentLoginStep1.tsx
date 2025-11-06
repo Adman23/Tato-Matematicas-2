@@ -83,7 +83,7 @@ export default function StudentLoginStep1() {
             <IonButton
               fill="clear"
               className="default-action-button"
-              onClick={() => history.push('/')}
+              onClick={() => history.push('/home')}
             >
               <img
                 src="/assets/pictograms/boton_volver.png"
@@ -95,7 +95,7 @@ export default function StudentLoginStep1() {
             <IonButton
               fill="clear"
               className="default-action-button"
-              onClick={() => history.push('/')}
+              onClick={() => history.push('/home')}
             >
               <img
                 src="/assets/pictograms/home.png"
