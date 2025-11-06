@@ -170,7 +170,7 @@ export default function StudentRegister() {
         username: userName,
         password: password,
         role: "student",
-        photo_url: photoUrl, // ✅ Ahora siempre es una URL válida
+        photo_url: photoUrl, 
       });
 
       setToastMessage('Estudiante registrado correctamente 🎉');
@@ -260,7 +260,7 @@ export default function StudentRegister() {
     const selected = avatarOptions.find(a => a.id === avatarId);
     setSelectedAvatar(avatarId);
     setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
-    setSelectedAvatarUrl(selected?.imageUrl || DEFAULT_AVATAR); 
+    setSelectedAvatarUrl(selected?.id || DEFAULT_AVATAR); 
     closeAvatarModal();
   };
 
