@@ -21,11 +21,11 @@ interface User {
 export default function UserManagement() {
 
   const { tipo } = useParams<{ tipo: string }>();
-  const {user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<{ id: string; username: string; photo_url: string }[]>([]);
-  
+
   const history = useHistory();
 
   // Redirige si el tipo no es válido
@@ -65,7 +65,7 @@ export default function UserManagement() {
       isMounted = false; // limpia el efecto al desmontar
     };
   }, [tipo]);*/
-  
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -89,21 +89,23 @@ export default function UserManagement() {
     };
 
     loadData();
-  }, [tipo]); 
+  }, [tipo]);
 
   if (authLoading || loading) {
     return (
       <IonPage>
         <IonContent className="ion-text-center">
-          <IonSpinner />
+          <div className='user-management-spinner'>
+            <IonSpinner name='crescent' />
+          </div>
         </IonContent>
       </IonPage>
     );
   }
 
   // Redirige si no está autenticado 
-   if (!user || user.role !== 'admin') { 
-    return <Redirect to="/login" />; 
+  if (!user || user.role !== 'admin') {
+    return <Redirect to="/login" />;
   }
 
   return (
