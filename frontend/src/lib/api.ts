@@ -257,14 +257,50 @@ export const authAPI = {
 };
 
 // === OTROS ENDPOINTS ===
+/**
+ * Obtener todos los profesores
+ * @returns  Lista de profesores
+ */
 export async function fetchTeachers() {
   const response = await api.get("/api/admin/teachers");
   return response.data;
 }
 
+/**
+ * Obtener todos los alumnos
+ * @returns Lista de alumnos
+ */
 export async function fetchStudents() {
   const response = await api.get("/api/admin/students");
   return response.data;
+}
+
+/**
+ * Obtener los alumnos de un profesor
+ * @returns Lista de alumnos
+ */
+export async function fetchStudentsByTeacher() {
+  try {
+    const response = await api.get("/api/teacher/students");
+    return response.data;
+  } catch (err) {
+    console.error("Error obteniendo estudiantes:", err);
+    throw err; // opcional, para que el caller maneje el error
+  }
+}
+
+/**
+ * Obtener los alumnos de un profesor
+ * @returns Lista de alumnos
+ */
+export async function fetchStudentsByTeacherProfile() {
+  try {
+    const response = await api.get("/api/teacher/students");
+    return response.data;
+  } catch (err) {
+    console.error("Error obteniendo estudiantes:", err);
+    throw err; // opcional, para que el caller maneje el error
+  }
 }
 
 export async function fetchTeachersWithGroups() {

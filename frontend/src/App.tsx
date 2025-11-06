@@ -37,6 +37,10 @@ import TutorDashboard from './pages/tutor/Dashboard';
 import LinkProfiles from './pages/admin/LinkProfiles';
 import AdminDashboard from './pages/admin/MenuAdmin';
 import userManagement from './pages/admin/userManagement';
+
+// === Perfil profesor ===
+import TeacherProfilePage from './pages/teacherProfile/teacherProfilePage';
+
 import TeacherRegister from './pages/auth/TeacherRegister';
 import RegisterConfirmation from './pages/auth/RegisterConfirmation';
 
@@ -82,6 +86,7 @@ export default function App() {
             <Route path="/admin-dashboard" exact component={AdminDashboard} />
             <Route path="/student-register" exact component={StudentRegister} />
             <Route path="/admin/:tipo" exact component={userManagement} />
+            <Route path="/teacher-profile" exact component={TeacherProfilePage} />
             <Route path="/register/confirmation/:tipo" component={RegisterConfirmation} exact />
 
             <Redirect to="/" />

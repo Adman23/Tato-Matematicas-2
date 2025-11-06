@@ -15,7 +15,6 @@ router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
-
 @router.get("/students", summary="Gets all the students of a teacher")
 async def list_students(teacher=Depends(get_current_user)):
     """
