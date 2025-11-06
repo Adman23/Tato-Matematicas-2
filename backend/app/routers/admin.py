@@ -281,7 +281,7 @@ async def upload_image(file: UploadFile = File(...), filename: str = Form(...)):
             )
             
         url_response = supabase_admin.storage.from_("user_photo").get_public_url(filename)
-        return {"url": url_response}
+        return {"name": filename,"url": url_response}
     
     except Exception as e:
         print("Upload exception:", repr(e))
