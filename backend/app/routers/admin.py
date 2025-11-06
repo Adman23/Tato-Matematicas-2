@@ -40,7 +40,8 @@ async def list_teachers():
                 teachers.append({
                     "id": user["id"],
                     "username": username,
-                    "photo_url": user.get("photo_url") or DEFAULT_AVATAR
+                    "photo_url": supabase_admin.storage.from_("user_photo")
+                        .get_public_url(user.get("photo_url")) or DEFAULT_AVATAR
                 })
             except Exception as user_error:
                 # If we can't get auth user, skip this student
@@ -84,7 +85,8 @@ async def list_students():
                 students.append({
                     "id": user["id"],
                     "username": username,
-                    "photo_url": user.get("photo_url") or DEFAULT_AVATAR
+                    "photo_url": supabase_admin.storage.from_("user_photo")
+                        .get_public_url(user.get("photo_url")) or DEFAULT_AVATAR
                 })
             except Exception as user_error:
                 # If we can't get auth user, skip this student
