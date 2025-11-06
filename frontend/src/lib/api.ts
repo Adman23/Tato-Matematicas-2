@@ -358,13 +358,13 @@ export const uploadImage = async (file: File, filename: string): Promise<string>
   formData.append('filename', filename);
 
   // ✅ Usa la ruta completa si está en /api/admin
-  const response = await api.post<{ url: string }>('/api/admin/upload_image', formData, {
+  const response = await api.post<{ name: string, url: string  }>('/api/admin/upload_image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
 
-  return response.data.url;
+  return response.data.name;
 };
 
 /**

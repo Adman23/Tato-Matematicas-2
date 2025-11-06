@@ -1,4 +1,4 @@
-.teacherManagement-MainContainer{
+.teacherManagement-MainContainer {
 
     display: flex;
     flex-direction: column;
@@ -7,7 +7,7 @@
     margin: 20px auto auto auto;
 }
 
-.teacherManagement-TextAddButton{
+.teacherManagement-TextAddButton {
 
     display: flex;
     flex-direction: row;
@@ -16,13 +16,13 @@
     padding: 20px 20px;
 }
 
-.teacherManagement-TextTeacher{
+.teacherManagement-TextTeacher {
 
     color: #50BFE6;
     font-size: 30px;
 }
 
-ion-button.teacherManagement-AddButoon::part(native){
+ion-button.teacherManagement-AddButoon::part(native) {
 
     border-radius: 40px;
     height: 36px;
@@ -31,16 +31,23 @@ ion-button.teacherManagement-AddButoon::part(native){
     align-items: center;
     justify-content: center;
     background-color: #50BFE6;
-    color:white;
+    color: white;
     border: none;
     box-shadow: none;
 
 }
 
-.teacherManagement-teacherTable{
+.teacherManagement-teacherTable {
 
     border: 3px solid #50BFE6;
     overflow-y: auto;
     border-radius: 20px;
     height: 90%;
+}
+
+.user-management-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
