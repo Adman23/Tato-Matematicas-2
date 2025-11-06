@@ -202,8 +202,7 @@ export default function TeacherRegister() {
     // Guardamos tanto el ID como la URL completa
     setSelectedAvatar(avatarId);
     setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
-    // 👇 Añadimos un estado para guardar la URL real que se usará en el registro
-    setSelectedAvatarUrl(selected?.imageUrl || DEFAULT_AVATAR); // <-- Nuevo estado
+    setSelectedAvatarUrl(selected?.name || DEFAULT_AVATAR);
     closeAvatarModal();
   };
 
