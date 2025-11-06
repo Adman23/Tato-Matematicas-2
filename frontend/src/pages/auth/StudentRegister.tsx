@@ -36,7 +36,6 @@ const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function StudentRegister() {
   const history = useHistory();
-  const { register } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pictoPickerRef = useRef<HTMLDivElement>(null);
