@@ -70,7 +70,7 @@ async def register( data: RegisterRequest,
             id=new_user.user.id,
             username=data.username,
             role=data.role,
-            photo_url=data.photo_url
+            photo_url=supabase_admin.storage.from_("user_photo").get_public_url(data.photo_url) or None
         )
 
     except Exception as e:
@@ -157,7 +157,8 @@ async def login(data: LoginRequest):
                 "id": auth_response.user.id,
                 "username": auth_response.user.email.split("@")[0],
                 "role": response_user_public.data[0]["role"],
-                "photo_url": response_user_public.data[0].get("photo_url"),
+                "photo_url": supabase_admin.storage.from_("user_photo")\
+                                .get_public_url(response_user_public.data[0].get("photo_url")) or None,
                 "notes": response_user_profile.data[0].get("notes"),
                 "visual_preferences": response_user_profile.data[0].get("visual_preferences"),
                 "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
