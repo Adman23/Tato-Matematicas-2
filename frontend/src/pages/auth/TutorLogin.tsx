@@ -62,6 +62,11 @@ export default function Login() {
   const { login } = useAuth();
   const history = useHistory();
 
+  /**
+   * Reset del formulario de inicio de sesión.
+   * Reinicia los campos `username` y `password` a strings vacíos.
+   * @returns {void}
+   */
   const clearForm = () => {
     setUsername('');
     setPassword('');
@@ -122,8 +127,10 @@ try {
   };
 
   /**
-* Alterna la visibilidad de la contraseña.
-*/
+   * Alterna la visibilidad del campo de contraseña.
+   * Cambia el estado `showPassword` (boolean).
+   * @returns {void}
+   */
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -132,6 +139,12 @@ try {
   const [isUsernameValid, setIsUsernameValid] = useState<boolean | null>(null);
   const requestIdRef = useRef(0);
 
+  /**
+   * Efecto para validar la existencia del nombre de usuario mientras el usuario escribe.
+   * - Aplica debounce (400ms) antes de llamar a `authAPI.checkUsername`.
+   * - Usa `requestIdRef` para ignorar respuestas obsoletas y evitar condiciones de carrera.
+   * - Actualiza `isUsernameValid` con `true` o `false` según la respuesta.
+   */
   useEffect(() => {
     const trimmed = username.trim();
 

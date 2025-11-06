@@ -15,11 +15,14 @@ router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
+
 @router.get("/all", summary="Gets all students with photo, username and group")
 async def list_students(admin=Depends(get_current_admin)):
     """
-    Returns a list of all students, each one with id, username, photo_url and their
-    single associated group as an object { id, alias } (or null if none).
+    Devuelve una lista de todos los estudiantes con su id, 
+    nombre de usuario (email sin dominio), foto y grupo asignado (id y alias).
+
+    Requiere autenticación de admin.
     """
     try:
         # Get all users with role 'students'
@@ -33,6 +36,8 @@ async def list_students(admin=Depends(get_current_admin)):
             return []
 
         students = []
+
+        # For each student, get id from users table
         for s in resp.data:
             sid = s.get("id")
             if not sid:
@@ -47,6 +52,7 @@ async def list_students(admin=Depends(get_current_admin)):
             except Exception:
                 username = None
 
+            # Get photo_url or default avatar
             photo = s.get("photo_url") or DEFAULT_AVATAR
 
             # Resolve single group for the student (group_id may be None)
@@ -62,6 +68,7 @@ async def list_students(admin=Depends(get_current_admin)):
                     g = gresp.data[0]
                     group = {"id": g.get("id"), "alias": g.get("alias")}
 
+            # Append student info to the list
             students.append({
                 "id": sid,
                 "username": username,
@@ -77,6 +84,71 @@ async def list_students(admin=Depends(get_current_admin)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting the students"
         )
-
+        
+@router.get("/student", summary="Gets all the info of a specific student")
+async def get_student(student_id: str):
+    """
+    Returns all the config data of a specific student.
+    """
+    try:
+        # Get the public user using the id
+        # todo needs to complete the info from the other tables.
+        # The structure should be like: "id": .., "username": .., "photo_url": .., "group_id": ..,
+        # "user_profiles": [..] "reinforcement_messages": [..], "game_configurations": [..]
+        # user_profiles and game_configurations are one-to-one relations, reinforcement_messages is one-to-many
+        
+        resp = supabase_admin.table("users") \
+                .select("""
+                        id, 
+                        photo_url, 
+                        group_id,
+                        user_profiles!user_id(
+                            id,
+                        ),
+                        reinforcement_messages!student_id(
+                            id,
+                        ),
+                        game_configurations!user_id(
+                            id,
+                        )
+                        """) \
+                .eq("id", student_id) \
+                .execute()
+                
+        if not resp.data or len(resp.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found"
+            )
+        
+        # Get the auth user data (using admin client to bypass RLS)
+        auth_resp = supabase_admin.auth.api.get_user_by_id(student_id)
+        
+        if auth_resp != 200:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student auth data not found"
+            )
+        
+        student = {
+                "id": resp.data[0].get("id"),
+                "username": auth_resp.user.email.split("@")[0],
+                "photo_url": supabase_admin.storage.from_("user_photo")
+                                .get_public_url(resp.data[0].get("photo_url")) or DEFAULT_AVATAR,
+                "group_id": resp.data[0].get("group_id"),
+                "role": "student",
+                "user_profile": resp.data[0].get("user_profiles")[0] ,
+                "game_configuration": resp.data[0].get("game_configurations")[0] ,
+                "reinforcement_messages": resp.data[0].get("reinforcement_messages")
+        }
+        
+        
+        return student
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting the student"
+        )  
     
 

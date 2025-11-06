@@ -11,13 +11,15 @@ import {
   IonImg,
   IonText,
 } from '@ionic/react';
-import { personOutline, addOutline, closeOutline } from 'ionicons/icons';
-import { useState, useRef, useLayoutEffect, useCallback } from 'react';
+import { personOutline, addOutline, closeOutline, checkmarkOutline } from 'ionicons/icons';
+import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { authAPI, uploadImage } from '../../lib/api';
+import { authAPI, uploadImage, getImages } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
+import { createPortal } from 'react-dom';
+
 setupIonicReact();
 
 const PICTOGRAMS = [
@@ -43,7 +45,7 @@ export default function StudentRegister() {
 
   const [userName, setUserName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState<string>('');
-  const [avatarPreview, setAvatarPreview] = useState<string>('/assets/perfiles/Perfil.png');
+  const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR);
   const [pictograms, setPictograms] = useState<string[]>([]);
 
   const [showPictoModal, setShowPictoModal] = useState(false);
@@ -58,44 +60,92 @@ export default function StudentRegister() {
 
   const { user } = useAuth();
 
-  const AVATAR_OPTIONS = [
-    'Aventurero.png',
-    'Batman.png',
-    'Bufón.png',
-    'Centauro.png',
-    'Dragón.png',
-    'Gato.png',
-    'Hércules.png',
-    'Lobo.png',
-    'Mago.png',
-    'Maga.png',
-    'Olentzero.png',
-    'Pinocho.png',
-    'Presidenta.png',
-    'Presidente.png',
-    'Princesa.png',
-    'Sirena.png',
-    'Spiderman.png',
-    'Supermán.png',
-    'Tutankhamon.png',
-    'Vampiro.png',
-  ].map(file => ({
-    id: file,
-    name: file.replace('.png', '').replace(/_/g, ' '),
-    image: `/assets/perfiles/${file}`,
-  }));
+  const [avatarOptions, setAvatarOptions] = useState<{ id: string; name: string; imageUrl: string }[]>([]);
+  const [loadingAvatars, setLoadingAvatars] = useState(true);
 
-  const isUserNameValid = userName.trim().length >= 3;
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
+  const usernameCheckIdRef = useRef(0);
+
+  const isUserNameLong = userName.trim().length >= 3;
+  const isUserNameSpaceless = !userName.includes(' ');
+  const isUsernameValid = isUserNameLong && isUserNameSpaceless && isUsernameAvailable === true;
   const hasExactlyThreePictograms = pictograms.length === 3;
   const isAvatarSelected = selectedAvatar !== '';
+  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
+
+  useEffect(() => {
+    const trimmed = userName.trim();
+
+    if (trimmed.length < 3) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
+    const currentId = ++usernameCheckIdRef.current;
+
+    const handler = setTimeout(() => {
+      authAPI.checkUsername(trimmed)
+        .then(res => {
+          if (currentId === usernameCheckIdRef.current) {
+            setIsUsernameAvailable(!res.exists);
+          }
+        })
+        .catch(() => {
+          if (currentId === usernameCheckIdRef.current) {
+            setIsUsernameAvailable(false);
+          }
+        });
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [userName]);
+
+  useEffect(() => {
+    const loadAvatars = async () => {
+      try {
+        const imagesMap = await getImages();
+        const options = Object.entries(imagesMap).map(([filename, url]) => ({
+          id: filename,
+          name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
+          imageUrl: url as string,
+        }));
+        setAvatarOptions(options);
+      } catch (err) {
+        console.error('Error al cargar avatares:', err);
+        setToastMessage('No se pudieron cargar los avatares.');
+        setToastColor('danger');
+        setIsToastOpen(true);
+      } finally {
+        setLoadingAvatars(false);
+      }
+    };
+
+    loadAvatars();
+  }, []);
+
+  const getUsernameIcon = () => {
+    if (userName.trim().length === 0) return closeOutline;
+    if (!isUserNameLong || !isUserNameSpaceless) return closeOutline;
+    if (isUsernameAvailable === true) return checkmarkOutline;
+    return closeOutline;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let errorMsg = '';
-    if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
-    if (!hasExactlyThreePictograms) errorMsg += 'Debes seleccionar exactamente 3 pictogramas. ';
-    if (!isAvatarSelected) errorMsg += 'Debes seleccionar una imagen de perfil. ';
+
+    if (!isUserNameLong) {
+      errorMsg = 'El nombre de usuario debe tener al menos 3 caracteres.';
+    } else if (!isUserNameSpaceless) {
+      errorMsg = 'El nombre de usuario no puede contener espacios.';
+    } else if (isUsernameAvailable === false) {
+      errorMsg = 'El nombre de usuario ya está en uso.';
+    } else if (!hasExactlyThreePictograms) {
+      errorMsg = 'Debes seleccionar exactamente 3 pictogramas.';
+    } else if (!isAvatarSelected) {
+      errorMsg = 'Debes seleccionar una imagen de perfil.';
+    }
 
     if (errorMsg) {
       setToastMessage(errorMsg);
@@ -106,23 +156,21 @@ export default function StudentRegister() {
 
     try {
       const password = pictograms.join('-');
-      let photoUrl = '';
+      let photoUrl = DEFAULT_AVATAR;
 
-      if (AVATAR_OPTIONS.some(a => a.id === selectedAvatar)) {
-        photoUrl = `/assets/perfiles/${selectedAvatar}`;
+      if (avatarOptions.some(a => a.id === selectedAvatar)) {
+        photoUrl = selectedAvatarUrl;
       } else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
         const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
         photoUrl = await uploadImage(file, uniqueFilename);
-      } else {
-        photoUrl = DEFAULT_AVATAR;
       }
 
       await authAPI.register({
         username: userName,
         password: password,
         role: "student",
-        photo_url: photoUrl,
+        photo_url: photoUrl, // ✅ Ahora siempre es una URL válida
       });
 
       setToastMessage('Estudiante registrado correctamente 🎉');
@@ -130,9 +178,8 @@ export default function StudentRegister() {
       setIsToastOpen(true);
 
       setTimeout(() => {
-        (document.activeElement as HTMLElement)?.blur();
-        history.push('/admin/alumnos');
-      }, 1500);
+        history.push('/register/confirmation/alumnos'); 
+      }, 2000); 
     } catch (err: any) {
       console.error('Error en el registro:', err);
       const message =
@@ -149,11 +196,11 @@ export default function StudentRegister() {
   const handleCancel = () => {
     setUserName('');
     setSelectedAvatar('');
-    setAvatarPreview('/assets/perfiles/Perfil.png');
+    setAvatarPreview(DEFAULT_AVATAR);
     setPictograms([]);
     if (showPictoModal) closePictoModal();
     if (showAvatarModal) closeAvatarModal();
-    history.push('/admin/alumnos');
+    history.replace('/admin/alumnos');
   };
 
   // === PICTOGRAMAS ===
@@ -197,7 +244,7 @@ export default function StudentRegister() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
+      if (avatarPreview && !avatarPreview.startsWith('http')) {
         URL.revokeObjectURL(avatarPreview);
       }
       setSelectedAvatar(file.name);
@@ -207,11 +254,13 @@ export default function StudentRegister() {
   };
 
   const handleAvatarSelect = (avatarId: string) => {
-    if (avatarPreview && !avatarPreview.startsWith('/assets/')) {
+    if (avatarPreview && !avatarPreview.startsWith('http')) {
       URL.revokeObjectURL(avatarPreview);
     }
+    const selected = avatarOptions.find(a => a.id === avatarId);
     setSelectedAvatar(avatarId);
-    setAvatarPreview(`/assets/perfiles/${avatarId}`);
+    setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
+    setSelectedAvatarUrl(selected?.imageUrl || DEFAULT_AVATAR); 
     closeAvatarModal();
   };
 
@@ -233,12 +282,12 @@ export default function StudentRegister() {
     }, 200);
   };
 
-  // === POSICIONAMIENTO MODAL PICTOGRAMAS ===
+  // === POSICIONAMIENTO MODALES ===
   const updatePictoModalPosition = useCallback(() => {
     if (showPictoModal && formCardRef.current && pictoPickerRef.current) {
       const cardRect = formCardRef.current.getBoundingClientRect();
       const modal = pictoPickerRef.current;
-      const modalHeight = Math.min(cardRect.height * 0.62, 360);
+      const modalHeight = Math.min(cardRect.height, 460);
       modal.style.position = 'fixed';
       modal.style.left = `${cardRect.left + window.scrollX}px`;
       modal.style.top = `${cardRect.top + window.scrollY}px`;
@@ -260,7 +309,6 @@ export default function StudentRegister() {
     }
   }, [showPictoModal, updatePictoModalPosition]);
 
-  // === POSICIONAMIENTO MODAL AVATAR ===
   const updateAvatarModalPosition = useCallback(() => {
     if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
       const cardRect = formCardRef.current.getBoundingClientRect();
@@ -287,11 +335,11 @@ export default function StudentRegister() {
   }, [showAvatarModal, updateAvatarModalPosition]);
 
   const getAvatarDisplayName = () => {
-    const predefined = AVATAR_OPTIONS.find(a => a.id === selectedAvatar);
+    const predefined = avatarOptions.find(a => a.id === selectedAvatar);
     if (predefined) {
       return predefined.name;
     }
-    if (selectedAvatar && !selectedAvatar.startsWith('/assets/')) {
+    if (selectedAvatar && !selectedAvatar.includes('http')) {
       return selectedAvatar;
     }
     return 'Seleccionar imagen...';
@@ -299,9 +347,18 @@ export default function StudentRegister() {
 
   const handleConfirmClick = () => {
     let errorMsg = '';
-    if (!isUserNameValid) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
-    if (!hasExactlyThreePictograms) errorMsg += 'Debes seleccionar exactamente 3 pictogramas. ';
-    if (!isAvatarSelected) errorMsg += 'Debes seleccionar una imagen de perfil. ';
+
+    if (!isUserNameLong) {
+      errorMsg = 'El nombre de usuario debe tener al menos 3 caracteres.';
+    } else if (!isUserNameSpaceless) {
+      errorMsg = 'El nombre de usuario no puede contener espacios.';
+    } else if (isUsernameAvailable === false) {
+      errorMsg = 'El nombre de usuario ya está en uso.';
+    } else if (!hasExactlyThreePictograms) {
+      errorMsg = 'Debes seleccionar exactamente 3 pictogramas.';
+    } else if (!isAvatarSelected) {
+      errorMsg = 'Debes seleccionar una imagen de perfil.';
+    }
 
     if (errorMsg) {
       setToastMessage(errorMsg);
@@ -320,6 +377,7 @@ export default function StudentRegister() {
       {user && user.role === 'admin' && (
         <SimpleHeaderAdmin adminName={user.username} />
       )}
+
       <div className="student-register-main-container">
         <div className="student-register-form-card" ref={formCardRef}>
           <h2>Registro Alumno</h2>
@@ -343,12 +401,18 @@ export default function StudentRegister() {
 
           <div className="student-register-field-wrapper">
             <div className="student-register-field-label">Usuario *</div>
-            <IonInput
-              className="student-register-input-item"
-              placeholder="Escribir aquí..."
-              value={userName}
-              onIonInput={(e) => setUserName(e.detail.value || '')}
-            />
+            <div className="student-register-input-with-icon">
+              <IonInput
+                className="student-register-input-item"
+                placeholder="Escribir aquí..."
+                value={userName}
+                onIonInput={(e) => setUserName(e.detail.value || '')}
+              />
+              <IonIcon
+                icon={getUsernameIcon()}
+                className="student-register-input-status-icon"
+              />
+            </div>
           </div>
 
           <div className="student-register-field-wrapper">
@@ -376,7 +440,7 @@ export default function StudentRegister() {
             <IonButton 
               expand="block" 
               className={`student-register-confirm-button ${
-                !isUserNameValid || !hasExactlyThreePictograms || !isAvatarSelected 
+                !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected 
                   ? 'student-register-confirm-button--disabled' 
                   : ''
               }`}
@@ -390,8 +454,28 @@ export default function StudentRegister() {
           </div>
         </div>
 
-        {/* Modal de pictogramas */}
-        {showPictoModal && (
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+        />
+
+        <div className="student-register-toast">
+          <IonToast
+            isOpen={isToastOpen}
+            message={toastMessage}
+            color={toastColor}
+            duration={3000}
+            onDidDismiss={() => setIsToastOpen(false)}
+          />
+        </div>
+      </div>
+
+      {/* Modales */}
+      {showPictoModal &&
+        createPortal(
           <div className="student-register-picto-picker-overlay" onClick={closePictoModal}>
             <div
               ref={pictoPickerRef}
@@ -408,18 +492,23 @@ export default function StudentRegister() {
               </div>
               <div className="student-register-picto-grid">
                 {PICTOGRAMS.map((picto) => (
-                  <div key={picto.id} className="student-register-picto-option" onClick={() => selectPictogram(picto.id)}>
+                  <div
+                    key={picto.id}
+                    className="student-register-picto-option"
+                    onClick={() => selectPictogram(picto.id)}
+                  >
                     <IonImg src={picto.image} alt={picto.name} />
                     <span>{picto.name}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
+          </div>,
+          document.getElementById('modal-root')!
         )}
 
-        {/* Modal de avatares */}
-        {showAvatarModal && (
+      {showAvatarModal &&
+        createPortal(
           <div className="student-register-avatar-picker-overlay" onClick={closeAvatarModal}>
             <div
               ref={avatarPickerRef}
@@ -442,39 +531,25 @@ export default function StudentRegister() {
                   <span>Subir imagen</span>
                 </div>
 
-                {AVATAR_OPTIONS.map((avatar) => (
-                  <div
-                    key={avatar.id}
-                    className="student-register-picto-option"
-                    onClick={() => handleAvatarSelect(avatar.id)}
-                  >
-                    <IonImg src={avatar.image} alt={avatar.name} />
-                    <span>{avatar.name}</span>
-                  </div>
-                ))}
+                {loadingAvatars ? (
+                  <div className="student-register-avatar-loading">Cargando avatares...</div>
+                ) : (
+                  avatarOptions.map((avatar) => (
+                    <div
+                      key={avatar.id}
+                      className="student-register-picto-option"
+                      onClick={() => handleAvatarSelect(avatar.id)}
+                    >
+                      <IonImg src={avatar.imageUrl} alt={avatar.name} />
+                      <span>{avatar.name}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
-          </div>
+          </div>,
+          document.getElementById('modal-root')!
         )}
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-        />
-
-        <div className="student-register-toast">
-          <IonToast
-            isOpen={isToastOpen}
-            message={toastMessage}
-            color={toastColor}
-            duration={3000}
-            onDidDismiss={() => setIsToastOpen(false)}
-          />
-        </div>
-      </div>
     </IonPage>
   );
 }

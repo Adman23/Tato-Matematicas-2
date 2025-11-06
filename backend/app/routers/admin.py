@@ -5,6 +5,7 @@ from ..services.supabase import supabase_admin
 from ..dependencies import get_current_admin
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
+from ..schemas.admin import AssignStudentsPayload, AssignTeachersPayload, UnassignStudentsPayload, UnassignTeachersPayload
 router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
@@ -97,24 +98,6 @@ async def list_students():
             detail=f"Error al obtener los estudiantes: {str(e)}"
         )
 
-class AssignStudentsPayload(BaseModel):
-    group_id: int
-    student_ids: list[str]
-
-
-class AssignTeachersPayload(BaseModel):
-    group_id: int
-    teacher_ids: list[str]
-
-
-class UnassignStudentsPayload(BaseModel):
-    student_ids: list[str]
-
-
-class UnassignTeachersPayload(BaseModel):
-    group_id: int
-    teacher_ids: list[str]
-
 
 @router.post("/students/assign", summary="Asignar alumnos a un grupo")
 async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends(get_current_admin)):
@@ -128,10 +111,11 @@ async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends
     Requiere autenticación de admin.
     """
     try:
+        # Validate payload
         if not payload.group_id or not payload.student_ids:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="group_id and student_ids required")
 
-        # Usamos la operación 'in' para actualizar múltiples filas a la vez
+        # Update group_id for users in student_ids
         resp = supabase_admin.table("users") \
             .update({"group_id": payload.group_id}) \
             .in_("id", payload.student_ids) \
@@ -143,8 +127,7 @@ async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends
         raise
     except Exception as e:
         print("Assign students error:", repr(e))
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error assigning students: {str(e)}")
-        
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error assigning students: {str(e)}")        
 
 
 @router.post("/teachers/assign", summary="Asignar profesores a un grupo")
@@ -163,28 +146,31 @@ async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends
         if not payload.group_id or not payload.teacher_ids:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="group_id and teacher_ids required")
 
-        # Consultar las relaciones ya existentes para evitar duplicados
+        # Get existing relations to avoid duplicates
         existing_resp = supabase_admin.table("teacher_group_relations") \
             .select("teacher_id") \
             .eq("group_id", payload.group_id) \
             .in_("teacher_id", payload.teacher_ids) \
             .execute()
 
+        # Get existing teacher IDs
         existing_teacher_ids = set()
+
+        # If there are existing relations, add their teacher_ids to the set
         if existing_resp.data:
             for row in existing_resp.data:
-                # row puede ser {'teacher_id': '...'}
                 tid = row.get("teacher_id")
                 if tid:
                     existing_teacher_ids.add(tid)
 
-        # Filtrar los teacher_ids que no estén ya relacionados
+        # Prepare list of new relations to insert
         to_insert = [
             {"teacher_id": tid, "group_id": payload.group_id}
             for tid in payload.teacher_ids
             if tid not in existing_teacher_ids
         ]
 
+        # Insert new relations
         inserted = []
         if to_insert:
             insert_resp = supabase_admin.table("teacher_group_relations").insert(to_insert).execute()
@@ -205,7 +191,7 @@ async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends
 @router.post("/students/unassign", summary="Desmatricular alumnos de un grupo")
 async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=Depends(get_current_admin)):
     """
-    Desmatricula una lista de estudiantes sus correspondientes grupos estableciendo
+    Desmatricula una lista de estudiantes  de sus correspondientes grupos estableciendo
     `group_id` a NULL en la tabla `users` para esos usuarios.
 
     Body:
@@ -214,10 +200,11 @@ async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=D
     Requiere autenticación de admin.
     """
     try:
+        # Validate payload
         if not payload.student_ids:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="student_ids required")
 
-        # Actualizar solo los usuarios que pertenecen al grupo indicado
+        # Update group_id for users in student_ids
         resp = supabase_admin.table("users") \
             .update({"group_id": None}) \
             .in_("id", payload.student_ids) \
@@ -244,10 +231,11 @@ async def unassign_teachers_from_group(payload: UnassignTeachersPayload, admin=D
     Requiere autenticación de admin.
     """
     try:
+        # Validate payload
         if not payload.group_id or not payload.teacher_ids:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="group_id and teacher_ids required")
 
-        # Borrar las relaciones que coincidan con group_id y los teacher_ids dados
+        # Delete the relations matching the given group_id and teacher_ids
         resp = supabase_admin.table("teacher_group_relations") \
             .delete() \
             .eq("group_id", payload.group_id) \
@@ -302,4 +290,38 @@ async def upload_image(file: UploadFile = File(...), filename: str = Form(...)):
             detail="Error uploading image"
         )
     
+@router.get("/get_images", summary="Get all the images (url) from the storage bucket")
+async def get_images():
+    """
+    Fetches all image files stored in the "user_photo" bucket in Supabase Storage.
+    Only includes common image extensions: .png, .jpg, .jpeg, .gif.
     
+    Returns:
+        dict: { "filename.png": "https://public-url.com/..." }
+    """
+    try:
+        # Obtener la lista de archivos del bucket
+        files = supabase_admin.storage.from_("user_photo").list()
+
+        # Filtrar solo archivos de imagen
+        image_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
+        image_files = [
+            f for f in files
+            if isinstance(f, dict) and 'name' in f and
+            any(f['name'].lower().endswith(ext) for ext in image_extensions)
+        ]
+
+        images = {}
+        for file in image_files:
+            filename = file['name']
+            public_url = supabase_admin.storage.from_("user_photo").get_public_url(filename)
+            images[filename] = public_url
+
+        return images
+
+    except Exception as e:
+        print("Error fetching images:", repr(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching images from storage"
+        )

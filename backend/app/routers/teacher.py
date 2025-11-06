@@ -81,8 +81,10 @@ async def list_students(teacher=Depends(get_current_user)):
 @router.get("/all", summary="Gets all teachers with photo, username and groups")
 async def list_teachers(admin=Depends(get_current_admin)):
     """
-    Returns a list of all teachers, each one with id, username, photo_url and a list
-    of associated groups (id and alias).
+    Devuelve una lista de todos los profesores con su id, 
+    nombre de usuario (email sin dominio), foto y grupos asignados (id y alias).
+
+    Requiere autenticación de admin.
     """
     try:
         # Get all users with role 'teacher'
@@ -94,6 +96,7 @@ async def list_teachers(admin=Depends(get_current_admin)):
         if not resp.data:
             return []
 
+        # For each teacher, get id from users table
         teachers = []
         for t in resp.data:
             tid = t.get("id")
@@ -109,7 +112,8 @@ async def list_teachers(admin=Depends(get_current_admin)):
             except Exception:
                 username = None
 
-            photo = t.get("photo_url") or DEFAULT_AVATAR
+            # Get photo_url or default avatar
+            photo = supabase_admin.storage.from_("user_photo").get_public_url(t.get("photo_url")) or DEFAULT_AVATAR
 
             # Get group relations for this teacher
             rel = supabase_admin.table("teacher_group_relations") \
@@ -126,6 +130,7 @@ async def list_teachers(admin=Depends(get_current_admin)):
                                     .execute()
                 groups = [{"id": g.get("id"), "alias": g.get("alias")} for g in (groups_resp.data or [])]
 
+            # Append teacher info to the list
             teachers.append({
                 "id": tid,
                 "username": username,

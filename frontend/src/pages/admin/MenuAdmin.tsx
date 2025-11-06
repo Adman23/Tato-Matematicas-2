@@ -1,3 +1,11 @@
+/**
+ * @file MenuAdmin.tsx
+ * @description Dashboard / menú de administración. Provee rutas rápidas para
+ * ver profesores, ver alumnos y gestionar matrículas. Utiliza `SimpleHeaderAdmin`
+ * y el contexto de autenticación para mostrar el nombre del admin y proteger
+ * la vista.
+ */
+
 import {
     IonPage,
     IonContent,
@@ -13,6 +21,12 @@ import { useHistory, Redirect } from 'react-router-dom';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
+/**
+ * Componente principal del Dashboard de administración.
+ * - Protegido: redirige al login si no hay usuario autenticado.
+ * - Muestra un spinner mientras `loading` esté activo en el contexto de auth.
+ * - Contiene botones que navegan a las pantallas de profesores, alumnos y gestión de matrículas.
+ */
 export default function AdminDashboard() {
 
     const { user, loading } = useAuth();

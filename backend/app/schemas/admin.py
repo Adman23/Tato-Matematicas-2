@@ -18,3 +18,23 @@ class Student(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class AssignStudentsPayload(BaseModel):
+    group_id: int
+    student_ids: list[str]
+
+
+class AssignTeachersPayload(BaseModel):
+    group_id: int
+    teacher_ids: list[str]
+
+
+class UnassignStudentsPayload(BaseModel):
+    student_ids: list[str]
+
+
+class UnassignTeachersPayload(BaseModel):
+    group_id: int
+    teacher_ids: list[str]
+

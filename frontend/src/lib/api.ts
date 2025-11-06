@@ -343,7 +343,7 @@ export async function unassignTeachersFromGroup(groupId: number, teacherIds: str
   });
   return response.data;
 }
-// === SUBIDA DE IMÁGENES ===
+// === SUBIDA Y RECUPERACIÓN DE IMÁGENES ===
 
 /**
  * Sube una imagen al backend (Supabase Storage).
@@ -351,12 +351,14 @@ export async function unassignTeachersFromGroup(groupId: number, teacherIds: str
  * @param filename - Nombre único para el archivo
  * @returns URL pública de la imagen subida
  */
+// En api.ts
 export const uploadImage = async (file: File, filename: string): Promise<string> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('filename', filename);
 
-  const response = await api.post<{ url: string }>('/upload_image', formData, {
+  // ✅ Usa la ruta completa si está en /api/admin
+  const response = await api.post<{ url: string }>('/api/admin/upload_image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -364,6 +366,15 @@ export const uploadImage = async (file: File, filename: string): Promise<string>
 
   return response.data.url;
 };
+
+/**
+ * Obtiene todas las imágenes disponibles en el bucket 'user_photo'.
+ * @returns Mapa: { "filename.png": "https://public-url.com/..." }
+ */
+export async function getImages(): Promise<Record<string, string>> {
+  const response = await api.get<Record<string, string>>('/api/admin/get_images');
+  return response.data;
+}
 
 // ==== EXPORTACIÓN PRINCIPAL ====
 

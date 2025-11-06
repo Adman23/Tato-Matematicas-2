@@ -208,7 +208,6 @@ async def get_me(current_user: dict = Depends(get_current_user)):
     return User(**current_user)
 
 
-
 @router.get("/exists/{username}", response_model=ExistsResponse)
 async def username_exists(username: str):
     """
@@ -231,13 +230,12 @@ async def username_exists(username: str):
         exists = False
         if users:
             for u in users:
-                # Try attribute access first
+                # Get email attribute safely
                 try:
                     user_email = getattr(u, "email", None)
                 except Exception:
                     user_email = None
 
-                # If it's a dict-like
                 if not user_email and isinstance(u, dict):
                     user_email = u.get("email")
 
@@ -250,6 +248,7 @@ async def username_exists(username: str):
                 except Exception:
                     continue
 
+                # Compare case-insensitively
                 if username_from_email and username_from_email.lower() == username.lower():
                     exists = True
                     break
