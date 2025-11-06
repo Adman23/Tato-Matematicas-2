@@ -114,7 +114,7 @@ async def list_teachers(admin=Depends(get_current_admin)):
                 username = None
 
             # Get photo_url or default avatar
-            photo = t.get("photo_url") or DEFAULT_AVATAR
+            photo = supabase_admin.storage.from_("user_photo").get_public_url(t.get("photo_url")) or DEFAULT_AVATAR
 
             # Get group relations for this teacher
             rel = supabase_admin.table("teacher_group_relations") \
