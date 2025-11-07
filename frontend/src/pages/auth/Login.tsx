@@ -251,7 +251,7 @@ try {
                 fill="clear"
                 onClick={() => {
                   clearForm();
-                  history.push('/');
+                  history.push('/home');
                 }}
               >
                 Volver al inicio
