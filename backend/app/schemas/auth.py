@@ -105,7 +105,9 @@ class Group(BaseModel):
     """
     Group data model
     """
-    id: int
+    # id is optional for creation (DB will usually generate it). Keep it optional so
+    # Pydantic doesn't raise 422 when the client POSTs only the alias.
+    id: int | None = None
     alias: str
 
     class Config:

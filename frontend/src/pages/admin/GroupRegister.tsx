@@ -1,0 +1,177 @@
+// src/pages/GroupRegister.tsx
+
+import './GroupRegister.css';
+
+import {
+    IonPage,
+    IonInput,
+    IonButton,
+    IonIcon,
+    IonToast,
+} from '@ionic/react';
+import {
+    checkmarkOutline,
+    closeOutline,
+
+} from 'ionicons/icons';
+import { useState, useRef, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { authAPI } from '../../lib/api';
+import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
+import { useAuth } from '../../contexts/AuthContext';
+
+
+export default function GroupRegister() {
+    const history = useHistory();
+    const formCardRef = useRef<HTMLDivElement>(null);
+
+    const [groupName, setGroupName] = useState('');
+
+    const [isToastOpen, setIsToastOpen] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
+
+    const [isGroupNameAvailable, setIsGroupNameAvailable] = useState<boolean | null>(null);
+    const groupCheckIdRef = useRef(0);
+
+    const { user } = useAuth();
+
+    const isGroupNameLong = groupName.trim().length >= 3;
+
+    useEffect(() => {
+        const trimmed = groupName.trim();
+
+        if (trimmed.length < 3) {
+            setIsGroupNameAvailable(false);
+            return;
+        }
+
+        const currentId = ++groupCheckIdRef.current;
+
+        const handler = setTimeout(() => {
+            authAPI.checkGroup(trimmed)
+                .then(res => {
+                    if (currentId === groupCheckIdRef.current) {
+                        setIsGroupNameAvailable(!res.exists);
+                    }
+                })
+                .catch(() => {
+                    if (currentId === groupCheckIdRef.current) {
+                        setIsGroupNameAvailable(false);
+                    }
+                });
+        }, 400);
+
+        return () => clearTimeout(handler);
+    }, [groupName]);
+
+    const canSubmit =
+        isGroupNameLong &&
+        isGroupNameAvailable === true;
+
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        let errorMsg = '';
+        if (!isGroupNameLong) errorMsg += 'El nombre del grupo debe tener al menos 3 caracteres. ';
+        if (isGroupNameAvailable === false) errorMsg += 'El nombre del grupo ya está en uso. ';
+
+        if (errorMsg) {
+            setToastMessage(errorMsg);
+            setToastColor('danger');
+            setIsToastOpen(true);
+            return;
+        }
+
+        try {
+
+            await authAPI.register_group({
+                alias: groupName
+            });
+
+            setToastMessage('Registro completado correctamente 🎉');
+            setToastColor('success');
+            setIsToastOpen(true);
+
+            setTimeout(() => {
+                history.push('/register/confirmation/grupos');
+            }, 2000);
+        } catch (err: any) {
+            console.error('Error en el registro:', err);
+            const message =
+                err.response?.data?.detail ||
+                err.response?.data?.message ||
+                err.message ||
+                'Error al registrar grupo';
+            setToastMessage(message);
+            setToastColor('danger');
+            setIsToastOpen(true);
+        }
+    };
+
+    const handleCancel = () => {
+        setGroupName('');
+        history.replace('/admin-dashboard/groups-management');
+    };
+
+    return (
+        <IonPage>
+            {user && user.role === 'admin' && (
+                <SimpleHeaderAdmin adminName={user.username} />
+            )}
+            <div className="group-register-main-container">
+                <div className="group-register-form-card" ref={formCardRef}>
+                    <div className="group-register-form-container-header">
+                        <h2>Registro</h2>
+                        <p>Rellene los siguientes campos, por favor</p>
+                    </div>
+
+
+                    <div className="group-register-form-container">
+
+                        <div className="group-register-field-wrapper">
+                            <div className="group-register-field-label">Nombre del grupo *</div>
+                            <div className="group-register-input-with-icon">
+                                <IonInput
+                                    placeholder="Escribir aquí..."
+                                    value={groupName}
+                                    onIonInput={(e) => setGroupName(e.detail.value || '')}
+                                    className="group-register-input-item"
+                                />
+                                <IonIcon icon={
+                                    groupName.trim().length === 0 ? closeOutline :
+                                        !isGroupNameLong ? closeOutline :
+                                            isGroupNameAvailable === true ? checkmarkOutline : closeOutline
+                                } />
+                            </div>
+                        </div>
+
+                        <div className="group-register-buttons">
+                            <IonButton
+                                expand="block"
+                                className={`group-register-confirm-button ${!canSubmit ? 'group-register-confirm-button--disabled' : ''
+                                    }`}
+                                onClick={handleSubmit}
+                            >
+                                Confirmar
+                            </IonButton>
+                            <IonButton expand="block" className="group-register-cancel-button" onClick={handleCancel}>
+                                Cancelar
+                            </IonButton>
+                        </div>
+                    </div>
+                </div>
+
+                <IonToast
+                    isOpen={isToastOpen}
+                    message={toastMessage}
+                    color={toastColor}
+                    duration={3000}
+                    onDidDismiss={() => setIsToastOpen(false)}
+                    className="group-register-toast"
+                />
+            </div>
+        </IonPage>
+    );
+}

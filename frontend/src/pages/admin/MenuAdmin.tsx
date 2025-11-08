@@ -63,7 +63,7 @@ export default function AdminDashboard() {
                                     className='admin-dashboard-button'
                                     onClick={() => history.push('/admin/profesores')}
                                 >
-                                    Ver profesores
+                                    Gestionar profesores
                                 </IonButton>
 
                                 <IonButton
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
                                     fill="clear"
                                     onClick={() => history.push('/admin/alumnos')}
                                 >
-                                    Ver alumnos
+                                    Gestionar alumnos
                                 </IonButton>
 
                                 <IonButton
@@ -82,6 +82,15 @@ export default function AdminDashboard() {
                                     onClick={() => history.push('/admin-dashboard/link-profiles')}
                                 >
                                     Gestionar matrículas
+                                </IonButton>
+
+                                <IonButton
+                                    className='admin-dashboard-button'
+                                    expand="block"
+                                    fill="clear"
+                                    onClick={() => history.push('/admin-dashboard/groups-management')}
+                                >
+                                    Gestionar grupos
                                 </IonButton>
 
                             </div>
