@@ -5,7 +5,7 @@ import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton } from '@
 import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import { fetchGroups } from '../../lib/api';
+import { fetchGroups, deleteGroup } from '../../lib/api';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import GroupItem from './components/GroupItem';
 import './GroupsManagement.css';
@@ -84,7 +84,22 @@ export default function GroupsManagement() {
                             {groups.map((group) => (
                                 <GroupItem
                                     key={group.id}
+                                    id={group.id}
                                     groupName={group.name}
+                                    onDelete={async (id) => {
+                                        try {
+                                            setGroups(prev => prev.filter(g => String(g.id) !== String(id)));
+                                            await deleteGroup(Number(id));
+                                        } catch (err) {
+                                            console.error('Error eliminando grupo:', err);
+                                            try {
+                                                const refreshed = await fetchGroups();
+                                                setGroups(refreshed);
+                                            } catch (err2) {
+                                                console.error('Error recargando grupos tras fallo:', err2);
+                                            }
+                                        }
+                                    }}
                                 />
                             ))}
                         </IonList>

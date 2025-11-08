@@ -34,10 +34,12 @@ const RegisterConfirmation = () => {
     return <Redirect to="/login" />;
   }
 
-  const isValidType = tipo === 'profesores' || tipo === 'alumnos';
+  const isValidType = tipo === 'profesores' || tipo === 'alumnos' || tipo === 'grupos';
 
   const handleAccept = () => {
-    if (isValidType) {
+    if (isValidType && tipo === 'grupos') {
+      window.location.href = '/admin-dashboard/groups-management';
+    } else if (isValidType && tipo !== 'grupos') {
       window.location.href = `/admin/${tipo}`;
     } else {
       window.location.href = '/admin-dashboard';
@@ -47,12 +49,14 @@ const RegisterConfirmation = () => {
   const getMessage = () => {
     if (tipo === 'profesores') return 'Profesor registrado con éxito.';
     if (tipo === 'alumnos') return 'Alumno registrado con éxito.';
+    if (tipo === 'grupos') return 'Grupo registrado con éxito.';
     return 'Registro completado con éxito.';
   };
 
   const getTitle = () => {
     if (tipo === 'profesores') return 'Profesor registrado';
     if (tipo === 'alumnos') return 'Alumno registrado';
+    if (tipo === 'grupos') return 'Grupo registrado';
     return 'Completado';
   };
 

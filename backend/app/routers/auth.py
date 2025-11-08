@@ -90,6 +90,56 @@ async def register( data: RegisterRequest,
         )
 
 
+@router.post("/register/group", response_model=Group, status_code=status.HTTP_201_CREATED)
+async def register_group(data: Group, current_admin: dict = Depends(get_current_admin)):
+    """
+    Register new group
+
+    This endpoint allows the creation of a new group.
+
+    Args:
+        data (Group): Objeto con los datos del grupo a crear.
+
+    Raises:
+        HTTPException: Si ocurre un error al crear el grupo (`500 INTERNAL SERVER ERROR`).
+
+    Returns:
+        Group: Información del grupo creado.
+    """
+    try:
+        # Create the new group in the database
+        # `data` is a Pydantic model instance; convert to dict so it's JSON-serializable
+        try:
+            payload = data.dict(exclude_none=True)
+        except Exception as e:
+            # Payload conversion failed -> client error
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Invalid group payload: {str(e)}")
+
+        try:
+            new_group = supabase_admin.table("groups").insert(payload).execute()
+        except Exception as e:
+            # Error from Supabase client or network
+            print("Supabase insert error:", repr(e))
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"Error creating group in database: {str(e)}")
+
+        if not new_group.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Error creating group"
+            )
+
+        return new_group.data[0]
+
+    except HTTPException:
+        # Re-raise known HTTP exceptions
+        raise
+    except Exception as e:
+        print("Register group error:", repr(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error registering group: {str(e)}")
+
+
 @router.post("/login", response_model=AuthResponse)
 async def login(data: LoginRequest):
     """
@@ -260,6 +310,55 @@ async def username_exists(username: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error checking username existence: {str(e)}"
+        )
+
+
+@router.get("/groups/exists/{groupId}", response_model=ExistsResponse)
+async def group_exists(groupId: str):
+    """
+    Comprueba si existe un grupo con el id dado en la tabla public.groups.
+
+    Busca por id en public.groups y devuelve { exists: bool }.
+    """
+    try:
+
+        # Use the admin API to list groups and check for the id that
+        # corresponds to the provided groupId
+        try:
+            resp = supabase_admin.table("groups").select("*").execute()
+
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error fetching groups: {str(e)}"
+            )
+
+        # Normalize rows (Supabase client returns object with .data)
+        rows = getattr(resp, 'data', None) or resp or []
+
+        exists = False
+
+
+        for g in rows:
+            try:
+                gid = getattr(g, 'alias', None)
+            except Exception:
+                gid = None
+
+            if not gid and isinstance(g, dict):
+                gid = g.get('alias')
+
+            # Compare as strings to avoid type mismatch (int vs str)
+            if gid is not None and str(gid) == str(groupId):
+                exists = True
+                break
+
+        return ExistsResponse(exists=exists)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error checking group existence: {str(e)}"
         )
 
 

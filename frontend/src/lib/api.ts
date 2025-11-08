@@ -154,6 +154,15 @@ export interface StudentLoginData {
   password: string; // formato: "perro-gato-león"
 }
 
+
+/**
+ * Representa un grupo de estudiantes.
+ */
+export interface RegisterGroup {
+  alias: string;
+}
+
+
 /**
  * Representa un grupo de estudiantes.
  */
@@ -188,6 +197,16 @@ export const authAPI = {
   },
 
   /**
+  * Registrar un nuevo grupo.
+  * @param data - Datos del grupo.
+  * @returns Información del grupo creado.
+  */
+  register_group: (data: RegisterGroup) => {
+    // Backend router exposes POST /auth/register/group (singular)
+    return api.post('/auth/register/group', data);
+  },
+
+  /**
    * Iniciar sesión de tutor o administrador.
    * @param data - Credenciales de inicio de sesión.
    * @returns Información del usuario y tokens de acceso.
@@ -204,6 +223,16 @@ export const authAPI = {
    */
   checkUsername: async (username: string): Promise<{ exists: boolean }> => {
     const response = await api.get<{ exists: boolean }>(`/auth/exists/${encodeURIComponent(username)}`);
+    return response.data;
+  },
+
+  /**
+ * Comprueba si un grupo existe en la base de datos (tabla public.groups).
+ * @param groupName - Nombre del grupo a comprobar
+ * @returns { exists: boolean }
+ */
+  checkGroup: async (groupName: string): Promise<{ exists: boolean }> => {
+    const response = await api.get<{ exists: boolean }>(`/auth/groups/exists/${encodeURIComponent(groupName)}`);
     return response.data;
   },
 
@@ -346,6 +375,15 @@ export async function unassignTeachersFromGroup(groupId: number, teacherIds: str
 
 export async function fetchGroups() {
   const response = await api.get("/api/admin/groups");
+  return response.data;
+}
+
+/**
+ * Elimina un grupo por su id (requiere permisos de admin).
+ * @param groupId - id del grupo a eliminar
+ */
+export async function deleteGroup(groupId: number) {
+  const response = await api.delete(`/api/admin/groups/${groupId}`);
   return response.data;
 }
 // === SUBIDA Y RECUPERACIÓN DE IMÁGENES ===

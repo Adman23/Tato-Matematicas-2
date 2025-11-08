@@ -4,14 +4,22 @@ import { create, trashOutline } from 'ionicons/icons';
 import './GroupItem.css';
 
 interface Props {
+    id: number | string;
     groupName: string;
     onEditClick?: () => void;
-
+    onDelete?: (id: number | string) => void;
 }
 
 const GroupItem: React.FC<Props> = ({
-    groupName
+    id,
+    groupName,
+    onDelete
 }) => {
+    const handleDelete = () => {
+        const confirmed = window.confirm(`¿Eliminar el grupo "${groupName}"? Esta acción no se puede deshacer.`);
+        if (!confirmed) return;
+        if (onDelete) onDelete(id);
+    };
     return (
 
         <IonItem lines="none" className="groupItem-item">
@@ -27,7 +35,7 @@ const GroupItem: React.FC<Props> = ({
                         <IonIcon slot="icon-only" md={create}></IonIcon>
                     </IonButton>
 
-                    <IonButton className='groupItem-IconButton'>
+                    <IonButton className='groupItem-IconButton' onClick={handleDelete}>
                         <IonIcon slot="icon-only" md={trashOutline}></IonIcon>
                     </IonButton>
                 </div>

@@ -360,3 +360,47 @@ async def list_groups():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener los grupos: {str(e)}"
         )
+
+
+@router.delete("/groups/{group_id}", summary="Eliminar un grupo")
+async def delete_group(group_id: int, admin=Depends(get_current_admin)):
+    """
+    Elimina un grupo por id.
+
+    Pasos:
+    1. Desasigna `group_id` de los usuarios (establece group_id = NULL) para evitar referencias.
+    2. Elimina las relaciones en `teacher_group_relations` para ese group_id.
+    3. Elimina la fila en `groups`.
+
+    Requiere autenticación de admin.
+    """
+    try:
+        # 1) Desasignar usuarios que tengan este group_id
+        supabase_admin.table("users") \
+            .update({"group_id": None}) \
+            .eq("group_id", group_id) \
+            .execute()
+
+        # 2) Eliminar relaciones profesor-grupo
+        supabase_admin.table("teacher_group_relations") \
+            .delete() \
+            .eq("group_id", group_id) \
+            .execute()
+
+        # 3) Eliminar el grupo
+        resp = supabase_admin.table("groups") \
+            .delete() \
+            .eq("id", group_id) \
+            .execute()
+
+        if resp and getattr(resp, 'data', None):
+            return {"deleted": resp.data}
+        else:
+            # Si no se borró nada, devolver 404
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Grupo no encontrado")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("Delete group error:", repr(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error eliminando grupo: {str(e)}")

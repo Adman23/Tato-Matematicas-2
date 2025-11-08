@@ -8,132 +8,74 @@ import {
     IonButton,
     IonIcon,
     IonToast,
-    IonImg,
 } from '@ionic/react';
 import {
     checkmarkOutline,
     closeOutline,
-    eyeOutline,
-    eyeOffOutline,
-    person,
-    addOutline,
+
 } from 'ionicons/icons';
-import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { authAPI, uploadImage, getImages } from '../../lib/api';
+import { authAPI } from '../../lib/api';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
-import { createPortal } from 'react-dom';
 
-const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function GroupRegister() {
     const history = useHistory();
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const avatarPickerRef = useRef<HTMLDivElement>(null);
     const formCardRef = useRef<HTMLDivElement>(null);
 
-    const [userName, setUserName] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [selectedAvatar, setSelectedAvatar] = useState<string>('');
-    const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR);
-
-    const [showAvatarModal, setShowAvatarModal] = useState(false);
-    const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
+    const [groupName, setGroupName] = useState('');
 
     const [isToastOpen, setIsToastOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
 
-    const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
-    const usernameCheckIdRef = useRef(0);
-
-    const [avatarOptions, setAvatarOptions] = useState<{ id: string; name: string; imageUrl: string }[]>([]);
-    const [loadingAvatars, setLoadingAvatars] = useState(true);
+    const [isGroupNameAvailable, setIsGroupNameAvailable] = useState<boolean | null>(null);
+    const groupCheckIdRef = useRef(0);
 
     const { user } = useAuth();
 
-    const isUserNameLong = userName.trim().length >= 3;
-    const isUserNameSpaceless = !userName.includes(' ');
-    const isPasswordLong = password.length >= 6;
-    const isPasswordValid = /\d/.test(password);
-    const doPasswordsMatch = password === confirmPassword;
-    const isAvatarSelected = selectedAvatar !== '';
-
-    const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
+    const isGroupNameLong = groupName.trim().length >= 3;
 
     useEffect(() => {
-        const loadAvatars = async () => {
-            try {
-                const imagesMap = await getImages();
-                const options = Object.entries(imagesMap).map(([filename, url]) => ({
-                    id: filename,
-                    name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
-                    imageUrl: url as string,
-                }));
-                setAvatarOptions(options);
-            } catch (err) {
-                console.error('Error al cargar avatares:', err);
-                setToastMessage('No se pudieron cargar los avatares.');
-                setToastColor('danger');
-                setIsToastOpen(true);
-            } finally {
-                setLoadingAvatars(false);
-            }
-        };
-        loadAvatars();
-    }, []);
+        const trimmed = groupName.trim();
 
-    useEffect(() => {
-        const trimmed = userName.trim();
-
-        if (trimmed.length < 3 || trimmed.includes(' ')) {
-            setIsUsernameAvailable(false);
+        if (trimmed.length < 3) {
+            setIsGroupNameAvailable(false);
             return;
         }
 
-        const currentId = ++usernameCheckIdRef.current;
+        const currentId = ++groupCheckIdRef.current;
 
         const handler = setTimeout(() => {
-            authAPI.checkUsername(trimmed)
+            authAPI.checkGroup(trimmed)
                 .then(res => {
-                    if (currentId === usernameCheckIdRef.current) {
-                        setIsUsernameAvailable(!res.exists);
+                    if (currentId === groupCheckIdRef.current) {
+                        setIsGroupNameAvailable(!res.exists);
                     }
                 })
                 .catch(() => {
-                    if (currentId === usernameCheckIdRef.current) {
-                        setIsUsernameAvailable(false);
+                    if (currentId === groupCheckIdRef.current) {
+                        setIsGroupNameAvailable(false);
                     }
                 });
         }, 400);
 
         return () => clearTimeout(handler);
-    }, [userName]);
+    }, [groupName]);
 
     const canSubmit =
-        isUserNameLong &&
-        isUserNameSpaceless &&
-        isUsernameAvailable === true &&
-        isPasswordLong &&
-        isPasswordValid &&
-        doPasswordsMatch &&
-        isAvatarSelected;
+        isGroupNameLong &&
+        isGroupNameAvailable === true;
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         let errorMsg = '';
-        if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
-        if (!isUserNameSpaceless) errorMsg += 'El nombre de usuario no puede contener espacios. ';
-        if (isUsernameAvailable === false) errorMsg += 'El nombre de usuario ya está en uso. ';
-        if (!isPasswordLong) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
-        if (!isPasswordValid) errorMsg += 'La contraseña debe contener al menos un número. ';
-        if (!doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
-        if (!isAvatarSelected) errorMsg += 'Debe seleccionar una imagen de perfil. ';
+        if (!isGroupNameLong) errorMsg += 'El nombre del grupo debe tener al menos 3 caracteres. ';
+        if (isGroupNameAvailable === false) errorMsg += 'El nombre del grupo ya está en uso. ';
 
         if (errorMsg) {
             setToastMessage(errorMsg);
@@ -143,22 +85,9 @@ export default function GroupRegister() {
         }
 
         try {
-            let photoUrl = DEFAULT_AVATAR;
 
-            // Si se seleccionó un avatar del modal, usamos su URL completa
-            if (avatarOptions.some(a => a.id === selectedAvatar)) {
-                photoUrl = selectedAvatarUrl;
-            } else if (fileInputRef.current?.files?.[0]) {
-                const file = fileInputRef.current.files[0];
-                const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
-                photoUrl = await uploadImage(file, uniqueFilename);
-            }
-
-            await authAPI.register({
-                username: userName,
-                password: password,
-                role: 'teacher',
-                photo_url: photoUrl,
+            await authAPI.register_group({
+                alias: groupName
             });
 
             setToastMessage('Registro completado correctamente 🎉');
@@ -166,7 +95,7 @@ export default function GroupRegister() {
             setIsToastOpen(true);
 
             setTimeout(() => {
-                history.push('/register/confirmation/profesores');
+                history.push('/register/confirmation/grupos');
             }, 2000);
         } catch (err: any) {
             console.error('Error en el registro:', err);
@@ -174,88 +103,16 @@ export default function GroupRegister() {
                 err.response?.data?.detail ||
                 err.response?.data?.message ||
                 err.message ||
-                'Error al registrar tutor';
+                'Error al registrar grupo';
             setToastMessage(message);
             setToastColor('danger');
             setIsToastOpen(true);
         }
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            if (avatarPreview && !avatarPreview.startsWith('http')) {
-                URL.revokeObjectURL(avatarPreview);
-            }
-            setSelectedAvatar(file.name);
-            setAvatarPreview(URL.createObjectURL(file));
-            closeAvatarModal();
-        }
-    };
-
-    const handleAvatarSelect = (avatarId: string) => {
-        if (avatarPreview && !avatarPreview.startsWith('http')) {
-            URL.revokeObjectURL(avatarPreview);
-        }
-        const selected = avatarOptions.find(a => a.id === avatarId);
-        // Guardamos tanto el ID como la URL completa
-        setSelectedAvatar(avatarId);
-        setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
-        setSelectedAvatarUrl(selected?.name || DEFAULT_AVATAR);
-        closeAvatarModal();
-    };
-
-    const triggerFileInput = () => {
-        fileInputRef.current?.click();
-    };
-
-    const openAvatarModal = () => {
-        setShowAvatarModal(true);
-        requestAnimationFrame(() => {
-            setIsAvatarModalVisible(true);
-        });
-    };
-
-    const closeAvatarModal = () => {
-        setIsAvatarModalVisible(false);
-        setTimeout(() => {
-            setShowAvatarModal(false);
-        }, 200);
-    };
-
-    const updateAvatarModalPosition = useCallback(() => {
-        if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
-            const cardRect = formCardRef.current.getBoundingClientRect();
-            const modal = avatarPickerRef.current;
-            modal.style.position = 'fixed';
-            modal.style.left = `${cardRect.left + window.scrollX}px`;
-            modal.style.top = `${cardRect.top + window.scrollY}px`;
-            modal.style.width = `${cardRect.width}px`;
-            modal.style.height = `${cardRect.height}px`;
-            modal.style.zIndex = '1002';
-        }
-    }, [showAvatarModal]);
-
-    useLayoutEffect(() => {
-        if (showAvatarModal) {
-            const id = requestAnimationFrame(updateAvatarModalPosition);
-            const handleResize = () => updateAvatarModalPosition();
-            window.addEventListener('resize', handleResize);
-            return () => {
-                cancelAnimationFrame(id);
-                window.removeEventListener('resize', handleResize);
-            };
-        }
-    }, [showAvatarModal, updateAvatarModalPosition]);
-
     const handleCancel = () => {
-        setUserName('');
-        setPassword('');
-        setConfirmPassword('');
-        setSelectedAvatar('');
-        setAvatarPreview(DEFAULT_AVATAR);
-        if (showAvatarModal) closeAvatarModal();
-        history.replace('/admin/profesores');
+        setGroupName('');
+        history.replace('/admin-dashboard/groups-management');
     };
 
     return (
@@ -278,14 +135,14 @@ export default function GroupRegister() {
                             <div className="group-register-input-with-icon">
                                 <IonInput
                                     placeholder="Escribir aquí..."
-                                    value={userName}
-                                    onIonInput={(e) => setUserName(e.detail.value || '')}
+                                    value={groupName}
+                                    onIonInput={(e) => setGroupName(e.detail.value || '')}
                                     className="group-register-input-item"
                                 />
                                 <IonIcon icon={
-                                    userName.trim().length === 0 ? closeOutline :
-                                        (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
-                                            isUsernameAvailable === true ? checkmarkOutline : closeOutline
+                                    groupName.trim().length === 0 ? closeOutline :
+                                        !isGroupNameLong ? closeOutline :
+                                            isGroupNameAvailable === true ? checkmarkOutline : closeOutline
                                 } />
                             </div>
                         </div>
@@ -305,14 +162,6 @@ export default function GroupRegister() {
                         </div>
                     </div>
                 </div>
-
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                />
 
                 <IonToast
                     isOpen={isToastOpen}
