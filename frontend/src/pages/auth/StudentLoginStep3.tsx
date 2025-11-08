@@ -35,7 +35,7 @@ const PICTOGRAMS = [
 
 /** Longitud mínima requerida para validar la secuencia. */
 const REQUIRED_LENGTH = 3; // Longitud mínima de la secuencia
-const MAX_LENGTH = 4;
+const MAX_LENGTH = REQUIRED_LENGTH; // Se muestran solo 3 posiciones fijas
 
 /**
  * Paso 3 del login de estudiante: Secuencia de pictogramas (contraseña).
@@ -199,27 +199,43 @@ export default function StudentLoginStep3() {
 
           {/* Secuencia seleccionada con botón borrar a la derecha */}
           <div className="student-sequence-row">
-            <div className="student-sequence-display">
-              {selected.length === 0 ? (
-                <p className="student-sequence-placeholder">
-                  Tu secuencia aparecerá aquí...
-                </p>
-              ) : (
-                <div className="student-sequence-items">
-                  {selected.map((pictogramId, index) => {
-                    const picto = PICTOGRAMS.find(p => p.id === pictogramId);
-                    return (
-                      <div key={`${pictogramId}-${index}`} className="student-sequence-item">
+            <div
+              className="student-sequence-display"
+              aria-live="polite"
+              aria-label="Posiciones de la contraseña"
+            >
+              <div className="student-sequence-slots" role="list">
+                {Array.from({ length: REQUIRED_LENGTH }, (_, index) => {
+                  const pictogramId = selected[index];
+                  const picto = pictogramId
+                    ? PICTOGRAMS.find(p => p.id === pictogramId)
+                    : null;
+                  return (
+                    <div
+                      key={`password-slot-${index}`}
+                      className={`student-sequence-slot ${picto ? 'filled' : ''}`}
+                      role="listitem"
+                      aria-label={
+                        picto
+                          ? `Posición ${index + 1} seleccionada: ${picto.name}`
+                          : `Posición ${index + 1} vacía`
+                      }
+                    >
+                      {picto ? (
                         <img
-                          src={picto?.image}
-                          alt={picto?.name}
+                          src={picto.image}
+                          alt={picto.name}
                           className="student-sequence-image"
                         />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      ) : (
+                        <span className="student-sequence-slot-placeholder">
+                          Posición {index + 1}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             {/* Boton borrar */}
             <IonButton
