@@ -40,7 +40,7 @@ const RegisterConfirmation = () => {
     if (isValidType && tipo === 'grupos') {
       window.location.href = '/admin-dashboard/groups-management';
     } else if (isValidType && tipo !== 'grupos') {
-      window.location.href = `/admin/${tipo}`;
+      window.location.href = `/admin-dashboard/${tipo}`;
     } else {
       window.location.href = '/admin-dashboard';
     }
