@@ -12,12 +12,11 @@ import {
   IonIcon,
 } from '@ionic/react';
 import { checkmarkCircle } from 'ionicons/icons';
-import { useHistory, useParams, Redirect } from 'react-router-dom';
+import { useParams, Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 
 const RegisterConfirmation = () => {
-  const history = useHistory();
   const { tipo } = useParams<{ tipo: string }>();
   const { user, loading } = useAuth();
 

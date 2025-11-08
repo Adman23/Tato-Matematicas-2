@@ -9,7 +9,6 @@ import {
   IonIcon,
   IonToast,
   IonImg,
-  IonText,
 } from '@ionic/react';
 import {
   checkmarkOutline,
@@ -115,7 +114,7 @@ export default function TeacherRegister() {
     return () => clearTimeout(handler);
   }, [userName]);
 
-  const canSubmit = 
+  const canSubmit =
     isUserNameLong &&
     isUserNameSpaceless &&
     isUsernameAvailable === true &&
@@ -167,8 +166,8 @@ export default function TeacherRegister() {
       setIsToastOpen(true);
 
       setTimeout(() => {
-        history.push('/register/confirmation/profesores'); 
-      }, 2000); 
+        history.push('/register/confirmation/profesores');
+      }, 2000);
     } catch (err: any) {
       console.error('Error en el registro:', err);
       const message =
@@ -284,8 +283,8 @@ export default function TeacherRegister() {
                   />
                   <IonIcon icon={
                     userName.trim().length === 0 ? closeOutline :
-                    (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
-                    isUsernameAvailable === true ? checkmarkOutline : closeOutline
+                      (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
+                        isUsernameAvailable === true ? checkmarkOutline : closeOutline
                   } />
                 </div>
               </div>
@@ -346,9 +345,8 @@ export default function TeacherRegister() {
           <div className="teacher-register-form-button-container">
             <IonButton
               expand="block"
-              className={`teacher-register-confirm-button ${
-                !canSubmit ? 'teacher-register-confirm-button--disabled' : ''
-              }`}
+              className={`teacher-register-confirm-button ${!canSubmit ? 'teacher-register-confirm-button--disabled' : ''
+                }`}
               onClick={handleSubmit}
             >
               Confirmar
@@ -383,9 +381,8 @@ export default function TeacherRegister() {
           <div className="teacher-register-avatar-picker-overlay" onClick={closeAvatarModal}>
             <div
               ref={avatarPickerRef}
-              className={`teacher-register-avatar-picker ${
-                isAvatarModalVisible ? 'teacher-register-avatar-picker-visible' : ''
-              }`}
+              className={`teacher-register-avatar-picker ${isAvatarModalVisible ? 'teacher-register-avatar-picker-visible' : ''
+                }`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="teacher-register-picto-picker-header">

@@ -12,11 +12,7 @@ import './userManagement.css';
 
 import { useHistory } from 'react-router-dom';
 
-interface User {
-  id: string;
-  username: string;
-  photo_url: string;
-}
+// Nota: interface User no usada — eliminada para evitar error de lint/ts
 
 export default function UserManagement() {
 

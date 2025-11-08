@@ -19,6 +19,8 @@ interface Props {
     avatar: string;
     alias: string;
     classes: string[];
+    /** Si true, resalta el fondo del item (por ejemplo: pertenece a la clase seleccionada) */
+    highlight?: boolean;
 
     isChecked?: boolean;
     onCheckChange?: (checked: boolean) => void;
@@ -32,17 +34,18 @@ interface Props {
 const UserItem: React.FC<Props> = ({
     avatar,
     alias,
-    classes = [[]],
+    classes = [],
     isChecked = false,
-    onCheckChange
+    onCheckChange,
+    highlight = false,
 
 }) => {
     return (
 
-        <IonItem lines="none" className="userItem-item">
+        <IonItem lines="none" className="userItem-item ">
 
             {/* Contenedor interno para controlar flex sin tocar el ion-item por fuera */}
-            <div className="userItem-mainContainer">
+            <div className={`userItem-mainContainer ${highlight ? 'userItem-highlight' : ''}`}>
 
                 <IonCheckbox
                     slot='start'

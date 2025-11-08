@@ -58,3 +58,10 @@
     flex-shrink: 0;
     min-width: 80px;
 }
+
+/* Estilo para resaltar el item cuando pertenece a la clase seleccionada */
+.userItem-mainContainer.userItem-highlight {
+    /* Fallback color sobre el ion-item */
+    background-color: #A9DAF3;
+    /* suave amarillo claro */
+}
