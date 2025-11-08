@@ -46,7 +46,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
 */
     const handleLogout = async () => {
         await logout();
-        history.replace('/');
+        history.replace('/login');
     };
 
     const handleHome = () => {
