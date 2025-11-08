@@ -56,7 +56,7 @@ interface User {
  */
 export default function LinkProfiles() {
 
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
 
     const [students, setStudents] = useState<User[]>([]);
     const [teachers, setTeachers] = useState<User[]>([]);
@@ -83,6 +83,14 @@ export default function LinkProfiles() {
          * Carga la lista de grupos desde el backend y actualiza el estado `groups`.
          * Ejecutado una vez al montar el componente.
          */
+        // Esperar a que el AuthProvider termine de rehidratar
+        if (loading) return;
+        // Solo cargar grupos si es admin autenticado
+        if (!user || user.role !== 'admin') {
+            setLoadingGroups(false);
+            return;
+        }
+
         const loadGroups = async () => {
             try {
                 setLoadingGroups(true);
@@ -97,17 +105,25 @@ export default function LinkProfiles() {
             }
         };
         loadGroups();
-    }, []);
+    }, [loading, user]);
 
     // Carga (o recarga) de usuarios. Se reruneará en mount y cada vez que
     // cambie `selectedClass`, tal y como pide el requisito.
     useEffect(() => {
-    /**
-     * Carga los usuarios (profesores y estudiantes) desde el backend y actualiza
-     * los estados `teachers` y `students`.
-     * Ejecutado al montar el componente y cuando cambia `selectedClass`.
-     */
-    const loadData = async () => {
+        /**
+         * Carga los usuarios (profesores y estudiantes) desde el backend y actualiza
+         * los estados `teachers` y `students`.
+         * Ejecutado al montar el componente y cuando cambia `selectedClass`.
+         */
+        // Esperar a que el AuthProvider termine de rehidratar
+        if (loading) return;
+        // Solo cargar usuarios si es admin autenticado
+        if (!user || user.role !== 'admin') {
+            setLoadingUsers(false);
+            return;
+        }
+
+        const loadData = async () => {
             try {
                 setLoadingUsers(true);
 
@@ -128,7 +144,7 @@ export default function LinkProfiles() {
         };
 
         loadData();
-    }, []);
+    }, [loading, user]);
 
     /**
      * Asigna los usuarios seleccionados a la clase actualmente seleccionada.
@@ -271,6 +287,7 @@ export default function LinkProfiles() {
                                         avatar={student.photo_url}
                                         alias={student.username}
                                         classes={student.group ? [student.group.alias] : []}
+                                        highlight={selectedClass !== null && student.group?.id === selectedClass}
                                         isChecked={selectedStudentIds.includes(student.id)}
                                         onCheckChange={(checked) => {
                                             setSelectedStudentIds(prev => {
@@ -317,6 +334,7 @@ export default function LinkProfiles() {
                                         avatar={teacher.photo_url}
                                         alias={teacher.username}
                                         classes={teacher.groups?.map(g => g.alias) || []}
+                                        highlight={selectedClass !== null && teacher.groups?.some(g => g.id === selectedClass)}
                                         isChecked={selectedTeacherIds.includes(teacher.id)}
                                         onCheckChange={(checked) => {
                                             setSelectedTeacherIds(prev => {
