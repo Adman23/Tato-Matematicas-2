@@ -1,0 +1,199 @@
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA - TeacherRegister
+   ========================================================================== */
+
+.group-register-main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    background-color: #ffffff;
+    min-height: 100vh;
+    width: 100%;
+    padding: 1.5rem;
+    transform: scale(1.5);
+    transform-origin: top center;
+}
+
+/* =============================================================================
+   TARJETA DEL FORMULARIO
+   ========================================================================== */
+
+.group-register-form-card {
+    width: 95%;
+    max-width: 400px;
+    background-color: #50BFE6;
+    border-radius: 24px;
+    padding: 1.8rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.group-register-form-container-header {
+    text-align: center;
+}
+
+.group-register-form-container-header h2 {
+    color: white;
+    font-size: 1.4rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.group-register-form-container-header p {
+    color: rgb(0, 0, 0);
+    font-size: 1rem;
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .group-register-form-card {
+        padding: 2rem;
+    }
+
+    .group-register-form-container-header h2 {
+        font-size: 1.5rem;
+    }
+}
+
+.group-register-form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+
+/* =============================================================================
+   CAMPOS COMUNES
+   ========================================================================== */
+
+.group-register-field-wrapper {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.group-register-field-label {
+    color: #000000;
+    font-size: 0.9rem;
+    margin: 0.4rem 0.3rem;
+}
+
+.group-register-input-item {
+    --background: white;
+    --border-radius: 20px;
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
+    width: 100%;
+    border: none;
+    margin: 0;
+}
+
+.group-register-input-with-icon {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.group-register-input-with-icon ion-icon:last-child {
+    position: absolute;
+    right: 12px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.group-register-input-with-icon ion-icon:first-child {
+    padding-left: 12px;
+    font-size: 1.4rem;
+    color: var(--ion-color-medium);
+}
+
+
+/* =============================================================================
+   BOTÓN
+   ========================================================================== */
+
+.group-register-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15%;
+    width: 100%;
+}
+
+.group-register-confirm-button {
+    --background: white;
+    --color: #50BFE6;
+    --border-radius: 20px;
+    --padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.group-register-cancel-button {
+    --background: rgb(0, 110, 255);
+    --color: #ffffff;
+    --border-radius: 20px;
+    --padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.group-register-confirm-button::part(native) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: none;
+    outline: none;
+}
+
+.group-register-confirm-button:hover::part(native) {
+    background-color: #f0f0f0;
+}
+
+.group-register-confirm-button--disabled {
+    opacity: 0.8;
+}
+
+.group-register-confirm-button--disabled::part(native) {
+    cursor: not-allowed !important;
+}
+
+/* =============================================================================
+   TOAST
+   ========================================================================== */
+
+.group-register-toast ion-toast {
+    --background: #f44336;
+    --color: white;
+}
+
+
+/* =============================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .teacher-register-grid-content {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-register-form-right {
+        margin-top: 1.2rem;
+    }
+
+    .teacher-register-picto-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

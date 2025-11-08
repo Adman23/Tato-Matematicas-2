@@ -1,0 +1,55 @@
+.groupManagement-MainContainer {
+
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    height: 90%;
+    margin: 20px auto auto auto;
+}
+
+.groupManagement-TextAddButton {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px;
+}
+
+.groupManagement-Text {
+
+    color: #50BFE6;
+    font-size: 30px;
+}
+
+ion-button.groupManagement-AddButton::part(native) {
+
+    border-radius: 40px;
+    height: 36px;
+    padding: 15px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #50BFE6;
+    color: white;
+    border: none;
+    box-shadow: none;
+
+}
+
+.groupManagement-Table {
+
+    border: 3px solid #50BFE6;
+    overflow-y: auto;
+    border-radius: 20px;
+    flex-grow: 1;
+    width: 100%;
+
+}
+
+.group-management-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

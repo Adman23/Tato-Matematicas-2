@@ -327,3 +327,36 @@ async def get_images():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching images from storage"
         )
+
+
+@router.get("/groups", summary="Obtener todos los grupos")
+async def list_groups():
+    """
+    Obtiene todos los grupos disponibles.
+
+    Requiere autenticación de admin.
+    """
+    try:
+        # Obtener todos los grupos
+
+        resp = supabase_admin.table("groups") \
+                             .select("id, alias") \
+                             .execute()
+
+        if not resp.data:
+            return []
+
+        groups = []
+
+        for group in resp.data:
+            groups.append({
+                "id": group["id"],
+                "name": group["alias"]
+            })
+        return groups
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener los grupos: {str(e)}"
+        )
