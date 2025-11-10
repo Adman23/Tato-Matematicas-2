@@ -1,0 +1,314 @@
+/**
+ * Estilos para el Juego 2: Ordena la Secuencia
+ * Diseño actualizado según mockup
+ */
+
+/* ===== LAYOUT GENERAL ===== */
+.game2-content {
+  --background: #ffffff;
+}
+
+.game2-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #4fb3d4 0%, #3498db 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game2-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.round-indicator {
+  font-weight: bold;
+  color: white;
+}
+
+.round-indicator p {
+  margin: 0;
+}
+
+/* ===== CONTENEDOR DEL JUEGO ===== */
+.game2-container {
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* ===== INSTRUCCIÓN ===== */
+.instruction-header {
+  text-align: center;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.instruction-text {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ===== NÚMEROS DISPONIBLES (ARRIBA) ===== */
+.available-numbers-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-height: 120px;
+}
+
+/* ===== ZONA DE ORDENAMIENTO (ABAJO) ===== */
+.drop-zone-section-v2 {
+  margin-bottom: 2rem;
+}
+
+.drop-zone-v2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-height: 140px;
+  align-items: center;
+}
+
+/* ===== SLOTS DROPPABLES (POSICIONES FIJAS) ===== */
+.droppable-slot {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.droppable-slot-hover {
+  transform: scale(1.05);
+}
+
+/* Espacio vacío (círculo gris) */
+.empty-slot {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #d1d5db;
+  border: 3px dashed #9ca3af;
+  transition: all 0.2s;
+}
+
+.droppable-slot-hover .empty-slot {
+  background: #93c5fd;
+  border-color: #3b82f6;
+  border-width: 4px;
+  transform: scale(1.1);
+}
+
+/* ===== TARJETAS DE NÚMEROS V2 (CÍRCULOS) ===== */
+.number-card-v2 {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #3b82f6;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Estilo para tarjetas con pictograma */
+.number-card-pictogram {
+  background: white;
+  border: 3px solid #3b82f6;
+}
+
+.number-card-pictogram.number-card-available {
+  border-color: #9ca3af;
+}
+
+/* Imagen del pictograma */
+.pictogram-image {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Números disponibles arriba (color gris) */
+.number-card-available {
+  background: #9ca3af;
+  box-shadow: 0 4px 12px rgba(156, 163, 175, 0.3);
+}
+
+/* Números bloqueados (ayuda pre-colocada) */
+.number-card-locked {
+  background: #10b981 !important;
+  cursor: not-allowed !important;
+  opacity: 0.9;
+  border: 3px solid #059669 !important;
+}
+
+.number-card-locked.number-card-pictogram {
+  border: 3px solid #10b981 !important;
+}
+
+.number-card-v2:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.number-card-available:hover {
+  box-shadow: 0 6px 16px rgba(156, 163, 175, 0.4);
+}
+
+.number-card-locked:hover {
+  transform: none !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+}
+
+.number-card-v2:active {
+  cursor: grabbing;
+}
+
+.number-card-locked:active {
+  cursor: not-allowed !important;
+}
+
+.number-card-dragging {
+  opacity: 0.5;
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.number-value {
+  font-family: 'Arial', sans-serif;
+  z-index: 1;
+}
+
+/* ===== ICONOS DE FEEDBACK (TIC/CRUZ) ===== */
+.feedback-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 2.5rem;
+  z-index: 2;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.feedback-correct {
+  color: #10b981;
+  animation: popIn 0.3s ease-out;
+}
+
+.feedback-incorrect {
+  color: #ef4444;
+  animation: popIn 0.3s ease-out, shake 0.5s ease-in-out;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===== BOTÓN DE COMPROBAR ===== */
+.check-button-container {
+  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.check-button-container ion-button {
+  --border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  height: 56px;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes correctPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+
+/* ===== DETALLES DE RONDAS ===== */
+.rounds-detail-card {
+  margin-bottom: 1rem;
+}
+
+.order-detail {
+  font-size: 0.85rem;
+  color: #666;
+  font-family: 'Courier New', monospace;
+}
+
+.correct-order {
+  color: #2dd36f;
+  font-weight: bold;
+}
+
+/* ===== BOTÓN DE SALIDA ===== */
+.exit-button-container {
+  margin: 2rem 0;
+}
+
+.exit-button-container ion-button {
+  --border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  height: 56px;
+  background-color: black;
+}
