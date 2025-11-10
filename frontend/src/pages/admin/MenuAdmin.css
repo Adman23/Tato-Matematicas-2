@@ -1,10 +1,11 @@
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA - MenuAdmin
+   ========================================================================== */
+
 /* ========================================
-   Login profesores
+   Contenedor
    ======================================== */
 
-/*
-Centra todo el contenido en la pantalla
-*/
 .admin-dashboard-outer-container {
     display: flex;
     flex-direction: column;
@@ -35,9 +36,10 @@ Centra todo el contenido en la pantalla
     height: auto;
 }
 
-/*
-Botones
-*/
+/* ========================================
+    Botones
+   ======================================== */
+
 ion-button.admin-dashboard-button::part(native) {
     width: 170px;
     height: 48px;

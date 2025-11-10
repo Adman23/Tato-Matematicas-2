@@ -39,6 +39,26 @@ interface ClassSelectProps {
  * Select control para elegir un grupo. Renderiza una lista de opciones
  * proveniente de `classes`.
  */
+/**
+ * Resumen Funcional.
+ *
+ * Control reutilizable para seleccionar una clase (grupo). Renderiza un
+ * `IonSelect` con las opciones provistas a través de `classes`.
+ *
+ * Flujo de ejecución.
+ *
+ * - Muestra una etiqueta y un control select con las opciones.
+ * - Al cambiar la selección invoca `onChange` con el id seleccionado o
+ *   `null` si no hay selección.
+ *
+ * @param {ClassSelectProps} props - Props del componente (classes, value, onChange, label, max_width, placeholder_text).
+ * @returns {JSX.Element} Control de selección de clase.
+ *
+ * @example
+ * ```tsx
+ * <ClassSelect classes={groups} value={1} onChange={(v)=>setClass(v)} />
+ * ```
+ */
 const ClassSelect: React.FC<ClassSelectProps> = ({
     classes,
     value,
@@ -49,10 +69,10 @@ const ClassSelect: React.FC<ClassSelectProps> = ({
 }) => {
 
     return (
-        <div className='teacher-select-container'>
-            <IonLabel className='select-teacher-label'>{label}</IonLabel>
+        <div className='class-select-container'>
+            <IonLabel className='select-class-label'>{label}</IonLabel>
             <IonSelect
-                className='select-teacher'
+                className='select-class'
                 value={value}
                 placeholder={placeholder_text}
                 onIonChange={e => onChange && onChange(e.detail.value)}

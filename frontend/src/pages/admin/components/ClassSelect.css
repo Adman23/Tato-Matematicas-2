@@ -1,4 +1,12 @@
-.teacher-select-container {
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA - ClassSelect
+   ========================================================================== */
+
+/* ========================================
+    Contenedor
+   ======================================== */
+
+.class-select-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,7 +15,11 @@
     padding: 30px 30px;
 }
 
-ion-label.select-teacher-label {
+/* ========================================
+    Seleccionar clase
+   ======================================== */
+
+ion-label.select-class-label {
     font-family: var(--ion-font-family);
     font-weight: var(--ion-weight-regular);
     color: var(--ion-color-primary);
@@ -15,7 +27,7 @@ ion-label.select-teacher-label {
     font-size: 2rem;
 }
 
-ion-select.select-teacher {
+ion-select.select-class {
 
     position: relative;
     background: #F5F5F5;
@@ -34,7 +46,12 @@ ion-select.select-teacher {
     font-weight: var(--ion-weight-regular);
 }
 
-ion-select.select-teacher::part(placeholder) {
+
+/* ========================================
+    Placeholder
+   ======================================== */
+
+ion-select.select-class::part(placeholder) {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -43,7 +60,11 @@ ion-select.select-teacher::part(placeholder) {
     text-align: center;
 }
 
-ion-select.select-teacher::part(text) {
+/* ========================================
+    Texto seleccionado
+   ======================================== */
+
+ion-select.select-class::part(text) {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -52,7 +73,11 @@ ion-select.select-teacher::part(text) {
     text-align: center;
 }
 
-ion-select.select-teacher::part(icon) {
+/* ========================================
+    Ícono
+   ======================================== */
+
+ion-select.select-class::part(icon) {
     opacity: 1;
     color: #565353;
     font-size: 20px;

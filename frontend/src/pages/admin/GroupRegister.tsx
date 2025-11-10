@@ -1,5 +1,27 @@
 // src/pages/GroupRegister.tsx
 
+/**
+ * Resumen Funcional.
+ *
+ * Pantalla para registrar un nuevo grupo. Permite introducir un alias, validar
+ * su disponibilidad y enviar la petición de registro al backend.
+ *
+ * Flujo de ejecución.
+ *
+ * - El campo del nombre se valida localmente (mínimo 3 caracteres) y mediante
+ *   una petición debounce a `authAPI.checkGroup` para comprobar disponibilidad.
+ * - Al enviar, `handleSubmit` valida los datos, llama a la API y muestra un
+ *   `IonToast` con el resultado. En caso de éxito, redirige a la confirmación.
+ *
+ * @param {void}
+ * @returns {JSX.Element} Pantalla de registro de grupos.
+ *
+ * @example
+ * ```tsx
+ * <Route path="/group-register" component={GroupRegister} />
+ * ```
+ */
+
 import './GroupRegister.css';
 
 import {
@@ -65,6 +87,27 @@ export default function GroupRegister() {
         return () => clearTimeout(handler);
     }, [groupName]);
 
+    /**
+     * Resumen Funcional.
+     *
+     * Efecto que valida la disponibilidad del nombre del grupo con debounce.
+     *
+     * Flujo de ejecución.
+     *
+     * - Si el nombre es menor a 3 caracteres marca como no disponible localmente.
+     * - Tras 400ms sin cambios llama a `authAPI.checkGroup(trimmed)` y actualiza
+     *   `isGroupNameAvailable` solo si la respuesta corresponde al último
+     *   `groupCheckIdRef` (evitar condiciones de carrera).
+     *
+     * @param {void}
+     * @returns {void}
+     *
+     * @example
+     * ```ts
+     * // Ejecutado automáticamente al cambiar `groupName`
+     * ```
+     */
+
     const canSubmit =
         isGroupNameLong &&
         isGroupNameAvailable === true;
@@ -110,10 +153,47 @@ export default function GroupRegister() {
         }
     };
 
+    /**
+     * Resumen Funcional.
+     *
+     * Maneja el envío del formulario de registro de grupo. Valida los campos,
+     * llama a la API `authAPI.register_group` y muestra un toast con el
+     * resultado. En caso de éxito redirige a la página de confirmación.
+     *
+     * Flujo de ejecución.
+     *
+     * - Previene el comportamiento por defecto del formulario.
+     * - Comprueba la longitud y disponibilidad del nombre.
+     * - Si hay errores muestra un `IonToast` con los mensajes correspondientes.
+     * - Si todo es correcto hace la petición y redirige tras 2s.
+     *
+     * @param {React.FormEvent} e - Evento de envío del formulario.
+     * @returns {Promise<void>} Promesa que se resuelve al completar la operación.
+     *
+     * @example
+     * ```tsx
+     * <form onSubmit={handleSubmit}>...</form>
+     * ```
+     */
+
     const handleCancel = () => {
         setGroupName('');
         history.replace('/admin-dashboard/groups-management');
     };
+
+    /**
+     * Resumen Funcional.
+     *
+     * Cancela el registro, limpia el formulario y vuelve a la gestión de grupos.
+     *
+     * @param {void}
+     * @returns {void}
+     *
+     * @example
+     * ```ts
+     * handleCancel();
+     * ```
+     */
 
     return (
         <IonPage>

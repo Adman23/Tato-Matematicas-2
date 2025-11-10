@@ -81,10 +81,24 @@ async def list_students(teacher=Depends(get_current_user)):
 @router.get("/all", summary="Gets all teachers with photo, username and groups")
 async def list_teachers(admin=Depends(get_current_admin)):
     """
-    Devuelve una lista de todos los profesores con su id, 
-    nombre de usuario (email sin dominio), foto y grupos asignados (id y alias).
+    List all teachers with groups.
 
-    Requiere autenticación de admin.
+    Get all teachers with their id, username, photo_url and the groups they teach.
+
+    Args:
+        admin: The current admin user.
+
+    Raises:
+        HTTPException: If there is an error getting the teachers (`500 INTERNAL SERVER ERROR`).
+
+    Returns:
+        A list of teachers, each with:
+            - id: Teacher's ID.
+            - username: Teacher's username (email prefix).
+            - photo_url: URL of the teacher's photo.
+            - groups: List of groups the teacher teaches, each with id and alias.
+
+    Requires admin authentication.
     """
     try:
         # Get all users with role 'teacher'

@@ -98,13 +98,14 @@ async def register_group(data: Group, current_admin: dict = Depends(get_current_
     This endpoint allows the creation of a new group.
 
     Args:
-        data (Group): Objeto con los datos del grupo a crear.
+        data (Group): object with the group data:
+            - alias (str): Alias of the group (should be unique).
 
     Raises:
-        HTTPException: Si ocurre un error al crear el grupo (`500 INTERNAL SERVER ERROR`).
+        HTTPException: If there is an error creating the group (`500 INTERNAL SERVER ERROR`).
 
     Returns:
-        Group: Información del grupo creado.
+        Group: Information about the created group.
     """
     try:
         # Create the new group in the database
@@ -149,17 +150,17 @@ async def login(data: LoginRequest):
     It returns a JWT token and the user profile data.
 
     Args:
-        data (LoginRequest): Objeto con las credenciales de inicio de sesión:
-            - username (str): Nombre de usuario registrado.
-            - password (str): Contraseña asociada.
+        data (LoginRequest): Object with login credentials:
+            - username (str): Registered username.
+            - password (str): Associated password.
 
     Raises:
-        HTTPException: Si el usuario no existe (`404 NOT FOUND`).
-        HTTPException: Si la contraseña es incorrecta (`401 UNAUTHORIZED`).
-        HTTPException: Si ocurre un error interno durante la autenticación (`500 INTERNAL SERVER ERROR`).
+        HTTPException: If the user does not exist (`404 NOT FOUND`).
+        HTTPException: If the password is incorrect (`401 UNAUTHORIZED`).
+        HTTPException: If there is an internal error during authentication (`500 INTERNAL SERVER ERROR`).
 
     Returns:
-        AuthResponse: Objeto con el token de acceso y la información del perfil autenticado.
+        AuthResponse: Object with the access token and the authenticated profile information.
     """
     try:
 
@@ -262,9 +263,19 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 @router.get("/exists/{username}", response_model=ExistsResponse)
 async def username_exists(username: str):
     """
-    Comprueba si existe un usuario con el username dado en la tabla public.users.
+    Check username existence.
 
-    Busca por email en auth.users y toma el username del correo, y devuelve { exists: bool }.
+    Check if exists a user with the given username in auth.users. Searches by
+    email (the part before the @) and returns { exists: bool }.
+
+    Args:
+        username (str): Username to check.
+
+    Raises:
+        HTTPException: If there is an error checking username existence (`500 INTERNAL SERVER ERROR`).
+
+    Returns:
+        ExistsResponse: Object with `exists: bool` indicating if the username exists.
     """
     try:
 
@@ -316,9 +327,18 @@ async def username_exists(username: str):
 @router.get("/groups/exists/{groupId}", response_model=ExistsResponse)
 async def group_exists(groupId: str):
     """
-    Comprueba si existe un grupo con el id dado en la tabla public.groups.
+    Check group existence.
 
-    Busca por id en public.groups y devuelve { exists: bool }.
+    Check if exists a group with the given id in public.groups.Searches by id in public.groups and returns { exists: bool }.
+
+    Args:
+        groupId (str): Group ID to check.
+
+    Raises:
+        HTTPException: If there is an error checking group existence (`500 INTERNAL SERVER ERROR`).
+    
+    Returns:
+        ExistsResponse: Object with `exists: bool` indicating if the group exists.
     """
     try:
 
