@@ -419,6 +419,145 @@ export async function getImages(): Promise<Record<string, string>> {
   return response.data;
 }
 
+// === ENDPOINTS DE JUEGOS ===
+
+/**
+ * Configuración de juego específica para un estudiante
+ */
+export interface GameConfig {
+  game_id: number;
+  game_key: string;
+  user_id: string;
+  number_range: string;
+  settings: {
+    quantity: number;
+    order: 'ascending' | 'descending';
+  };
+}
+
+/**
+ * Respuesta al crear una sesión de juego
+ */
+export interface GameSessionResponse {
+  session_id: string;
+}
+
+/**
+ * Datos de una ronda de juego
+ */
+export interface RoundResult {
+  round: number;
+  numbers: number[];
+  user_order: number[];
+  correct_order: number[];
+  is_correct: boolean;
+  time_seconds: number;
+}
+
+/**
+ * Conjunto de endpoints para juegos.
+ *
+ * Proporciona métodos para gestionar sesiones de juegos, configuraciones
+ * y resultados a través de la API del backend.
+ */
+export const gamesAPI = {
+  /**
+   * Obtiene la configuración personalizada de un juego para un usuario (estudiante o profesor).
+   *
+   * Flujo de ejecución:
+   * 1. Realiza petición GET al endpoint de configuración
+   * 2. El backend consulta la tabla game_configs filtrada por user_id y game_key
+   * 3. Devuelve la configuración específica (rango de números, cantidad, orden, etc.)
+   *
+   * @param userId - UUID del usuario (estudiante o profesor) en la base de datos
+   * @param gameKey - Identificador del juego (ej: 'order_sequence', 'count_objects')
+   * @returns Promesa que resuelve con la configuración del juego incluyendo settings personalizados
+   *
+   * @example
+   * const config = await gamesAPI.getGameConfig('uuid-123', 'order_sequence');
+   * console.log(config.settings.quantity); // 5
+   * console.log(config.number_range); // '0-10'
+   */
+  getGameConfig: async (userId: string, gameKey: string): Promise<GameConfig> => {
+    const response = await api.get<GameConfig>(`/api/games/config/${userId}/${gameKey}`);
+    return response.data;
+  },
+
+  /**
+   * Crea una nueva sesión de juego para tracking de resultados.
+   *
+   * Flujo de ejecución:
+   * 1. Envía petición POST con user_id (estudiante o profesor) y game_key
+   * 2. El backend crea un registro en game_sessions con timestamp de inicio
+   * 3. Devuelve el ID de sesión que se usará para guardar rondas
+   *
+   * @param userId - UUID del usuario (estudiante o profesor) que jugará
+   * @param gameKey - Identificador del juego a iniciar
+   * @returns Promesa con el ID de sesión generado
+   *
+   * @example
+   * const session = await gamesAPI.createGameSession('uuid-123', 'order_sequence');
+   * console.log(session.session_id); // 'session-uuid-456'
+   */
+  createGameSession: async (userId: string, gameKey: string): Promise<GameSessionResponse> => {
+    const response = await api.post<GameSessionResponse>('/api/games/sessions', {
+      student_id: userId,
+      game_key: gameKey
+    });
+    return response.data;
+  },
+
+  /**
+   * Guarda el resultado de una ronda individual dentro de una sesión.
+   *
+   * Flujo de ejecución:
+   * 1. Envía los datos de la ronda (números, respuesta, corrección, tiempo)
+   * 2. El backend actualiza el campo results.attempts[] en game_sessions
+   * 3. Incrementa contadores de total_correct o total_incorrect según resultado
+   *
+   * @param sessionId - ID de la sesión activa donde guardar
+   * @param roundResult - Objeto con todos los datos de la ronda
+   * @returns Promesa que resuelve cuando se guarda exitosamente
+   *
+   * @example
+   * await gamesAPI.saveRoundResult('session-123', {
+   *   round: 1,
+   *   numbers: [1, 3, 5, 7, 9],
+   *   user_order: [1, 3, 5, 7, 9],
+   *   correct_order: [1, 3, 5, 7, 9],
+   *   is_correct: true,
+   *   time_seconds: 12.5
+   * });
+   */
+  saveRoundResult: async (sessionId: string, roundResult: RoundResult): Promise<void> => {
+    await api.post(`/api/games/sessions/${sessionId}/round`, {
+      round_result: roundResult
+    });
+  },
+
+  /**
+   * Finaliza una sesión de juego y guarda el tiempo total.
+   *
+   * Flujo de ejecución:
+   * 1. Envía el tiempo total de juego en segundos
+   * 2. El backend actualiza finished_at con timestamp actual
+   * 3. Calcula estadísticas finales y cierra la sesión
+   *
+   * @param sessionId - ID de la sesión a finalizar
+   * @param totalTimeSeconds - Tiempo total transcurrido desde el inicio
+   * @returns Promesa que resuelve cuando se finaliza exitosamente
+   *
+   * @example
+   * await gamesAPI.finishGameSession('session-123', 125.7);
+   * // La sesión ahora está marcada como completada en BD
+   */
+  finishGameSession: async (sessionId: string, totalTimeSeconds: number): Promise<void> => {
+    await api.post(`/api/games/sessions/${sessionId}/finish`, {
+      total_time_seconds: totalTimeSeconds
+    });
+  }
+};
+
 // ==== EXPORTACIÓN PRINCIPAL ====
 
 /**

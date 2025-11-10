@@ -45,7 +45,7 @@ export default function TutorDashboard() {
               onClick={() => history.push('/game1')}
             >
               <div className="game-button-content">
-                <img src="/juegoX.png" alt="Juego 1" className="game-image" />
+                <img src="/juego2.png" alt="Juego 1" className="game-image" />
                 <div className="game-title">Toca el numero que suena</div>
               </div>
             </IonButton>
@@ -69,7 +69,7 @@ export default function TutorDashboard() {
               onClick={() => history.push('/game3')}
             >
               <div className="game-button-content">
-                <img src="/juegoX.png" alt="Juego 3" className="game-image" />
+                <img src="/repartir.png" alt="Juego 3" className="game-image" />
                 <div className="game-title">Juego de repartir</div>
               </div>
             </IonButton>
@@ -81,7 +81,7 @@ export default function TutorDashboard() {
               onClick={() => history.push('/game4')}
             >
               <div className="game-button-content">
-                <img src="/juegoX.png" alt="Juego 4" className="game-image" />
+                <img src="/meter.png" alt="Juego 4" className="game-image" />
                 <div className="game-title">Igualar recipientes</div>
               </div>
             </IonButton>
