@@ -19,10 +19,20 @@ DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 @router.get("/all", summary="Gets all students with photo, username and group")
 async def list_students(admin=Depends(get_current_admin)):
     """
-    Devuelve una lista de todos los estudiantes con su id, 
-    nombre de usuario (email sin dominio), foto y grupo asignado (id y alias).
+    List all students with groups.
 
-    Requiere autenticación de admin.
+    Returns a list of all students with their id, username, photo_url and group info.
+
+    Args:
+        admin: The current admin user.
+
+    Raises:
+        HTTPException: If there is an error getting the students (`500 INTERNAL SERVER ERROR`).
+
+    Returns:
+        A list of students with their id, username, photo_url and group info.
+
+    Requires admin authentication.
     """
     try:
         # Get all users with role 'students'

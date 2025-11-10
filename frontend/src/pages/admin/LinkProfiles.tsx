@@ -1,9 +1,37 @@
 /**
- * @file LinkProfiles.tsx
- * @description Página de administración para vincular perfiles (alumnos y profesores) a clases.
- * Provee UI para listar, buscar, seleccionar y (des)asignar usuarios a grupos.
+ * Resumen Funcional.
  *
- * Componente principal: LinkProfiles
+ * Pantalla de administración para vincular perfiles (alumnos y profesores) a
+ * clases (grupos). Proporciona interfaces para buscar, seleccionar, asignar y
+ * desasignar usuarios a grupos, así como para recargar los datos desde el
+ * backend.
+ *
+ * Flujo de ejecución.
+ *
+ * 1. Al montar el componente carga la lista de grupos (`authAPI.getGroups`) y
+ *    las listas de profesores y alumnos (`fetchTeachersWithGroups`,
+ *    `fetchStudentsWithGroups`). Usa flags por recurso para controlar spinners
+ *    independientes (`loadingGroups`, `loadingUsers`).
+ * 2. El usuario puede filtrar la lista de alumnos/profesores mediante barras
+ *    de búsqueda (client-side). Puede seleccionar múltiples usuarios.
+ * 3. `handleAssign` asigna los usuarios seleccionados a la clase escogida; si
+ *    hay errores muestra mensajes y refresca las listas tras éxito/fracaso.
+ * 4. `handleUnassign` desasigna los seleccionados (con validaciones similares).
+ *
+ * Contrato (resumen):
+ * - Entradas: interacción del usuario con la UI (selección, búsqueda, botones).
+ * - Salidas: llamadas a las APIs de backend para asignar/desasignar y actualización
+ *   de los estados `students`, `teachers`, `groups`.
+ * - Errores: se muestran en pantalla mediante el estado `_error`.
+ *
+ * @param {void} No recibe props; usa el contexto de autenticación y hooks internos.
+ * @returns {JSX.Element} Componente que renderiza la UI de vinculación de perfiles.
+ *
+ * @example Ejemplo de uso
+ *
+ * ```tsx
+ * <Route path="/admin-dashboard/link-profiles" component={LinkProfiles} />
+ * ```
  */
 
 import {
@@ -78,11 +106,31 @@ export default function LinkProfiles() {
     const [loadingGroups, setLoadingGroups] = useState<boolean>(true);
     const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
+    /**
+     * Resumen Funcional.
+     *
+     * Efecto que carga la lista de grupos desde el backend cuando el componente
+     * se monta o cuando cambia el estado de autenticación.
+     *
+     * Flujo de ejecución.
+     *
+     * - Espera a que el `AuthProvider` haya terminado (si `loading` es true
+     *   sale temprano).
+     * - Si no hay usuario autenticado o no es admin, desactiva la flag de
+     *   carga local y no realiza la petición.
+     * - Llama a `authAPI.getGroups()` y guarda la respuesta en `groups`.
+     * - Gestiona errores actualizando `_error` y siempre limpia la flag
+     *   `loadingGroups` al finalizar.
+     *
+     * @param {void}
+     * @returns {void}
+     *
+     * @example
+     * ```ts
+     * // Ejecutado automáticamente al montar el componente
+     * ```
+     */
     useEffect(() => {
-        /**
-         * Carga la lista de grupos desde el backend y actualiza el estado `groups`.
-         * Ejecutado una vez al montar el componente.
-         */
         // Esperar a que el AuthProvider termine de rehidratar
         if (loading) return;
         // Solo cargar grupos si es admin autenticado
@@ -107,14 +155,34 @@ export default function LinkProfiles() {
         loadGroups();
     }, [loading, user]);
 
-    // Carga (o recarga) de usuarios. Se reruneará en mount y cada vez que
-    // cambie `selectedClass`, tal y como pide el requisito.
+    /**
+     * Resumen Funcional.
+     *
+     * Efecto responsable de cargar (o recargar) la lista de profesores y
+     * estudiantes. Se ejecuta al montar el componente y cuando cambia
+     * `selectedClass` (es decir, cuando el admin cambia la clase objetivo).
+     *
+     * Flujo de ejecución.
+     *
+     * - Si `loading` del AuthProvider es true, sale temprano.
+     * - Si no hay usuario o no es admin, desactiva la flag `loadingUsers`.
+     * - Llama a `fetchTeachersWithGroups()` y `fetchStudentsWithGroups()` y
+     *   actualiza los estados `teachers` y `students` respectivamente.
+     * - Maneja errores con console.error y siempre limpia la flag de carga.
+     *
+     * Consideraciones de rendimiento/UX:
+     * - Esta carga se realiza en cliente y refresca toda la lista; para
+     *   datasets grandes se podría paginar o aplicar búsquedas server-side.
+     *
+     * @param {void}
+     * @returns {void}
+     *
+     * @example
+     * ```ts
+     * // Ejecutado automáticamente; no llamar manualmente
+     * ```
+     */
     useEffect(() => {
-        /**
-         * Carga los usuarios (profesores y estudiantes) desde el backend y actualiza
-         * los estados `teachers` y `students`.
-         * Ejecutado al montar el componente y cuando cambia `selectedClass`.
-         */
         // Esperar a que el AuthProvider termine de rehidratar
         if (loading) return;
         // Solo cargar usuarios si es admin autenticado
@@ -147,9 +215,29 @@ export default function LinkProfiles() {
     }, [loading, user]);
 
     /**
-     * Asigna los usuarios seleccionados a la clase actualmente seleccionada.
-     * - Valida que exista `selectedClass`.
-     * - Llama a las APIs de asignación y refresca las listas.
+     * Resumen Funcional.
+     *
+     * Asigna los alumnos y/o profesores seleccionados a la clase actualmente
+     * seleccionada (`selectedClass`). Valida entradas, llama a las APIs de
+     * asignación y refresca las listas locales tras la operación.
+     *
+     * Flujo de ejecución.
+     *
+     * - Si no hay `selectedClass` o no hay usuarios seleccionados, establece
+     *   `_error` y aborta.
+     * - Activa la flag `loadingUsers` y llama a `assignStudentsToGroup` y/o
+     *   `assignTeachersToGroup` según corresponda.
+     * - Tras éxito, recarga los datos (`fetchStudentsWithGroups`,
+     *   `fetchTeachersWithGroups`) y limpia la selección.
+     * - En caso de error registra en consola y actualiza `_error`.
+     *
+     * @param {void}
+     * @returns {Promise<void>} Promesa que se resuelve al completar la operación.
+     *
+     * @example
+     * ```ts
+     * await handleAssign();
+     * ```
      */
     const handleAssign = async () => {
         if (!selectedClass) {
@@ -188,8 +276,27 @@ export default function LinkProfiles() {
     };
 
     /**
-     * Desasigna los usuarios seleccionados de sus clases (o del grupo indicado para profesores).
-     * - Llama a las APIs de desasignación y refresca las listas.
+     * Resumen Funcional.
+     *
+     * Desasigna los alumnos y/o profesores seleccionados de sus clases. Valida
+     * la selección y clase (cuando procede), llama a las APIs de desasignación
+     * y refresca las listas.
+     *
+     * Flujo de ejecución.
+     *
+     * - Si no hay usuarios seleccionados establece `_error` y aborta.
+     * - Si hay profesores seleccionados, exige que `selectedClass` esté
+     *   definida.
+     * - Llama a `unassignStudentsFromGroup` y/o `unassignTeachersFromGroup`.
+     * - Refresca `students` y `teachers`, limpia la selección y gestiona errores.
+     *
+     * @param {void}
+     * @returns {Promise<void>} Promesa que se resuelve al completar la operación.
+     *
+     * @example
+     * ```ts
+     * await handleUnassign();
+     * ```
      */
     const handleUnassign = async () => {
 

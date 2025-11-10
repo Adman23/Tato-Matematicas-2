@@ -1,3 +1,12 @@
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA - GroupsManagement
+   ========================================================================== */
+
+/* ========================================
+    Contenedor principal
+   ======================================== */
+
+
 .groupManagement-MainContainer {
 
     display: flex;
@@ -6,6 +15,10 @@
     height: 90%;
     margin: 20px auto auto auto;
 }
+
+/* ========================================
+    Texto
+   ======================================== */
 
 .groupManagement-TextAddButton {
 
@@ -22,6 +35,10 @@
     font-size: 30px;
 }
 
+/* ========================================
+    Botones
+   ======================================== */
+
 ion-button.groupManagement-AddButton::part(native) {
 
     border-radius: 40px;
@@ -37,6 +54,10 @@ ion-button.groupManagement-AddButton::part(native) {
 
 }
 
+/* ========================================
+    Tabla
+   ======================================== */
+
 .groupManagement-Table {
 
     border: 3px solid #50BFE6;
@@ -46,6 +67,10 @@ ion-button.groupManagement-AddButton::part(native) {
     width: 100%;
 
 }
+
+/* ========================================
+    Spinner de carga
+   ======================================== */
 
 .group-management-spinner {
     display: flex;

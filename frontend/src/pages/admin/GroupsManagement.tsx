@@ -1,6 +1,30 @@
 import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
 
+/**
+ * Resumen Funcional.
+ *
+ * Página de gestión de grupos para administradores. Lista grupos, permite
+ * eliminar y navegar al registro de nuevos grupos.
+ *
+ * Flujo de ejecución.
+ *
+ * - Al montar, carga la lista de grupos mediante `fetchGroups` y la muestra en
+ *   una lista.
+ * - Muestra un spinner mientras se cargan los datos o el contexto de auth está
+ *   en estado de carga.
+ * - Si el usuario no está autenticado o no es admin, redirige al login.
+ * - Permite eliminar grupos y, en caso de fallo, intenta recargar la lista.
+ *
+ * @param {void}
+ * @returns {JSX.Element} Componente de gestión de grupos.
+ *
+ * @example
+ * ```tsx
+ * <Route path="/admin-dashboard/groups-management" component={GroupsManagement} />
+ * ```
+ */
+
 import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton } from '@ionic/react';
 import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';

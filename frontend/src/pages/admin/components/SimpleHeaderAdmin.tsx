@@ -1,7 +1,25 @@
 /**
- * @file SimpleHeaderAdmin.tsx
- * @description Header simple para vistas de admin. Muestra el nombre del admin,
- * un botón home y un botón para cerrar sesión.
+ * Resumen Funcional.
+ *
+ * Header simple reutilizable para las vistas de administración. Muestra el
+ * nombre del admin, un botón para ir al dashboard y un botón para cerrar
+ * sesión.
+ *
+ * Flujo de ejecución.
+ *
+ * - Se renderiza el título con el nombre del administrador pasado vía props.
+ * - `handleHome` redirige al dashboard del administrador.
+ * - `handleLogout` llama a `logout` del contexto de autenticación y redirige
+ *   a la pantalla de login.
+ *
+ * @param {Props} props - Propiedades del componente (ver interface `Props`).
+ * @returns {JSX.Element} Encabezado para vistas de admin.
+ *
+ * @example Ejemplo de uso
+ *
+ * ```tsx
+ * <SimpleHeaderAdmin adminName="Admin" />
+ * ```
  */
 
 import {
@@ -23,6 +41,7 @@ setupIonicReact();
 
 /**
  * Props del SimpleHeaderAdmin
+ *
  * @property adminName - Nombre a mostrar en el header
  */
 interface Props {
@@ -41,17 +60,45 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
     const history = useHistory();
     const { logout } = useAuth();
 
-    /**
-* Cierra la sesión del usuario y redirige a la página principal.
-*/
-    const handleLogout = async () => {
-        await logout();
-        history.replace('/login');
-    };
+        /**
+         * Resumen Funcional.
+         *
+         * Cierra la sesión del usuario y redirige al login.
+         *
+         * Flujo de ejecución.
+         *
+         * - Llama a `logout` del contexto.
+         * - Reemplaza la ruta actual por '/login' con `history.replace`.
+         *
+         * @param {void}
+         * @returns {Promise<void>}
+         *
+         * @example
+         * ```ts
+         * await handleLogout();
+         * ```
+         */
+        const handleLogout = async () => {
+            await logout();
+            history.replace('/login');
+        };
 
-    const handleHome = () => {
-        history.replace('/admin-dashboard');
-    }
+        /**
+         * Resumen Funcional.
+         *
+         * Navega al dashboard del administrador.
+         *
+         * @param {void}
+         * @returns {void}
+         *
+         * @example
+         * ```ts
+         * handleHome();
+         * ```
+         */
+        const handleHome = () => {
+            history.replace('/admin-dashboard');
+        }
 
     return (
         <IonHeader>

@@ -104,13 +104,20 @@ async def list_students():
 @router.post("/students/assign", summary="Asignar alumnos a un grupo")
 async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends(get_current_admin)):
     """
-    Asigna una lista de estudiantes a un grupo (actualiza group_id en public.users).
+    Assign students to a group.
+    Assign a list of students to a group by setting their `group_id` in the `users` table.
 
-    Body:
-      - group_id (int): id del grupo al que asignar
-      - student_ids (list[str]): lista de ids de usuario (UUID)
+    Args:
+        - group_id (int): id from the group to assign students to
+        - student_ids (list[str]): list of user ids (UUID)
 
-    Requiere autenticación de admin.
+    Raises:
+        - HTTPException: 400 if parameters are missing, 500 if there is an error assigning
+
+    Returns:
+        - dict: {"updated": [...] } with the list of updated users
+
+    Requires admin authentication.
     """
     try:
         # Validate payload
@@ -135,14 +142,22 @@ async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends
 @router.post("/teachers/assign", summary="Asignar profesores a un grupo")
 async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends(get_current_admin)):
     """
-    Asigna una lista de profesores a un grupo creando entradas en la tabla
-    `teacher_group_relations` con (teacher_id, group_id).
+    Assign teachers to a group.
 
-    Body:
-      - group_id (int): id del grupo al que asignar
-      - teacher_ids (list[str]): lista de ids de usuario (UUID)
+    Assign a list of teachers to a group by creating entries in the
+    `teacher_group_relations` table with (teacher_id, group_id).
 
-    Requiere autenticación de admin.
+    Args:
+        - group_id (int): id from the group to assign
+        - teacher_ids (list[str]): list of user ids (UUID)
+
+    Raises:
+        - HTTPException: 400 if parameters are missing, 500 if there is an error assigning
+
+    Returns:
+        - dict: {"inserted": [...], "skipped_existing": [...] } with the list of inserted relations and the existing ones
+
+    Requires admin authentication.
     """
     try:
         if not payload.group_id or not payload.teacher_ids:
@@ -193,13 +208,21 @@ async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends
 @router.post("/students/unassign", summary="Desmatricular alumnos de un grupo")
 async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=Depends(get_current_admin)):
     """
-    Desmatricula una lista de estudiantes  de sus correspondientes grupos estableciendo
-    `group_id` a NULL en la tabla `users` para esos usuarios.
+    Unassign students from their groups.
 
-    Body:
-      - student_ids (list[str]): lista de ids de usuario (UUID)
+    Unassign a list of students from their corresponding groups by setting
+    `group_id` to NULL in the `users` table for those users.
 
-    Requiere autenticación de admin.
+    Args:
+        - student_ids (list[str]): list of user ids (UUID)
+
+    Raises:
+        - HTTPException: 400 if parameters are missing, 500 if there is an error unassigning
+
+    Returns:
+        - dict: {"updated": [...] } with the list of updated users
+
+    Requires admin authentication.
     """
     try:
         # Validate payload
@@ -224,13 +247,21 @@ async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=D
 @router.post("/teachers/unassign", summary="Desasignar profesores de un grupo")
 async def unassign_teachers_from_group(payload: UnassignTeachersPayload, admin=Depends(get_current_admin)):
     """
-    Elimina las relaciones (teacher_id, group_id) de la tabla `teacher_group_relations`.
+    Unassign teachers from a group.
 
-    Body:
-      - group_id (int): id del grupo del que desasignar
-      - teacher_ids (list[str]): lista de ids de usuario (UUID)
+    Removes the relations (teacher_id, group_id) from the `teacher_group_relations` table.
 
-    Requiere autenticación de admin.
+    Args:
+        - group_id (int): id from the group to unassign
+        - teacher_ids (list[str]): list of user ids (UUID)
+
+    Raises:
+        - HTTPException: 400 if parameters are missing, 500 if there is an error unassigning
+
+    Returns:
+        - dict: {"deleted": [...] } with the list of deleted relations
+
+    Requires admin authentication.
     """
     try:
         # Validate payload
@@ -332,9 +363,20 @@ async def get_images():
 @router.get("/groups", summary="Obtener todos los grupos")
 async def list_groups():
     """
-    Obtiene todos los grupos disponibles.
+    List all groups.
 
-    Requiere autenticación de admin.
+    Get all groups with their id and name.
+
+    Args:
+        None
+
+    Raises:
+        - HTTPException: 500 if there is an error fetching the groups
+
+    Returns:
+        - list[dict]: List of groups with fields 'id' and 'name'
+
+    Requires admin authentication.
     """
     try:
         # Obtener todos los grupos
@@ -365,29 +407,39 @@ async def list_groups():
 @router.delete("/groups/{group_id}", summary="Eliminar un grupo")
 async def delete_group(group_id: int, admin=Depends(get_current_admin)):
     """
-    Elimina un grupo por id.
+    Delete a group.
 
-    Pasos:
-    1. Desasigna `group_id` de los usuarios (establece group_id = NULL) para evitar referencias.
-    2. Elimina las relaciones en `teacher_group_relations` para ese group_id.
-    3. Elimina la fila en `groups`.
+    Deletes a group by id.
+    Steps:
+    1. Unassign `group_id` from users (set group_id = NULL) to avoid references.
+    2. Remove the relations in `teacher_group_relations` for that group_id.
+    3. Delete the row in `groups`.
 
-    Requiere autenticación de admin.
+    Args:
+        - group_id (int): id of the group to delete
+
+    Raises:
+        - HTTPException: 404 if the group does not exist, 500 if there is an error deleting
+
+    Returns:
+        - dict: {"deleted": [...] } with the list of deleted groups
+
+    Requires admin authentication.
     """
     try:
-        # 1) Desasignar usuarios que tengan este group_id
+        # 1) Unassign group_id from users
         supabase_admin.table("users") \
             .update({"group_id": None}) \
             .eq("group_id", group_id) \
             .execute()
 
-        # 2) Eliminar relaciones profesor-grupo
+        # 2) Delete teacher-group relations
         supabase_admin.table("teacher_group_relations") \
             .delete() \
             .eq("group_id", group_id) \
             .execute()
 
-        # 3) Eliminar el grupo
+        # 3) Delete the group
         resp = supabase_admin.table("groups") \
             .delete() \
             .eq("id", group_id) \
@@ -396,7 +448,7 @@ async def delete_group(group_id: int, admin=Depends(get_current_admin)):
         if resp and getattr(resp, 'data', None):
             return {"deleted": resp.data}
         else:
-            # Si no se borró nada, devolver 404
+            # If no data returned, group was not found
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Grupo no encontrado")
 
     except HTTPException:

@@ -28,8 +28,23 @@ interface Props {
 }
 
 /**
- * Componente visual para mostrar un usuario con avatar, nombre y lista de clases.
- * Incluye un checkbox y lanza `onCheckChange` con el nuevo estado.
+ * Resumen Funcional.
+ *
+ * Componente visual para mostrar un usuario con avatar, nombre y lista de
+ * clases. Incluye un checkbox que notifica cambios mediante `onCheckChange`.
+ *
+ * Flujo de ejecución.
+ *
+ * - Renderiza un avatar, el alias del usuario y una lista de clases.
+ * - El checkbox refleja `isChecked` y al cambiar ejecuta `onCheckChange`.
+ *
+ * @param {Props} props - Propiedades del componente (avatar, alias, classes, isChecked, onCheckChange, highlight).
+ * @returns {JSX.Element} Item visual que representa un usuario.
+ *
+ * @example
+ * ```tsx
+ * <UserItem avatar="/me.png" alias="Juan" classes={["1A"]} onCheckChange={(c)=>{}} />
+ * ```
  */
 const UserItem: React.FC<Props> = ({
     avatar,

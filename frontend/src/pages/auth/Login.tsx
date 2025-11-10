@@ -1,13 +1,32 @@
 /**
- * Página de inicio de sesión para tutores y administradores.
- * -----------------------------------------------------------
- * Permite a los usuarios autenticarse mediante nombre de usuario y contraseña.
+ * Resumen Funcional.
  *
- * Utiliza:
- * - **Ionic React** para la interfaz (`IonInput`, `IonButton`, `IonCard`, etc.).
- * - **React Hooks** (`useState`) para gestionar el estado del formulario.
- * - **React Router** (`useHistory`) para redirecciones.
- * - **AuthContext** (`useAuth`) para conectarse con la API de autenticación.
+ * Página de inicio de sesión para tutores y administradores. Renderiza un
+ * formulario que solicita 'username' y 'password', valida la existencia del
+ * usuario mientras se escribe, realiza la autenticación y redirige según el
+ * rol del usuario.
+ *
+ * Flujo de ejecución.
+ *
+ * 1. Renderiza los campos de entrada y botones.
+ * 2. Mientras el usuario escribe en 'Usuario', se aplica un debounce y se
+ *    solicita a `authAPI.checkUsername` la existencia del nombre. Se muestra
+ *    un icono indicando si el usuario existe o no.
+ * 3. Al enviar el formulario (`handleLogin`):
+ *    - Se llama a `login` del contexto de autenticación.
+ *    - Si la autenticación es correcta, se obtiene el rol desde
+ *      `localStorage` y se redirige a `/admin-dashboard` o `/tutor-dashboard`.
+ *    - Si hay un error, se muestra un `IonToast` con el mensaje correspondiente.
+ *
+ * @param {void} No recibe props; utiliza hooks y contexto.
+ * @returns {JSX.Element} Componente de la pantalla de login.
+ *
+ * @example Ejemplo de uso
+ *
+ * ```tsx
+ * import Login from './pages/auth/Login';
+ * <Route path="/login" component={Login} />
+ * ```
  */
 
 import {
@@ -33,21 +52,30 @@ import './Login.css';
 setupIonicReact();
 
 /**
-* Componente funcional de la pantalla de inicio de sesión.
-*
-* Permite al tutor o administrador autenticarse ingresando su nombre de usuario
-* y contraseña. Realiza validaciones básicas en frontend y muestra errores en caso
-* de credenciales inválidas o problemas de conexión.
-*
-* @returns {JSX.Element} Interfaz del formulario de inicio de sesión.
-*
-* @example
-* ```tsx
-* import Login from "./pages/auth/Login";
-*
-* <Route path="/login" component={Login} />
-* ```
-*/
+ * Resumen Funcional.
+ *
+ * Componente de la pantalla de inicio de sesión. Gestiona el formulario de
+ * autenticación, validación en tiempo real del nombre de usuario y muestra
+ * retroalimentación (toasts) en caso de error.
+ *
+ * Flujo de ejecución.
+ *
+ * - Usuario introduce 'username' y 'password'.
+ * - Mientras escribe 'username', se realiza una comprobación debounce para
+ *   verificar existencia mediante `authAPI.checkUsername`.
+ * - Al enviar el formulario, `handleLogin` llama a `login` del contexto y
+ *   redirige según el rol almacenado en `localStorage`.
+ *
+ * @param {void} No recibe props; usa hooks y contexto.
+ * @returns {JSX.Element} Elemento JSX que representa la pantalla de login.
+ *
+ * @example Ejemplo de uso
+ *
+ * ```tsx
+ * import Login from './pages/auth/Login';
+ * <Route path="/login" component={Login} />
+ * ```
+ */
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -63,22 +91,53 @@ export default function Login() {
   const history = useHistory();
 
   /**
-   * Reset del formulario de inicio de sesión.
-   * Reinicia los campos `username` y `password` a strings vacíos.
+   * Resumen Funcional.
+   *
+   * Resetea el formulario de inicio de sesión.
+   *
+   * Flujo de ejecución.
+   *
+   * - Se invoca tras un inicio de sesión exitoso o cuando el usuario pulsa
+   *   "Volver al inicio".
+   * - Limpia los estados locales `username` y `password` para dejar el
+   *   formulario en su estado inicial.
+   *
+   * @param {void}
    * @returns {void}
+   *
+   * @example
+   * ```ts
+   * clearForm();
+   * ```
    */
   const clearForm = () => {
     setUsername('');
     setPassword('');
   };
   /**
- * Maneja el envío del formulario de inicio de sesión.
- *
- * Valida el nombre de usuario antes de enviar la solicitud al backend.
- * En caso de éxito, redirige al dashboard correspondiente al rol.
- *
- * @param {React.FormEvent} e - Evento del formulario.
- */
+   * Resumen Funcional.
+   *
+   * Procesa el envío del formulario de autenticación. Llama a la función
+   * `login` del contexto de autenticación y gestiona redirecciones y errores.
+   *
+   * Flujo de ejecución.
+   *
+   * - Previene el comportamiento por defecto del formulario.
+   * - Limpia mensajes previos y activa el estado de carga.
+   * - Llama a `login({ username, password })`.
+   * - Si la respuesta es exitosa: extrae el rol desde `localStorage`, limpia
+   *   el formulario y redirige a la ruta correspondiente.
+   * - Si hay error: construye un mensaje adecuado (según status) y muestra
+   *   un `IonToast` con color 'danger'.
+   *
+   * @param {React.FormEvent} e - Evento de envío del formulario.
+   * @returns {Promise<void>} Promesa que resuelve cuando termina la operación.
+   *
+   * @example
+   * ```tsx
+   * <form onSubmit={handleLogin}>...</form>
+   * ```
+   */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setToastMessage('');
@@ -127,9 +186,22 @@ export default function Login() {
   };
 
   /**
-   * Alterna la visibilidad del campo de contraseña.
-   * Cambia el estado `showPassword` (boolean).
+   * Resumen Funcional.
+   *
+   * Alterna la visibilidad del campo de contraseña (`password`).
+   *
+   * Flujo de ejecución.
+   *
+   * - Invierte el valor booleano de `showPassword`.
+   * - Este estado controla el tipo del `IonInput` ("text" | "password").
+   *
+   * @param {void}
    * @returns {void}
+   *
+   * @example
+   * ```tsx
+   * <IonIcon onClick={togglePasswordVisibility} />
+   * ```
    */
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -140,10 +212,28 @@ export default function Login() {
   const requestIdRef = useRef(0);
 
   /**
-   * Efecto para validar la existencia del nombre de usuario mientras el usuario escribe.
-   * - Aplica debounce (400ms) antes de llamar a `authAPI.checkUsername`.
-   * - Usa `requestIdRef` para ignorar respuestas obsoletas y evitar condiciones de carrera.
-   * - Actualiza `isUsernameValid` con `true` o `false` según la respuesta.
+   * Resumen Funcional.
+   *
+   * Valida de forma asíncrona la existencia del nombre de usuario mientras el
+   * usuario escribe, evitando llamadas innecesarias mediante debounce y
+   * previniendo condiciones de carrera con `requestIdRef`.
+   *
+   * Flujo de ejecución.
+   *
+   * - Se ejecuta cada vez que cambia `username`.
+   * - Si el campo está vacío o demasiado corto, marca como inválido sin pedir al
+   *   servidor.
+   * - Tras 400ms sin cambios, llama a `authAPI.checkUsername(trimmed)`.
+   * - Solo la respuesta con `currentId === requestIdRef.current` actualiza el estado
+   *   `isUsernameValid`.
+   *
+   * @param {void} (usa `username` desde el cierre lexical)
+   * @returns {void}
+   *
+   * @example
+   * ```ts
+   * // El efecto se ejecuta automáticamente; no se llama manualmente.
+   * ```
    */
   useEffect(() => {
     const trimmed = username.trim();

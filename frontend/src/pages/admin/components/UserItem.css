@@ -1,8 +1,20 @@
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA - UserItem
+   ========================================================================== */
+
+/* ========================================
+    Item
+   ======================================== */
+
 .userItem-item {
 
     --padding-start: 0;
     --inner-padding-end: 0;
 }
+
+/* ========================================
+    Contenedor
+   ======================================== */
 
 .userItem-mainContainer {
 
@@ -16,9 +28,17 @@
     gap: 15px;
 }
 
+/* ========================================
+    Checkbox
+   ======================================== */
+
 .userItem-checkbox {
     margin-right: 5px;
 }
+
+/* ========================================
+    Avatar
+   ======================================== */
 
 .userItem-avatar {
 
@@ -39,6 +59,10 @@
     margin: 0;
 }
 
+/* ========================================
+    Texto
+   ======================================== */
+
 .userItem-name {
 
     font-size: 16px;
@@ -51,6 +75,10 @@
     text-align: center;
 }
 
+/* ========================================
+    Clases
+   ======================================== */
+
 .userItem-class {
     display: flex;
     flex-direction: column;
@@ -59,9 +87,10 @@
     min-width: 80px;
 }
 
-/* Estilo para resaltar el item cuando pertenece a la clase seleccionada */
+/* ========================================
+   Resaltado
+   ======================================== */
+
 .userItem-mainContainer.userItem-highlight {
-    /* Fallback color sobre el ion-item */
     background-color: #A9DAF3;
-    /* suave amarillo claro */
 }

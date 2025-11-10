@@ -22,10 +22,26 @@ import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
 /**
- * Componente principal del Dashboard de administración.
- * - Protegido: redirige al login si no hay usuario autenticado.
- * - Muestra un spinner mientras `loading` esté activo en el contexto de auth.
- * - Contiene botones que navegan a las pantallas de profesores, alumnos y gestión de matrículas.
+ * Resumen Funcional.
+ *
+ * Componente principal del Dashboard de administración. Proporciona enlaces
+ * rápidos para gestionar profesores, alumnos, matrículas y grupos. Protege la
+ * vista comprobando el contexto de autenticación.
+ *
+ * Flujo de ejecución.
+ *
+ * - Si `loading` está activo en el contexto de auth, muestra un spinner.
+ * - Si no hay `user`, redirige a `/login`.
+ * - Renderiza `SimpleHeaderAdmin` con el nombre del usuario y botones que
+ *   navegan a las páginas administrativas.
+ *
+ * @param {void}
+ * @returns {JSX.Element} Dashboard / menú de administración.
+ *
+ * @example
+ * ```tsx
+ * <Route path="/admin" component={AdminDashboard} />
+ * ```
  */
 export default function AdminDashboard() {
 
