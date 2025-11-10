@@ -27,23 +27,31 @@ import './StudentLogin.css';
  * 3) Navega al paso 3 con el group_id y username
  */
 export default function StudentLoginStep2() {
-  const { groupId } = useParams<{ groupId: string }>();
+  const params = useParams<{ groupId: string }>();
+  const history = useHistory();
+
+  // Extract groupId from URL pathname as fallback (IonReactRouter issue workaround)
+  const groupId = params.groupId || history.location.pathname.split('/').pop() || '';
+
   const [students, setStudents] = useState<StudentBasicInfo[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<StudentBasicInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const history = useHistory();
+  const [hasLoaded, setHasLoaded] = useState(false);
 
+  // Cargar estudiantes cuando groupId esté disponible (solo una vez)
   useEffect(() => {
-    if (groupId) {
+    if (groupId && !hasLoaded) {
       loadStudents();
+      setHasLoaded(true);
     }
-  }, [groupId]);
+  }, [groupId, hasLoaded]);
 
-  // Resetear selección cada vez que la vista se muestra
+  // Resetear selección y recargar estudiantes cada vez que la vista se muestra
   useIonViewWillEnter(() => {
     setSelectedStudent(null);
     setError('');
+    setHasLoaded(false); // Permite recargar estudiantes cuando se vuelve a la vista
   });
 
   const loadStudents = async () => {
@@ -53,8 +61,8 @@ export default function StudentLoginStep2() {
       setStudents(studentsData);
       setError('');
     } catch (err: any) {
+      console.error('Error loading students:', err);
       setError('Error al cargar los estudiantes');
-      console.error(err);
     } finally {
       setLoading(false);
     }

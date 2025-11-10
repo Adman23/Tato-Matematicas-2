@@ -56,7 +56,26 @@ class FinishSessionRequest(BaseModel):
 async def get_game_config(student_id: str, game_key: str):
     """
     Obtiene la configuración del juego para un estudiante específico.
-    Si no existe configuración personalizada, devuelve la configuración por defecto.
+
+    Busca una configuración personalizada del estudiante para el juego dado.
+    Si no existe, devuelve una configuración por defecto.
+
+    Args:
+        student_id (str): ID del estudiante.
+        game_key (str): Clave única del juego (por ejemplo, "game2").
+
+    Raises:
+        HTTPException:
+            - 404 NOT FOUND: Si el juego no existe.
+            - 500 INTERNAL SERVER ERROR: Si ocurre un error al obtener la configuración.
+
+    Returns:
+        GameConfigResponse: Objeto con la configuración del juego, incluyendo:
+            - game_id (int)
+            - game_key (str)
+            - user_id (str)
+            - number_range (str)
+            - settings (dict)
     """
     try:
         # 1. Obtener el game_id desde la tabla games
@@ -119,8 +138,23 @@ async def get_game_config(student_id: str, game_key: str):
 @router.post("/sessions")
 async def create_game_session(request: CreateSessionRequest):
     """
-    Crea una nueva sesión de juego.
-    Retorna el ID de la sesión creada.
+    Crea una nueva sesión de juego para un estudiante.
+
+    La sesión se guarda en la tabla `game_sessions` con los contadores inicializados
+    y un campo `results` vacío para almacenar los intentos.
+
+    Args:
+        request (CreateSessionRequest): Datos con `student_id` y `game_key`.
+
+    Raises:
+        HTTPException:
+            - 404 NOT FOUND: Si el juego no existe.
+            - 500 INTERNAL SERVER ERROR: Si ocurre un error al crear la sesión.
+
+    Returns:
+        dict: Contiene:
+            - session_id (str): ID de la sesión creada.
+            - message (str): Mensaje de confirmación.
     """
     try:
         # 1. Obtener el game_id desde la tabla games
@@ -176,7 +210,25 @@ async def create_game_session(request: CreateSessionRequest):
 @router.post("/sessions/{session_id}/round")
 async def save_round_result(session_id: str, request: SaveRoundRequest):
     """
-    Guarda el resultado de una ronda en la sesión de juego.
+    Guarda el resultado de una ronda dentro de una sesión activa.
+
+    El resultado se añade al array de intentos en el campo `results.attempts`,
+    y se actualizan los contadores de aciertos y errores.
+
+    Args:
+        session_id (str): ID de la sesión de juego.
+        request (SaveRoundRequest): Datos con el resultado de la ronda.
+
+    Raises:
+        HTTPException:
+            - 404 NOT FOUND: Si la sesión no existe.
+            - 500 INTERNAL SERVER ERROR: Si ocurre un error al guardar la ronda.
+
+    Returns:
+        dict: Contiene:
+            - message (str): Confirmación.
+            - total_correct (int): Total de respuestas correctas.
+            - total_incorrect (int): Total de respuestas incorrectas.
     """
     try:
         # 1. Obtener la sesión actual
@@ -249,7 +301,23 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
 @router.post("/sessions/{session_id}/finish")
 async def finish_game_session(session_id: str, request: FinishSessionRequest):
     """
-    Finaliza una sesión de juego, guardando el tiempo total.
+    Finaliza una sesión de juego y guarda el tiempo total.
+
+    Actualiza el campo `finished_at` y añade `total_time` dentro del campo `results`.
+
+    Args:
+        session_id (str): ID de la sesión de juego.
+        request (FinishSessionRequest): Tiempo total de la sesión.
+
+    Raises:
+        HTTPException:
+            - 404 NOT FOUND: Si la sesión no existe.
+            - 500 INTERNAL SERVER ERROR: Si ocurre un error al finalizar la sesión.
+
+    Returns:
+        dict: Contiene:
+            - message (str): Confirmación.
+            - session_id (str): ID de la sesión finalizada.
     """
     try:
         # 1. Verificar que la sesión existe
@@ -299,7 +367,20 @@ async def finish_game_session(session_id: str, request: FinishSessionRequest):
 async def get_student_sessions(student_id: str, game_key: Optional[str] = None):
     """
     Obtiene todas las sesiones de juego de un estudiante.
-    Opcionalmente filtrar por game_key.
+
+    Permite filtrar opcionalmente por una clave de juego (`game_key`).
+
+    Args:
+        student_id (str): ID del estudiante.
+        game_key (Optional[str]): Clave del juego para filtrar (opcional).
+
+    Raises:
+        HTTPException:
+            - 500 INTERNAL SERVER ERROR: Si ocurre un error al obtener las sesiones.
+
+    Returns:
+        dict: Contiene:
+            - sessions (list): Lista de sesiones del estudiante, ordenadas por fecha de inicio descendente.
     """
     try:
         query = supabase_admin.table("game_sessions") \

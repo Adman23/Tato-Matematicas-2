@@ -98,7 +98,35 @@ async def list_students(admin=Depends(get_current_admin)):
 @router.get("/student", summary="Gets all the info of a specific student")
 async def get_student(student_id: str):
     """
-    Returns all the config data of a specific student.
+    Get all configuration and related information of a specific student.
+
+    This endpoint returns the complete data of a student, including their
+    basic info (id, username, photo, group) and related data from other
+    tables such as `user_profiles`, `reinforcement_messages`, and 
+    `game_configurations`.
+
+    Args:
+        student_id (str): The unique identifier (UUID) of the student.
+
+    Raises:
+        HTTPException:
+            - 404 NOT FOUND: If the student or their authentication data 
+              cannot be found.
+            - 500 INTERNAL SERVER ERROR: If an unexpected error occurs 
+              while retrieving the student data.
+
+    Returns:
+        dict: A dictionary containing:
+            - id (str): Student ID.
+            - username (str): Username derived from email prefix.
+            - photo_url (str): Public photo URL (or default avatar if missing).
+            - group_id (str | None): ID of the group the student belongs to.
+            - role (str): Always "student".
+            - user_profile (dict): One-to-one relation data from `user_profiles`.
+            - game_configuration (dict): One-to-one relation data from `game_configurations`.
+            - reinforcement_messages (list): One-to-many relation data from `reinforcement_messages`.
+
+    Requires admin privileges to access.
     """
     try:
         # Get the public user using the id
