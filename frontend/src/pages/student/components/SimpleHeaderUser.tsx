@@ -17,6 +17,27 @@ interface Props {
   photoUrl?: string;
 }
 
+/**
+ * Componente que muestra un encabezado simple con el nombre del usuario,
+ * su imagen de perfil y un botón para acceder a la página de perfil.
+ *
+ * Este encabezado se utiliza normalmente en vistas donde el usuario
+ * necesita una referencia rápida a su identidad y un acceso directo
+ * a su perfil personal.
+ *
+ * @component
+ * @param {Props} props - Propiedades del componente.
+ * @param {string} props.userName - Nombre del usuario.
+ * @param {string} [props.photoUrl] - URL de la imagen de perfil del usuario.
+ *
+ * @example
+ * ```tsx
+ * <SimpleHeaderUser
+ *   userName="Juan Pérez"
+ *   photoUrl="https://example.com/avatar.jpg"
+ * />
+ * ```
+ */
 const SimpleHeaderUser: React.FC<Props> = ({
   userName,
   photoUrl
@@ -26,7 +47,12 @@ const SimpleHeaderUser: React.FC<Props> = ({
   const { user } = useAuth();
 
 
-
+ /**
+   * Redirige al usuario a su página de perfil correspondiente.
+   * 
+   * Actualmente, solo se contempla la ruta `/teacher-profile` para usuarios con rol `teacher`.
+   * En el futuro se pueden añadir más roles o rutas según el tipo de usuario.
+   */
   const handleProfile = () => {
     //REDIRIGIR AL PERFIL DEL USUARIO
     /*if (history.location.pathname !== '/admin-dashboard') {

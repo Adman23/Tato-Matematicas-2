@@ -6,8 +6,8 @@ class Teacher(BaseModel):
     avatar_url: str | None = None
     role: str = "teacher"
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
+
 
 
 class Student(BaseModel):
@@ -16,8 +16,8 @@ class Student(BaseModel):
     avatar_url: str | None = None
     role: str = "student"
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
+
 
 
 class AssignStudentsPayload(BaseModel):
