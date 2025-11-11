@@ -19,7 +19,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
 import DropZone from './DropZone';
-import Game2Header from './Game2Header';
+import Game2Header from '../Game2Header';
 import './Game2.css';
 
 // Importar imágenes locales de pictogramas
@@ -129,7 +129,7 @@ const Game2: React.FC = () => {
     loadGameConfig();
     setGameStartTime(Date.now());
   },
-   []);
+    []);
 
   // Crear sesión cuando la configuración esté cargada (solo una vez)
   useEffect(() => {
@@ -137,7 +137,7 @@ const Game2: React.FC = () => {
       sessionCreatedRef.current = true;
       createGameSession();
     }
-    
+
   }, [config]);
 
   // Generar nueva ronda cuando cambia currentRound

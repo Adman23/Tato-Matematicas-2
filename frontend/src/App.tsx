@@ -30,6 +30,7 @@ import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
 import StudentDashboard from './pages/student/Dashboard';
 
 // === Juegos ===
+import Game1 from './pages/games/Game1/Game1';
 import Game2 from './pages/games/Game2/Game2';
 
 // == Paginas de tutor ====
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="/student-dashboard" exact component={StudentDashboard} />
 
             {/* Rutas de juegos */}
+            <Route path="/game1" exact component={Game1} />
             <Route path="/game2" exact component={Game2} />
 
             {/* Nueva ruta de registro de tutores */}
