@@ -48,12 +48,18 @@ const MAX_LENGTH = REQUIRED_LENGTH; // Se muestran solo 3 posiciones fijas
  * Muestra mensajes de error cuando la secuencia es incompleta o incorrecta.
  */
 export default function StudentLoginStep3() {
-  const { groupId, username } = useParams<{ groupId: string; username: string }>();
+  const params = useParams<{ groupId: string; username: string }>();
+  const history = useHistory();
+  const { loginStudent } = useAuth();
+
+  // Extract groupId and username from URL pathname as fallback (IonReactRouter issue workaround)
+  const pathParts = history.location.pathname.split('/');
+  const groupId = params.groupId || pathParts[pathParts.length - 2] || '';
+  const username = params.username || pathParts[pathParts.length - 1] || '';
+
   const [selected, setSelected] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
-  const { loginStudent } = useAuth();
 
   // Resetear secuencia cada vez que la vista se muestra
   useIonViewWillEnter(() => {

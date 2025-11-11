@@ -31,16 +31,22 @@ export default function StudentLoginStep1() {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [hasLoaded, setHasLoaded] = useState(false);
   const history = useHistory();
 
+  // Cargar grupos solo una vez
   useEffect(() => {
-    loadGroups();
-  }, []);
+    if (!hasLoaded) {
+      loadGroups();
+      setHasLoaded(true);
+    }
+  }, [hasLoaded]);
 
-  // Resetear selección cada vez que la vista se muestra
+  // Resetear selección y recargar grupos cada vez que la vista se muestra
   useIonViewWillEnter(() => {
     setSelectedGroup(null);
     setError('');
+    setHasLoaded(false); // Permite recargar grupos cuando se vuelve a la vista
   });
 
   const loadGroups = async () => {

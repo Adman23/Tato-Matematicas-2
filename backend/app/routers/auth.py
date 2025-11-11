@@ -408,10 +408,19 @@ async def logout(current_user: dict = Depends(get_current_user)):
 @router.get("/groups", response_model=list[Group])
 async def get_groups():
     """
-    Get all available groups for student login
+    Get all available groups for student login.
+
+    Retrieves all groups available in the system that students can belong to.
+    Used in the login process to let the student choose their group.
+
+    Raises:
+        HTTPException:
+            - 500 INTERNAL SERVER ERROR: If an error occurs while fetching the groups.
 
     Returns:
-        list[Group]: List of all groups with id and alias
+        list[Group]: A list of groups, where each group contains:
+            - id (int): The unique identifier of the group.
+            - alias (str): The short name or label of the group.
     """
     try:
         response = supabase_admin.table("groups").select("*").execute()
@@ -431,11 +440,29 @@ async def get_groups():
 @router.get("/groups/{group_id}/students", response_model=list[StudentBasicInfo])
 async def get_students_by_group(group_id: int):
     """
-    Get all students from a specific group
+    Get all students from a specific group.
+
+    Retrieves the list of students belonging to a given group, including
+    their `id`, `username` (derived from the email prefix), and `photo_url`.
+    Authentication data (username) is fetched in parallel using threads to
+    improve performance for large groups.
+
+    Args:
+        group_id (int): The ID of the group to retrieve students from.
+
+    Raises:
+        HTTPException:
+            - 500 INTERNAL SERVER ERROR: If an error occurs while fetching the students.
 
     Returns:
-        list[StudentBasicInfo]: List of students with id, username (extracted from email), and photo_url
+        list[StudentBasicInfo]: A list of students with:
+            - id (str): Unique identifier of the student.
+            - username (str): Username extracted from the email.
+            - photo_url (str): URL of the student's photo (if any).
     """
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+
     try:
         # Get students from public.users (id and photo_url)
         resp = supabase_admin.table("users") \
@@ -447,24 +474,33 @@ async def get_students_by_group(group_id: int):
         if not resp.data:
             return []
 
-        # Get username from auth.users email for each student
-        students = []
-        for user in resp.data:
+        # Function to get auth user (will run in thread pool)
+        def get_auth_user(user_data):
             try:
-                # Get email from auth.users
-                auth_user = supabase_admin.auth.admin.get_user_by_id(user["id"])
-                # Extract username from email (before @)
+                auth_user = supabase_admin.auth.admin.get_user_by_id(user_data["id"])
                 username = auth_user.user.email.split("@")[0]
-
-                students.append({
-                    "id": user["id"],
+                return {
+                    "id": user_data["id"],
                     "username": username,
-                    "photo_url": user.get("photo_url")
-                })
-            except Exception as user_error:
-                # If we can't get auth user, skip this student
-                print(f"Warning: Could not get username for user {user['id']}: {user_error}")
-                continue
+                    "photo_url": user_data.get("photo_url")
+                }
+            except Exception as e:
+                print(f"Warning: Could not get username for user {user_data['id']}: {e}")
+                return None
+
+        # Get all auth users in parallel using ThreadPoolExecutor
+        loop = asyncio.get_event_loop()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            # Create futures for all auth calls
+            futures = [
+                loop.run_in_executor(executor, get_auth_user, user)
+                for user in resp.data
+            ]
+            # Wait for all to complete
+            results = await asyncio.gather(*futures)
+
+        # Filter out None values (failed auth calls)
+        students = [student for student in results if student is not None]
 
         return students
 
@@ -473,21 +509,6 @@ async def get_students_by_group(group_id: int):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error fetching students: {str(e)}"
         )
-"""
-
-@router.get("/groups/{group_id}/students", response_model=list[StudentBasicInfo])
-async def get_students_by_group(group_id: int):
-    try:
-        resp = supabase_admin.table("users") \
-                             .select("id, username, photo_url") \
-                             .eq("group_id", group_id) \
-                             .execute()
-        return resp.data or []
-    except Exception as e:
-        raise HTTPException(500, detail=f"Error fetching students: {e}")
-"""
-
-
 
 @router.post("/student/login", response_model=StudentAuthResponse)
 async def login_student(data: StudentLoginRequest):

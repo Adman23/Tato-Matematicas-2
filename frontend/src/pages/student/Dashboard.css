@@ -1,3 +1,7 @@
+/* ========================================
+   CONTAINERS PRINCIPALES
+   ======================================== */
+
 /* Container principal del dashboard del estudiante */
 .student-dashboard-content {
     --background: var(--ion-color-primary-contrast);
@@ -32,6 +36,10 @@
     min-height: 120px;
 }
 
+/* ========================================
+   BOTONES DE JUEGOS
+   ======================================== */
+   
 /* Botón del juego */
 .game-button {
     --background: transparent;
