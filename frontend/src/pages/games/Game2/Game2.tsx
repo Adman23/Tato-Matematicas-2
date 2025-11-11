@@ -13,7 +13,7 @@ import {
   IonText,
   IonSpinner
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 
 import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
@@ -93,7 +93,7 @@ const TOTAL_ROUNDS = 5;
  */
 const Game2: React.FC = () => {
   const history = useHistory();
-  const { student, user } = useAuth();
+  const { student, user, loading: authLoading } = useAuth();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = student || user;
@@ -128,8 +128,8 @@ const Game2: React.FC = () => {
   useEffect(() => {
     loadGameConfig();
     setGameStartTime(Date.now());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  },
+   []);
 
   // Crear sesión cuando la configuración esté cargada (solo una vez)
   useEffect(() => {
@@ -137,7 +137,7 @@ const Game2: React.FC = () => {
       sessionCreatedRef.current = true;
       createGameSession();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [config]);
 
   // Generar nueva ronda cuando cambia currentRound
@@ -145,10 +145,32 @@ const Game2: React.FC = () => {
     if (config && currentRound <= TOTAL_ROUNDS) {
       generateRound();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [config, currentRound]);
 
-  // Listener para eventos de drop nativos
+  /**
+   * Listener de eventos personalizados 'number-dropped' disparados por DroppableSlot.
+   *
+   * Maneja tres casos de drag & drop:
+   * 1. **'available'**: Número arrastrado desde zona superior → zona de ordenamiento
+   * 2. **'ordered'**: Número reordenado dentro de la zona de ordenamiento
+   * 3. **'return-to-available'**: Número devuelto desde zona ordenamiento → zona superior
+   *
+   * Lógica de intercambio:
+   * - Si el slot de destino tiene número, lo desplaza al primer slot vacío disponible
+   * - No permite mover números bloqueados (ayuda pre-colocada)
+   * - Mantiene slots vacíos persistentes para permitir devolver números
+   *
+   * Custom Event :
+   * ```typescript
+   * {
+   *   number: 5,              // Número arrastrado
+   *   targetIndex: 2,         // Índice de destino
+   *   sourceType: 'ordered',  // Origen del drag
+   *   sourceIndex?: 1         // Índice de origen (solo para return-to-available)
+   * }
+   * ```
+   */
   useEffect(() => {
     const handleNumberDropped = (e: Event) => {
       const customEvent = e as CustomEvent;
@@ -608,7 +630,25 @@ const Game2: React.FC = () => {
   };
 
 
-  // Pantalla de carga
+  // Pantalla de carga de autenticación
+  if (authLoading) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding ion-text-center">
+          <div style={{ marginTop: '50%' }}>
+            <IonSpinner name="crescent" />
+          </div>
+        </IonContent>
+      </IonPage>
+    );
+  }
+
+  // Redirigir si no hay usuario autenticado (estudiante o profesor)
+  if (!student && !user) {
+    return <Redirect to="/student-login" />;
+  }
+
+  // Pantalla de carga del juego
   if (loading) {
     return (
       <IonPage>
