@@ -10,19 +10,16 @@ import {
   IonContent,
   IonPage,
   IonButton,
-  IonProgressBar,
   IonText,
-  IonIcon,
-  IonSpinner,
-  IonAlert
+  IonSpinner
 } from '@ionic/react';
-import { arrowBack, checkmarkCircle, closeCircle } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 
 import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
 import DropZone from './DropZone';
+import Game2Header from './Game2Header';
 import './Game2.css';
 
 // Importar imágenes locales de pictogramas
@@ -37,6 +34,12 @@ import img7 from './img/7.png';
 import img8 from './img/8.png';
 import img9 from './img/9.png';
 import img10 from './img/10.png';
+
+// Importar imágenes para el header
+import imgAceptar from './img/aceptar.png';
+import imgFlecha from './flecha.png';
+import imgOrdenar from './img/ordenar.png';
+import imgJuego from './img/juegoX.png';
 
 // Mapeo de números a imágenes locales
 const PICTOGRAM_IMAGES: { [key: number]: string } = {
@@ -112,13 +115,11 @@ const Game2: React.FC = () => {
 
   // Estados de UI
   const [showFeedback, setShowFeedback] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
   const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
   const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
 
   // Estados de resultados
   const [gameFinished, setGameFinished] = useState(false);
-  const [showExitAlert, setShowExitAlert] = useState(false);
 
   // Determinar si usar pictogramas (solo para rango 0-10)
   const usePictograms = config?.number_range === '0-10';
@@ -374,11 +375,83 @@ const Game2: React.FC = () => {
       return;
     }
 
+    // Calcular números disponibles en el rango
+    const availableInRange = max - min + 1;
+
     // Calcular números de ayuda (40% de quantity, redondeado)
     const helpCount = Math.ceil(quantity * 0.4);
 
     // Total de números = números a colocar + números de ayuda
     const totalNumbers = quantity + helpCount;
+
+    // Validar que no se pidan más números de los disponibles en el rango
+    if (totalNumbers > availableInRange) {
+      console.error(
+        `Cannot generate ${totalNumbers} unique numbers from range ${min}-${max} (only ${availableInRange} available). ` +
+        `Please reduce quantity or increase range.`
+      );
+      // Ajustar totalNumbers al máximo disponible
+      const adjustedTotal = availableInRange;
+      const adjustedQuantity = Math.floor(adjustedTotal * 0.7); // 70% para el usuario
+      const adjustedHelp = adjustedTotal - adjustedQuantity;
+
+      console.warn(`Adjusting: quantity=${adjustedQuantity}, help=${adjustedHelp}, total=${adjustedTotal}`);
+
+      // Usar todos los números del rango
+      const numbers = new Set<number>();
+      for (let i = min; i <= max; i++) {
+        numbers.add(i);
+      }
+
+      const numbersArray = Array.from(numbers);
+
+      // Ordenar todos los números según configuración
+      const sorted = [...numbersArray].sort((a, b) =>
+        config.settings.order === 'ascending' ? a - b : b - a
+      );
+
+      // Crear array de orden correcto
+      const fullOrder = [...sorted];
+      setCorrectOrder(fullOrder);
+
+      // Seleccionar aleatoriamente qué números serán de ayuda (bloqueados)
+      const allIndices = Array.from({ length: adjustedTotal }, (_, i) => i);
+      const shuffledIndices = allIndices.sort(() => Math.random() - 0.5);
+      const lockedPositions = shuffledIndices.slice(0, adjustedHelp);
+
+      // Separar números bloqueados y disponibles
+      const lockedNumbers: number[] = [];
+      const availableNums: number[] = [];
+
+      sorted.forEach((num, index) => {
+        if (lockedPositions.includes(index)) {
+          lockedNumbers.push(num);
+        } else {
+          availableNums.push(num);
+        }
+      });
+
+      // Mezclar aleatoriamente los números disponibles
+      const shuffledAvailable = availableNums.sort(() => Math.random() - 0.5);
+
+      // Crear array inicial con números bloqueados en sus posiciones correctas
+      const initialOrdered = new Array(adjustedTotal).fill(undefined);
+      const fixedIndices = new Set<number>();
+
+      // Colocar números de ayuda bloqueados en sus posiciones correctas
+      lockedNumbers.forEach((num) => {
+        const correctPos = sorted.indexOf(num);
+        fixedIndices.add(correctPos);
+        initialOrdered[correctPos] = num;
+      });
+
+      setAvailableNumbers(shuffledAvailable);
+      setOrderedNumbers(initialOrdered);
+      setLockedIndices(fixedIndices);
+      setShowFeedback(false);
+      setRoundStartTime(Date.now());
+      return;
+    }
 
     // Generar totalNumbers números únicos aleatorios
     const numbers = new Set<number>();
@@ -475,7 +548,6 @@ const Game2: React.FC = () => {
       return num === correctOrder[index];
     });
 
-    setIsCorrect(correct);
     setShowFeedback(true);
 
     // Guardar en el backend
@@ -535,19 +607,6 @@ const Game2: React.FC = () => {
     setGameFinished(true);
   };
 
-  /**
-   * Redirige al usuario al dashboard correspondiente según su rol.
-   *
-   * Flujo de ejecución:
-   * 1. Verifica si el usuario es estudiante o profesor
-   * 2. Redirige al dashboard correspondiente
-   *
-   * @returns void
-   */
-  const goBackToDashboard = () => {
-    const dashboardRoute = student ? '/student-dashboard' : '/tutor-dashboard';
-    history.push(dashboardRoute);
-  };
 
   // Pantalla de carga
   if (loading) {
@@ -573,6 +632,7 @@ const Game2: React.FC = () => {
           <div style={{ marginTop: '50%' }}>
             <IonText color="success">
               <h1>¡Juego completado!</h1>
+              <h1>¡AQUÍ PODRIA IR EL MENSAJE DE FEEDBACK! ??</h1>
               <p>Volviendo al inicio...</p>
             </IonText>
           </div>
@@ -585,36 +645,28 @@ const Game2: React.FC = () => {
     <IonPage>
       <IonContent className="game2-content">
         {/* Header */}
-        <div className="game2-header">
-          <IonButton
-            fill="clear"
-            onClick={() => setShowExitAlert(true)}
-          >
-            <IonIcon icon={arrowBack} />
-          </IonButton>
+        <Game2Header
+          title="Ordenar Nº"
+          pictogram1={imgOrdenar}
+          pictogramArrow={imgFlecha}
+          pictogram2={imgJuego}
+          currentRound={currentRound}
+          totalRounds={TOTAL_ROUNDS}
+        />
 
-          <IonText>
-            <h2>Ordena la Secuencia</h2>
-          </IonText>
 
-          <IonText className="round-indicator">
-            <p>Ronda {currentRound}/{TOTAL_ROUNDS}</p>
-          </IonText>
-        </div>
-
-        {/* Barra de progreso */}
-        <IonProgressBar value={currentRound / TOTAL_ROUNDS} />
 
         {/* Zona de juego */}
         <div className="game2-container">
-          {/* Instrucción con pictograma */}
+          {/* Instrucción con pictograma 
           <div className="instruction-header">
             <IonText>
               <h3 className="instruction-text">
-                Ordenar Nº {config?.settings.order === 'ascending' ? '→' : '←'}
+                {config?.settings.order === 'ascending' ? '→' : '←'}
               </h3>
             </IonText>
           </div>
+            */}
 
           {/* Números disponibles (arriba) */}
           <div className="available-numbers-top" id="available-zone">
@@ -694,39 +746,18 @@ const Game2: React.FC = () => {
         {/* Botón de comprobar */}
         <div className="check-button-container">
           <IonButton
-            expand="block"
+            fill="clear"
+            className="game2-check-button"
             onClick={checkAnswer}
             disabled={availableNumbers.some(n => n !== undefined) || showFeedback}
-            color={showFeedback ? (isCorrect ? 'success' : 'danger') : 'primary'}
           >
-            {showFeedback ? (
-              <>
-                <IonIcon icon={isCorrect ? checkmarkCircle : closeCircle} slot="start" />
-                {isCorrect ? '¡Correcto!' : 'Intenta de nuevo'}
-              </>
-            ) : (
-              'Comprobar'
-            )}
+            <img
+              src={imgAceptar}
+              alt="Comprobar"
+              className="game2-check-button-image"
+            />
           </IonButton>
         </div>
-
-        {/* Alert de confirmación de salida */}
-        <IonAlert
-          isOpen={showExitAlert}
-          onDidDismiss={() => setShowExitAlert(false)}
-          header="¿Salir del juego?"
-          message="Si sales ahora, perderás tu progreso."
-          buttons={[
-            {
-              text: 'Cancelar',
-              role: 'cancel'
-            },
-            {
-              text: 'Salir',
-              handler: goBackToDashboard
-            }
-          ]}
-        />
       </IonContent>
     </IonPage>
   );
