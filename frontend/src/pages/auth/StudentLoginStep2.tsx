@@ -198,7 +198,9 @@ export default function StudentLoginStep2() {
                       </div>
                     </button>
                     <div className="student-group-caption">
-                      {student.username.toUpperCase()}
+                      {student.username.length > 15
+                      ? (student.username.substring(0, 12) + '...').toUpperCase()
+                      : student.username.toUpperCase()}
                     </div>
                   </div>
                 ))}
