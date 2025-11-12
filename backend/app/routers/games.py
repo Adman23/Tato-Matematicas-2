@@ -38,6 +38,8 @@ class RoundResult(BaseModel):
     correct_order: List[int]
     is_correct: bool
     time_seconds: float
+    is_final_attempt: bool = True  # Por defecto True para compatibilidad
+    omissions: int = 0  # Números que no colocó (dejó sin colocar)
 
 
 class SaveRoundRequest(BaseModel):
@@ -261,20 +263,39 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
 
         results["attempts"].append(round_data)
 
-        # 3. Actualizar totales
+        # 3. Actualizar totales solo si es el intento final de la ronda
         total_correct = session.get("total_correct", 0)
         total_incorrect = session.get("total_incorrect", 0)
+        total_omissions = session.get("total_omissions", 0)
 
-        if request.round_result.is_correct:
-            total_correct += 1
-        else:
-            total_incorrect += 1
+        if request.round_result.is_final_attempt:
+            # Contar cuántos números colocó correctamente/incorrectamente
+            # user_order y correct_order tienen la misma longitud (posiciones fijas)
+            # -1 en user_order significa posición vacía (omisión)
+            correct_count = 0
+            incorrect_count = 0
+
+            for i, (user_num, correct_num) in enumerate(zip(request.round_result.user_order, request.round_result.correct_order)):
+                if user_num == -1:
+                    # Posición vacía, ya contada en omissions
+                    continue
+                elif user_num == correct_num:
+                    correct_count += 1
+                else:
+                    incorrect_count += 1
+
+            omissions_count = request.round_result.omissions
+
+            total_correct += correct_count
+            total_incorrect += incorrect_count
+            total_omissions += omissions_count
 
         # 4. Actualizar la sesión en la base de datos
         update_data = {
             "results": results,
             "total_correct": total_correct,
-            "total_incorrect": total_incorrect
+            "total_incorrect": total_incorrect,
+            "total_omissions": total_omissions
         }
 
         supabase_admin.table("game_sessions") \
