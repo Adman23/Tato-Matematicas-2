@@ -37,6 +37,7 @@ import img10 from './img/10.png';
 
 // Importar imágenes para el header
 import imgAceptar from './img/aceptar.png';
+import imgVolver from './img/volver.png';
 import imgFlecha from './flecha.png';
 import imgOrdenar from './img/ordenar.png';
 import imgJuego from './img/juegoX.png';
@@ -117,6 +118,8 @@ const Game2: React.FC = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
   const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
+  const [hasErrors, setHasErrors] = useState(false);
+  const [incorrectIndices, setIncorrectIndices] = useState<Set<number>>(new Set());
 
   // Estados de resultados
   const [gameFinished, setGameFinished] = useState(false);
@@ -173,6 +176,11 @@ const Game2: React.FC = () => {
    */
   useEffect(() => {
     const handleNumberDropped = (e: Event) => {
+      // No permitir mover números cuando se muestra feedback
+      if (showFeedback) {
+        return;
+      }
+
       const customEvent = e as CustomEvent;
       const { number, targetIndex, sourceType, sourceIndex } = customEvent.detail;
 
@@ -261,7 +269,7 @@ const Game2: React.FC = () => {
 
     window.addEventListener('number-dropped', handleNumberDropped);
     return () => window.removeEventListener('number-dropped', handleNumberDropped);
-  }, [availableNumbers, orderedNumbers, lockedIndices]);
+  }, [availableNumbers, orderedNumbers, lockedIndices, showFeedback]);
 
   // Efecto para redirigir cuando el juego termine
   useEffect(() => {
@@ -402,6 +410,7 @@ const Game2: React.FC = () => {
 
     // Calcular números de ayuda (40% de quantity, redondeado)
     const helpCount = Math.ceil(quantity * 0.4);
+    //const helpCount =0;
 
     // Total de números = números a colocar + números de ayuda
     const totalNumbers = quantity + helpCount;
@@ -540,8 +549,9 @@ const Game2: React.FC = () => {
    * 2. Calcula el tiempo transcurrido en la ronda
    * 3. Compara el orden del usuario con el orden correcto (posición por posición)
    * 4. Muestra feedback visual (botón verde/rojo, iconos check/cruz)
-   * 5. Guarda el resultado en el backend vía API
-   * 6. Tras 2 segundos, avanza a la siguiente ronda o finaliza el juego
+   * 5. Si hay errores, NO avanza automáticamente (muestra botones Repetir/Avanzar)
+   * 6. Si todo está correcto, avanza automáticamente tras 2 segundos
+   * 7. Guarda el resultado en el backend vía API
    *
    * @returns Promesa que resuelve cuando se completa la validación
    *
@@ -552,50 +562,141 @@ const Game2: React.FC = () => {
    * // → Guarda en BD y avanza a ronda 2
    */
   const checkAnswer = async () => {
-    // Verificar que no queden números sin colocar en availableNumbers
-    if (availableNumbers.some(n => n !== undefined)) {
-      // Aún hay números por colocar
-      return;
-    }
-
     const timeSeconds = (Date.now() - roundStartTime) / 1000;
 
-    // Comparar solo las posiciones que deben tener números (no undefined)
-    const correct = orderedNumbers.every((num, index) => {
-      if (correctOrder[index] === undefined) {
-        // Esta posición debe estar vacía
-        return num === undefined;
+    // Calcular omisiones (números que no colocó)
+    const omissions = availableNumbers.filter(n => n !== undefined).length;
+
+    // Identificar qué posiciones están incorrectas
+    const wrongIndices = new Set<number>();
+    orderedNumbers.forEach((num, index) => {
+      if (correctOrder[index] !== undefined && num !== correctOrder[index]) {
+        wrongIndices.add(index);
       }
-      // Esta posición debe tener el número correcto
-      return num === correctOrder[index];
     });
 
+    // Solo es correcto si no hay errores NI omisiones
+    const correct = wrongIndices.size === 0 && omissions === 0;
+    const hasProblems = wrongIndices.size > 0 || omissions > 0;
+
     setShowFeedback(true);
+    setHasErrors(hasProblems);
+    setIncorrectIndices(wrongIndices);
 
     // Guardar en el backend
+    // is_final_attempt = false cuando hay errores o omisiones (puede repetir)
+    // is_final_attempt = true cuando todo está correcto (avanza automático)
     if (sessionId) {
       try {
+        // Convertir undefined a -1 para que el backend pueda procesarlo
+        const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
+
         await gamesAPI.saveRoundResultGame2(sessionId, {
           round: currentRound,
           numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
-          user_order: orderedNumbers.filter((n): n is number => n !== undefined),
+          user_order: userOrderWithNulls,
           correct_order: correctOrder,
           is_correct: correct,
-          time_seconds: timeSeconds
+          time_seconds: timeSeconds,
+          omissions: omissions,
+          is_final_attempt: correct // Solo es final si está todo correcto
         });
       } catch (error) {
         console.error('Error saving round:', error);
       }
     }
 
-    // Avanzar a la siguiente ronda o finalizar
-    setTimeout(() => {
-      if (currentRound < TOTAL_ROUNDS) {
-        setCurrentRound(prev => prev + 1);
-      } else {
-        finishGame();
+    // Solo avanzar automáticamente si NO hay errores ni omisiones
+    if (correct) {
+      setTimeout(() => {
+        if (currentRound < TOTAL_ROUNDS) {
+          setCurrentRound(prev => prev + 1);
+        } else {
+          finishGame();
+        }
+      }, 2000);
+    }
+  };
+
+  /**
+   * Repite el ejercicio actual, manteniendo solo las posiciones correctas bloqueadas.
+   * Las posiciones incorrectas Y los números omitidos se devuelven a la zona de disponibles.
+   */
+  const repeatExercise = () => {
+    // Crear nuevo array de números disponibles con:
+    // - Números incorrectos (mal colocados)
+    // - Números omitidos (que no colocó)
+    const newAvailable: (number | undefined)[] = [];
+    const newOrdered = [...orderedNumbers];
+    const newLockedIndices = new Set<number>(lockedIndices);
+
+    // Agregar números incorrectos
+    orderedNumbers.forEach((num, index) => {
+      if (num !== undefined && incorrectIndices.has(index)) {
+        // Este número estaba mal, devolverlo a disponibles
+        newAvailable.push(num);
+        newOrdered[index] = undefined;
+      } else if (num !== undefined && !lockedIndices.has(index)) {
+        // Este número estaba bien, bloquearlo en su posición
+        newLockedIndices.add(index);
       }
-    }, 2000);
+    });
+
+    // Agregar números omitidos (que estaban en availableNumbers)
+    availableNumbers.forEach(num => {
+      if (num !== undefined) {
+        newAvailable.push(num);
+      }
+    });
+
+    // Mezclar todos los números que hay que volver a colocar
+    const shuffledAvailable = newAvailable.sort(() => Math.random() - 0.5);
+
+    setAvailableNumbers(shuffledAvailable);
+    setOrderedNumbers(newOrdered);
+    setLockedIndices(newLockedIndices);
+    setShowFeedback(false);
+    setHasErrors(false);
+    setIncorrectIndices(new Set());
+    setRoundStartTime(Date.now());
+  };
+
+  /**
+   * Avanza manualmente a la siguiente ronda o finaliza el juego.
+   * Guarda el intento actual como final antes de avanzar.
+   */
+  const advanceToNextRound = async () => {
+    // El último intento ya fue guardado en checkAnswer() con is_final_attempt: false
+    // Ahora lo guardamos nuevamente marcado como final para actualizar contadores
+    if (sessionId && hasErrors) {
+      try {
+        const timeSeconds = (Date.now() - roundStartTime) / 1000;
+        const omissions = availableNumbers.filter(n => n !== undefined).length;
+
+        // Convertir undefined a -1 para que el backend pueda procesarlo
+        const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
+
+        await gamesAPI.saveRoundResult(sessionId, {
+          round: currentRound,
+          numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
+          user_order: userOrderWithNulls,
+          correct_order: correctOrder,
+          is_correct: false, // Tiene errores o omisiones
+          time_seconds: timeSeconds,
+          omissions: omissions,
+          is_final_attempt: true // Marcar como final para actualizar contadores
+        });
+      } catch (error) {
+        console.error('Error saving final attempt:', error);
+      }
+    }
+
+    // Avanzar a la siguiente ronda
+    if (currentRound < TOTAL_ROUNDS) {
+      setCurrentRound(prev => prev + 1);
+    } else {
+      finishGame();
+    }
   };
 
   /**
@@ -751,8 +852,12 @@ const Game2: React.FC = () => {
                 <div
                   key={`available-${num}-${index}`}
                   className={cardClass}
-                  draggable
+                  draggable={!showFeedback}
                   onDragStart={(e) => {
+                    if (showFeedback) {
+                      e.preventDefault();
+                      return;
+                    }
                     e.dataTransfer.effectAllowed = 'move';
                     e.dataTransfer.setData('number', num.toString());
                     e.dataTransfer.setData('sourceType', 'available');
@@ -783,17 +888,33 @@ const Game2: React.FC = () => {
           />
         </div>
 
-        {/* Botón de comprobar */}
+        {/* Botones de control */}
         <div className="check-button-container">
+          {/* Mostrar botón Repetir solo cuando hay errores y se muestra feedback */}
+          {showFeedback && hasErrors && (
+            <IonButton
+              fill="clear"
+              className="game2-check-button game2-repeat-button"
+              onClick={repeatExercise}
+            >
+              <img
+                src={imgVolver}
+                alt="Repetir"
+                className="game2-check-button-image"
+              />
+            </IonButton>
+          )}
+
+          {/* Botón Aceptar/Comprobar (o Avanzar cuando hay errores) */}
           <IonButton
             fill="clear"
             className="game2-check-button"
-            onClick={checkAnswer}
-            disabled={availableNumbers.some(n => n !== undefined) || showFeedback}
+            onClick={showFeedback && hasErrors ? advanceToNextRound : checkAnswer}
+            disabled={showFeedback && !hasErrors}
           >
             <img
               src={imgAceptar}
-              alt="Comprobar"
+              alt={showFeedback && hasErrors ? "Avanzar" : "Comprobar"}
               className="game2-check-button-image"
             />
           </IonButton>

@@ -350,9 +350,6 @@ const Game1: React.FC = () => {
             roundNumber = numbersArray[randomIndex];
         } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
 
-        setCurrentNumber(roundNumber);
-        setUsedNumbers(prev => [...prev, roundNumber]);
-
         // Asegurarse de que el número correcto esté en las opciones
         if (!numbers.has(roundNumber)) {
             // Reemplazar un número aleatorio por el correcto
