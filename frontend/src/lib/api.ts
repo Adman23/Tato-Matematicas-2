@@ -452,6 +452,8 @@ export interface RoundResult {
   correct_order: number[];
   is_correct: boolean;
   time_seconds: number;
+  is_final_attempt?: boolean; // Opcional, por defecto true en backend
+  omissions?: number; // Números que no colocó (dejó sin colocar)
 }
 
 /**

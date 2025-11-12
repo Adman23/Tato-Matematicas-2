@@ -219,11 +219,12 @@
 /* ===== BOTÓN DE COMPROBAR ===== */
 .check-button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
   max-width: 900px;
   margin: -1rem auto 2rem auto;
+  gap: 1rem;
 }
 
 .game2-check-button {
@@ -259,4 +260,14 @@
 
 .game2-check-button:disabled {
   opacity: 0.4;
+}
+
+/* ===== BOTÓN DE REPETIR ===== */
+.game2-repeat-button {
+  order: -1; /* Coloca el botón de repetir a la izquierda */
+}
+
+/* Ajustar el contenedor cuando solo hay un botón */
+.check-button-container:not(:has(.game2-repeat-button)) {
+  justify-content: flex-end;
 }
