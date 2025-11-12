@@ -676,7 +676,7 @@ const Game2: React.FC = () => {
         // Convertir undefined a -1 para que el backend pueda procesarlo
         const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
 
-        await gamesAPI.saveRoundResult(sessionId, {
+        await gamesAPI.saveRoundResultGame2(sessionId, {
           round: currentRound,
           numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
           user_order: userOrderWithNulls,
