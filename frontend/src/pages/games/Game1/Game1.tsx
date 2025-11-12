@@ -544,10 +544,18 @@ const Game1: React.FC = () => {
                             const isSelected = selectedNumber === num;
                             if (isSelected) cardClass += ' selected';
 
-                            // Si estamos mostrando feedback, colorear la selección en verde/rojo
-                            if (showFeedback && isSelected) {
-                                if (selectedNumber === currentNumber) cardClass += ' correct';
-                                else cardClass += ' incorrect';
+                            // Si estamos mostrando feedback, marcar la opción correcta en verde
+                            // y la opción seleccionada incorrecta en rojo.
+                            if (showFeedback) {
+                                // marcar la opción correcta (aunque no esté seleccionada)
+                                if (num === currentNumber) {
+                                    cardClass += ' correct';
+                                }
+
+                                // si el usuario seleccionó una opción equivocada, marcarla en rojo
+                                if (selectedNumber !== null && selectedNumber === num && selectedNumber !== currentNumber) {
+                                    cardClass += ' incorrect';
+                                }
                             }
 
                             return (
@@ -605,6 +613,7 @@ const Game1: React.FC = () => {
                         <IonButton
                             fill="clear"
                             className="game1-check-button"
+                            disabled={listeningAudio || showFeedback}
                         >
                             <img
                                 src={imgSonidoConTexto}
