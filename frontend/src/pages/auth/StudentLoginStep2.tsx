@@ -14,51 +14,54 @@ import {
 } from '@ionic/react';
 import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { authAPI } from '../../lib/api';
+import { authAPI, getImages } from '../../lib/api'; // 👈 Added getImages
 import type { StudentBasicInfo } from '../../lib/api';
 import './StudentLogin.css';
 
-/**
- * Paso 2 del login de estudiante: Selección de username.
- *
- * Flujo:
- * 1) Carga la lista de estudiantes del grupo
- * 2) El alumno selecciona su usuario (con foto si está disponible)
- * 3) Navega al paso 3 con el group_id y username
- */
 export default function StudentLoginStep2() {
   const { groupId } = useParams<{ groupId: string }>();
   const [students, setStudents] = useState<StudentBasicInfo[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<StudentBasicInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [arrowImageUrl, setArrowImageUrl] = useState<string | null>(null); // 👈 For arrows
+  const [currentPage, setCurrentPage] = useState(0);
   const history = useHistory();
 
-  useEffect(() => {
-    if (groupId) {
-      loadStudents();
-    }
-  }, [groupId]);
+  const STUDENTS_PER_PAGE = 4;
 
-  // Resetear selección cada vez que la vista se muestra
-  useIonViewWillEnter(() => {
-    setSelectedStudent(null);
-    setError('');
-  });
-
-  const loadStudents = async () => {
+  // Load students + arrow image (same as Step1)
+  const loadStudentsAndImages = async () => {
     try {
       setLoading(true);
       const studentsData = await authAPI.getStudentsByGroup(groupId);
+
+      // Load arrow for pagination (optional but consistent)
+      const images = await getImages();
+      const arrowUrl = images['direccion.png'] || null;
+      setArrowImageUrl(arrowUrl);
+
       setStudents(studentsData);
       setError('');
     } catch (err: any) {
-      setError('Error al cargar los estudiantes');
+      setError('Error al cargar los estudiantes o imágenes');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (groupId) {
+      loadStudentsAndImages();
+    }
+  }, [groupId]);
+
+  useIonViewWillEnter(() => {
+    setSelectedStudent(null);
+    setError('');
+    setCurrentPage(0);
+  });
 
   const handleStudentClick = (student: StudentBasicInfo) => {
     setSelectedStudent(student);
@@ -70,24 +73,28 @@ export default function StudentLoginStep2() {
       setError('Selecciona un estudiante');
       return;
     }
-    // Navegar al paso 3 con el group_id y username
     history.push(`/student-login/step3/${groupId}/${selectedStudent.username}`);
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(students.length / STUDENTS_PER_PAGE);
+  const startIndex = currentPage * STUDENTS_PER_PAGE;
+  const currentStudents = students.slice(startIndex, startIndex + STUDENTS_PER_PAGE);
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) setCurrentPage(currentPage + 1);
   };
 
   return (
     <IonPage>
-
-
       <IonContent className="student-login-content">
         <div className="student-login-container">
-
           {/* Fila de botones superior */}
-
-
           <div className="student-button-row">
-
-
-
             <IonButton
               fill="clear"
               className="default-action-button"
@@ -99,7 +106,8 @@ export default function StudentLoginStep2() {
                 className="student-boton-imagen"
               />
             </IonButton>
-            <div className='action-card'>
+
+            <div className="action-card">
               <IonButton
                 fill="clear"
                 className="default-action-button"
@@ -110,19 +118,15 @@ export default function StudentLoginStep2() {
                   alt="Volver a la pagina principal"
                   className="student-boton-imagen"
                 />
-
               </IonButton>
               <span className="default-action-button-label">Ir a inicio</span>
             </div>
-
-
-            {/* Botón de avanzar */}
 
             <IonButton
               fill="clear"
               className="default-action-button"
               onClick={handleAdvance}
-              disabled={loading}
+              disabled={loading || !selectedStudent} // ✅ improved
             >
               <img
                 src="/assets/pictograms/correcto.png"
@@ -130,59 +134,89 @@ export default function StudentLoginStep2() {
                 className="student-boton-imagen student-boton-rotado"
               />
             </IonButton>
-
-
           </div>
 
-          {/* Título y arriba */}
+          {/* Título */}
           <div className="student-login-header">
-
-
             <h1 className="student-login-title">Selección de usuario</h1>
             <p className="student-login-subtitle">
               Toca tu foto o nombre y pulsa avanzar
             </p>
           </div>
 
-          {/* Grid de estudiantes */}
+          {/* 2x2 Grid with Pagination — SAME AS STEP1 */}
           {loading ? (
             <div className="student-loading">
               <IonSpinner name="crescent" />
             </div>
           ) : students.length === 0 ? (
-            <div className="student-error-message ">
+            <div className="student-error-message">
               <IonText color="warning">
                 <p>No hay estudiantes en este grupo</p>
               </IonText>
             </div>
           ) : (
-            <div className="student-pictograms-grid">
-              {students.map((student) => (
-                <button
-                  key={student.id}
-                  onClick={() => handleStudentClick(student)}
-                  disabled={loading}
-                  className={`student-pictogram-button ${selectedStudent?.id === student.id ? 'selected' : ''}`}
-                  aria-label={student.username}
-                >
-                  <div className="student-user-card">
-                    {student.photo_url ? (
-                      <img
-                        src={student.photo_url}
-                        alt={student.username}
-                        className="student-user-photo"
-                      />
-                    ) : (
-                      <img
-                        src="/assets/pictograms/user_default.png"
-                        alt={student.username}
-                        className="student-user-photo"
-                      />
-                    )}
-                    <h3>{student.username}</h3>
+            <div className="student-group-pagination-container-centered">
+              {/* Left Arrow */}
+              <IonButton
+                fill="clear"
+                className="pagination-arrow-button"
+                onClick={handlePrevPage}
+                disabled={currentPage === 0}
+              >
+                <img
+                  src={arrowImageUrl || '/assets/pictograms/flecha_izquierda.png'}
+                  alt="Anterior"
+                  className="pagination-arrow-image pagination-arrow-flip"
+                />
+              </IonButton>
+
+              {/* 2x2 Grid */}
+              <div className="student-group-grid-2x2">
+                {currentStudents.map((student) => (
+                  <div className="student-group-wrapper" key={student.id}>
+                    <button
+                      onClick={() => handleStudentClick(student)}
+                      disabled={loading}
+                      className={`student-pictogram-button ${selectedStudent?.id === student.id ? 'selected' : ''}`}
+                      aria-label={student.username}
+                    >
+                      <div className="student-user-card">
+                        {student.photo_url ? (
+                          <img
+                            src={student.photo_url}
+                            alt=""
+                            className="student-user-photo"
+                          />
+                        ) : (
+                          <img
+                            src="/assets/pictograms/user_default.png"
+                            alt=""
+                            className="student-user-photo"
+                          />
+                        )}
+                      </div>
+                    </button>
+                    <div className="student-group-caption">
+                      {student.username.toUpperCase()}
+                    </div>
                   </div>
-                </button>
-              ))}
+                ))}
+              </div>
+
+              {/* Right Arrow */}
+              <IonButton
+                fill="clear"
+                className="pagination-arrow-button"
+                onClick={handleNextPage}
+                disabled={currentPage >= totalPages - 1}
+              >
+                <img
+                  src={arrowImageUrl || '/assets/pictograms/flecha_derecha.png'}
+                  alt="Siguiente"
+                  className="pagination-arrow-image"
+                />
+              </IonButton>
             </div>
           )}
 
@@ -194,8 +228,6 @@ export default function StudentLoginStep2() {
               </div>
             </IonText>
           )}
-
-
         </div>
       </IonContent>
     </IonPage>

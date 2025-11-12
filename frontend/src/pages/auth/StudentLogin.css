@@ -427,21 +427,27 @@
   border-radius: clamp(4px, 1vw, 8px);
 }
 
-/* Bold uppercase letter on top */
+/* Bold uppercase letter on top-left corner */
 .student-group-letter {
   position: absolute;
-  font-size: clamp(1.8rem, 5vw, 3.5rem);
+  top: clamp(4px, 0.8vw, 8px);
+  left: clamp(4px, 1vw, 8px);
+  font-size: clamp(1.2rem, 3.2vw, 3.5rem);
   font-weight: 900;
-  color: #ffffff;
-  text-shadow:
-    0 2px 2px rgba(0, 0, 0, 0.7),
-    0 0 4px rgba(0, 0, 0, 0.8);
-  line-height: 1;
-  pointer-events: none;
-  z-index: 2;
-  text-transform: uppercase;
-  letter-spacing: clamp(-0.05em, -0.02em, 0);
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+  padding: clamp(1px, 0.1vw, 1px) clamp(20px, 1vw, 12px);
+  color: #000000;
+}
+
+/* Label below the image */
+.student-group-label {
+  position: absolute;
+  bottom: clamp(4px, 0.8vw, 8px);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: clamp(0.7rem, 1.5vw, 1.1rem);
+  font-weight: 700;
+  background: rgb(255, 255, 255);
 }
 
 .student-group-card h2 {
@@ -503,4 +509,87 @@
   hyphens: auto;
   flex: 0 0 auto;
   padding: clamp(0.05rem, 0.15vw, 0.1rem) clamp(0.1rem, 0.3vw, 0.2rem);
+}
+
+/* ========================================
+   NEW: 2x2 GROUP GRID + PAGINATION (Step1 Only)
+   ======================================== */
+
+/* Centered container for 2x2 grid + arrows */
+.student-group-pagination-container-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1vw, 1rem);
+  width: 100%;
+  padding: clamp(0.5rem, 1vh, 1rem);
+  flex: 1;
+}
+
+.student-group-grid-2x2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  width: 90vw;
+  height: 90vh;
+  max-width: 600px;
+  max-height: 600px;
+  background-color: #50BFE6;
+  border-radius: 20px;
+}
+
+.student-group-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1vw, 1rem);
+}
+
+.student-pictogram-button {
+  width: 100%;
+  height: 100%;
+  min-width: 200px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Caption below button */
+.student-group-caption {
+  font-size: clamp(0.75rem, 1.8vw, 1.2rem);
+  font-weight: 700;
+  color: #000000;
+  text-align: center;
+  line-height: 1.2;
+  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Pagination arrows */
+.pagination-arrow-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: clamp(100px, 6vw, 60px);
+  height: clamp(100px, 6vw, 60px);
+  margin: 0;
+}
+
+.pagination-arrow-image {
+  object-fit: contain;
+  filter: brightness(0.9);
+}
+
+.pagination-arrow-image:hover {
+  filter: brightness(1.1);
+}
+
+/* Flip arrow for left direction */
+.pagination-arrow-flip {
+  transform: scaleX(-1);
+  transition: transform 0.2s ease;
 }
