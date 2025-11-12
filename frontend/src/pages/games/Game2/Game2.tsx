@@ -575,7 +575,7 @@ const Game2: React.FC = () => {
     // Guardar en el backend
     if (sessionId) {
       try {
-        await gamesAPI.saveRoundResult(sessionId, {
+        await gamesAPI.saveRoundResultGame2(sessionId, {
           round: currentRound,
           numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
           user_order: orderedNumbers.filter((n): n is number => n !== undefined),

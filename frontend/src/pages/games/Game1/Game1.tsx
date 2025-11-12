@@ -407,7 +407,7 @@ const Game1: React.FC = () => {
         // Guardar en el backend
         if (sessionId) {
             try {
-                await gamesAPI.saveRoundResult(sessionId, {
+                await gamesAPI.saveRoundResultGame1(sessionId, {
                     round: currentRound,
                     numbers: availableNumbers.filter((n): n is number => n !== undefined),
                     selected_number: selectedNumber,

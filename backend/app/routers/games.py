@@ -3,7 +3,6 @@ Router de Juegos
 Endpoints para gestionar configuraciones, sesiones y resultados de los juegos
 """
 from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -11,44 +10,6 @@ from ..services.supabase import supabase_admin
 from ..dependencies import get_current_user
 
 router = APIRouter()
-
-
-# ===== SCHEMAS =====
-
-class GameConfigResponse(BaseModel):
-    """Configuración del juego para un estudiante"""
-    game_id: int
-    game_key: str
-    user_id: str
-    number_range: str
-    settings: Dict[str, Any]
-
-
-class CreateSessionRequest(BaseModel):
-    """Crear nueva sesión de juego"""
-    student_id: str
-    game_key: str  # 'game2'
-
-
-class RoundResult(BaseModel):
-    """Resultado de una ronda"""
-    round: int
-    numbers: List[int]
-    user_order: List[int]
-    correct_order: List[int]
-    is_correct: bool
-    time_seconds: float
-
-
-class SaveRoundRequest(BaseModel):
-    """Guardar resultado de ronda"""
-    round_result: RoundResult
-
-
-class FinishSessionRequest(BaseModel):
-    """Finalizar sesión de juego"""
-    total_time_seconds: float
-
 
 # ===== ENDPOINTS =====
 
@@ -252,12 +213,11 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         results = session.get("results", {"attempts": []})
 
         # 2. Añadir la nueva ronda al array de attempts
-        console.log(session.get("game_id"))
         if session.get("game_id") == 1:
             round_data = {
                 "round": request.round_result.round,
                 "numbers": request.round_result.numbers,
-                "selected_number": request.round_result.user_number,
+                "selected_number": request.round_result.selected_number,
                 "correct_number": request.round_result.correct_number,
                 "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds
