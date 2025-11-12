@@ -22,39 +22,28 @@ import DropZone from './DropZone';
 import Game2Header from './Game2Header';
 import './Game2.css';
 
-// Importar imágenes locales de pictogramas
-import img0 from './img/0.png';
-import img1 from './img/uno.png';
-import img2 from './img/2.png';
-import img3 from './img/3.png';
-import img4 from './img/4.png';
-import img5 from './img/5.png';
-import img6 from './img/6.png';
-import img7 from './img/7.png';
-import img8 from './img/8.png';
-import img9 from './img/9.png';
-import img10 from './img/10.png';
-
 // Importar imágenes para el header
-import imgAceptar from './img/aceptar.png';
-import imgVolver from './img/volver.png';
-import imgFlecha from './flecha.png';
-import imgOrdenar from './img/ordenar.png';
-import imgJuego from './img/juegoX.png';
+import imgAceptar from '/assets/juegosImg/game2/aceptar.png';
+import imgVolver from '/assets/juegosImg/game2/volver.png';
+import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
+import imgJuego from '/assets/juegosImg/juegoX.png';
 
-// Mapeo de números a imágenes locales
+// Flecha desde assets
+const imgFlecha = '/assets/juegosImg/flecha.png';
+
+// Mapeo de números a imágenes desde assets
 const PICTOGRAM_IMAGES: { [key: number]: string } = {
-  0: img0,
-  1: img1,
-  2: img2,
-  3: img3,
-  4: img4,
-  5: img5,
-  6: img6,
-  7: img7,
-  8: img8,
-  9: img9,
-  10: img10
+  0: '/assets/numbers/0.png',
+  1: '/assets/numbers/1.png',
+  2: '/assets/numbers/2.png',
+  3: '/assets/numbers/3.png',
+  4: '/assets/numbers/4.png',
+  5: '/assets/numbers/5.png',
+  6: '/assets/numbers/6.png',
+  7: '/assets/numbers/7.png',
+  8: '/assets/numbers/8.png',
+  9: '/assets/numbers/9.png',
+  10: '/assets/numbers/10.png'
 };
 
 const TOTAL_ROUNDS = 5;
