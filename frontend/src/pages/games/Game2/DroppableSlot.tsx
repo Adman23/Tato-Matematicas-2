@@ -23,35 +23,22 @@ import { IonIcon } from '@ionic/react';
 import { checkmarkCircle, closeCircle } from 'ionicons/icons';
 import './Game2.css';
 
-// Importar imágenes locales de pictogramas
-import img0 from './img/0.png';
-import img1 from './img/uno.png';
-import img2 from './img/2.png';
-import img3 from './img/3.png';
-import img4 from './img/4.png';
-import img5 from './img/5.png';
-import img6 from './img/6.png';
-import img7 from './img/7.png';
-import img8 from './img/8.png';
-import img9 from './img/9.png';
-import img10 from './img/10.png';
-
 /**
- * Mapeo de números (0-10) a sus imágenes de pictogramas locales.
+ * Mapeo de números (0-10) a sus imágenes de pictogramas desde assets.
  * Usado cuando el juego se configura con rango 0-10 para aprendizaje visual.
  */
 const PICTOGRAM_IMAGES: { [key: number]: string } = {
-  0: img0,
-  1: img1,
-  2: img2,
-  3: img3,
-  4: img4,
-  5: img5,
-  6: img6,
-  7: img7,
-  8: img8,
-  9: img9,
-  10: img10
+  0: '/assets/numbers/0.png',
+  1: '/assets/numbers/1.png',
+  2: '/assets/numbers/2.png',
+  3: '/assets/numbers/3.png',
+  4: '/assets/numbers/4.png',
+  5: '/assets/numbers/5.png',
+  6: '/assets/numbers/6.png',
+  7: '/assets/numbers/7.png',
+  8: '/assets/numbers/8.png',
+  9: '/assets/numbers/9.png',
+  10: '/assets/numbers/10.png'
 };
 
 /**
