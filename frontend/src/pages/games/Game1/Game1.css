@@ -23,7 +23,7 @@
 /* ========================================
    Números disponibles
    ======================================== */
-.available-numbers {
+/* .available-numbers {
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
@@ -49,7 +49,7 @@
 }
 
 /* Espacio vacío (círculo gris) */
-.game1-empty-slot {
+/* .game1-empty-slot {
     width: 90px;
     height: 90px;
     border-radius: 50%;
@@ -63,12 +63,27 @@
     border-color: #a5a5a5;
     border-width: 4px;
     transform: scale(1.1);
+} */
+
+.numbers-grid {
+    width: 100%;
+    max-width: 1500px;
+    margin: 20px auto;
+    padding: 0px;
+}
+
+.numbers-grid ion-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 60px;
+    padding: 0;
 }
 
 /* ========================================
    Tarjetas de números
    ======================================== */
-.number-card-v2 {
+/* .number-card-v2 {
     width: 90px;
     height: 90px;
     display: flex;
@@ -88,38 +103,38 @@
 }
 
 /* Estilo para tarjetas con pictograma */
-.number-card-pictogram {
+/* .number-card-pictogram {
     background: #6a98e7;
     border: 3px solid #6a98e7;
 }
 
 .number-card-pictogram.number-card-available {
     border-color: #6a98e7;
-}
+} */
 
 /* Imagen del pictograma */
-.pictogram-image {
+/* .pictogram-image {
     width: 75px;
     height: 75px;
     object-fit: contain;
     pointer-events: none;
-}
+} */
 
 /* Números disponibles arriba (color gris) */
-.number-card-available {
+/* .number-card-available {
     background: #84acf1;
     box-shadow: 0 4px 12px rgba(156, 163, 175, 0.3);
-}
+} */
 
 /* Números bloqueados (ayuda pre-colocada) */
-.number-card-locked {
+/* .number-card-locked {
     background: #10b981 !important;
     cursor: not-allowed !important;
     opacity: 0.9;
     border: 3px solid #059669 !important;
-}
+} */
 
-.number-card-locked.number-card-pictogram {
+/* .number-card-locked.number-card-pictogram {
     border: 3px solid #10b981 !important;
 }
 
@@ -154,27 +169,123 @@
 .number-value {
     font-family: 'Arial', sans-serif;
     z-index: 1;
+}  */
+
+.number-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #A9DAF3;
+    color: black;
+    font-size: 4em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
+    border: 3px solid transparent;
+    outline: none;
 }
 
+.number-circle:focus {
+    outline: none;
+}
 
+.number-circle.selected {
+    background-color: #FFB7FA;
+    color: black;
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+    border: 3px solid black;
+    outline: none;
+}
+
+/* Feedback states: correcto / incorrecto */
+.number-circle.correct {
+    background-color: #34D399;
+    /* verde */
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(16, 185, 129, 0.3);
+    border: 3px solid #059669;
+}
+
+.number-circle.incorrect {
+    background-color: #F87171;
+    /* rojo */
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(248, 113, 113, 0.3);
+    border: 3px solid #b91c1c;
+}
+
+.number-circle .number-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5em;
+    max-width: 100%;
+    text-align: center;
+    line-height: 1;
+}
+
+.number-circle .pictogram-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
 
 /* ========================================
-    Botón de comprobar
+    Footer: Tato y Botones de Acción
    ======================================== */
-.game1-check-button-container {
+.game1-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+/* ========================================
+    Tato
+   ======================================== */
+
+.tato-container {
+    position: relative;
+}
+
+.tato-container img {
+    width: 120px;
+    height: auto;
+}
+
+/* ========================================
+    Botones
+   ======================================== */
+.check-button-container {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 0 2rem;
     max-width: 900px;
-    margin: -1rem auto 2rem auto;
+    margin: 10px 10px;
 }
 
 .game1-check-button {
     --padding-start: 0;
     --padding-end: 0;
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     margin: 0;
 }
 

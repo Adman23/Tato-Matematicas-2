@@ -430,8 +430,9 @@ export interface GameConfig {
   user_id: string;
   number_range: string;
   settings: {
-    quantity: number;
-    order: 'ascending' | 'descending';
+    options_count?: number;
+    quantity?: number;
+    order?: 'ascending' | 'descending';
   };
 }
 
@@ -442,17 +443,42 @@ export interface GameSessionResponse {
   session_id: string;
 }
 
+
 /**
- * Datos de una ronda de juego
+* Tipos de juegos disponibles
  */
-export interface RoundResult {
+export type GameKey = 'touch_number' | 'order_sequence' | 'distribute_equal' | 'remove_equal';
+
+
+/**
+ * Datos de una ronda de juego base
+ */
+export interface RoundResultBase {
   round: number;
   numbers: number[];
-  user_order: number[];
-  correct_order: number[];
   is_correct: boolean;
   time_seconds: number;
 }
+
+
+/**
+ * Datos de una ronda del juego 1: Elegir Número
+ */
+export interface TouchNumber extends RoundResultBase {
+  selected_number: number;
+  correct_number: number | null;
+}
+
+
+/**
+ * Datos de una ronda del juego 2: Ordenar Secuencia
+ */
+export interface OrderSequence extends RoundResultBase {
+  user_order: number[];
+  correct_order: number[];
+}
+
+
 
 /**
  * Conjunto de endpoints para juegos.
@@ -529,7 +555,7 @@ export const gamesAPI = {
    *   time_seconds: 12.5
    * });
    */
-  saveRoundResult: async (sessionId: string, roundResult: RoundResult): Promise<void> => {
+  saveRoundResult: async (sessionId: string, roundResult: TouchNumber | OrderSequence): Promise<void> => {
     await api.post(`/api/games/sessions/${sessionId}/round`, {
       round_result: roundResult
     });

@@ -12,12 +12,16 @@ import {
     IonSpinner,
     IonText,
     IonButton,
+    IonGrid,
+    IonRow,
+    IonCol
 
 } from '@ionic/react';
 import { useHistory, Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
+
 
 import Game2Header from '../Game2Header';
 import './Game1.css';
@@ -40,6 +44,13 @@ import imgAceptar from '../Game2/img/aceptar.png';
 import imgFlecha from '../Game2/flecha.png';
 import imgSonido from '../Game2/img/sonido.png';
 import imgJuego from '../Game2/img/juegoX.png';
+import imgSonidoConTexto from '../Game2/img/sonido_con_texto.png';
+import imgSiguiente from '../Game2/img/siguiente.png';
+
+// Importar imagen de Tato
+import imgTato from '../Tato/Tato.png';
+import imgTatoFeliz from '../Tato/TatoFeliz.png';
+import imgTatoTriste from '../Tato/TatoTriste.png';
 
 // Mapeo de números a imágenes locales
 const PICTOGRAM_IMAGES: { [key: number]: string } = {
@@ -108,22 +119,40 @@ const Game1: React.FC = () => {
     // Estados del juego
     const [currentRound, setCurrentRound] = useState(1);
     const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]);
+    const [currentNumber, setCurrentNumber] = useState<number | null>(null);
+    const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+    const [triesCurrentNumber, setTriesCurrentNumber] = useState(false);
+    const [usedNumbers, setUsedNumbers] = useState<number[]>([]);
+
 
     // Estados de UI
     const [showFeedback, setShowFeedback] = useState(false);
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
+    const [listeningAudio, setListeningAudio] = useState(false);
 
     // Estados de resultados
     const [gameFinished, setGameFinished] = useState(false);
 
-    // Estado para selección por clic (en lugar de drag & drop)
-    const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
-
-
 
     // Determinar si usar pictogramas (solo para rango 0-10)
-    const usePictograms = /*config?.number_range === '0-10'*/true;
+    const usePictograms = config?.number_range === '0-10';
+
+    // Cargar configuración al montar (solo una vez)
+    useEffect(() => {
+        loadGameConfig();
+        setGameStartTime(Date.now());
+    },
+        []);
+
+    // Crear sesión cuando la configuración esté cargada (solo una vez)
+    useEffect(() => {
+        if (config && !sessionId && !sessionCreatedRef.current) {
+            sessionCreatedRef.current = true;
+            createGameSession();
+        }
+
+    }, [config]);
 
     // Generar nueva ronda cuando cambia currentRound
     useEffect(() => {
@@ -133,47 +162,177 @@ const Game1: React.FC = () => {
 
     }, [config, currentRound]);
 
+    // Efecto para redirigir cuando el juego termine
+    useEffect(() => {
+        if (gameFinished) {
+            const timer = setTimeout(() => {
+                // Redirigir al dashboard correspondiente según el tipo de usuario
+                const dashboardRoute = student ? '/student-dashboard' : '/tutor-dashboard';
+                history.push(dashboardRoute);
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [gameFinished, history, student]);
+
+
+    /**
+     * Carga la configuración personalizada del juego desde el backend.
+     *
+     * Flujo de ejecución:
+     * 1. Verifica que existe un usuario autenticado (estudiante o profesor)
+     * 2. Llama a la API para obtener la config del juego 'touch_number'
+     * 3. Valida que la configuración recibida sea correcta, o usa valores por defecto
+     * 4. Actualiza el estado con la configuración recibida (rango, cantidad, orden)
+     * 5. Desactiva el indicador de carga
+     *
+     * @returns Promesa que resuelve cuando se carga la configuración
+     *
+     * @example
+     * // Al montar el componente se carga automáticamente:
+     * // config = { number_range: '0-10', settings: { quantity: 5 } }
+     */
+    const loadGameConfig = async () => {
+        try {
+            if (!currentUser?.id) return;
+
+            const data = await gamesAPI.getGameConfig(currentUser.id, 'touch_number');
+
+            // Validar que la configuración tenga valores válidos
+            const validatedConfig: GameConfig = {
+                ...data,
+                number_range: data.number_range || '0-10',
+                settings: {
+                    options_count: data.settings?.options_count || 5
+                }
+            };
+
+            setConfig(validatedConfig);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error loading game config:', error);
+
+            // Si falla la carga, usar configuración por defecto
+            const defaultConfig: GameConfig = {
+                game_id: 0,
+                game_key: 'order_sequence',
+                user_id: currentUser?.id || '',
+                number_range: '0-10',
+                settings: {
+                    options_count: 5
+                }
+            };
+
+            setConfig(defaultConfig);
+            setLoading(false);
+        }
+    };
+
+
+    /**
+     * Crea una nueva sesión de juego en el backend para tracking de progreso.
+     *
+     * Flujo de ejecución:
+     * 1. Verifica que existe un usuario autenticado (estudiante o profesor)
+     * 2. Llama a la API para crear sesión vinculada al usuario y juego
+     * 3. Guarda el session_id en estado para usarlo al guardar rondas
+     * 4. El session_id permite vincular todas las rondas a esta partida
+     *
+     * @returns Promesa que resuelve cuando se crea la sesión
+     *
+     * @example
+     * // Al montar el componente:
+     * // sessionId = 'uuid-session-789' (se guarda en estado)
+     */
+    const createGameSession = async () => {
+        try {
+            if (!currentUser?.id) return;
+
+            const data = await gamesAPI.createGameSession(currentUser.id, 'touch_number');
+            setSessionId(data.session_id);
+        } catch (error) {
+            console.error('Error creating game session:', error);
+        }
+    };
 
     /**
       * Genera los números y configuración para una nueva ronda del juego.
       *
       * Flujo de ejecución:
-      * 1. Calcula cantidad total: números a ordenar (quantity) + números de ayuda (40%)
-      * 2. Genera números únicos aleatorios dentro del rango configurado
-      * 3. Los ordena según configuración (ascendente/descendente)
-      * 4. Selecciona aleatoriamente qué números serán "ayuda" (pre-colocados y bloqueados)
-      * 5. Mezcla los números disponibles para que no estén en orden
-      * 6. Coloca números de ayuda en sus posiciones correctas (verdes y bloqueados)
+      * 1. Calcula cantidad de opciones: números entre los que elegir el correcto
+      * 2. Genera número que se va a escuchar (currentNumber)
+      * 3. Si el número ya se ha usado en otra ronda, genera otro
+      * 4. Genera números únicos aleatorios dentro del rango configurado
+      * 5. Añade a la lista el número correcto
+      * 6. Mezcla los números disponibles para que no estén en orden
       * 7. Reinicia el timer de la ronda
       *
       * @returns void - Actualiza múltiples estados del componente
       *
       * @example
-      * // Si config.settings.quantity = 5 y order = 'ascending':
-      * // - Genera 7 números (5 + 2 de ayuda)
-      * // - correctOrder = [1, 3, 5, 7, 9, 10, 15] (ordenados)
-      * // - availableNumbers = [7, 1, 15, 9, 3] (mezclados, sin ayuda)
-      * // - orderedNumbers = [undefined, undefined, 5, undefined, undefined, 10, undefined]
-      * // - lockedIndices = Set(2, 5) (posiciones bloqueadas)
+      * // Si config.settings.options_count = 5:
+      * // - Genera 4 números
+      * // - currentNumber = 9 (número a escuchar)
+      * // - availableNumbers = [2, 9, 5, 12, 7] (mezclados, sin ayuda)
       */
     const generateRound = () => {
-        //if (!config) return;
+        if (!config) return;
 
-        const [min, max] = /*config.number_range.split('-').map(Number)*/[0, 10];
+        const [min, max] = config.number_range.split('-').map(Number);
 
-        // // Validar que min y max sean números válidos
-        // if (isNaN(min) || isNaN(max) || min >= max) {
-        //     console.error('Invalid number range:', config.number_range);
-        //     return;
-        // }
+        // Validar que min y max sean números válidos
+        if (isNaN(min) || isNaN(max) || min >= max) {
+            console.error('Invalid number range:', config.number_range);
+            return;
+        }
 
-        const totalNumbers = /*config.settings.quantity ||*/ 5; // opciones disponibles
+        const totalNumbers = config.settings.options_count || 5; // opciones disponibles
 
-        // // Validar que quantity sea un número válido
-        // if (isNaN(quantity) || quantity <= 0) {
-        //     console.error('Invalid quantity:', config.settings.quantity);
-        //     return;
-        // }
+        // Validar que totalNumbers sea un número válido
+        if (isNaN(totalNumbers) || totalNumbers <= 0) {
+            console.error('Invalid totalNumbers:', config.settings.options_count);
+            return;
+        }
+
+        // Calcular números disponibles en el rango
+        const availableInRange = max - min + 1;
+
+        // Validar que no se pidan más números de los disponibles en el rango
+        if (totalNumbers > availableInRange) {
+            console.error(
+                `Cannot generate ${totalNumbers} unique numbers from range ${min}-${max} (only ${availableInRange} available). ` +
+                `Please reduce options_count or increase range.`
+            );
+            // Ajustar totalNumbers al máximo disponible
+            const adjustedTotal = availableInRange;
+
+            console.warn(`Adjusting: options_count=${adjustedTotal}`);
+
+            // Usar todos los números del rango
+            const numbers = new Set<number>();
+            for (let i = min; i <= max; i++) {
+                numbers.add(i);
+            }
+
+            const numbersArray = Array.from(numbers);
+
+            // Mezclar aleatoriamente los números disponibles
+            const poolNumbers = numbersArray.sort(() => Math.random() - 0.5);
+
+            // Generar número a escuchar (currentNumber)
+            let roundNumber: number;
+            do {
+                const randomIndex = Math.floor(Math.random() * numbersArray.length);
+                roundNumber = numbersArray[randomIndex];
+            } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
+
+            setCurrentNumber(roundNumber);
+            setUsedNumbers(prev => [...prev, roundNumber]);
+            setAvailableNumbers(poolNumbers);
+            setShowFeedback(false);
+            setRoundStartTime(Date.now());
+            return;
+        }
 
         // Generar totalNumbers números únicos aleatorios
         const numbers = new Set<number>();
@@ -184,16 +343,127 @@ const Game1: React.FC = () => {
 
         const numbersArray = Array.from(numbers);
 
+        // Generar número a escuchar (currentNumber)
+        let roundNumber: number;
+        do {
+            const randomIndex = Math.floor(Math.random() * numbersArray.length);
+            roundNumber = numbersArray[randomIndex];
+        } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
+
+        setCurrentNumber(roundNumber);
+        setUsedNumbers(prev => [...prev, roundNumber]);
+
+        // Asegurarse de que el número correcto esté en las opciones
+        if (!numbers.has(roundNumber)) {
+            // Reemplazar un número aleatorio por el correcto
+            const replaceIndex = Math.floor(Math.random() * numbersArray.length);
+            numbersArray[replaceIndex] = roundNumber;
+        }
+
         // Mezclar aleatoriamente los números disponibles (para que no estén en orden)
         const poolNumbers = numbersArray.sort(() => Math.random() - 0.5);
 
-
+        setCurrentNumber(roundNumber);
+        setUsedNumbers(prev => [...prev, roundNumber]);
         setAvailableNumbers(poolNumbers);
         console.log('Generated round', currentRound, 'with numbers:', poolNumbers);
         setShowFeedback(false);
         setRoundStartTime(Date.now());
     };
 
+
+    /**
+     * Valida la respuesta del usuario y guarda el resultado de la ronda.
+     *
+     * Flujo de ejecución:
+     * 1. Calcula el tiempo transcurrido en la ronda
+     * 2. Compara el número seleccionado con el correcto
+     * 3. Muestra feedback visual (botón verde/rojo, iconos check/cruz)
+     * 4. Guarda el resultado en el backend vía API
+     * 5. Tras 2 segundos, avanza a la siguiente ronda o finaliza el juego
+     *
+     * @returns Promesa que resuelve cuando se completa la validación
+     *
+     * @example
+     * // Usuario selecciona número 7 cuando el correcto es 7:
+     * // → is_correct = true, muestra botón verde "¡Correcto!"
+     * // → Guarda en BD y avanza a ronda 2
+     */
+    const checkAnswer = async () => {
+        // Verificar que haya un número seleccionado
+        if (selectedNumber === null) {
+            return;
+        }
+
+        const timeSeconds = (Date.now() - roundStartTime) / 1000;
+
+        // Comparar el número seleccionado con el correcto
+        const correct = selectedNumber === currentNumber;
+
+        // Mostrar feedback y guardar el resultado en backend.
+        // No avanzamos automáticamente: esperamos a que el usuario pulse 'siguiente'.
+        setShowFeedback(true);
+
+        // Guardar en el backend
+        if (sessionId) {
+            try {
+                await gamesAPI.saveRoundResult(sessionId, {
+                    round: currentRound,
+                    numbers: availableNumbers.filter((n): n is number => n !== undefined),
+                    selected_number: selectedNumber,
+                    correct_number: currentNumber,
+                    is_correct: correct,
+                    time_seconds: timeSeconds
+                });
+            } catch (error) {
+                console.error('Error saving round:', error);
+            }
+        }
+    };
+
+    // Avanzar al siguiente paso cuando el usuario pulse 'siguiente' en la pantalla de feedback
+    const handleNext = () => {
+        // Reset de selección y ocultar feedback
+        setShowFeedback(false);
+        setSelectedNumber(null);
+
+        if (currentRound < TOTAL_ROUNDS) {
+            setCurrentRound(prev => prev + 1);
+        } else {
+            finishGame();
+        }
+    };
+
+    /**
+     * Finaliza la sesión de juego y registra el tiempo total en el backend.
+     *
+     * Flujo de ejecución:
+     * 1. Calcula el tiempo total desde que empezó el juego
+     * 2. Envía el tiempo al backend para cerrar la sesión
+     * 3. Marca el juego como finalizado en el estado
+     * 4. El efecto useEffect redirige al dashboard tras 2 segundos
+     *
+     * @returns Promesa que resuelve cuando se finaliza la sesión
+     *
+     * @example
+     * // Al completar la ronda 5:
+     * // totalTimeSeconds = 150.2 (2 minutos y medio)
+     * // → Guarda en BD y marca gameFinished = true
+     * // → Muestra "¡Juego completado!" y redirige
+     */
+    const finishGame = async () => {
+        const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
+
+        if (sessionId) {
+            try {
+                await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+            } catch (error) {
+                console.error('Error finishing game:', error);
+            }
+        }
+
+        setGameFinished(true);
+    };
 
     // Pantalla de carga de autenticación
     if (authLoading) {
@@ -213,21 +483,38 @@ const Game1: React.FC = () => {
         return <Redirect to="/student-login" />;
     }
 
-    // // Pantalla de carga del juego
-    // if (loading) {
-    //     return (
-    //         <IonPage>
-    //             <IonContent>
-    //                 <div className='Game1-spinner'>
-    //                     <IonSpinner name="crescent" />
-    //                     <IonText>
-    //                         <p>Cargando juego...</p>
-    //                     </IonText>
-    //                 </div>
-    //             </IonContent>
-    //         </IonPage>
-    //     );
-    // }
+    // Pantalla de carga del juego
+    if (loading) {
+        return (
+            <IonPage>
+                <IonContent>
+                    <div className='Game1-spinner'>
+                        <IonSpinner name="crescent" />
+                        <IonText>
+                            <p>Cargando juego...</p>
+                        </IonText>
+                    </div>
+                </IonContent>
+            </IonPage>
+        );
+    }
+
+    // Si el juego terminó, mostrar mensaje
+    if (gameFinished) {
+        return (
+            <IonPage>
+                <IonContent className="ion-padding ion-text-center">
+                    <div style={{ marginTop: '50%' }}>
+                        <IonText color="success">
+                            <h1>¡Juego completado!</h1>
+                            <h1>¡AQUÍ PODRIA IR EL MENSAJE DE FEEDBACK! ??</h1>
+                            <p>Volviendo al inicio...</p>
+                        </IonText>
+                    </div>
+                </IonContent>
+            </IonPage>
+        );
+    }
 
 
     return (
@@ -245,74 +532,107 @@ const Game1: React.FC = () => {
 
                 {/* Zona de juego */}
                 {/* Números disponibles */}
-                <div className="available-numbers" id="available-zone">
-                    {availableNumbers.map((num, index) => {
-                        if (num === undefined) {
-                            // Mostrar slot vacío (sin droppable en modo click)
+                <p>{currentNumber}</p>
+
+                <IonGrid className="numbers-grid">
+                    <IonRow className="ion-justify-content-center">
+                        {availableNumbers.map((num, index) => {
+                            if (num === undefined) return null;
+
+                            const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
+                            let cardClass = 'number-circle'; // Usamos la clase del círculo
+                            if (usePictograms) cardClass += ' number-card-pictogram';
+
+                            // Añadir clase visual cuando esté seleccionado
+                            const isSelected = selectedNumber === num;
+                            if (isSelected) cardClass += ' selected';
+
+                            // Si estamos mostrando feedback, colorear la selección en verde/rojo
+                            if (showFeedback && isSelected) {
+                                if (selectedNumber === currentNumber) cardClass += ' correct';
+                                else cardClass += ' incorrect';
+                            }
+
                             return (
-                                <div
-                                    key={`available-slot-${index}`}
-                                    className="game1-droppable-slot"
-                                >
-                                    <div className="game1-empty-slot" />
-                                </div>
+                                <IonCol size="4" size-md="3" size-lg="2" key={`available-${num}-${index}`} className="ion-text-center">
+                                    <div
+                                        className={cardClass}
+                                        onClick={() => {
+                                            if (showFeedback) return; // no permitir cambios durante feedback
+                                            setSelectedNumber(prev => (prev === num ? null : num));
+                                        }}
+                                        role="button"
+                                        aria-pressed={isSelected}
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                if (!showFeedback) {
+                                                    setSelectedNumber(prev => (prev === num ? null : num));
+                                                }
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                    >
+                                        {pictogramImg ? (
+                                            <img
+                                                src={pictogramImg}
+                                                alt={`Pictograma número ${num}`}
+                                                className="pictogram-image"
+                                            />
+                                        ) : (
+                                            <span className="number-value">{num}</span>
+                                        )}
+                                    </div>
+                                </IonCol>
                             );
-                        }
+                        })}
+                    </IonRow>
+                </IonGrid>
 
-                        const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
-                        let cardClass = 'number-card-v2 number-card-available';
-                        if (usePictograms) cardClass += ' number-card-pictogram';
-
-                        // Añadir clase visual cuando esté seleccionado
-                        const isSelected = selectedNumber === num;
-                        if (isSelected) cardClass += ' selected';
-
-                        return (
-                            <div
-                                key={`available-${num}-${index}`}
-                                className={cardClass}
-                                onClick={() => {
-                                    // Alternar selección al hacer click
-                                    setSelectedNumber(prev => (prev === num ? null : num));
-                                }}
-                                role="button"
-                                aria-pressed={isSelected}
-                                tabIndex={0}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        setSelectedNumber(prev => (prev === num ? null : num));
-                                        e.preventDefault();
-                                    }
-                                }}
-                            >
-                                {pictogramImg ? (
-                                    <img
-                                        src={pictogramImg}
-                                        alt={`Pictograma número ${num}`}
-                                        className="pictogram-image"
-                                    />
-                                ) : (
-                                    <span className="number-value">{num}</span>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Botón de comprobar */}
-                <div className="game1-check-button-container">
-                    <IonButton
-                        fill="clear"
-                        className="game1-check-button"
-                        //onClick={checkAnswer}
-                        disabled={selectedNumber === null}
-                    >
+                <div className='game1-footer'>
+                    {/*Tato*/}
+                    <div className="game1-tato-container">
                         <img
-                            src={imgAceptar}
-                            alt="Comprobar"
-                            className="game1-check-button-image"
+                            src={
+                                showFeedback
+                                    ? (selectedNumber === currentNumber ? imgTatoFeliz : imgTatoTriste)
+                                    : imgTato
+                            }
+                            alt="Tato"
+                            className="game1-tato-image"
                         />
-                    </IonButton>
+                    </div>
+
+                    {/*Botón de escuchar*/}
+                    <div className="game1-check-button-container">
+                        <IonButton
+                            fill="clear"
+                            className="game1-check-button"
+                        >
+                            <img
+                                src={imgSonidoConTexto}
+                                alt="Escuchar"
+                                className="game1-check-button-image"
+                            />
+                        </IonButton>
+                    </div>
+
+
+                    {/*Botón de comprobar*/}
+                    <div className="game1-check-button-container">
+                        <IonButton
+                            fill="clear"
+                            className="game1-check-button"
+                            onClick={showFeedback ? handleNext : checkAnswer}
+                            disabled={!showFeedback && selectedNumber === null}
+                        >
+                            <img
+                                src={showFeedback ? imgSiguiente : imgAceptar}
+                                alt={showFeedback ? 'Siguiente' : 'Comprobar'}
+                                className="game1-check-button-image"
+                            />
+                        </IonButton>
+                    </div>
                 </div>
             </IonContent>
         </IonPage>

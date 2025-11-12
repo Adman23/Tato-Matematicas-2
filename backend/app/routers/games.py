@@ -111,11 +111,16 @@ async def get_game_config(student_id: str, game_key: str):
                 settings=config.get("settings", {})
             )
 
-        # 4. Si no existe, devolver configuración por defecto para Game2
-        default_settings = {
-            "quantity": 5,  # 5 números a ordenar
-            "order": "ascending"  # orden ascendente
-        }
+        # 4. Si no existe, devolver configuración por defecto 
+        if game_key == "touch_number":
+            default_settings = {
+                "options_count": 5  # 5 opciones para tocar
+            }
+        if game_key == "order_sequence":
+            default_settings = {
+                "quantity": 5,  # 5 números a ordenar
+                "order": "ascending"  # orden ascendente
+            }
 
         return GameConfigResponse(
             game_id=game_id,
@@ -247,14 +252,28 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         results = session.get("results", {"attempts": []})
 
         # 2. Añadir la nueva ronda al array de attempts
-        round_data = {
-            "round": request.round_result.round,
-            "numbers": request.round_result.numbers,
-            "user_order": request.round_result.user_order,
-            "correct_order": request.round_result.correct_order,
-            "is_correct": request.round_result.is_correct,
-            "time": request.round_result.time_seconds
-        }
+        console.log(session.get("game_id"))
+        if session.get("game_id") == 1:
+            round_data = {
+                "round": request.round_result.round,
+                "numbers": request.round_result.numbers,
+                "selected_number": request.round_result.user_number,
+                "correct_number": request.round_result.correct_number,
+                "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds
+            }
+
+        if session.get("game_id") == 2:
+            round_data = {
+                "round": request.round_result.round,
+                "numbers": request.round_result.numbers,
+                "user_order": request.round_result.user_order,
+                "correct_order": request.round_result.correct_order,
+                "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds
+            }
+
+        
 
         if "attempts" not in results:
             results["attempts"] = []
