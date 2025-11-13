@@ -40,6 +40,8 @@ class RoundResult(BaseModel):
     time_seconds: float
     is_final_attempt: bool = True  # Por defecto True para compatibilidad
     omissions: int = 0  # Números que no colocó (dejó sin colocar)
+    attempts: int = 0  # Contador de intentos (veces que presionó "Repetir")
+    hints: int = 0  # Contador de pistas usadas
 
 
 class SaveRoundRequest(BaseModel):
@@ -255,7 +257,9 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
             "user_order": request.round_result.user_order,
             "correct_order": request.round_result.correct_order,
             "is_correct": request.round_result.is_correct,
-            "time": request.round_result.time_seconds
+            "time": request.round_result.time_seconds,
+            "attempts": request.round_result.attempts,
+            "hints": request.round_result.hints
         }
 
         if "attempts" not in results:

@@ -21,7 +21,7 @@
 import React from 'react';
 import { IonIcon } from '@ionic/react';
 import { checkmarkCircle, closeCircle } from 'ionicons/icons';
-import './Game2.css';
+import './DroppableSlot.css';
 
 /**
  * Mapeo de números (0-10) a sus imágenes de pictogramas desde assets.
@@ -52,6 +52,8 @@ const PICTOGRAM_IMAGES: { [key: number]: string } = {
  * @property {boolean} [isIncorrect] - Si el número en este slot es incorrecto (feedback rojo)
  * @property {boolean} [usePictogram] - Si se debe mostrar pictograma en vez de número
  * @property {boolean} [isLocked] - Si el número está bloqueado (ayuda pre-colocada, no arrastrable)
+ * @property {boolean} [isSelected] - Si el número está seleccionado mediante click
+ * @property {(targetIndex: number) => void} [onSlotClick] - Callback al hacer click en el slot
  */
 interface DroppableSlotProps {
   id: string;
@@ -61,6 +63,8 @@ interface DroppableSlotProps {
   isIncorrect?: boolean;
   usePictogram?: boolean;
   isLocked?: boolean;
+  isSelected?: boolean;
+  onSlotClick?: (targetIndex: number) => void;
 }
 
 /**
@@ -120,14 +124,12 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
   isCorrect = false,
   isIncorrect = false,
   usePictogram = false,
-  isLocked = false
+  isLocked = false,
+  isSelected = false,
+  onSlotClick
 }) => {
-  // Estado local para efecto visual de hover durante el drag
-  const [isDragOver, setIsDragOver] = React.useState(false);
-
-  // Clase CSS del slot (añade hover si se está arrastrando sobre él)
+  // Clase CSS del slot
   let slotClass = 'droppable-slot';
-  if (isDragOver) slotClass += ' droppable-slot-hover';
 
   // Obtener imagen del pictograma si aplica (solo números 0-10)
   const pictogramImg = usePictogram && number !== undefined && number <= 10 ? PICTOGRAM_IMAGES[number] : null;
@@ -136,52 +138,15 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
   let cardClass = 'number-card-v2';
   if (usePictogram) cardClass += ' number-card-pictogram';
   if (isLocked) cardClass += ' number-card-locked';
+  if (isSelected) cardClass += ' number-card-selected';
 
   return (
     <div
       className={slotClass}
-      onDragOver={(e) => {
-        // No permitir drop en slots bloqueados
-        if (isLocked) return;
-        e.preventDefault();
-        setIsDragOver(true);
-      }}
-      onDragLeave={() => setIsDragOver(false)}
-      onDrop={(e) => {
-        // No permitir drop en slots bloqueados
-        if (isLocked) return;
-        e.preventDefault();
-        setIsDragOver(false);
-        const numberStr = e.dataTransfer.getData('number');
-        const sourceType = e.dataTransfer.getData('sourceType');
-
-        if (numberStr !== '') {
-          const droppedNumber = parseInt(numberStr);
-          // Disparar evento personalizado para manejar el drop
-          window.dispatchEvent(new CustomEvent('number-dropped', {
-            detail: {
-              number: droppedNumber,
-              targetIndex: index,
-              sourceType: sourceType || 'available'
-            }
-          }));
-        }
-      }}
+      onClick={() => onSlotClick?.(index)}
     >
       {number !== undefined ? (
-        <div
-          className={cardClass}
-          draggable={!isLocked}
-          onDragStart={(e) => {
-            if (isLocked) {
-              e.preventDefault();
-              return;
-            }
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('number', number.toString());
-            e.dataTransfer.setData('sourceType', 'ordered');
-          }}
-        >
+        <div className={cardClass}>
           {pictogramImg ? (
             <img
               src={pictogramImg}

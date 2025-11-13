@@ -22,7 +22,7 @@
 
 import React from 'react';
 import DroppableSlot from './DroppableSlot';
-import './Game2.css';
+import './DropZone.css';
 
 /**
  * Props del componente DropZone.
@@ -34,6 +34,8 @@ import './Game2.css';
  * @property {number} totalSlots - Número total de slots a renderizar
  * @property {boolean} [usePictogram] - Si usar pictogramas en vez de números (rango 0-10)
  * @property {Set<number>} [lockedIndices] - Set de índices bloqueados (números de ayuda)
+ * @property {object} [selectedNumber] - Número actualmente seleccionado mediante click
+ * @property {(targetIndex: number) => void} [onSlotClick] - Callback al hacer click en un slot
  */
 interface DropZoneProps {
   numbers: (number | undefined)[];
@@ -42,6 +44,12 @@ interface DropZoneProps {
   totalSlots: number;
   usePictogram?: boolean;
   lockedIndices?: Set<number>;
+  selectedNumber?: {
+    value: number;
+    source: 'available' | 'ordered';
+    index: number;
+  } | null;
+  onSlotClick?: (targetIndex: number) => void;
 }
 
 /**
@@ -92,7 +100,9 @@ const DropZone: React.FC<DropZoneProps> = ({
   showFeedback,
   totalSlots,
   usePictogram = false,
-  lockedIndices = new Set()
+  lockedIndices = new Set(),
+  selectedNumber = null,
+  onSlotClick
 }) => {
   // Crear array de slots con posiciones fijas (evita reordenamiento visual)
   const slots = Array.from({ length: totalSlots }, (_, index) => {
@@ -109,6 +119,9 @@ const DropZone: React.FC<DropZoneProps> = ({
       isIncorrect = num !== correctOrder[index];
     }
 
+    // Verificar si este slot está seleccionado
+    const isSelected = selectedNumber?.source === 'ordered' && selectedNumber.index === index;
+
     return (
       <DroppableSlot
         key={slotId}
@@ -119,6 +132,8 @@ const DropZone: React.FC<DropZoneProps> = ({
         isIncorrect={isIncorrect}
         usePictogram={usePictogram}
         isLocked={isLocked}
+        isSelected={isSelected}
+        onSlotClick={onSlotClick}
       />
     );
   });
