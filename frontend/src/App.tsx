@@ -49,6 +49,7 @@ import TeacherProfilePage from './pages/teacherProfile/teacherProfilePage';
 
 import TeacherRegister from './pages/auth/TeacherRegister';
 import RegisterConfirmation from './pages/auth/RegisterConfirmation';
+import StudentProfile from './pages/student/StudentProfile';
 
 
 /**
@@ -85,6 +86,7 @@ export default function App() {
             <Route path="/student-login/step3/:groupId/:username" exact component={StudentLoginStep3} />
 
             <Route path="/student-dashboard" exact component={StudentDashboard} />
+            <Route path="/student-profile" exact component={StudentProfile} />
 
             {/* Rutas de juegos */}
             <Route path="/game1" exact component={Game1} />
@@ -101,6 +103,7 @@ export default function App() {
             <Route path="/admin-dashboard/groups-management" exact component={GroupsManagement} />
             <Route path="/teacher-profile" exact component={TeacherProfilePage} />
             <Route path="/register/confirmation/:tipo" component={RegisterConfirmation} exact />
+
 
             {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
             <Redirect to="/student-login" />
