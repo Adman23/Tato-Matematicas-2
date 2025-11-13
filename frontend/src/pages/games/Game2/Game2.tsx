@@ -19,12 +19,12 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
 import DropZone from './DropZone';
-import Game2Header from './Game2Header';
+import Game2Header from '../Game2Header';
 import './Game2.css';
 
 // Importar imágenes para el header
-import imgAceptar from '/assets/juegosImg/game2/aceptar.png';
-import imgVolver from '/assets/juegosImg/game2/volver.png';
+import imgAceptar from '/assets/juegosImg/aceptar.png';
+import imgVolver from '/assets/juegosImg/volver.png';
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 
@@ -121,7 +121,7 @@ const Game2: React.FC = () => {
     loadGameConfig();
     setGameStartTime(Date.now());
   },
-   []);
+    []);
 
   // Crear sesión cuando la configuración esté cargada (solo una vez)
   useEffect(() => {
@@ -129,7 +129,7 @@ const Game2: React.FC = () => {
       sessionCreatedRef.current = true;
       createGameSession();
     }
-    
+
   }, [config]);
 
   // Generar nueva ronda cuando cambia currentRound
@@ -580,7 +580,7 @@ const Game2: React.FC = () => {
         // Convertir undefined a -1 para que el backend pueda procesarlo
         const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
 
-        await gamesAPI.saveRoundResult(sessionId, {
+        await gamesAPI.saveRoundResultGame2(sessionId, {
           round: currentRound,
           numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
           user_order: userOrderWithNulls,
@@ -665,7 +665,7 @@ const Game2: React.FC = () => {
         // Convertir undefined a -1 para que el backend pueda procesarlo
         const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
 
-        await gamesAPI.saveRoundResult(sessionId, {
+        await gamesAPI.saveRoundResultGame2(sessionId, {
           round: currentRound,
           numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
           user_order: userOrderWithNulls,

@@ -37,7 +37,7 @@ export default function TutorDashboard() {
     <IonPage>
       <SimpleHeaderUser userName={user.username} photoUrl={user.photo_url} />
 
-       <IonContent className="student-dashboard-content">
+      <IonContent className="student-dashboard-content">
         <div className="games-container">
           <div className="game-button-wrapper">
             <IonButton
