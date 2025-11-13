@@ -14,7 +14,7 @@ import {
 } from '@ionic/react';
 import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { authAPI, getImages } from '../../lib/api'; // 👈 Added getImages
+import { authAPI, getImages } from '../../lib/api'; 
 import type { StudentBasicInfo } from '../../lib/api';
 import './StudentLogin.css';
 
@@ -24,7 +24,7 @@ export default function StudentLoginStep2() {
   const [selectedStudent, setSelectedStudent] = useState<StudentBasicInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [arrowImageUrl, setArrowImageUrl] = useState<string | null>(null); // 👈 For arrows
+  const [arrowImageUrl, setArrowImageUrl] = useState<string | null>(null); 
   const [currentPage, setCurrentPage] = useState(0);
   const history = useHistory();
 
