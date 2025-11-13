@@ -135,7 +135,7 @@ export interface UserData {
 
 /**
  * @brief Auth response for users
- * @use Log in
+ * @use   Log in
  */
 export interface AuthResponse {
   access_token: string;
@@ -145,7 +145,7 @@ export interface AuthResponse {
 
 /** 
  * @brief Represents the data needed to register any type of user
- * @use Register endpoint when sending the request
+ * @use   Register endpoint when sending the request
  */
 export interface RegisterData {
   username: string;
@@ -157,7 +157,8 @@ export interface RegisterData {
 /**
  * !! EDITED
  *  -> Added group_id field, only for students so it can be null
- * Datos requeridos para iniciar sesión de usuario.
+ * @brief 
+ * @use
  */
 export interface LoginData {
   username: string;
