@@ -1,8 +1,16 @@
 /**
+ * !! SUMMARY !!
+ *  -> EDITED tag means that code has been changed, not only comments
+ *  -> DEPRECATED tag means that its older code no longer useful
+ *     -> There should be changes in other files to take into account when 
+ *        code is deprecated, if something doesnt work like it should check the
+ *        deprecated functions to maybe gain some insight.
+ * 
  * !! EDITED
  *  -> Restructured almost all the functions
  *  -> Added logic for the axios response manager
  *  -> Edited and removed some functions
+ * 
  * 
  * API Module
  * --------------------------------------------------
@@ -157,8 +165,9 @@ export interface RegisterData {
 /**
  * !! EDITED
  *  -> Added group_id field, only for students so it can be null
- * @brief 
- * @use
+ * 
+ * @brief Login data
+ * @use   Login endpoint when sending the request
  */
 export interface LoginData {
   username: string;
@@ -169,18 +178,43 @@ export interface LoginData {
 /**
  * Representa un grupo de estudiantes.
  */
+export interface Group {
+  id: number;
+  alias: string;
+}
+
+/**
+ * @brief Data to register a Group, not very useful but allows to expand the data
+ * @use   Register group endpoint
+ */
 export interface RegisterGroup {
   alias: string;
 }
 
 
 /**
- * Representa un grupo de estudiantes.
+ * Respuesta al crear una sesión de juego
  */
-export interface Group {
-  id: number;
-  alias: string;
+export interface GameSessionResponse {
+  session_id: string;
 }
+
+/**
+ * Datos de una ronda de juego
+ */
+export interface RoundResult {
+  round: number;
+  numbers: number[];
+  user_order: number[];
+  correct_order: number[];
+  is_correct: boolean;
+  time_seconds: number;
+  is_final_attempt?: boolean; // Opcional, por defecto true en backend
+  omissions?: number; // Números que no colocó (dejó sin colocar)
+}
+
+
+
 
 
 /**
@@ -246,23 +280,23 @@ export interface StudentBasicInfo {
 
 // === AUTH API ===
 /**
- * Conjunto de endpoints de autenticación.
- * Cada método devuelve una promesa con los datos del backend.
+ * Auth endpoints.
+ * Returns a promise (synchronous behavior handled in the caller) with the response data.
  */
 export const authAPI = {
   /**
-   * Registrar un nuevo usuario (admin o tutor).
-   * @param data - Datos de registro.
-   * @returns Información del usuario y tokens de acceso.
+   * @brief Register new user
+   * @param data - RegisterData
+   * @returns Returns the info of the endpoint located in auth/register
    */
   register: (data: RegisterData) => {
     return api.post('/auth/register', data);
   },
 
   /**
-  * Registrar un nuevo grupo.
-  * @param data - Datos del grupo.
-  * @returns Información del grupo creado.
+  * @brief Register new group
+  * @param data - RegisterGroup
+  * @returns Information of the Group
   */
   register_group: (data: RegisterGroup) => {
     // Backend router exposes POST /auth/register/group (singular)
@@ -353,7 +387,7 @@ export const authAPI = {
 };
 
 
-// === OTROS ENDPOINTS ===
+// === OTHER ENDPOINTS ===
 /**
  * Obtener todos los profesores
  * @returns  Lista de profesores
@@ -503,26 +537,7 @@ export interface GameConfig {
   };
 }
 
-/**
- * Respuesta al crear una sesión de juego
- */
-export interface GameSessionResponse {
-  session_id: string;
-}
 
-/**
- * Datos de una ronda de juego
- */
-export interface RoundResult {
-  round: number;
-  numbers: number[];
-  user_order: number[];
-  correct_order: number[];
-  is_correct: boolean;
-  time_seconds: number;
-  is_final_attempt?: boolean; // Opcional, por defecto true en backend
-  omissions?: number; // Números que no colocó (dejó sin colocar)
-}
 
 /**
  * Conjunto de endpoints para juegos.

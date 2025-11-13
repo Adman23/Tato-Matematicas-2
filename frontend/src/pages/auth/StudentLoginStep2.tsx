@@ -1,4 +1,6 @@
 /**
+ * !! EDITED
+ *  -> Now there is no student
  * Pantalla de Paso 2: Selección de Usuario
  * ---------------------------------------------------------
  * El estudiante selecciona su username de la lista de estudiantes del grupo.
@@ -34,7 +36,7 @@ export default function StudentLoginStep2() {
   const groupId = params.groupId || history.location.pathname.split('/').pop() || '';
 
   const [students, setStudents] = useState<User[]>([]);
-  const [selectedStudent, setSelectedStudent] = useState<StudentBasicInfo | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -68,7 +70,7 @@ export default function StudentLoginStep2() {
     }
   };
 
-  const handleStudentClick = (student: StudentBasicInfo) => {
+  const handleStudentClick = (student: User) => {
     setSelectedStudent(student);
     setError('');
   };

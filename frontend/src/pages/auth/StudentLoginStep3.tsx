@@ -1,4 +1,7 @@
 /**
+ * !! EDITED
+ *  -> Now there is no student
+ * 
  * Pantalla de Paso 3: Secuencia de Pictogramas (Contraseña)
  * ---------------------------------------------------------
  * El estudiante selecciona una secuencia de pictogramas (animales) que
@@ -50,7 +53,7 @@ const MAX_LENGTH = REQUIRED_LENGTH; // Se muestran solo 3 posiciones fijas
 export default function StudentLoginStep3() {
   const params = useParams<{ groupId: string; username: string }>();
   const history = useHistory();
-  const { loginStudent } = useAuth();
+  const { login } = useAuth();
 
   // Extract groupId and username from URL pathname as fallback (IonReactRouter issue workaround)
   const pathParts = history.location.pathname.split('/');
@@ -123,7 +126,7 @@ export default function StudentLoginStep3() {
       // Convertir array de pictogramas a string con guiones: "perro-gato-león"
       const password = selected.join('-');
 
-      await loginStudent({
+      await login({
         group_id: groupId,
         username: username,
         password: password
