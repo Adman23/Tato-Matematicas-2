@@ -1,30 +1,30 @@
 /**
- * Contexto de Autenticación Unificado
+ * Auth context
  * -----------------------------------
- * Maneja el estado global tanto de usuarios (tutores/admins)
- * como de estudiantes en la aplicación.
+ * Context for every user, its lightweight and only contains basic info.
+ * Its only loaded once when its logged in, and removed when logged out.
+ * -------------------------------
  *
- * Permite:
- * - Iniciar sesión (usuarios o estudiantes)
- * - Registrar nuevos usuarios
- * - Cerrar sesión
- * - Mantener el estado de autenticación en toda la app
+ * Allows to:
+ * - Log in
+ * - Log out
+ * - Auth access to user data
  */
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authAPI } from '../lib/api';
 import type { User, Student, LoginData, RegisterData, StudentLoginData } from '../lib/api';
 
 /**
- * Estructura del contexto de autenticación.
- * Define los datos y funciones disponibles para toda la aplicación.
+ * Structure of the AuthContext.
+ * Data and functions.
  */
 interface AuthContextType {
   user: User | null;
   student: Student | null;
   loading: boolean;
   login: (data: LoginData) => Promise<void>;
-  loginStudent: (data: StudentLoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -102,22 +102,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   /**
-   * Inicia sesión de tutor o administrador.
-   * Guarda el token y los datos del usuario en localStorage.
+   * !! EDITED
+   *  -> Adapted for every type of User
+   * 
+   * Log in for every user
+   * Saves the token and the data
    */
   const login = async (data: LoginData) => {
     const response = await authAPI.login(data);
     localStorage.setItem('access_token', response.access_token);
     localStorage.setItem('user', JSON.stringify(response.user));
     setUser(response.user);
-    setStudent(null); // Asegurar que no hay estudiante activo
+    // setStudent(null); // Asegurar que no hay estudiante activo
   };
 
   /**
+   * !! DEPRECATED
    * Inicia sesión de estudiante mediante pictogramas.
    * Guarda su token y datos básicos.
    * Ahora usa el nuevo flujo: group_id + username + password (pictogramas unidos por guiones).
    */
+  /*
   const loginStudent = async (data: StudentLoginData) => {
     const response = await authAPI.loginStudent(data);
     // El backend ahora devuelve access_token (no token) y student (UserProfile)
@@ -127,6 +132,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setStudent(response.student);
     setUser(null); // Asegurar que no hay usuario activo
   };
+  */
 
  /**
  * Registra un nuevo usuario (tutor, admin o estudiante).

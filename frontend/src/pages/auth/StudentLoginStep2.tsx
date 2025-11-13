@@ -15,7 +15,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
-import type { StudentBasicInfo } from '../../lib/api';
+import type { User } from '../../lib/api';
 import './StudentLogin.css';
 
 /**
@@ -33,7 +33,7 @@ export default function StudentLoginStep2() {
   // Extract groupId from URL pathname as fallback (IonReactRouter issue workaround)
   const groupId = params.groupId || history.location.pathname.split('/').pop() || '';
 
-  const [students, setStudents] = useState<StudentBasicInfo[]>([]);
+  const [students, setStudents] = useState<User[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<StudentBasicInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

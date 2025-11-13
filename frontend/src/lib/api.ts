@@ -1,22 +1,25 @@
 /**
- * Cliente API para el backend de TatoMaths.
+ * !! EDITED
+ *  -> Restructured almost all the functions
+ *  -> Added logic for the axios response manager
+ *  -> Edited and removed some functions
+ * 
+ * API Module
  * --------------------------------------------------
- * Este módulo define:
- * - La configuración base de Axios (`api`)
- * - Interceptores de autenticación y manejo de errores
- * - Tipos de datos (User, Student, etc.)
- * - Servicios API de autenticación (`authAPI`)
+ * Includes:
+ * - Axios config to manage errors for the request/response model.
+ * - Data Types/Interfaces
+ * - API Services -> connection to endpoints
  *
- * Se encarga de realizar las peticiones HTTP al backend
- * y añadir automáticamente el token correspondiente (usuario o estudiante).
+ * RESTFUL API client to interact with the backend services.
  */
+
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 /**
- * Cliente Axios configurado con la URL base del backend.
- * Incluye encabezado `Content-Type: application/json`.
+ * Axios client.
  */
 export const api = axios.create({
   baseURL: API_URL,
@@ -27,12 +30,10 @@ export const api = axios.create({
 
 
 /**
- * Interceptor de peticiones.
- * Añade automáticamente el token JWT del usuario o estudiante
- * en el encabezado `Authorization` de cada petición.
+ * Request interceptor.
+ * Adds the access token to the header of the request (Authorization).
  */
 api.interceptors.request.use((config) => {
-  // Todos los usuarios (tutor/admin/estudiante) ahora usan access_token
   const accessToken = localStorage.getItem('access_token');
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
@@ -42,14 +43,45 @@ api.interceptors.request.use((config) => {
 
 
 /**
- * Interceptor de respuestas.
- * Maneja errores comunes del backend (por ejemplo, 401 Unauthorized).
- * Si el token es inválido o expiró, limpia los datos locales
- * y redirige al login correspondiente.
+ * !!NEW
+ * Cleans the storage, used when logging out or expired/invalid token
+ */
+function emptyStorage(){
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('student_id');
+        localStorage.removeItem('student');
+}
+
+
+/**
+ * Response interceptor.
+ * Exception handler for every type of error.
+ * Expired or invalid tokens -> clears localStorage and redirects to login.
+ * 
+ * !!EDITED
+ * Type 1: Network and client side errors
+ *  -> Request fails to reach the API
+ *  -> error.response undefined / null
+ *  -> Possible reasons: FastAPI server down / CORS doesnt function well / user offline
+ * 
  */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+
+    // Type 1 Error----------------------------------------------
+    if (!error.response){
+      // 1. Check for a timeout first
+      if (error.code === 'ECONNABORTED') {
+        console.error("Request Timed Out:", error.message);
+        // Show a global toast
+        // showToast("The server is taking too long to respond. Please try again.");
+        return Promise.reject(error);
+      }
+    }
+    // Type 2 Error----------------------------------------------
+    else
     if (error.response?.status === 401) {
       // Solo redirigir si NO es un endpoint de login/auth
       // Los endpoints de login pueden devolver 401 por credenciales incorrectas
@@ -60,13 +92,9 @@ api.interceptors.response.use(
       if (!isAuthEndpoint) {
         // Token inválido o expirado, limpiar todo
         const isStudent = !!localStorage.getItem('student');
-
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('student_id');
-        localStorage.removeItem('student');
-
-        // Redirigir según el tipo de usuario
+        emptyStorage();
+        
+        // Redirect
         if (isStudent) {
           window.location.href = '/student-login';
         } else {
@@ -74,43 +102,40 @@ api.interceptors.response.use(
         }
       }
     }
+
     return Promise.reject(error);
   }
 );
 
 
-// ==== INTERFACES DE DATOS ====
+// ==== DATA INTERFACES ====
 
 /**
- * Representa un usuario del sistema (tutor o admin).
+ * !!EDITED
+ *  -> Removed full_name and email fields. -> Not needed.
+ * @brief Represents a user.
  */
 export interface User {
   id: string;
   username: string;
-  email: string;
-  full_name: string;
-  role: 'admin' | 'teacher';
+  role: 'admin' | 'teacher' | 'student';
   photo_url?: string;
 }
 
-
 /**
- * Representa un estudiante autenticado en el sistema.
+ * !!NEW
+ * @brief Represents the user data, only for students and teachers.
+ * @use for responses when loading the structures for the user (mainly login and reload)
  */
-export interface Student {
-  id: string;
-  username: string;
-  role: string;
-  photo_url?: string;
-  notes?: string;
-  visual_preferences?: any;
-  audio_preferences?: any;
-  accessibility_settings?: any;
-  game_preferences?: any;
+export interface UserData {
+  user_profile: any;
+  game_configuration: any;
+  reinforcement_messages: any;
 }
 
 /**
- * Respuesta de autenticación de usuario.
+ * @brief Auth response for users
+ * @use Log in
  */
 export interface AuthResponse {
   access_token: string;
@@ -118,17 +143,9 @@ export interface AuthResponse {
   user: User;
 }
 
-/**
- * Respuesta de autenticación de estudiante.
- */
-export interface StudentAuthResponse {
-  access_token: string;
-  token_type: string;
-  student: Student;
-}
-
-/**
- * Datos requeridos para registrar un nuevo usuario.
+/** 
+ * @brief Represents the data needed to register any type of user
+ * @use Register endpoint when sending the request
  */
 export interface RegisterData {
   username: string;
@@ -138,22 +155,15 @@ export interface RegisterData {
 }
 
 /**
+ * !! EDITED
+ *  -> Added group_id field, only for students so it can be null
  * Datos requeridos para iniciar sesión de usuario.
  */
 export interface LoginData {
   username: string;
   password: string;
+  group_id?: string; // Only for users with role="student"
 }
-
-/**
- * Datos requeridos para el login de estudiante (pictogramas).
- */
-export interface StudentLoginData {
-  group_id: string;
-  username: string;
-  password: string; // formato: "perro-gato-león"
-}
-
 
 /**
  * Representa un grupo de estudiantes.
@@ -171,17 +181,69 @@ export interface Group {
   alias: string;
 }
 
+
 /**
+ * !!DEPRECATED 
+ *  -> All is managed by user structure
+ */
+/* 
+export interface Student {
+  id: string;
+  username: string;
+  role: string;
+  photo_url?: string;
+  notes?: string;
+  visual_preferences?: any;
+  audio_preferences?: any;
+  accessibility_settings?: any;
+  game_preferences?: any;
+}
+*/
+
+/**
+ * !!DEPRECATED
+ *  -> All is managed by user structure
+ */
+/* 
+export interface StudentAuthResponse {
+  access_token: string;
+  token_type: string;
+  student: Student;
+}
+*/
+
+/**
+ * !! DEPRECATED
+ *  -> All is managed by user structure
+ * Datos requeridos para el login de estudiante (pictogramas).
+ */
+/*
+export interface StudentLoginData {
+  group_id: string;
+  username: string;
+  password: string; // formato: "perro-gato-león"
+}
+*/
+
+/**
+ * !! DEPRECATED
+ *  -> Too similar to User
+ *  -> Replaced all the uses with User (uses in api.ts and StudentLogin)
+ * 
  * Información básica de estudiante para selección.
  */
+/*
 export interface StudentBasicInfo {
   id: string;
   username: string;
   photo_url?: string;
 }
+*/
+//------------------------------------------------------------
 
-// === ENDPOINTS DE AUTENTICACIÓN ===
 
+
+// === AUTH API ===
 /**
  * Conjunto de endpoints de autenticación.
  * Cada método devuelve una promesa con los datos del backend.
@@ -255,15 +317,19 @@ export const authAPI = {
     localStorage.removeItem('user');
   },
 
+  
   /**
+   * !! DEPRECATED
    * Iniciar sesión de estudiante mediante secuencia de pictogramas.
    * @param data - Datos de pictogramas del estudiante.
    * @returns Token y perfil del estudiante autenticado.
    */
+  /*
   loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
     const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
     return response.data;
   },
+  */
 
   /**
    * Obtener todos los grupos disponibles.
@@ -279,11 +345,12 @@ export const authAPI = {
    * @param groupId - ID del grupo.
    * @returns Lista de estudiantes del grupo.
    */
-  getStudentsByGroup: async (groupId: string): Promise<StudentBasicInfo[]> => {
-    const response = await api.get<StudentBasicInfo[]>(`/auth/groups/${groupId}/students`);
+  getStudentsByGroup: async (groupId: string): Promise<User[]> => {
+    const response = await api.get<User[]>(`/auth/groups/${groupId}/students`);
     return response.data;
   },
 };
+
 
 // === OTROS ENDPOINTS ===
 /**
