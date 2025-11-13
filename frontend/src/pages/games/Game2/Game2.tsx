@@ -23,8 +23,8 @@ import Game2Header from '../Game2Header';
 import './Game2.css';
 
 // Importar imágenes para el header
-import imgAceptar from '/assets/juegosImg/game2/aceptar.png';
-import imgVolver from '/assets/juegosImg/game2/volver.png';
+import imgAceptar from '/assets/juegosImg/aceptar.png';
+import imgVolver from '/assets/juegosImg/volver.png';
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 

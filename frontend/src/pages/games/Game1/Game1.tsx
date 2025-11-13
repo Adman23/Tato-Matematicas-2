@@ -26,45 +26,34 @@ import type { GameConfig } from '../../../lib/api';
 import Game2Header from '../Game2Header';
 import './Game1.css';
 
-// Importar imágenes locales de pictogramas
-import img0 from '../Game2/img/0.png';
-import img1 from '../Game2/img/uno.png';
-import img2 from '../Game2/img/2.png';
-import img3 from '../Game2/img/3.png';
-import img4 from '../Game2/img/4.png';
-import img5 from '../Game2/img/5.png';
-import img6 from '../Game2/img/6.png';
-import img7 from '../Game2/img/7.png';
-import img8 from '../Game2/img/8.png';
-import img9 from '../Game2/img/9.png';
-import img10 from '../Game2/img/10.png';
-
 // Importar imágenes para el header
-import imgAceptar from '../Game2/img/aceptar.png';
-import imgFlecha from '../Game2/flecha.png';
-import imgSonido from '../Game2/img/sonido.png';
-import imgJuego from '../Game2/img/juegoX.png';
-import imgSonidoConTexto from '../Game2/img/sonido_con_texto.png';
-import imgSiguiente from '../Game2/img/siguiente.png';
+import imgAceptar from '/assets/juegosImg/aceptar.png';
+import imgSonido from '/assets/juegosImg/game1/sonido.png';
+import imgJuego from '/assets/juegosImg/juegoX.png';
+import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
+import imgSiguiente from '/assets/juegosImg/siguiente.png';
+
+// Flecha desde assets
+const imgFlecha = '/assets/juegosImg/flecha.png';
 
 // Importar imagen de Tato
-import imgTato from '../Tato/Tato.png';
-import imgTatoFeliz from '../Tato/TatoFeliz.png';
-import imgTatoTriste from '../Tato/TatoTriste.png';
+import imgTato from '/assets/Tato/Tato.png';
+import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
+import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 
-// Mapeo de números a imágenes locales
+// Mapeo de números a imágenes desde assets
 const PICTOGRAM_IMAGES: { [key: number]: string } = {
-    0: img0,
-    1: img1,
-    2: img2,
-    3: img3,
-    4: img4,
-    5: img5,
-    6: img6,
-    7: img7,
-    8: img8,
-    9: img9,
-    10: img10
+    0: '/assets/numbers/0.png',
+    1: '/assets/numbers/1.png',
+    2: '/assets/numbers/2.png',
+    3: '/assets/numbers/3.png',
+    4: '/assets/numbers/4.png',
+    5: '/assets/numbers/5.png',
+    6: '/assets/numbers/6.png',
+    7: '/assets/numbers/7.png',
+    8: '/assets/numbers/8.png',
+    9: '/assets/numbers/9.png',
+    10: '/assets/numbers/10.png'
 };
 
 const TOTAL_ROUNDS = 5;
