@@ -94,7 +94,8 @@ async def get_current_user(
                 "id": responseAuth.user.id,
                 "username": responseAuth.user.email.split("@")[0],
                 "role": responsePublic.data[0]["role"],
-                "photo_url": responsePublic.data[0].get("photo_url")
+                "photo_url": supabase_admin.storage.from_("user_photo")\
+                                .get_public_url(responsePublic.data[0].get("photo_url")) or None
                 }
         
         

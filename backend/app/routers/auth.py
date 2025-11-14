@@ -479,10 +479,17 @@ async def get_students_by_group(group_id: int):
             try:
                 auth_user = supabase_admin.auth.admin.get_user_by_id(user_data["id"])
                 username = auth_user.user.email.split("@")[0]
+
+                # Convert photo_url to public URL if exists
+                photo_url_raw = user_data.get("photo_url")
+                photo_url = None
+                if photo_url_raw:
+                    photo_url = supabase_admin.storage.from_("user_photo").get_public_url(photo_url_raw)
+
                 return {
                     "id": user_data["id"],
                     "username": username,
-                    "photo_url": user_data.get("photo_url")
+                    "photo_url": photo_url
                 }
             except Exception as e:
                 print(f"Warning: Could not get username for user {user_data['id']}: {e}")

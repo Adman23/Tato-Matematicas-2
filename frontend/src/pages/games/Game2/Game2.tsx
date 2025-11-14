@@ -662,7 +662,7 @@ const Game2: React.FC = () => {
     }
 
     // Redirigir al dashboard
-    const dashboardRoute = student ? '/student-dashboard' : '/tutor-dashboard';
+    const dashboardRoute = user?.role=='student' ? '/student-dashboard' : '/tutor-dashboard';
     history.push(dashboardRoute);
   };
 
