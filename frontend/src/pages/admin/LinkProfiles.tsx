@@ -353,6 +353,29 @@ export default function LinkProfiles() {
         return <Redirect to="/login" />;
     }
 
+    // Preparar la lista de estudiantes a mostrar: filtrar por query y, si hay
+    // una clase seleccionada, ordenar para que los alumnos que pertenezcan a
+    // esa clase aparezcan primero. No mutamos `students`.
+    const displayedStudents = (() => {
+        const filtered = studentQuery === '' ? students : students.filter(s => {
+            const q = studentQuery.toLowerCase();
+            const uname = (s.username || '').toLowerCase();
+            const inUsername = uname.includes(q);
+            const inGroup = (s.group && s.group.alias) ? (s.group.alias || '').toLowerCase().includes(q) : false;
+            return inUsername || inGroup;
+        });
+
+        if (selectedClass === null) return filtered;
+
+        return [...filtered].sort((a, b) => {
+            const aIn = a.group?.id === selectedClass ? 0 : 1;
+            const bIn = b.group?.id === selectedClass ? 0 : 1;
+            if (aIn !== bIn) return aIn - bIn; // los que pertenecen a la clase van primero
+            // Fallback: ordenar por username para consistencia
+            return (a.username || '').localeCompare(b.username || '');
+        });
+    })();
+
     return (
         <IonPage>
             <SimpleHeaderAdmin adminName={user.username} />
@@ -380,15 +403,7 @@ export default function LinkProfiles() {
                         </div>
                         <div className='LinkProfiles-items'>
                             <IonList>
-                                {(
-                                    (studentQuery === '' ? students : students.filter(s => {
-                                        const q = studentQuery.toLowerCase();
-                                        const uname = (s.username || '').toLowerCase();
-                                        const inUsername = uname.includes(q);
-                                        const inGroup = (s.group && s.group.alias) ? (s.group.alias || '').toLowerCase().includes(q) : false;
-                                        return inUsername || inGroup;
-                                    }))
-                                ).map(student => (
+                                {displayedStudents.map(student => (
                                     <UserItem
                                         key={student.id}
                                         avatar={student.photo_url}

@@ -220,12 +220,13 @@
 
 .student-pictograms-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(60px, 12vw, 100px), 1fr));
   gap: clamp(0.25rem, 1.2vw, 0.8rem);
   flex: 1;
   align-content: center;
   max-height: clamp(22vh, 35vh, 40vh);
   width: 100%;
+  overflow-y: auto;
 }
 
 .student-pictogram-button {
@@ -471,13 +472,14 @@
   padding: clamp(0.2rem, 0.6vw, 0.4rem);
   gap: clamp(0.2rem, 0.6vw, 0.4rem);
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .student-user-photo {
   width: 100%;
   height: auto;
-  max-width: min(clamp(55%, 65%, 70%), clamp(80px, 15vw, 120px));
-  max-height: min(clamp(55%, 65%, 70%), clamp(80px, 15vw, 120px));
+  max-width: min(clamp(70%, 80%, 85%), clamp(100px, 20vw, 160px));
+  max-height: min(clamp(70%, 80%, 85%), clamp(100px, 20vw, 160px));
   aspect-ratio: 1;
   border-radius: clamp(3px, 0.8vw, 6px);
   border: 1px solid #ccc;
@@ -488,7 +490,7 @@
 
 .student-user-card h3 {
   color: #000000;
-  font-size: clamp(0.4rem, 1.2vw, 0.85rem);
+  font-size: clamp(0.65rem, 3cqw, 1.15rem);
   font-weight: 700;
   text-align: center;
   text-transform: uppercase;

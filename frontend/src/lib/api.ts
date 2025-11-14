@@ -532,9 +532,39 @@ export interface GameConfig {
   user_id: string;
   number_range: string;
   settings: {
-    quantity: number;
-    order: 'ascending' | 'descending';
+    options_count?: number;
+    quantity?: number;
+    order?: 'ascending' | 'descending';
   };
+}
+
+
+
+/**
+ * Datos de una ronda del juego 1: Elegir Número
+ */
+export interface RoundResultGame1 {
+  round: number;
+  numbers: number[];
+  selected_number: number;
+  correct_number: number | null;
+  is_correct: boolean;
+  time_seconds: number;
+}
+
+
+/**
+ * Datos de una ronda del juego 2: Ordenar Secuencia
+ */
+export interface RoundResultGame2 {
+  round: number;
+  numbers: number[];
+  user_order: number[];
+  correct_order: number[];
+  is_correct: boolean;
+  time_seconds: number;
+  is_final_attempt?: boolean; // Opcional, por defecto true en backend
+  omissions?: number; // Números que no colocó (dejó sin colocar)
 }
 
 
@@ -593,6 +623,35 @@ export const gamesAPI = {
   },
 
   /**
+ * Guarda el resultado de una ronda individual dentro de una sesión.
+ *
+ * Flujo de ejecución:
+ * 1. Envía los datos de la ronda (números, respuesta, corrección, tiempo)
+ * 2. El backend actualiza el campo results.attempts[] en game_sessions
+ * 3. Incrementa contadores de total_correct o total_incorrect según resultado
+ *
+ * @param sessionId - ID de la sesión activa donde guardar
+ * @param roundResult - Objeto con todos los datos de la ronda
+ * @returns Promesa que resuelve cuando se guarda exitosamente
+ *
+ * @example
+ * await gamesAPI.saveRoundResult('session-123', {
+ *   round: 1,
+ *   numbers: [1, 3, 5, 7, 9],
+ *   selected_number: 5,
+ *   correct_number: 5,
+ *   is_correct: true,
+ *   time_seconds: 12.5
+ * });
+ */
+  saveRoundResultGame1: async (sessionId: string, roundResult: RoundResultGame1): Promise<void> => {
+    await api.post(`/api/games/sessions/${sessionId}/round`, {
+      round_result: roundResult
+    });
+  },
+
+
+  /**
    * Guarda el resultado de una ronda individual dentro de una sesión.
    *
    * Flujo de ejecución:
@@ -614,7 +673,7 @@ export const gamesAPI = {
    *   time_seconds: 12.5
    * });
    */
-  saveRoundResult: async (sessionId: string, roundResult: RoundResult): Promise<void> => {
+  saveRoundResultGame2: async (sessionId: string, roundResult: RoundResultGame2): Promise<void> => {
     await api.post(`/api/games/sessions/${sessionId}/round`, {
       round_result: roundResult
     });

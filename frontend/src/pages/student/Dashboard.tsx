@@ -70,7 +70,7 @@ export default function StudentDashboard() {
               onClick={() => history.push('/game1')}
             >
               <div className="game-button-content">
-                <img src="/juego2.png" alt="Juego 1" className="game-image" />
+                <img src="/assets/juegosImg/juego2.png" alt="Juego 1" className="game-image" />
                 <div className="game-title">Toca el numero que suena</div>
               </div>
             </IonButton>
@@ -82,7 +82,7 @@ export default function StudentDashboard() {
               onClick={() => history.push('/game2')}
             >
               <div className="game-button-content">
-                <img src="/juegoX.png" alt="Juego 2" className="game-image" />
+                <img src="/assets/juegosImg/juegoX.png" alt="Juego 2" className="game-image" />
                 <div className="game-title">Ordena la secuencia</div>
               </div>
             </IonButton>
@@ -94,7 +94,7 @@ export default function StudentDashboard() {
               onClick={() => history.push('/game3')}
             >
               <div className="game-button-content">
-                <img src="/repartir.png" alt="Juego 3" className="game-image" />
+                <img src="/assets/juegosImg/repartir.png" alt="Juego 3" className="game-image" />
                 <div className="game-title">Juego de repartir</div>
               </div>
             </IonButton>
@@ -106,12 +106,13 @@ export default function StudentDashboard() {
               onClick={() => history.push('/game4')}
             >
               <div className="game-button-content">
-                <img src="/meter.png" alt="Juego 4" className="game-image" />
+                <img src="/assets/juegosImg/meter.png" alt="Juego 4" className="game-image" />
                 <div className="game-title">Igualar recipientes</div>
               </div>
             </IonButton>
           </div>
         </div>
+
       </IonContent>
     </IonPage>
   );
