@@ -164,6 +164,104 @@ const Game1: React.FC = () => {
     }, [gameFinished, history, user]);
 
 
+
+    /**
+     * 
+     * Función para reproducir el sonido de un número usando la API de síntesis de voz.
+     * 
+     * @param number 
+     */
+    function speakNumber(number: String | null) {
+        if (number === null) return;
+
+        const msg = new SpeechSynthesisUtterance(number.toString());
+        msg.lang = "es-ES"; // puedes usar "es-MX" o "es-AR"
+        msg.rate = 1;       // velocidad
+        msg.pitch = 5;      // tono
+        msg.volume = 1000;
+        speechSynthesis.speak(msg);
+
+        // // Comprobar soporte
+        // if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+        //     console.warn('Speech Synthesis no está soportado en este entorno');
+        //     return;
+        // }
+
+        // const synth = window.speechSynthesis;
+
+        // // Crea y habla con la voz opcionalmente elegida
+        // const speakWithVoice = (voice: SpeechSynthesisVoice | null, text: string) => {
+        //     // Cancelar cualquier reproducción previa para evitar solapamientos
+        //     try { synth.cancel(); } catch (e) { /* noop */ }
+
+        //     setListeningAudio(true);
+
+        //     const msg = new SpeechSynthesisUtterance(text);
+        //     msg.lang = 'es-ES';
+        //     msg.rate = 1;
+        //     msg.pitch = 1;
+        //     msg.volume = 1;
+        //     if (voice) msg.voice = voice;
+
+        //     msg.onend = () => {
+        //         setListeningAudio(false);
+        //     };
+
+        //     msg.onerror = (ev: SpeechSynthesisErrorEvent) => {
+        //         console.error('TTS error:', ev);
+        //         // Si falla la síntesis y hay otras voces, intentar otra voz una vez
+        //         if (ev.error === 'synthesis-failed') {
+        //             const allVoices = synth.getVoices();
+        //             // Si había una voz y hay al menos otra, intentar con la primera disponible distinta
+        //             const altVoice = allVoices.find(v => v !== voice) || null;
+        //             if (altVoice) {
+        //                 // quitar listeners y reintentar una vez
+        //                 try { synth.cancel(); } catch (e) { }
+        //                 // pequeña espera antes de reintentar
+        //                 setTimeout(() => speakWithVoice(altVoice, text), 150);
+        //                 return;
+        //             }
+        //         }
+
+        //         setListeningAudio(false);
+        //     };
+
+        //     synth.speak(msg);
+        // };
+
+        // const textToSpeak = number.toString();
+
+        // const voices = synth.getVoices();
+        // if (!voices || voices.length === 0) {
+        //     // Si aún no hay voces, esperar al evento 'voiceschanged' con fallback
+        //     const onVoicesChanged = () => {
+        //         const available = synth.getVoices() || [];
+        //         const spanishVoice = available.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) || available[0] || null;
+        //         speakWithVoice(spanishVoice, textToSpeak);
+        //         try { synth.removeEventListener('voiceschanged', onVoicesChanged); } catch (e) { }
+        //     };
+
+        //     synth.addEventListener('voiceschanged', onVoicesChanged);
+
+        //     // Fallback: tras un timeout breve, si aparecen voces, hablar
+        //     setTimeout(() => {
+        //         const available = synth.getVoices() || [];
+        //         if (available.length > 0) {
+        //             try { synth.removeEventListener('voiceschanged', onVoicesChanged); } catch (e) { }
+        //             const spanishVoice = available.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) || available[0] || null;
+        //             speakWithVoice(spanishVoice, textToSpeak);
+        //         } else {
+        //             // No hay voces: intentar hablar sin voz asignada
+        //             speakWithVoice(null, textToSpeak);
+        //         }
+        //     }, 500);
+        // } else {
+        //     // Seleccionar preferentemente una voz en español
+        //     const spanishVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) || voices[0] || null;
+        //     speakWithVoice(spanishVoice, textToSpeak);
+        // }
+    }
+
     /**
      * Carga la configuración personalizada del juego desde el backend.
      *
@@ -462,7 +560,7 @@ const Game1: React.FC = () => {
             </IonPage>
         );
     }
-    
+
     if (!user) {
         return <Redirect to="/student-login" />;
     }
@@ -601,6 +699,7 @@ const Game1: React.FC = () => {
                             fill="clear"
                             className="game1-check-button"
                             disabled={listeningAudio || showFeedback}
+                            onClick={() => speakNumber("Muy bieeeeeeeeen!!!!!!")}
                         >
                             <img
                                 src={imgSonidoConTexto}
