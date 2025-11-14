@@ -50,6 +50,10 @@ const PICTOGRAM_IMAGES: { [key: number]: string } = {
 const TOTAL_ROUNDS = 5;
 
 /**
+ * 
+ * !! EDITED
+ *  -> Now there is no student only user
+ *  -> If differenciation is needed, use the role
  * Componente principal del Juego 2: Ordena la Secuencia.
  *
  * Este juego educativo presenta números desordenados que el usuario (estudiante o profesor)
@@ -84,10 +88,10 @@ const TOTAL_ROUNDS = 5;
  */
 const Game2: React.FC = () => {
   const history = useHistory();
-  const { student, user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
-  const currentUser = student || user;
+  const currentUser = user;
 
   // Flag para prevenir creación duplicada de sesión (React 18 StrictMode)
   const sessionCreatedRef = useRef(false);
@@ -174,13 +178,13 @@ const Game2: React.FC = () => {
     if (gameFinished) {
       const timer = setTimeout(() => {
         // Redirigir al dashboard correspondiente según el tipo de usuario
-        const dashboardRoute = student ? '/student-dashboard' : '/tutor-dashboard';
+        const dashboardRoute = user?.role === "student" ? '/student-dashboard' : '/tutor-dashboard';
         history.push(dashboardRoute);
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [gameFinished, history, student]);
+  }, [gameFinished, history, user]);
 
   /**
    * Carga la configuración personalizada del juego desde el backend.
@@ -777,7 +781,7 @@ const Game2: React.FC = () => {
   }
 
   // Redirigir si no hay usuario autenticado (estudiante o profesor)
-  if (!student && !user) {
+  if (!user) {
     return <Redirect to="/student-login" />;
   }
 
