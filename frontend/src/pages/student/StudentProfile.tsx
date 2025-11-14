@@ -36,7 +36,7 @@ import './StudentProfile.css';
 export default function StudentProfile() {
 
     /**
-     * 'student': Object containing authenticated student data.
+     * 'user': Object containing authenticated student data.
      *            it should have the following structure:
      *           {
      *             username: string,
@@ -44,7 +44,13 @@ export default function StudentProfile() {
      *             other student properties...
      *           }  
      */ 
-    const { student, loading } = useAuth();
+    const { user, loading } = useAuth();
+
+    // Variables and functions---------------------------------
+    const [color, setColor] = useState('original');
+    const [sound, setSound] = useState('medio');
+    const [text, setText] = useState('normal');
+    // End of variables and functions--------------------------
 
     // Show loading icon
     if (loading) {
@@ -58,23 +64,16 @@ export default function StudentProfile() {
     }
 
     // Redirect if not authenticated
-    if (!student) {
+    if (!user) {
         return <Redirect to="/student-login" />;
     }
-
-    // Variables and functions---------------------------------
-    const [color, setColor] = useState('original');
-    const [sound, setSound] = useState('medio');
-    const [text, setText] = useState('normal');
-    // End of variables and functions--------------------------
-
 
     // Component-----------------------------------------------
     return (
         <IonPage>
             {/* Header */}
-            <SimpleHeaderUser userName={student.username} 
-                    photoUrl={student.photo_url} url="/student-dashboard" />
+            <SimpleHeaderUser userName={user.username} 
+                    photoUrl={user.photo_url} url="/student-dashboard" />
 
             {/* Main Content */}
             <IonContent className="ion-padding">

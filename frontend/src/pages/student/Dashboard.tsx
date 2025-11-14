@@ -14,6 +14,9 @@ import './Dashboard.css';
 
 
 /**
+ * 
+ * !! EDITED
+ *  -> Now there is no "student" only user
  * Componente funcional que representa el panel del estudiante.
  *
  * Permite al alumno autenticado:
@@ -34,7 +37,7 @@ import './Dashboard.css';
  * ```
  */
 export default function StudentDashboard() {
-  const { student, loading } = useAuth();
+  const { user, loading } = useAuth();
   const history = useHistory();
 
 
@@ -51,13 +54,13 @@ export default function StudentDashboard() {
   }
 
   // Redirigir si no hay estudiante autenticado
-  if (!student) {
+  if (!user) {
     return <Redirect to="/student-login" />;
   }
 
   return (
     <IonPage>
-      <SimpleHeaderUser userName={student.username} photoUrl={student.photo_url} />
+      <SimpleHeaderUser userName={user.username} photoUrl={user.photo_url} />
 
       <IonContent className="student-dashboard-content">
         <div className="games-container">
