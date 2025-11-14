@@ -37,7 +37,7 @@ interface AuthContextType {
  *
  * !! EDITED
  *  -> Removed logic for student, everything is user based now (problems may arise, check code)
- * 
+ *  -> Removed the call to me();
  * @brief This context is only for the auth data, other data will have
  * @param children - children pages that will have access
  * @returns provider that gives the context to the app
@@ -66,8 +66,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (token && savedUser) {
         try {
-          setUser(JSON.parse(savedUser));
-          const currentUser = await authAPI.me();
+          const currentUser = JSON.parse(savedUser);
           setUser(currentUser);
           localStorage.setItem('user', JSON.stringify(currentUser));
         } catch (error) {

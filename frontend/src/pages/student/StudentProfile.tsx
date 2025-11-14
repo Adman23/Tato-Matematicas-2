@@ -36,7 +36,7 @@ import './StudentProfile.css';
 export default function StudentProfile() {
 
     /**
-     * 'student': Object containing authenticated student data.
+     * 'user': Object containing authenticated student data.
      *            it should have the following structure:
      *           {
      *             username: string,
