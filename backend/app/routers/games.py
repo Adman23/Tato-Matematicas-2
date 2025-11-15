@@ -3,56 +3,20 @@ Router de Juegos
 Endpoints para gestionar configuraciones, sesiones y resultados de los juegos
 """
 from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 from ..services.supabase import supabase_admin
 from ..dependencies import get_current_user
 
+from ..schemas.games import (
+    GameConfigResponse,
+    CreateSessionRequest,
+    SaveRoundRequest,
+    FinishSessionRequest,
+)
+
 router = APIRouter()
-
-
-# ===== SCHEMAS =====
-
-class GameConfigResponse(BaseModel):
-    """Configuración del juego para un estudiante"""
-    game_id: int
-    game_key: str
-    user_id: str
-    number_range: str
-    settings: Dict[str, Any]
-
-
-class CreateSessionRequest(BaseModel):
-    """Crear nueva sesión de juego"""
-    student_id: str
-    game_key: str  # 'game2'
-
-
-class RoundResult(BaseModel):
-    """Resultado de una ronda"""
-    round: int
-    numbers: List[int]
-    user_order: List[int]
-    correct_order: List[int]
-    is_correct: bool
-    time_seconds: float
-    is_final_attempt: bool = True  # Por defecto True para compatibilidad
-    omissions: int = 0  # Números que no colocó (dejó sin colocar)
-    attempts: int = 0  # Contador de intentos (veces que presionó "Repetir")
-    hints: int = 0  # Contador de pistas usadas
-
-
-class SaveRoundRequest(BaseModel):
-    """Guardar resultado de ronda"""
-    round_result: RoundResult
-
-
-class FinishSessionRequest(BaseModel):
-    """Finalizar sesión de juego"""
-    total_time_seconds: float
-
 
 # ===== ENDPOINTS =====
 
@@ -115,11 +79,16 @@ async def get_game_config(student_id: str, game_key: str):
                 settings=config.get("settings", {})
             )
 
-        # 4. Si no existe, devolver configuración por defecto para Game2
-        default_settings = {
-            "quantity": 5,  # 5 números a ordenar
-            "order": "ascending"  # orden ascendente
-        }
+        # 4. Si no existe, devolver configuración por defecto 
+        if game_key == "touch_number":
+            default_settings = {
+                "options_count": 5  # 5 opciones para tocar
+            }
+        if game_key == "order_sequence":
+            default_settings = {
+                "quantity": 5,  # 5 números a ordenar
+                "order": "ascending"  # orden ascendente
+            }
 
         return GameConfigResponse(
             game_id=game_id,
@@ -251,16 +220,37 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         results = session.get("results", {"attempts": []})
 
         # 2. Añadir la nueva ronda al array de attempts
-        round_data = {
-            "round": request.round_result.round,
-            "numbers": request.round_result.numbers,
-            "user_order": request.round_result.user_order,
-            "correct_order": request.round_result.correct_order,
-            "is_correct": request.round_result.is_correct,
-            "time": request.round_result.time_seconds,
-            "attempts": request.round_result.attempts,
-            "hints": request.round_result.hints
-        }
+        # Diferenciar por tipo de juego
+        if session.get("game_id") == 1:
+            # Juego 1: Tocar número
+            round_data = {
+                "round": request.round_result.round,
+                "numbers": request.round_result.numbers,
+                "selected_number": request.round_result.selected_number,
+                "correct_number": request.round_result.correct_number,
+                "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds
+            }
+        elif session.get("game_id") == 2:
+            # Juego 2: Ordenar secuencia
+            round_data = {
+                "round": request.round_result.round,
+                "numbers": request.round_result.numbers,
+                "user_order": request.round_result.user_order,
+                "correct_order": request.round_result.correct_order,
+                "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds,
+                "attempts": request.round_result.attempts or 0,
+                "hints": request.round_result.hints or 0
+            }
+        else:
+            # Juego desconocido, usar campos genéricos
+            round_data = {
+                "round": request.round_result.round,
+                "numbers": request.round_result.numbers,
+                "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds
+            }
 
         if "attempts" not in results:
             results["attempts"] = []
