@@ -538,7 +538,28 @@ export interface GameConfig {
   };
 }
 
+/**
+ * Respuesta al crear una sesión de juego
+ */
+export interface GameSessionResponse {
+  session_id: string;
+}
 
+/**
+ * Datos de una ronda de juego
+ */
+export interface RoundResult {
+  round: number;
+  numbers: number[];
+  user_order: number[];
+  correct_order: number[];
+  is_correct: boolean;
+  time_seconds: number;
+  is_final_attempt?: boolean; // Opcional, por defecto true en backend
+  omissions?: number; // Números que no colocó (dejó sin colocar)
+  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
+  hints?: number; // Contador de pistas usadas
+}
 
 /**
  * Datos de una ronda del juego 1: Elegir Número
@@ -565,6 +586,8 @@ export interface RoundResultGame2 {
   time_seconds: number;
   is_final_attempt?: boolean; // Opcional, por defecto true en backend
   omissions?: number; // Números que no colocó (dejó sin colocar)
+  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
+  hints?: number; // Contador de pistas usadas
 }
 
 

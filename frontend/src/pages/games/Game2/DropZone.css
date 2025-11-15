@@ -1,0 +1,26 @@
+/**
+ * ============================================================================
+ * ESTILOS PARA DropZone - Zona de ordenamiento con slots
+ * ============================================================================
+ */
+
+/* ============================================================================
+   1. CONTENEDOR DE LA ZONA DE ORDENAMIENTO
+   ============================================================================ */
+
+.drop-zone-section-v2 {
+  margin-bottom: 2rem;
+}
+
+.drop-zone-v2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-height: 140px;
+  align-items: center;
+}
