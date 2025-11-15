@@ -443,47 +443,113 @@ const Game1: React.FC = () => {
     const speakNumber = (num: number | null) => {
         if (num === null) return;
         if (listeningAudio) return; // evitar múltiples reproducciones simultáneas
+        // Construir la secuencia de ficheros que hay que reproducir
+        const filesForNumber = (n: number): string[] => {
+            const files: string[] = [];
 
-        if (num < 0 || num > 10) {
-            console.warn('No hay sonido configurado para el número:', num);
+            // Casos directos
+            if ((n >= 0 && n <= 30) || (n < 100 && n % 10 === 0) || n % 100 === 0 || n === 100) {
+                files.push(`${n}.m4a`);
+                return files;
+            }
+
+            // 31..99 compuestos: decena + 'y' + unidad
+            if (n > 30 && n < 100) {
+                const unidades = n % 10;
+                const decenas = n - unidades;
+                files.push(`${decenas}.m4a`);
+                files.push(`y.m4a`);
+                files.push(`${unidades}.m4a`);
+                return files;
+            }
+
+            // 101..999: cientos + resto
+            if (n > 100 && n < 1000) {
+                const centenas = Math.floor(n / 100) * 100;
+                const resto = n % 100;
+
+                // Centenas
+                if (centenas === 100) {
+                    files.push(`ciento.m4a`);
+                } else {
+                    files.push(`${centenas}.m4a`); // 200,300,...900
+                }
+
+                // Añadir el resto usando las mismas reglas que arriba
+                if ((resto >= 0 && resto <= 30) || (resto < 100 && resto % 10 === 0) || resto % 100 === 0) {
+                    files.push(`${resto}.m4a`);
+                } else {
+                    const unidades = resto % 10;
+                    const decenas = resto - unidades;
+                    files.push(`${decenas}.m4a`);
+                    files.push(`y.m4a`);
+                    files.push(`${unidades}.m4a`);
+                }
+
+                return files;
+            }
+
+            // 100 exacto
+            if (n === 100) {
+                files.push(`100.m4a`);
+                return files;
+            }
+
+            return files;
+        };
+
+        // Reproduce una secuencia de archivos de audio de forma secuencial
+        const playFilesSequentially = async (files: string[]) => {
+            if (!files || files.length === 0) return;
+
+            setListeningAudio(true);
+
+            for (const f of files) {
+                const path = `/assets/sounds/man/${f}`;
+
+                // Detener audio anterior si existe
+                if (audioRef.current) {
+                    try {
+                        audioRef.current.pause();
+                        audioRef.current.currentTime = 0;
+                    } catch (e) { /* ignore */ }
+                    audioRef.current = null;
+                }
+
+                // Play single file and wait until it ends (or errors)
+                await new Promise<void>((resolve) => {
+                    const audio = new Audio(path);
+                    audioRef.current = audio;
+
+                    const finish = () => {
+                        if (audioRef.current === audio) audioRef.current = null;
+                        resolve();
+                    };
+
+                    audio.addEventListener('ended', finish);
+                    audio.addEventListener('error', (err) => {
+                        console.error('Error reproduciendo audio', path, err);
+                        finish();
+                    });
+
+                    audio.play().catch((err) => {
+                        console.error('play() falló para', path, err);
+                        finish();
+                    });
+                });
+            }
+
+            setListeningAudio(false);
+        };
+
+        const files = filesForNumber(num);
+        if (files.length === 0) {
+            console.warn('No audio files mapped for number', num);
             return;
         }
 
-        const fileName = `${num}.mp3`;
-        const path = `/assets/sounds/${fileName}`;
-
-        // Detener audio anterior si existe
-        if (audioRef.current) {
-            try {
-                audioRef.current.pause();
-                audioRef.current.currentTime = 0;
-            } catch (e) { /* ignore */ }
-            audioRef.current = null;
-        }
-
-        const audio = new Audio(path);
-        audioRef.current = audio;
-        setListeningAudio(true);
-
-        // Cuando termine o haya error, limpiar estado
-        const cleanup = () => {
-            setListeningAudio(false);
-            if (audioRef.current === audio) audioRef.current = null;
-        };
-
-        audio.addEventListener('ended', cleanup);
-        audio.addEventListener('error', (err) => {
-            console.error('Error reproduciendo audio', path, err);
-            cleanup();
-        });
-
-        // Intentar reproducir
-        audio.play().then(() => {
-            // reproducción iniciada correctamente
-        }).catch((err) => {
-            console.error('play() falló para', path, err);
-            cleanup();
-        });
+        // Lanzar la reproducción (no await en el handler para no bloquear la UI)
+        void playFilesSequentially(files);
     };
 
     // Limpiar audio cuando se desmonte el componente
