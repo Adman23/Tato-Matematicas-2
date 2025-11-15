@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
 import type { User } from '../../lib/api';
-import './StudentLogin.css';
+import './StudentLoginSelection.css';
 
 /**
  * Paso 2 del login de estudiante: Selección de username.
@@ -86,107 +86,95 @@ export default function StudentLoginStep2() {
 
   return (
     <IonPage>
-
-
       <IonContent className="student-login-content">
-        <div className="student-login-container">
-
+        <div className="sel-login-container">
           {/* Fila de botones superior */}
-
-
-          <div className="student-button-row">
-
-
-
+          <div className="sel-button-row">
             <IonButton
               fill="clear"
-              className="default-action-button"
+              className="sel-action-button"
               onClick={() => history.goBack()}
             >
               <img
                 src="/assets/pictograms/boton_volver.png"
                 alt="Volver"
-                className="student-boton-imagen"
+                className="sel-boton-imagen"
               />
             </IonButton>
-            <div className='action-card'>
+
+            <div className="sel-action-card">
               <IonButton
                 fill="clear"
-                className="default-action-button"
+                className="sel-action-button"
                 onClick={() => history.push('/')}
               >
                 <img
                   src="/assets/pictograms/home.png"
-                  alt="Volver a la pagina principal"
-                  className="student-boton-imagen"
+                  alt="Volver a la página principal"
+                  className="sel-boton-imagen"
                 />
-
               </IonButton>
-              <span className="default-action-button-label">Ir a inicio</span>
+              <span className="sel-action-button-label">Ir a inicio</span>
             </div>
 
-
             {/* Botón de avanzar */}
-
             <IonButton
               fill="clear"
-              className="default-action-button"
+              className="sel-action-button"
               onClick={handleAdvance}
               disabled={loading}
             >
               <img
                 src="/assets/pictograms/correcto.png"
                 alt="Avanzar"
-                className="student-boton-imagen student-boton-rotado"
+                className="sel-boton-imagen student-boton-rotado"
               />
             </IonButton>
-
-
           </div>
 
-          {/* Título y arriba */}
-          <div className="student-login-header">
-
-
-            <h1 className="student-login-title">Selección de usuario</h1>
-            <p className="student-login-subtitle">
+          {/* Título y subtítulo */}
+          <div className="sel-login-header">
+            <h1 className="sel-login-title">Selección de usuario</h1>
+            <p className="sel-login-subtitle">
               Toca tu foto o nombre y pulsa avanzar
             </p>
           </div>
 
           {/* Grid de estudiantes */}
           {loading ? (
-            <div className="student-loading">
+            <div className="sel-loading">
               <IonSpinner name="crescent" />
             </div>
           ) : students.length === 0 ? (
-            <div className="student-error-message ">
+            <div className="sel-error-message">
               <IonText color="warning">
                 <p>No hay estudiantes en este grupo</p>
               </IonText>
             </div>
           ) : (
-            <div className="student-pictograms-grid">
+            <div className="sel-pictograms-grid">
               {students.map((student) => (
                 <button
                   key={student.id}
                   onClick={() => handleStudentClick(student)}
                   disabled={loading}
-                  className={`student-pictogram-button ${selectedStudent?.id === student.id ? 'selected' : ''}`}
+                  className={`sel-pictogram-button ${
+                    selectedStudent?.id === student.id ? 'selected' : ''
+                  }`}
                   aria-label={student.username}
                 >
-                  <div className="student-user-card">
+                  <div className="sel-user-card">
                     {student.photo_url ? (
                       <img
                         src={student.photo_url}
                         alt={student.username}
-                        className="student-user-photo"
+                        className="sel-user-photo"
                       />
                     ) : (
                       <img
                         src="/assets/pictograms/user_default.png"
                         alt={student.username}
-                        className="student-user-photo"
+                        className="sel-user-photo"
                       />
                     )}
                     <h3>{student.username}</h3>
@@ -199,13 +187,11 @@ export default function StudentLoginStep2() {
           {/* Mensaje de error */}
           {error && (
             <IonText color="danger">
-              <div className="student-error-message">
+              <div className="sel-error-message">
                 <p>{error}</p>
               </div>
             </IonText>
           )}
-
-
         </div>
       </IonContent>
     </IonPage>

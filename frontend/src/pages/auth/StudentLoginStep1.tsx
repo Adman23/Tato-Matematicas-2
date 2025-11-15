@@ -16,7 +16,7 @@ import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
 import type { Group } from '../../lib/api';
-import './StudentLogin.css';
+import './StudentLoginSelection.css';
 
 /**
  * Paso 1 del login de estudiante: Selección de grupo.
@@ -79,82 +79,75 @@ export default function StudentLoginStep1() {
 
   return (
     <IonPage>
-
       <IonContent className="student-login-content">
-        <div className="student-login-container">
-
-
+        <div className="sel-login-container">
           {/* Fila de botones superior */}
-          <div className="student-button-row">
+          <div className="sel-button-row">
             <IonButton
               fill="clear"
-              className="default-action-button"
+              className="sel-action-button"
               onClick={() => history.push('/home')}
             >
               <img
                 src="/assets/pictograms/boton_volver.png"
                 alt="Volver"
-                className="student-boton-imagen"
+                className="sel-boton-imagen"
               />
             </IonButton>
 
             <IonButton
               fill="clear"
-              className="default-action-button"
+              className="sel-action-button"
               onClick={() => history.push('/home')}
             >
               <img
                 src="/assets/pictograms/home.png"
-                alt="Volver a la pagina principal"
-                className="student-boton-imagen"
+                alt="Volver a la página principal"
+                className="sel-boton-imagen"
               />
-
             </IonButton>
 
             {/* Botón de avanzar */}
-
             <IonButton
               fill="clear"
-              className="default-action-button"
+              className="sel-action-button"
               onClick={handleAdvance}
               disabled={loading}
             >
               <img
                 src="/assets/pictograms/correcto.png"
                 alt="Avanzar"
-                className="student-boton-imagen student-boton-rotado"
+                className="sel-boton-imagen student-boton-rotado" /* rotado no está en CSS nuevo — considera renombrarlo o moverlo a sel- si se usa */
               />
             </IonButton>
-
-
           </div>
 
-          {/* Título y arriba */}
-          <div className="student-login-header">
-
-            <h1 className="student-login-title">Seleccion de grupo</h1>
-            <p className="student-login-subtitle">
+          {/* Título y subtítulo */}
+          <div className="sel-login-header">
+            <h1 className="sel-login-title">Selección de grupo</h1>
+            <p className="sel-login-subtitle">
               Selecciona un grupo y pulsa avanzar
-
             </p>
           </div>
 
           {/* Grid de grupos */}
           {loading ? (
-            <div className="student-loading">
+            <div className="sel-loading">
               <IonSpinner name="crescent" />
             </div>
           ) : (
-            <div className="student-pictograms-grid">
+            <div className="sel-pictograms-grid">
               {groups.map((group) => (
                 <button
                   key={group.id}
                   onClick={() => handleGroupClick(group)}
                   disabled={loading}
-                  className={`student-pictogram-button ${selectedGroup?.id === group.id ? 'selected' : ''}`}
+                  className={`sel-pictogram-button ${
+                    selectedGroup?.id === group.id ? 'selected' : ''
+                  }`}
                   aria-label={group.alias}
                 >
-                  <div className="student-group-card">
+                  <div className="sel-group-card">
                     <h2>{group.alias}</h2>
                   </div>
                 </button>
@@ -165,12 +158,11 @@ export default function StudentLoginStep1() {
           {/* Mensaje de error */}
           {error && (
             <IonText color="danger">
-              <div className="student-error-message ">
+              <div className="sel-error-message">
                 <p>{error}</p>
               </div>
             </IonText>
           )}
-
         </div>
       </IonContent>
     </IonPage>

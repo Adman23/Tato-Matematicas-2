@@ -1,0 +1,271 @@
+/* ========================================
+   STUDENT LOGIN SELECTION — Step1 & Step2
+   ======================================== */
+
+.student-login-content {
+  --background: white;
+  overflow: hidden;
+}
+
+.sel-login-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100vh;
+  max-height: 100vh;
+  padding: clamp(0.25rem, 1.5vh, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.25rem, 1vh, 0.8rem);
+  overflow: hidden;
+}
+
+/* ========================================
+   BOTONES DE NAVEGACIÓN (compartidos)
+   ======================================== */
+
+.sel-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sel-button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  gap: clamp(0.25rem, 0.5vw, 0.5rem);
+}
+
+.sel-action-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  flex-shrink: 0;
+  height: auto;
+}
+
+.sel-action-button::part(native) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, 0.5vw, 6px);
+  border-radius: clamp(8px, 1.5vw, 16px);
+  padding: clamp(0.25rem, 0.8vw, 0.5rem);
+}
+
+.sel-action-button::part(native):hover,
+.sel-action-button::part(native):focus-visible {
+  background-color: var(--ion-color-primary);
+}
+
+.sel-action-button {
+  margin: 0;
+  width: clamp(45px, 8vw, 80px);
+  height: clamp(45px, 8vw, 80px);
+}
+
+.sel-login-container > .sel-action-button {
+  margin: clamp(6px, 2vh, 20px);
+}
+
+.sel-boton-imagen {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.sel-action-button-label {
+  font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+  font-weight: 600;
+  color: #000;
+  line-height: 1.1;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.sel-login-header {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sel-login-title {
+  font-size: clamp(0.95rem, 2.5vw, 1.6rem);
+  font-weight: 800;
+  color: #000000;
+  margin: clamp(0.15rem, 0.5vh, 0.3rem) 0;
+}
+
+.sel-login-subtitle {
+  font-size: clamp(0.7rem, 1.8vw, 1.1rem);
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+/* ========================================
+   GRID DE SELECCIÓN (grupos o usuarios)
+   ======================================== */
+
+.sel-pictograms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(60px, 12vw, 100px), 1fr));
+  gap: clamp(0.25rem, 1.2vw, 0.8rem);
+  flex: 1;
+  align-content: center;
+  max-height: clamp(22vh, 35vh, 40vh);
+  width: 100%;
+  overflow-y: auto;
+}
+
+.sel-pictogram-button {
+  position: relative;
+  border: clamp(2px, 0.8vw, 6px) solid transparent;
+  background: transparent;
+  cursor: pointer;
+  border-radius: clamp(6px, 1.5vw, 12px);
+  padding: clamp(0.1rem, 0.6vw, 0.4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  aspect-ratio: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: min(20vh, 180px);
+  max-height: min(20vh, 180px);
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.sel-pictogram-button:hover:not(:disabled),
+.sel-pictogram-button:focus-visible:not(:disabled) {
+  border-color: var(--ion-color-primary);
+  background-color: var(--ion-color-primary);
+  outline: 2px solid black;
+}
+
+.sel-pictogram-button.selected {
+  border-color: var(--ion-color-success);
+  background-color: var(--ion-color-success);
+  outline: 2px solid black;
+}
+
+/* ========================================
+   CARDS: Grupo y Usuario
+   ======================================== */
+
+.sel-group-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(119, 114, 114, 0.5);
+  border-radius: clamp(6px, 1.5vw, 12px);
+  padding: clamp(0.25rem, 0.8vw, 0.5rem);
+  overflow: hidden;
+}
+
+.sel-group-card h2 {
+  color: black;
+  font-size: clamp(0.6rem, 1.8vw, 1.3rem);
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  max-height: 3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding: clamp(0.1rem, 0.3vw, 0.2rem);
+}
+
+.sel-user-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: clamp(1px, 0.3vw, 2px) solid #ddd;
+  border-radius: clamp(4px, 1vw, 8px);
+  padding: clamp(0.2rem, 0.6vw, 0.4rem);
+  gap: clamp(0.2rem, 0.6vw, 0.4rem);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.sel-user-photo {
+  width: 100%;
+  height: auto;
+  max-width: min(clamp(70%, 80%, 85%), clamp(100px, 20vw, 160px));
+  max-height: min(clamp(70%, 80%, 85%), clamp(100px, 20vw, 160px));
+  aspect-ratio: 1;
+  border-radius: clamp(3px, 0.8vw, 6px);
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  object-fit: cover;
+  flex: 0 1 auto;
+}
+
+.sel-user-card h3 {
+  color: #000000;
+  font-size: clamp(0.65rem, 3cqw, 1.15rem);
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+  width: 100%;
+  min-height: 1.5em;
+  overflow: hidden;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  flex: 0 0 auto;
+  padding: clamp(0.05rem, 0.15vw, 0.1rem) clamp(0.1rem, 0.3vw, 0.2rem);
+}
+
+/* ========================================
+   MENSAJES DE ERROR Y CARGA
+   ======================================== */
+
+.sel-error-message {
+  background: rgba(241, 131, 131, 0.95);
+  border-radius: clamp(8px, 1.5vw, 12px);
+  padding: clamp(0.4rem, 1.5vw, 1rem);
+  text-align: center;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.3rem, 1vw, 0.6rem);
+}
+
+.sel-loading,
+.sel-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  text-align: center;
+}
+
+.sel-loading p,
+.sel-error p {
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  font-weight: 600;
+  color: #000000;
+}
