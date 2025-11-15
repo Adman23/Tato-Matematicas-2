@@ -11,11 +11,7 @@ import {
     IonPage,
     IonSpinner,
     IonText,
-    IonButton,
-    IonGrid,
-    IonRow,
-    IonCol
-
+    IonButton
 } from '@ionic/react';
 import { useHistory, Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
@@ -25,6 +21,7 @@ import type { GameConfig } from '../../../lib/api';
 
 import Game2Header from '../Game2Header';
 import './Game1.css';
+
 
 // Importar imágenes para el header
 import imgAceptar from '/assets/juegosImg/aceptar.png';
@@ -40,21 +37,9 @@ const imgFlecha = '/assets/juegosImg/flecha.png';
 import imgTato from '/assets/Tato/Tato.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+import BubblesZone from './BubblesZone';
 
-// Mapeo de números a imágenes desde assets
-const PICTOGRAM_IMAGES: { [key: number]: string } = {
-    0: '/assets/numbers/0.png',
-    1: '/assets/numbers/1.png',
-    2: '/assets/numbers/2.png',
-    3: '/assets/numbers/3.png',
-    4: '/assets/numbers/4.png',
-    5: '/assets/numbers/5.png',
-    6: '/assets/numbers/6.png',
-    7: '/assets/numbers/7.png',
-    8: '/assets/numbers/8.png',
-    9: '/assets/numbers/9.png',
-    10: '/assets/numbers/10.png'
-};
+// (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
 const TOTAL_ROUNDS = 5;
 
@@ -109,7 +94,6 @@ const Game1: React.FC = () => {
     const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]);
     const [currentNumber, setCurrentNumber] = useState<number | null>(null);
     const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
-    const [triesCurrentNumber, setTriesCurrentNumber] = useState(false);
     const [usedNumbers, setUsedNumbers] = useState<number[]>([]);
 
 
@@ -118,6 +102,7 @@ const Game1: React.FC = () => {
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [listeningAudio, setListeningAudio] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Estados de resultados
     const [gameFinished, setGameFinished] = useState(false);
@@ -163,104 +148,6 @@ const Game1: React.FC = () => {
         }
     }, [gameFinished, history, user]);
 
-
-
-    /**
-     * 
-     * Función para reproducir el sonido de un número usando la API de síntesis de voz.
-     * 
-     * @param number 
-     */
-    function speakNumber(number: String | null) {
-        if (number === null) return;
-
-        const msg = new SpeechSynthesisUtterance(number.toString());
-        msg.lang = "es-ES"; // puedes usar "es-MX" o "es-AR"
-        msg.rate = 1;       // velocidad
-        msg.pitch = 5;      // tono
-        msg.volume = 1000;
-        speechSynthesis.speak(msg);
-
-        // // Comprobar soporte
-        // if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-        //     console.warn('Speech Synthesis no está soportado en este entorno');
-        //     return;
-        // }
-
-        // const synth = window.speechSynthesis;
-
-        // // Crea y habla con la voz opcionalmente elegida
-        // const speakWithVoice = (voice: SpeechSynthesisVoice | null, text: string) => {
-        //     // Cancelar cualquier reproducción previa para evitar solapamientos
-        //     try { synth.cancel(); } catch (e) { /* noop */ }
-
-        //     setListeningAudio(true);
-
-        //     const msg = new SpeechSynthesisUtterance(text);
-        //     msg.lang = 'es-ES';
-        //     msg.rate = 1;
-        //     msg.pitch = 1;
-        //     msg.volume = 1;
-        //     if (voice) msg.voice = voice;
-
-        //     msg.onend = () => {
-        //         setListeningAudio(false);
-        //     };
-
-        //     msg.onerror = (ev: SpeechSynthesisErrorEvent) => {
-        //         console.error('TTS error:', ev);
-        //         // Si falla la síntesis y hay otras voces, intentar otra voz una vez
-        //         if (ev.error === 'synthesis-failed') {
-        //             const allVoices = synth.getVoices();
-        //             // Si había una voz y hay al menos otra, intentar con la primera disponible distinta
-        //             const altVoice = allVoices.find(v => v !== voice) || null;
-        //             if (altVoice) {
-        //                 // quitar listeners y reintentar una vez
-        //                 try { synth.cancel(); } catch (e) { }
-        //                 // pequeña espera antes de reintentar
-        //                 setTimeout(() => speakWithVoice(altVoice, text), 150);
-        //                 return;
-        //             }
-        //         }
-
-        //         setListeningAudio(false);
-        //     };
-
-        //     synth.speak(msg);
-        // };
-
-        // const textToSpeak = number.toString();
-
-        // const voices = synth.getVoices();
-        // if (!voices || voices.length === 0) {
-        //     // Si aún no hay voces, esperar al evento 'voiceschanged' con fallback
-        //     const onVoicesChanged = () => {
-        //         const available = synth.getVoices() || [];
-        //         const spanishVoice = available.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) || available[0] || null;
-        //         speakWithVoice(spanishVoice, textToSpeak);
-        //         try { synth.removeEventListener('voiceschanged', onVoicesChanged); } catch (e) { }
-        //     };
-
-        //     synth.addEventListener('voiceschanged', onVoicesChanged);
-
-        //     // Fallback: tras un timeout breve, si aparecen voces, hablar
-        //     setTimeout(() => {
-        //         const available = synth.getVoices() || [];
-        //         if (available.length > 0) {
-        //             try { synth.removeEventListener('voiceschanged', onVoicesChanged); } catch (e) { }
-        //             const spanishVoice = available.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) || available[0] || null;
-        //             speakWithVoice(spanishVoice, textToSpeak);
-        //         } else {
-        //             // No hay voces: intentar hablar sin voz asignada
-        //             speakWithVoice(null, textToSpeak);
-        //         }
-        //     }, 500);
-        // } else {
-        //     // Seleccionar preferentemente una voz en español
-        //     const spanishVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) || voices[0] || null;
-        //     speakWithVoice(spanishVoice, textToSpeak);
-        // }
-    }
 
     /**
      * Carga la configuración personalizada del juego desde el backend.
@@ -548,6 +435,69 @@ const Game1: React.FC = () => {
         setGameFinished(true);
     };
 
+    /**
+     * Reproduce el sonido del número actual.
+     * - Busca un archivo en /assets/sounds/ con el nombre en español (uno.mp3, dos.mp3, ...)
+     * - Si la reproducción falla o no existe el fichero, usa speechSynthesis como fallback
+     */
+    const speakNumber = (num: number | null) => {
+        if (num === null) return;
+        if (listeningAudio) return; // evitar múltiples reproducciones simultáneas
+
+        if (num < 0 || num > 10) {
+            console.warn('No hay sonido configurado para el número:', num);
+            return;
+        }
+
+        const fileName = `${num}.mp3`;
+        const path = `/assets/sounds/${fileName}`;
+
+        // Detener audio anterior si existe
+        if (audioRef.current) {
+            try {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            } catch (e) { /* ignore */ }
+            audioRef.current = null;
+        }
+
+        const audio = new Audio(path);
+        audioRef.current = audio;
+        setListeningAudio(true);
+
+        // Cuando termine o haya error, limpiar estado
+        const cleanup = () => {
+            setListeningAudio(false);
+            if (audioRef.current === audio) audioRef.current = null;
+        };
+
+        audio.addEventListener('ended', cleanup);
+        audio.addEventListener('error', (err) => {
+            console.error('Error reproduciendo audio', path, err);
+            cleanup();
+        });
+
+        // Intentar reproducir
+        audio.play().then(() => {
+            // reproducción iniciada correctamente
+        }).catch((err) => {
+            console.error('play() falló para', path, err);
+            cleanup();
+        });
+    };
+
+    // Limpiar audio cuando se desmonte el componente
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                try {
+                    audioRef.current.pause();
+                    audioRef.current = null;
+                } catch (e) { /* ignore */ }
+            }
+        };
+    }, []);
+
     // Pantalla de carga de autenticación
     if (authLoading) {
         return (
@@ -614,70 +564,15 @@ const Game1: React.FC = () => {
 
                 {/* Zona de juego */}
                 {/* Números disponibles */}
-                <p>{currentNumber}</p>
 
-                <IonGrid className="numbers-grid">
-                    <IonRow className="ion-justify-content-center">
-                        {availableNumbers.map((num, index) => {
-                            if (num === undefined) return null;
-
-                            const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
-                            let cardClass = 'number-circle'; // Usamos la clase del círculo
-                            if (usePictograms) cardClass += ' number-card-pictogram';
-
-                            // Añadir clase visual cuando esté seleccionado
-                            const isSelected = selectedNumber === num;
-                            if (isSelected) cardClass += ' selected';
-
-                            // Si estamos mostrando feedback, marcar la opción correcta en verde
-                            // y la opción seleccionada incorrecta en rojo.
-                            if (showFeedback) {
-                                // marcar la opción correcta (aunque no esté seleccionada)
-                                if (num === currentNumber) {
-                                    cardClass += ' correct';
-                                }
-
-                                // si el usuario seleccionó una opción equivocada, marcarla en rojo
-                                if (selectedNumber !== null && selectedNumber === num && selectedNumber !== currentNumber) {
-                                    cardClass += ' incorrect';
-                                }
-                            }
-
-                            return (
-                                <IonCol size="4" size-md="3" size-lg="2" key={`available-${num}-${index}`} className="ion-text-center">
-                                    <div
-                                        className={cardClass}
-                                        onClick={() => {
-                                            if (showFeedback) return; // no permitir cambios durante feedback
-                                            setSelectedNumber(prev => (prev === num ? null : num));
-                                        }}
-                                        role="button"
-                                        aria-pressed={isSelected}
-                                        tabIndex={0}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                if (!showFeedback) {
-                                                    setSelectedNumber(prev => (prev === num ? null : num));
-                                                }
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                    >
-                                        {pictogramImg ? (
-                                            <img
-                                                src={pictogramImg}
-                                                alt={`Pictograma número ${num}`}
-                                                className="pictogram-image"
-                                            />
-                                        ) : (
-                                            <span className="number-value">{num}</span>
-                                        )}
-                                    </div>
-                                </IonCol>
-                            );
-                        })}
-                    </IonRow>
-                </IonGrid>
+                <BubblesZone
+                    availableNumbers={availableNumbers}
+                    selectedNumber={selectedNumber}
+                    setSelectedNumber={setSelectedNumber}
+                    showFeedback={showFeedback}
+                    currentNumber={currentNumber}
+                    usePictograms={usePictograms}
+                />
 
                 <div className='game1-footer'>
                     {/*Tato*/}
@@ -699,7 +594,7 @@ const Game1: React.FC = () => {
                             fill="clear"
                             className="game1-check-button"
                             disabled={listeningAudio || showFeedback}
-                            onClick={() => speakNumber("Muy bieeeeeeeeen!!!!!!")}
+                            onClick={() => speakNumber(currentNumber)}
                         >
                             <img
                                 src={imgSonidoConTexto}
