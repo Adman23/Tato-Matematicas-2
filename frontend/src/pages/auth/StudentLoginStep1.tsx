@@ -167,65 +167,66 @@ export default function StudentLoginStep1() {
             <p className="sel-login-subtitle">Toca tu clase y pulsa avanzar</p>
           </div>
 
-          {/* Grid de grupos con flechas (condicional) */}
-          {loading ? (
-            <div className="sel-loading">
-              <IonSpinner name="crescent" />
-            </div>
-          ) : groups.length === 0 ? (
-            <div className="sel-error">
-              <p>No hay clases disponibles</p>
-            </div>
-          ) : (
-            <div className="sel-group-grid-container">
-              {/* Flecha izquierda */}
-              {showArrows && (
-                <button
-                  className="sel-group-grid-arrow"
-                  onClick={goToPrevPage}
-                  disabled={!canGoPrev}
-                  aria-label="Clases anteriores"
-                >
-                  <img src="/assets/pictograms/flecha.png" alt="Anterior" />
-                </button>
-              )}
+          {/* Contenedor de grid + flechas (sin card) */}
+          <div className="sel-group-grid-wrapper">
+            {/* Flecha izquierda */}
+            {showArrows && (
+              <button
+                className="sel-group-grid-arrow left-outside"
+                onClick={goToPrevPage}
+                disabled={!canGoPrev}
+                aria-label="Clases anteriores"
+              >
+                <img src="/assets/pictograms/flecha.png" alt="Anterior" />
+              </button>
+            )}
 
-              {/* Grid ✅ Sin ref */}
-              <div className="sel-group-grid">
-                {visibleGroups.map((group) => (
-                  <button
-                    key={group.id}
-                    onClick={() => handleGroupClick(group)}
-                    disabled={loading}
-                    className={`sel-group-tile ${selectedGroup?.id === group.id ? 'selected' : ''}`}
-                    aria-label={group.alias}
-                  >
-                    <img
-                      src="/assets/pictograms/clase.png"
-                      alt={group.alias}
-                      className="sel-group-icon"
-                    />
-                    <span className="sel-group-letter">
-                      {getLetterFromAlias(group.alias)}
-                    </span>
-                    <span className="sel-group-label">{group.alias}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Flecha derecha */}
-              {showArrows && (
-                <button
-                  className="sel-group-grid-arrow right"
-                  onClick={goToNextPage}
-                  disabled={!canGoNext}
-                  aria-label="Más clases"
-                >
-                  <img src="/assets/pictograms/flecha.png" alt="Siguiente" />
-                </button>
+            {/* Card con solo el grid */}
+            <div className="sel-classes-card">
+              {loading ? (
+                <div className="sel-loading">
+                  <IonSpinner name="crescent" />
+                </div>
+              ) : groups.length === 0 ? (
+                <div className="sel-error">
+                  <p>No hay clases disponibles</p>
+                </div>
+              ) : (
+                <div className="sel-group-grid">
+                  {visibleGroups.map((group) => (
+                    <button
+                      key={group.id}
+                      onClick={() => handleGroupClick(group)}
+                      disabled={loading}
+                      className={`sel-group-tile ${selectedGroup?.id === group.id ? 'selected' : ''}`}
+                      aria-label={group.alias}
+                    >
+                      <img
+                        src="/assets/pictograms/clase.png"
+                        alt={group.alias}
+                        className="sel-group-icon"
+                      />
+                      <span className="sel-group-letter">
+                        {getLetterFromAlias(group.alias)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
-          )}
+
+            {/* Flecha derecha */}
+            {showArrows && (
+              <button
+                className="sel-group-grid-arrow right-outside"
+                onClick={goToNextPage}
+                disabled={!canGoNext}
+                aria-label="Más clases"
+              >
+                <img src="/assets/pictograms/flecha.png" alt="Siguiente" />
+              </button>
+            )}
+          </div>
 
           {/* Mensaje de error */}
           {error && (

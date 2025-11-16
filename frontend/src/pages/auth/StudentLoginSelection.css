@@ -113,18 +113,6 @@
    GRID DE GRUPOS - Responsive con flechas
    ======================================== */
 
-.sel-group-grid-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.5rem, 1vw, 1rem);
-  padding: 0 clamp(0.5rem, 1vw, 1rem);
-  flex: 1;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-}
-
 /* Flechas de navegación - aumentar tamaño */
 .sel-group-grid-arrow {
   background: transparent;
@@ -135,14 +123,13 @@
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  min-width: clamp(100px, 10vw, 80px); /* Aumentado */
+  min-width: clamp(110px, 10vw, 80px); /* Aumentado */
   min-height: clamp(100px, 10vw, 80px); /* Aumentado */
 }
 
 .sel-group-grid-arrow img {
   width: clamp(80px, 8vw, 60px); /* Aumentado */
   height: clamp(80px, 8vw, 60px); /* Aumentado */
-  filter: invert(30%) sepia(80%) saturate(300%) hue-rotate(190deg);
 }
 
 /* Flechas deshabilitadas: baja opacidad y sin efecto hover */
@@ -162,7 +149,7 @@
   transform: rotate(180deg);
 }
 
-/* Grid adaptable: por defecto 2x2, en móvil 2 filas x 1 columna si caben 2+ */
+/* Grid forzado a 2x2 siempre (mínimo 2 filas, 2 columnas) */
 .sel-group-grid {
   display: grid;
   gap: clamp(0.5rem, 1vw, 1rem);
@@ -170,18 +157,19 @@
   max-width: min(90vw, 500px);
   margin: 0 auto;
   grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: min-content;
+  grid-template-rows: repeat(2, minmax(clamp(100px, 20vw, 150px), 1fr));
+  /* ✅ Asegura que haya 2 filas, aunque no haya suficientes elementos */
 }
 
 @media (max-width: 600px) {
   .sel-group-grid {
-    /* En móvil: 2 filas × 1 columna si hay 2 o más elementos visibles */
+    /* En móvil: forzar 2 filas × 1 columna */
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fit, minmax(clamp(100px, 20vw, 150px), 1fr));
+    grid-template-rows: repeat(2, minmax(clamp(100px, 20vw, 150px), 1fr));
   }
 }
 
-/* Botón de grupo: tamaño fijo */
+/* Botón de grupo: tamaño fijo y con imagen de fondo */
 .sel-group-tile {
   position: relative;
   width: 100%;
@@ -190,16 +178,39 @@
   background: white;
   border: 2px solid #000;
   border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(0.5rem, 1vw, 1rem);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   /* Tamaño constante */
   min-width: clamp(100px, 20vw, 150px);
   min-height: clamp(100px, 20vw, 150px);
+  /* Eliminar padding para que la imagen ocupe todo el espacio */
+  padding: 0;
+  overflow: hidden; /* Evitar que la letra sobresalga si es muy grande */
+}
+
+.sel-group-tile:empty {
+  background-color: #e0f3fa;
+  border: 2px dashed #888;
+  opacity: 0.7;
+}
+
+.sel-group-tile:empty::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url('/assets/pictograms/placeholder.png') center/contain no-repeat;
+}
+
+/* Estado seleccionado: borde grueso y colorido */
+.sel-group-tile.selected {
+  border-width: 6px; /* ← Más grueso: 2px → 6px (ajusta a gusto) */
+  border-color: var(--ion-color-success); /* Verde por defecto de Ionic */
+}
+
+/* Opcional: destacar con sombra interna suave */
+.sel-group-tile.selected {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
 .sel-group-tile:hover,
@@ -208,35 +219,60 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.sel-group-tile.selected {
-  border-color: var(--ion-color-success);
-  background: #f0fff0;
-}
-
+/* Imagen del pictograma: ocupa todo el tile */
 .sel-group-icon {
-  width: 60%;
-  height: 60%;
-  object-fit: contain;
-  margin-bottom: clamp(0.25rem, 0.5vw, 0.5rem);
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Asegura que cubra todo el tile */
+  object-position: center;
+  display: block; /* Evita espacios extra */
 }
 
+/* Letra superpuesta en la esquina superior izquierda */
 .sel-group-letter {
-  font-size: 1.8rem; /* Tamaño constante */
+  position: absolute;
+  top: 5%;
+  left: 15%;
+  font-size: 6rem;
   font-weight: 900;
   color: #000;
   line-height: 1;
   text-align: center;
-  margin: 0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 10;
+  pointer-events: none; /* Evitar que interfiera con el clic */
+}
+
+.sel-user-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative; /* ✅ Necesario para posicionar el nombre */
+  padding: 0;
 }
 
 .sel-group-label {
-  font-size: 0.9rem; /* Tamaño constante */
+  position: absolute;
+  bottom: 0px; /* ✅ Se superpone encima del borde inferior */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(0.75rem, 2vw, 1rem);
   font-weight: 700;
-  color: #000;
+  color: rgb(0, 0, 0);
   text-align: center;
-  margin-top: clamp(0.25rem, 0.5vw, 0.5rem);
-  text-transform: uppercase;
-  word-wrap: break-word;
+  line-height: 1.2;
+  min-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: clamp(4px, 1vh, 8px) clamp(8px, 2vw, 16px);
+  background: white;
+  z-index: 10;
+  pointer-events: none; /* ✅ Evita interferir con el clic en el botón */
 }
 
 /* ========================================
@@ -271,4 +307,114 @@
   font-size: clamp(0.9rem, 1.8vw, 1.2rem);
   font-weight: 600;
   color: #000000;
+}
+
+/* ========================================
+   CARD CONTENEDOR DE CLASES — fondo #50BFE6
+   ======================================== */
+
+.sel-classes-card {
+  background-color: #50BFE6;
+  border-radius: clamp(16px, 3vw, 24px);
+  padding: clamp(1rem, 2.5vh, 2rem);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  /* ✅ Ajuste compacto al contenido */
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  /* ✅ Ajusta el tamaño al contenido real */
+  width: fit-content;
+  max-width: calc(100% - 2rem); /* margen lateral para móviles */
+  height: fit-content;
+  
+  /* Centrado dentro del contenedor padre */
+  margin: 0 auto;
+}
+
+/* Asegurar que el grid se centre bien dentro del card */
+.sel-group-grid-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1vw, 1rem);
+  padding: 0;
+  
+  /* ✅ Permitir que se ajuste al contenido */
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* ========================================
+   WRAPPER PARA GRID + FLECHAS (fuera del card)
+   ======================================== */
+
+.sel-group-grid-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1vw, 1rem);
+  width: 100%;
+  max-width: 100%;
+  padding: 0 clamp(0.5rem, 1vw, 1rem);
+  overflow: visible; /* ✅ permitir que flechas estén fuera */
+}
+
+/* Flechas fuera del card */
+.sel-group-grid-arrow.left-outside,
+.sel-group-grid-arrow.right-outside {
+  /* ✅ Reutiliza estilos existentes */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: clamp(0.75rem, 1.5vw, 1.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  min-width: clamp(110px, 10vw, 80px);
+  min-height: clamp(100px, 10vw, 80px);
+}
+
+.sel-group-grid-arrow.left-outside img,
+.sel-group-grid-arrow.right-outside img {
+  width: clamp(80px, 8vw, 60px);
+  height: clamp(80px, 8vw, 60px);
+}
+
+.sel-group-grid-arrow.left-outside:disabled,
+.sel-group-grid-arrow.right-outside:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+.sel-group-grid-arrow.left-outside:not(:disabled):hover,
+.sel-group-grid-arrow.right-outside:not(:disabled):hover,
+.sel-group-grid-arrow.left-outside:not(:disabled):focus-visible,
+.sel-group-grid-arrow.right-outside:not(:disabled):focus-visible {
+  transform: scale(1.1);
+}
+
+/* Rotar flecha derecha */
+.sel-group-grid-arrow.right-outside img {
+  transform: rotate(180deg);
+}
+
+/* Card: ahora sin contenedor de flechas adentro */
+.sel-classes-card {
+  background-color: #50BFE6;
+  border-radius: clamp(16px, 3vw, 24px);
+  padding: clamp(1rem, 2.5vh, 2rem);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: calc(100% - 4rem); /* más margen lateral */
+  height: fit-content;
+  margin: 0;
 }

@@ -1,6 +1,4 @@
 /**
- * !! EDITED
- *  -> Now there is no student
  * Pantalla de Paso 2: Selección de Usuario
  * ---------------------------------------------------------
  * El estudiante selecciona su username de la lista de estudiantes del grupo.
@@ -40,6 +38,58 @@ export default function StudentLoginStep2() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hasLoaded, setHasLoaded] = useState(false);
+
+  // Paginación para estudiantes (dinámica según dispositivo)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(4); // Valor inicial optimista (desktop)
+
+  // Calcular estudiantes visibles
+  const visibleStudents = students.slice(currentIndex, currentIndex + visibleCount);
+
+  // Verificar si hay más estudiantes para mostrar flechas
+  const showArrows = students.length > visibleCount;
+
+  const canGoPrev = currentIndex > 0;
+  const canGoNext = currentIndex + visibleCount < students.length;
+
+  const goToPrevPage = () => {
+    if (canGoPrev) {
+      setCurrentIndex(prev => Math.max(0, prev - visibleCount));
+    }
+  };
+
+  const goToNextPage = () => {
+    if (canGoNext) {
+      setCurrentIndex(prev => prev + visibleCount);
+    }
+  };
+
+  // ✅ Lógica responsive: basada en ancho (sincronizada con @media (max-width: 600px))
+  const calculateVisibleCount = () => {
+    const isMobile = window.innerWidth <= 600;
+    return isMobile ? 2 : 4;
+  };
+
+  // Recalcular visibleCount al montar y en resize
+  useEffect(() => {
+    const updateCount = () => {
+      setVisibleCount(calculateVisibleCount());
+    };
+
+    updateCount(); // Inicial
+    window.addEventListener('resize', updateCount);
+    return () => window.removeEventListener('resize', updateCount);
+  }, []);
+
+  // ⚠️ Si cambia visibleCount (por resize), resetea currentIndex para evitar páginas inválidas
+  useEffect(() => {
+    if (students.length > 0) {
+      const maxIndex = Math.max(0, students.length - visibleCount);
+      if (currentIndex > maxIndex) {
+        setCurrentIndex(maxIndex);
+      }
+    }
+  }, [visibleCount, students.length, currentIndex]);
 
   // Cargar estudiantes cuando groupId esté disponible (solo una vez)
   useEffect(() => {
@@ -122,12 +172,12 @@ export default function StudentLoginStep2() {
               fill="clear"
               className="sel-action-button"
               onClick={handleAdvance}
-              disabled={loading}
+              disabled={loading || !selectedStudent}
             >
               <img
                 src="/assets/pictograms/correcto.png"
                 alt="Avanzar"
-                className="sel-boton-imagen student-boton-rotado"
+                className="sel-boton-imagen"
               />
             </IonButton>
           </div>
@@ -140,47 +190,74 @@ export default function StudentLoginStep2() {
             </p>
           </div>
 
-          {/* Grid de estudiantes */}
+          {/* Contenedor de grid + flechas (fuera del card) */}
           {loading ? (
             <div className="sel-loading">
               <IonSpinner name="crescent" />
             </div>
           ) : students.length === 0 ? (
-            <div className="sel-error-message">
-              <IonText color="warning">
-                <p>No hay estudiantes en este grupo</p>
-              </IonText>
+            <div className="sel-error">
+              <p>No hay estudiantes en este grupo</p>
             </div>
           ) : (
-            <div className="sel-pictograms-grid">
-              {students.map((student) => (
+            <div className="sel-group-grid-wrapper">
+              {/* Flecha izquierda */}
+              {showArrows && (
                 <button
-                  key={student.id}
-                  onClick={() => handleStudentClick(student)}
-                  disabled={loading}
-                  className={`sel-pictogram-button ${
-                    selectedStudent?.id === student.id ? 'selected' : ''
-                  }`}
-                  aria-label={student.username}
+                  className="sel-group-grid-arrow left-outside"
+                  onClick={goToPrevPage}
+                  disabled={!canGoPrev}
+                  aria-label="Estudiantes anteriores"
                 >
-                  <div className="sel-user-card">
-                    {student.photo_url ? (
-                      <img
-                        src={student.photo_url}
-                        alt={student.username}
-                        className="sel-user-photo"
-                      />
-                    ) : (
-                      <img
-                        src="/assets/pictograms/user_default.png"
-                        alt={student.username}
-                        className="sel-user-photo"
-                      />
-                    )}
-                    <h3>{student.username}</h3>
-                  </div>
+                  <img src="/assets/pictograms/flecha.png" alt="Anterior" />
                 </button>
-              ))}
+              )}
+
+              {/* Card con solo el grid */}
+              <div className="sel-classes-card">
+                <div className="sel-group-grid">
+                  {visibleStudents.map((student) => (
+                    <button
+                      key={student.id}
+                      onClick={() => handleStudentClick(student)}
+                      disabled={loading}
+                      className={`sel-group-tile ${
+                        selectedStudent?.id === student.id ? 'selected' : ''
+                      }`}
+                      aria-label={student.username}
+                    >
+                      <div className="sel-user-content">
+                        {student.photo_url ? (
+                          <img
+                            src={student.photo_url}
+                            alt={student.username}
+                            className="sel-group-icon"
+                          />
+                        ) : (
+                          <img
+                            src="/assets/pictograms/user_default.png"
+                            alt={student.username}
+                            className="sel-group-icon"
+                          />
+                        )}
+                        <span className="sel-group-label">{student.username}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Flecha derecha */}
+              {showArrows && (
+                <button
+                  className="sel-group-grid-arrow right-outside"
+                  onClick={goToNextPage}
+                  disabled={!canGoNext}
+                  aria-label="Más estudiantes"
+                >
+                  <img src="/assets/pictograms/flecha.png" alt="Siguiente" />
+                </button>
+              )}
             </div>
           )}
 
