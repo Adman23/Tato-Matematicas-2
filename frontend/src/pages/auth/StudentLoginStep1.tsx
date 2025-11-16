@@ -24,7 +24,7 @@ export default function StudentLoginStep1() {
 
   // ✅ Nueva lógica: basada en ancho (sincronizada con @media (max-width: 600px))
   const calculateVisibleCount = () => {
-    const isMobile = window.innerWidth <= 715;
+    const isMobile = window.innerWidth <= 860;
     return isMobile ? 2 : 4;
   };
 
@@ -164,7 +164,6 @@ export default function StudentLoginStep1() {
           {/* Título y subtítulo */}
           <div className="sel-login-header">
             <h1 className="sel-login-title">Selecciona tu clase</h1>
-            <p className="sel-login-subtitle">Toca tu clase y pulsa avanzar</p>
           </div>
 
           {/* Contenedor de grid + flechas (sin card) */}

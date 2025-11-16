@@ -66,7 +66,7 @@ export default function StudentLoginStep2() {
 
   // ✅ Lógica responsive: basada en ancho (sincronizada con @media (max-width: 600px))
   const calculateVisibleCount = () => {
-    const isMobile = window.innerWidth <= 715;
+    const isMobile = window.innerWidth <= 860;
     return isMobile ? 2 : 4;
   };
 
@@ -164,7 +164,6 @@ export default function StudentLoginStep2() {
                   className="sel-boton-imagen"
                 />
               </IonButton>
-              <span className="sel-action-button-label">Ir a inicio</span>
             </div>
 
             {/* Botón de avanzar */}
@@ -184,10 +183,7 @@ export default function StudentLoginStep2() {
 
           {/* Título y subtítulo */}
           <div className="sel-login-header">
-            <h1 className="sel-login-title">Selección de usuario</h1>
-            <p className="sel-login-subtitle">
-              Toca tu foto o nombre y pulsa avanzar
-            </p>
+            <h1 className="sel-login-title">Selecciona tu usuario</h1>
           </div>
 
           {/* Contenedor de grid + flechas (fuera del card) */}
