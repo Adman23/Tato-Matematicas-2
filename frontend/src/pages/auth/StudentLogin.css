@@ -1,0 +1,510 @@
+/* ========================================
+   STUDENT LOGIN - Simple y Accesible
+   ======================================== */
+
+.student-login-content {
+  --background: white;
+  overflow: hidden;
+}
+
+.student-login-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100vh;
+  max-height: 100vh;
+  padding: clamp(0.25rem, 1.5vh, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.25rem, 1vh, 0.8rem);
+  overflow: hidden;
+}
+
+/* ========================================
+   BOTONES DE NAVEGACIÓN
+   ======================================== */
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.student-button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  gap: clamp(0.25rem, 0.5vw, 0.5rem);
+}
+
+/* Estilos comunes para todos los botones de navegación */
+.default-action-button{
+  --padding-start: 0;
+  --padding-end: 0;
+  flex-shrink: 0;
+  height: auto;
+
+}
+
+.default-action-button::part(native){
+  display: flex;             /* añade display flex */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, 0.5vw, 6px);                  /* espacio icono-texto */
+  border-radius: clamp(8px, 1.5vw, 16px);
+  padding: clamp(0.25rem, 0.8vw, 0.5rem);
+}
+
+.default-action-button::part(native):hover,
+.default-action-button::part(native):focus-visible {
+  background-color: var(--ion-color-primary);
+}
+
+.default-action-button {
+  margin: 0;
+  width: clamp(45px, 8vw, 80px);
+  height: clamp(45px, 8vw, 80px);
+}
+
+.student-login-container > .default-action-button {
+  margin: clamp(6px, 2vh, 20px);
+}
+
+
+.student-boton-imagen {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.default-action-button-label {
+  font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+  font-weight: 600;
+  color: #000;
+  line-height: 1.1;
+  text-align: center;
+  pointer-events: none; /* evita interferencias con el clic */
+}
+
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.student-login-header {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.student-login-title {
+  font-size: clamp(0.95rem, 2.5vw, 1.6rem);
+  font-weight: 800;
+  color: #000000;
+  margin: clamp(0.15rem, 0.5vh, 0.3rem) 0;
+}
+
+.student-login-subtitle {
+  font-size: clamp(0.7rem, 1.8vw, 1.1rem);
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+.student-login-image {
+  width: clamp(100px, 15vw, 150px);
+  height: clamp(100px, 15vh, 150px);
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Ocultar imagen en pantallas pequeñas */
+@media (max-width: 768px), (max-height: 650px) {
+  .student-login-image {
+    display: none;
+  }
+}
+
+/* ========================================
+   SECUENCIA SELECCIONADA
+   ======================================== */
+
+.student-sequence-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.student-sequence-display {
+  background: rgba(119, 114, 114, 0.5);
+  border-radius: clamp(8px, 2vw, 16px);
+  padding: clamp(0.35rem, 1.2vw, 0.8rem);
+  min-height: clamp(40px, 10vh, 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  flex: 1;
+}
+
+.student-sequence-slots {
+  display: flex;
+  gap: clamp(0.35rem, 1vw, 0.8rem);
+  width: 100%;
+  justify-content: center;
+}
+
+.student-sequence-placeholder {
+  color: #0a1c36;
+  font-size: clamp(0.7rem, 1.8vw, 1.1rem);
+  font-weight: 600;
+}
+
+.student-sequence-items {
+  display: flex;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.student-sequence-item {
+  position: relative;
+  width: clamp(45px, 15vw, 120px);
+  height: clamp(45px, 15vw, 120px);
+  padding: clamp(0.15rem, 0.5vw, 0.3rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-sequence-slot {
+  width: clamp(60px, 18vw, 140px);
+  height: clamp(60px, 18vw, 140px);
+  border-radius: clamp(8px, 2vw, 16px);
+  border: clamp(2px, 0.8vw, 4px) dashed #0a1c36;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.2rem, 0.8vw, 0.6rem);
+  text-align: center;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.student-sequence-slot.filled {
+  border-style: solid;
+  border-color: #0a1c36;
+  background: white;
+}
+
+.student-sequence-slot-placeholder {
+  font-size: clamp(0.65rem, 1.6vw, 0.95rem);
+  font-weight: 700;
+  color: #0a1c36;
+}
+
+.student-sequence-image,
+.student-pictogram-image,
+.student-boton-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ========================================
+   GRID DE PICTOGRAMAS
+   ======================================== */
+
+.student-pictograms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(80px, 14vw, 130px), 1fr));
+  gap: clamp(0.5rem, 1.5vw, 1.2rem);
+  flex: 1;
+  align-content: start; /* Cambiado de center a start para que use más espacio */
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden; /* Eliminamos el scroll */
+  /* Las filas del grid se ajustarán automáticamente al espacio disponible */
+  grid-auto-rows: minmax(clamp(80px, 14vh, 130px), auto);
+}
+
+.student-pictogram-button {
+  position: relative;
+  border: clamp(2px, 0.8vw, 6px) solid transparent;
+  background: transparent;
+  cursor: pointer;
+  border-radius: clamp(6px, 1.5vw, 12px);
+  padding: clamp(0.1rem, 0.6vw, 0.4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  aspect-ratio: 1;
+  min-height: 0;
+  min-width: 0;
+  /* Aumentamos el tamaño máximo para aprovechar el espacio disponible */
+  max-width: min(25vh, 220px);
+  max-height: min(25vh, 220px);
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.student-pictogram-button:hover:not(:disabled),
+.student-pictogram-button:focus-visible:not(:disabled) {
+  border-color: var(--ion-color-primary);
+  background-color: var(--ion-color-primary);
+  outline: 2px solid black;
+}
+
+.student-pictogram-button.selected {
+  border-color: var(--ion-color-success);
+  background-color: var(--ion-color-success);
+  outline: 2px solid black;
+}
+
+/* ========================================
+   MENSAJES DE ERROR Y CARGA
+   ======================================== */
+
+.student-error-message {
+  background: rgba(241, 131, 131, 0.95);
+  border-radius: clamp(8px, 1.5vw, 12px);
+  padding: clamp(0.4rem, 1.5vw, 1rem);
+  text-align: center;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.3rem, 1vw, 0.6rem);
+}
+
+.student-error-icon {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.student-error-message p {
+  font-size: clamp(0.8rem, 1.8vw, 1.2rem);
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.student-loading,
+.student-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  text-align: center;
+}
+
+.student-loading p,
+.student-error p {
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  font-weight: 600;
+  color: #000000;
+}
+
+/* ========================================
+   SELECCIÓN DE GRUPO Y USUARIO
+   ======================================== */
+
+.student-selection-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  padding: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.student-selection-header {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.student-selection-title {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 800;
+  color: #000000;
+  margin: 0;
+  flex: 1;
+}
+
+.student-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(70px, 15vw, 140px), 1fr));
+  gap: clamp(0.3rem, 1.5vw, 1rem);
+  overflow-y: auto;
+  padding: clamp(0.25rem, 0.8vw, 0.5rem);
+  align-content: start;
+}
+
+.student-selection-card {
+  position: relative;
+  aspect-ratio: 1;
+  background: white;
+  border: clamp(2px, 0.6vw, 4px) solid #4a90e2;
+  border-radius: clamp(6px, 1.5vw, 12px);
+  padding: clamp(0.4rem, 1vw, 0.75rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.25rem, 0.8vw, 0.5rem);
+  cursor: pointer;
+  outline: none;
+}
+
+.student-selection-card:hover,
+.student-selection-card:focus-visible {
+  background: #f0f9ff;
+}
+
+.student-selection-letter {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 900;
+  color: #4a90e2;
+  line-height: 1;
+}
+
+.student-selection-image {
+  width: clamp(40px, 10vw, 80px);
+  height: clamp(40px, 10vw, 80px);
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+.student-selection-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-selection-label {
+  font-size: clamp(0.65rem, 1.2vw, 0.9rem);
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+.student-selection-check {
+  position: absolute;
+  bottom: clamp(4px, 1vw, 8px);
+  right: clamp(4px, 1vw, 8px);
+  width: clamp(20px, 4vw, 30px);
+  height: clamp(20px, 4vw, 30px);
+  opacity: 0;
+}
+
+.student-selection-check img {
+  width: 100%;
+  height: 100%;
+}
+
+.student-selection-card:hover .student-selection-check,
+.student-selection-card:focus-visible .student-selection-check {
+  opacity: 1;
+}
+
+/* ========================================
+   CARDS DE GRUPO Y USUARIO
+   ======================================== */
+
+.student-group-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(119, 114, 114, 0.5);
+  border-radius: clamp(6px, 1.5vw, 12px);
+  padding: clamp(0.25rem, 0.8vw, 0.5rem);
+  overflow: hidden;
+}
+
+.student-group-card h2 {
+  color: black;
+  font-size: clamp(0.6rem, 1.8vw, 1.3rem);
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  max-height: 3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding: clamp(0.1rem, 0.3vw, 0.2rem);
+}
+
+.student-user-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: clamp(1px, 0.3vw, 2px) solid #ddd;
+  border-radius: clamp(4px, 1vw, 8px);
+  padding: clamp(0.2rem, 0.6vw, 0.4rem);
+  gap: clamp(0.2rem, 0.6vw, 0.4rem);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.student-user-photo {
+  width: 100%;
+  height: auto;
+  max-width: min(clamp(70%, 80%, 85%), clamp(100px, 20vw, 160px));
+  max-height: min(clamp(70%, 80%, 85%), clamp(100px, 20vw, 160px));
+  aspect-ratio: 1;
+  border-radius: clamp(3px, 0.8vw, 6px);
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  object-fit: cover;
+  flex: 0 1 auto;
+}
+
+.student-user-card h3 {
+  color: #000000;
+  font-size: clamp(0.65rem, 3cqw, 1.15rem);
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+  width: 100%;
+  min-height: 1.5em;
+  overflow: hidden;
+  line-height: 1.3;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  flex: 0 0 auto;
+  padding: clamp(0.05rem, 0.15vw, 0.1rem) clamp(0.1rem, 0.3vw, 0.2rem);
+}

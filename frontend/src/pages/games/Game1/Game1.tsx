@@ -11,20 +11,16 @@ import {
     IonPage,
     IonSpinner,
     IonText,
-    IonButton,
-    IonGrid,
-    IonRow,
-    IonCol
-
+    IonButton
 } from '@ionic/react';
 import { useHistory, Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
 
-
-import Game2Header from '../Game2Header';
+import GameHeader from '../GameHeader';
 import './Game1.css';
+
 
 // Importar imágenes para el header
 import imgAceptar from '/assets/juegosImg/aceptar.png';
@@ -40,21 +36,9 @@ const imgFlecha = '/assets/juegosImg/flecha.png';
 import imgTato from '/assets/Tato/Tato.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+import BubblesZone from './BubblesZone';
 
-// Mapeo de números a imágenes desde assets
-const PICTOGRAM_IMAGES: { [key: number]: string } = {
-    0: '/assets/numbers/0.png',
-    1: '/assets/numbers/1.png',
-    2: '/assets/numbers/2.png',
-    3: '/assets/numbers/3.png',
-    4: '/assets/numbers/4.png',
-    5: '/assets/numbers/5.png',
-    6: '/assets/numbers/6.png',
-    7: '/assets/numbers/7.png',
-    8: '/assets/numbers/8.png',
-    9: '/assets/numbers/9.png',
-    10: '/assets/numbers/10.png'
-};
+// (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
 const TOTAL_ROUNDS = 5;
 
@@ -109,7 +93,6 @@ const Game1: React.FC = () => {
     const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]);
     const [currentNumber, setCurrentNumber] = useState<number | null>(null);
     const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
-    const [triesCurrentNumber, setTriesCurrentNumber] = useState(false);
     const [usedNumbers, setUsedNumbers] = useState<number[]>([]);
 
 
@@ -118,6 +101,7 @@ const Game1: React.FC = () => {
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [listeningAudio, setListeningAudio] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Estados de resultados
     const [gameFinished, setGameFinished] = useState(false);
@@ -125,6 +109,9 @@ const Game1: React.FC = () => {
 
     // Determinar si usar pictogramas (solo para rango 0-10)
     const usePictograms = config?.number_range === '0-10';
+
+    // Determinar si usar voz femenina o masculina
+    const useWomanVoice = config?.settings?.voice === 'woman';
 
     // Cargar configuración al montar (solo una vez)
     useEffect(() => {
@@ -144,12 +131,11 @@ const Game1: React.FC = () => {
 
     // Generar nueva ronda cuando cambia currentRound
     useEffect(() => {
-        if (config && currentRound <= TOTAL_ROUNDS) {
+        if (config && sessionId && currentRound <= TOTAL_ROUNDS) {
             generateRound();
         }
 
-    }, [config, currentRound]);
-
+    }, [config, currentRound, sessionId]);
     // Efecto para redirigir cuando el juego termine
     useEffect(() => {
         if (gameFinished) {
@@ -189,9 +175,10 @@ const Game1: React.FC = () => {
             // Validar que la configuración tenga valores válidos
             const validatedConfig: GameConfig = {
                 ...data,
-                number_range: data.number_range || '0-10',
+                number_range: data.number_range,
                 settings: {
-                    options_count: data.settings?.options_count || 5
+                    options_count: data.settings?.options_count,
+                    voice: data.settings?.voice
                 }
             };
 
@@ -203,11 +190,12 @@ const Game1: React.FC = () => {
             // Si falla la carga, usar configuración por defecto
             const defaultConfig: GameConfig = {
                 game_id: 0,
-                game_key: 'order_sequence',
+                game_key: 'touch_number',
                 user_id: currentUser?.id || '',
                 number_range: '0-10',
                 settings: {
-                    options_count: 5
+                    options_count: 5,
+                    voice: 'woman'
                 }
             };
 
@@ -310,8 +298,7 @@ const Game1: React.FC = () => {
             // Generar número a escuchar (currentNumber)
             let roundNumber: number;
             do {
-                const randomIndex = Math.floor(Math.random() * numbersArray.length);
-                roundNumber = numbersArray[randomIndex];
+                roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
             } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
 
             setCurrentNumber(roundNumber);
@@ -334,8 +321,7 @@ const Game1: React.FC = () => {
         // Generar número a escuchar (currentNumber)
         let roundNumber: number;
         do {
-            const randomIndex = Math.floor(Math.random() * numbersArray.length);
-            roundNumber = numbersArray[randomIndex];
+            roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
         } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
 
         // Asegurarse de que el número correcto esté en las opciones
@@ -356,6 +342,49 @@ const Game1: React.FC = () => {
         setRoundStartTime(Date.now());
     };
 
+
+    /**
+   * Proporciona una pista colocando automáticamente un número correcto.
+   * Busca el primer slot vacío y coloca el número que debería ir ahí.
+   */
+    const useHint = () => {
+        // // No permitir pistas cuando se muestra feedback
+        // if (showFeedback) return;
+
+        // // Buscar el primer slot vacío en orderedNumbers
+        // const emptyIndex = orderedNumbers.findIndex(num => num === undefined);
+
+        // if (emptyIndex === -1) {
+        //     // No hay slots vacíos
+        //     return;
+        // }
+
+        // // Obtener el número correcto para esa posición
+        // const correctNumber = correctOrder[emptyIndex];
+
+        // // Buscar el número en availableNumbers
+        // const availableIndex = availableNumbers.findIndex(num => num === correctNumber);
+
+        // if (availableIndex === -1) {
+        //     // El número no está disponible (ya está colocado en otro lugar)
+        //     return;
+        // }
+
+        // // Incrementar contador de pistas
+        // setHintsCount(prev => prev + 1);
+
+        // // Mover el número de available a ordered
+        // const newAvailable = [...availableNumbers];
+        // newAvailable[availableIndex] = undefined;
+        // setAvailableNumbers(newAvailable);
+
+        // const newOrdered = [...orderedNumbers];
+        // newOrdered[emptyIndex] = correctNumber;
+        // setOrderedNumbers(newOrdered);
+
+        // // Deseleccionar cualquier número seleccionado
+        // setSelectedNumber(null);
+    };
 
     /**
      * Valida la respuesta del usuario y guarda el resultado de la ronda.
@@ -450,6 +479,167 @@ const Game1: React.FC = () => {
         setGameFinished(true);
     };
 
+
+    /**
+      * Maneja la salida anticipada del juego (botón home).
+      * Guarda el estado actual como intento final y redirige al dashboard.
+      */
+    const handleEarlyExit = async () => {
+        // Si hay una sesión activa, guardar el estado actual
+        if (sessionId) {
+            try {
+                // Finalizar la sesión
+                const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
+                await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+            } catch (error) {
+                console.error('Error saving early exit:', error);
+            }
+        }
+
+        // Redirigir al dashboard
+        const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
+        history.push(dashboardRoute);
+    };
+
+    /**
+     * Reproduce el sonido del número actual.
+     * - Busca un archivo en /assets/sounds/ con el nombre en español (uno.mp3, dos.mp3, ...)
+     * - Si la reproducción falla o no existe el fichero, usa speechSynthesis como fallback
+     */
+    const speakNumber = (num: number | null) => {
+        if (num === null) return;
+        if (listeningAudio) return; // evitar múltiples reproducciones simultáneas
+        // Construir la secuencia de ficheros que hay que reproducir
+        const filesForNumber = (n: number): string[] => {
+            const files: string[] = [];
+
+            // Casos directos
+            if ((n >= 0 && n <= 30) || (n < 100 && n % 10 === 0) || n % 100 === 0 || n === 100) {
+                files.push(`${n}.m4a`);
+                return files;
+            }
+
+            // 31..99 compuestos: decena + 'y' + unidad
+            if (n > 30 && n < 100) {
+                const unidades = n % 10;
+                const decenas = n - unidades;
+                files.push(`${decenas}.m4a`);
+                files.push(`y.m4a`);
+                files.push(`${unidades}.m4a`);
+                return files;
+            }
+
+            // 101..999: cientos + resto
+            if (n > 100 && n < 1000) {
+                const centenas = Math.floor(n / 100) * 100;
+                const resto = n % 100;
+
+                // Centenas
+                if (centenas === 100) {
+                    files.push(`ciento.m4a`);
+                } else {
+                    files.push(`${centenas}.m4a`); // 200,300,...900
+                }
+
+                // Añadir el resto usando las mismas reglas que arriba
+                if ((resto >= 0 && resto <= 30) || (resto < 100 && resto % 10 === 0) || resto % 100 === 0) {
+                    files.push(`${resto}.m4a`);
+                } else {
+                    const unidades = resto % 10;
+                    const decenas = resto - unidades;
+                    files.push(`${decenas}.m4a`);
+                    files.push(`y.m4a`);
+                    files.push(`${unidades}.m4a`);
+                }
+
+                return files;
+            }
+
+            // 100 exacto
+            if (n === 100) {
+                files.push(`100.m4a`);
+                return files;
+            }
+
+            return files;
+        };
+
+
+        let path = '';
+
+
+        // Reproduce una secuencia de archivos de audio de forma secuenciall pat
+        const playFilesSequentially = async (files: string[]) => {
+            if (!files || files.length === 0) return;
+
+            setListeningAudio(true);
+
+            for (const f of files) {
+
+                if (useWomanVoice) {
+                    path = `/assets/sounds/woman/${f}`;
+                } else {
+                    path = `/assets/sounds/man/${f}`;
+                }
+
+
+                // Detener audio anterior si existe
+                if (audioRef.current) {
+                    try {
+                        audioRef.current.pause();
+                        audioRef.current.currentTime = 0;
+                    } catch (e) { /* ignore */ }
+                    audioRef.current = null;
+                }
+
+                // Play single file and wait until it ends (or errors)
+                await new Promise<void>((resolve) => {
+                    const audio = new Audio(path);
+                    audioRef.current = audio;
+
+                    const finish = () => {
+                        if (audioRef.current === audio) audioRef.current = null;
+                        resolve();
+                    };
+
+                    audio.addEventListener('ended', finish);
+                    audio.addEventListener('error', (err) => {
+                        console.error('Error reproduciendo audio', path, err);
+                        finish();
+                    });
+
+                    audio.play().catch((err) => {
+                        console.error('play() falló para', path, err);
+                        finish();
+                    });
+                });
+            }
+
+            setListeningAudio(false);
+        };
+
+        const files = filesForNumber(num);
+        if (files.length === 0) {
+            console.warn('No audio files mapped for number', num);
+            return;
+        }
+
+        // Lanzar la reproducción (no await en el handler para no bloquear la UI)
+        void playFilesSequentially(files);
+    };
+
+    // Limpiar audio cuando se desmonte el componente
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                try {
+                    audioRef.current.pause();
+                    audioRef.current = null;
+                } catch (e) { /* ignore */ }
+            }
+        };
+    }, []);
+
     // Pantalla de carga de autenticación
     if (authLoading) {
         return (
@@ -462,7 +652,7 @@ const Game1: React.FC = () => {
             </IonPage>
         );
     }
-    
+
     if (!user) {
         return <Redirect to="/student-login" />;
     }
@@ -505,95 +695,42 @@ const Game1: React.FC = () => {
         <IonPage>
             <IonContent className="game1-content">
                 {/* Header */}
-                <Game2Header
+                <GameHeader
                     title="Asociar Nº"
                     pictogram1={imgSonido}
                     pictogramArrow={imgFlecha}
                     pictogram2={imgJuego}
                     currentRound={currentRound}
                     totalRounds={TOTAL_ROUNDS}
+                    onHomeClick={handleEarlyExit}
                 />
 
                 {/* Zona de juego */}
                 {/* Números disponibles */}
-                <p>{currentNumber}</p>
 
-                <IonGrid className="numbers-grid">
-                    <IonRow className="ion-justify-content-center">
-                        {availableNumbers.map((num, index) => {
-                            if (num === undefined) return null;
+                <BubblesZone
+                    availableNumbers={availableNumbers}
+                    selectedNumber={selectedNumber}
+                    setSelectedNumber={setSelectedNumber}
+                    showFeedback={showFeedback}
+                    currentNumber={currentNumber}
+                    usePictograms={usePictograms}
+                />
 
-                            const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
-                            let cardClass = 'number-circle'; // Usamos la clase del círculo
-                            if (usePictograms) cardClass += ' number-card-pictogram';
-
-                            // Añadir clase visual cuando esté seleccionado
-                            const isSelected = selectedNumber === num;
-                            if (isSelected) cardClass += ' selected';
-
-                            // Si estamos mostrando feedback, marcar la opción correcta en verde
-                            // y la opción seleccionada incorrecta en rojo.
-                            if (showFeedback) {
-                                // marcar la opción correcta (aunque no esté seleccionada)
-                                if (num === currentNumber) {
-                                    cardClass += ' correct';
-                                }
-
-                                // si el usuario seleccionó una opción equivocada, marcarla en rojo
-                                if (selectedNumber !== null && selectedNumber === num && selectedNumber !== currentNumber) {
-                                    cardClass += ' incorrect';
-                                }
-                            }
-
-                            return (
-                                <IonCol size="4" size-md="3" size-lg="2" key={`available-${num}-${index}`} className="ion-text-center">
-                                    <div
-                                        className={cardClass}
-                                        onClick={() => {
-                                            if (showFeedback) return; // no permitir cambios durante feedback
-                                            setSelectedNumber(prev => (prev === num ? null : num));
-                                        }}
-                                        role="button"
-                                        aria-pressed={isSelected}
-                                        tabIndex={0}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                if (!showFeedback) {
-                                                    setSelectedNumber(prev => (prev === num ? null : num));
-                                                }
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                    >
-                                        {pictogramImg ? (
-                                            <img
-                                                src={pictogramImg}
-                                                alt={`Pictograma número ${num}`}
-                                                className="pictogram-image"
-                                            />
-                                        ) : (
-                                            <span className="number-value">{num}</span>
-                                        )}
-                                    </div>
-                                </IonCol>
-                            );
-                        })}
-                    </IonRow>
-                </IonGrid>
-
-                <div className='game1-footer'>
-                    {/*Tato*/}
-                    <div className="game1-tato-container">
+                {/* Botones de control */}
+                <div className="game1-buttons-container">
+                    {/* Botón de pistas - siempre visible a la izquierda */}
+                    <IonButton
+                        fill="clear"
+                        className="game1-check-button game1-hint-button"
+                        onClick={useHint}
+                    >
                         <img
-                            src={
-                                showFeedback
-                                    ? (selectedNumber === currentNumber ? imgTatoFeliz : imgTatoTriste)
-                                    : imgTato
-                            }
-                            alt="Tato"
-                            className="game1-tato-image"
+                            src={imgTato}
+                            alt="Pista"
+                            className="game1-check-button-image"
                         />
-                    </div>
+                    </IonButton>
 
                     {/*Botón de escuchar*/}
                     <div className="game1-check-button-container">
@@ -601,6 +738,7 @@ const Game1: React.FC = () => {
                             fill="clear"
                             className="game1-check-button"
                             disabled={listeningAudio || showFeedback}
+                            onClick={() => speakNumber(currentNumber)}
                         >
                             <img
                                 src={imgSonidoConTexto}
@@ -610,22 +748,41 @@ const Game1: React.FC = () => {
                         </IonButton>
                     </div>
 
-
-                    {/*Botón de comprobar*/}
-                    <div className="game1-check-button-container">
+                    {/* Botón Aceptar/Comprobar cuando no hay feedback */}
+                    {!showFeedback && (
                         <IonButton
                             fill="clear"
                             className="game1-check-button"
-                            onClick={showFeedback ? handleNext : checkAnswer}
-                            disabled={!showFeedback && selectedNumber === null}
+                            onClick={checkAnswer}
                         >
                             <img
-                                src={showFeedback ? imgSiguiente : imgAceptar}
-                                alt={showFeedback ? 'Siguiente' : 'Comprobar'}
+                                src={imgAceptar}
+                                alt="Comprobar"
                                 className="game1-check-button-image"
                             />
                         </IonButton>
-                    </div>
+                    )}
+
+                    {/* Botón Flecha para continuar cuando está correcto */}
+                    {showFeedback && (
+                        <IonButton
+                            fill="clear"
+                            className="game1-check-button"
+                            onClick={() => {
+                                if (currentRound < TOTAL_ROUNDS) {
+                                    setCurrentRound(prev => prev + 1);
+                                } else {
+                                    finishGame();
+                                }
+                            }}
+                        >
+                            <img
+                                src={imgSiguiente}
+                                alt="Continuar"
+                                className="game1-check-button-image"
+                            />
+                        </IonButton>
+                    )}
                 </div>
             </IonContent>
         </IonPage>

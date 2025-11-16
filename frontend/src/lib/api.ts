@@ -54,11 +54,11 @@ api.interceptors.request.use((config) => {
  * !!NEW
  * Cleans the storage, used when logging out or expired/invalid token
  */
-function emptyStorage(){
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('student_id');
-        localStorage.removeItem('student');
+function emptyStorage() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('student_id');
+  localStorage.removeItem('student');
 }
 
 
@@ -79,7 +79,7 @@ api.interceptors.response.use(
   (error) => {
 
     // Type 1 Error----------------------------------------------
-    if (!error.response){
+    if (!error.response) {
       // 1. Check for a timeout first
       if (error.code === 'ECONNABORTED') {
         console.error("Request Timed Out:", error.message);
@@ -90,26 +90,26 @@ api.interceptors.response.use(
     }
     // Type 2 Error----------------------------------------------
     else
-    if (error.response?.status === 401) {
-      // Solo redirigir si NO es un endpoint de login/auth
-      // Los endpoints de login pueden devolver 401 por credenciales incorrectas
-      const isAuthEndpoint = error.config?.url?.includes('/auth/login') ||
-        error.config?.url?.includes('/auth/student') ||
-        error.config?.url?.includes('/auth/register');
+      if (error.response?.status === 401) {
+        // Solo redirigir si NO es un endpoint de login/auth
+        // Los endpoints de login pueden devolver 401 por credenciales incorrectas
+        const isAuthEndpoint = error.config?.url?.includes('/auth/login') ||
+          error.config?.url?.includes('/auth/student') ||
+          error.config?.url?.includes('/auth/register');
 
-      if (!isAuthEndpoint) {
-        // Token inválido o expirado, limpiar todo
-        const isStudent = !!localStorage.getItem('student');
-        emptyStorage();
-        
-        // Redirect
-        if (isStudent) {
-          window.location.href = '/student-login';
-        } else {
-          window.location.href = '/login';
+        if (!isAuthEndpoint) {
+          // Token inválido o expirado, limpiar todo
+          const isStudent = !!localStorage.getItem('student');
+          emptyStorage();
+
+          // Redirect
+          if (isStudent) {
+            window.location.href = '/student-login';
+          } else {
+            window.location.href = '/login';
+          }
         }
       }
-    }
 
     return Promise.reject(error);
   }
@@ -352,7 +352,7 @@ export const authAPI = {
     localStorage.removeItem('user');
   },
 
-  
+
   /**
    * !! DEPRECATED
    * Iniciar sesión de estudiante mediante secuencia de pictogramas.
@@ -533,12 +533,34 @@ export interface GameConfig {
   number_range: string;
   settings: {
     options_count?: number;
+    voice?: 'woman' | 'man';
     quantity?: number;
     order?: 'ascending' | 'descending';
   };
 }
 
+/**
+ * Respuesta al crear una sesión de juego
+ */
+export interface GameSessionResponse {
+  session_id: string;
+}
 
+/**
+ * Datos de una ronda de juego
+ */
+export interface RoundResult {
+  round: number;
+  numbers: number[];
+  user_order: number[];
+  correct_order: number[];
+  is_correct: boolean;
+  time_seconds: number;
+  is_final_attempt?: boolean; // Opcional, por defecto true en backend
+  omissions?: number; // Números que no colocó (dejó sin colocar)
+  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
+  hints?: number; // Contador de pistas usadas
+}
 
 /**
  * Datos de una ronda del juego 1: Elegir Número
@@ -565,6 +587,8 @@ export interface RoundResultGame2 {
   time_seconds: number;
   is_final_attempt?: boolean; // Opcional, por defecto true en backend
   omissions?: number; // Números que no colocó (dejó sin colocar)
+  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
+  hints?: number; // Contador de pistas usadas
 }
 
 
