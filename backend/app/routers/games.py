@@ -221,7 +221,9 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         results = session.get("results", {"attempts": []})
 
         # 2. Añadir la nueva ronda al array de attempts
+        # Diferenciar por tipo de juego
         if session.get("game_id") == 1:
+            # Juego 1: Tocar número
             round_data = {
                 "round": request.round_result.round,
                 "numbers": request.round_result.numbers,
@@ -230,18 +232,26 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds
             }
-
-        if session.get("game_id") == 2:
+        elif session.get("game_id") == 2:
+            # Juego 2: Ordenar secuencia
             round_data = {
                 "round": request.round_result.round,
                 "numbers": request.round_result.numbers,
                 "user_order": request.round_result.user_order,
                 "correct_order": request.round_result.correct_order,
                 "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds,
+                "attempts": request.round_result.attempts or 0,
+                "hints": request.round_result.hints or 0
+            }
+        else:
+            # Juego desconocido, usar campos genéricos
+            round_data = {
+                "round": request.round_result.round,
+                "numbers": request.round_result.numbers,
+                "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds
             }
-
-        
 
         if "attempts" not in results:
             results["attempts"] = []
