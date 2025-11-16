@@ -344,6 +344,49 @@ const Game1: React.FC = () => {
 
 
     /**
+   * Proporciona una pista colocando automáticamente un número correcto.
+   * Busca el primer slot vacío y coloca el número que debería ir ahí.
+   */
+    const useHint = () => {
+        // // No permitir pistas cuando se muestra feedback
+        // if (showFeedback) return;
+
+        // // Buscar el primer slot vacío en orderedNumbers
+        // const emptyIndex = orderedNumbers.findIndex(num => num === undefined);
+
+        // if (emptyIndex === -1) {
+        //     // No hay slots vacíos
+        //     return;
+        // }
+
+        // // Obtener el número correcto para esa posición
+        // const correctNumber = correctOrder[emptyIndex];
+
+        // // Buscar el número en availableNumbers
+        // const availableIndex = availableNumbers.findIndex(num => num === correctNumber);
+
+        // if (availableIndex === -1) {
+        //     // El número no está disponible (ya está colocado en otro lugar)
+        //     return;
+        // }
+
+        // // Incrementar contador de pistas
+        // setHintsCount(prev => prev + 1);
+
+        // // Mover el número de available a ordered
+        // const newAvailable = [...availableNumbers];
+        // newAvailable[availableIndex] = undefined;
+        // setAvailableNumbers(newAvailable);
+
+        // const newOrdered = [...orderedNumbers];
+        // newOrdered[emptyIndex] = correctNumber;
+        // setOrderedNumbers(newOrdered);
+
+        // // Deseleccionar cualquier número seleccionado
+        // setSelectedNumber(null);
+    };
+
+    /**
      * Valida la respuesta del usuario y guarda el resultado de la ronda.
      *
      * Flujo de ejecución:
@@ -674,19 +717,20 @@ const Game1: React.FC = () => {
                     usePictograms={usePictograms}
                 />
 
-                <div className='game1-footer'>
-                    {/*Tato*/}
-                    <div className="game1-tato-container">
+                {/* Botones de control */}
+                <div className="game1-buttons-container">
+                    {/* Botón de pistas - siempre visible a la izquierda */}
+                    <IonButton
+                        fill="clear"
+                        className="game1-check-button game1-hint-button"
+                        onClick={useHint}
+                    >
                         <img
-                            src={
-                                showFeedback
-                                    ? (selectedNumber === currentNumber ? imgTatoFeliz : imgTatoTriste)
-                                    : imgTato
-                            }
-                            alt="Tato"
-                            className="game1-tato-image"
+                            src={imgTato}
+                            alt="Pista"
+                            className="game1-check-button-image"
                         />
-                    </div>
+                    </IonButton>
 
                     {/*Botón de escuchar*/}
                     <div className="game1-check-button-container">
@@ -704,22 +748,41 @@ const Game1: React.FC = () => {
                         </IonButton>
                     </div>
 
-
-                    {/*Botón de comprobar*/}
-                    <div className="game1-check-button-container">
+                    {/* Botón Aceptar/Comprobar cuando no hay feedback */}
+                    {!showFeedback && (
                         <IonButton
                             fill="clear"
                             className="game1-check-button"
-                            onClick={showFeedback ? handleNext : checkAnswer}
-                            disabled={!showFeedback && selectedNumber === null}
+                            onClick={checkAnswer}
                         >
                             <img
-                                src={showFeedback ? imgSiguiente : imgAceptar}
-                                alt={showFeedback ? 'Siguiente' : 'Comprobar'}
+                                src={imgAceptar}
+                                alt="Comprobar"
                                 className="game1-check-button-image"
                             />
                         </IonButton>
-                    </div>
+                    )}
+
+                    {/* Botón Flecha para continuar cuando está correcto */}
+                    {showFeedback && (
+                        <IonButton
+                            fill="clear"
+                            className="game1-check-button"
+                            onClick={() => {
+                                if (currentRound < TOTAL_ROUNDS) {
+                                    setCurrentRound(prev => prev + 1);
+                                } else {
+                                    finishGame();
+                                }
+                            }}
+                        >
+                            <img
+                                src={imgSiguiente}
+                                alt="Continuar"
+                                className="game1-check-button-image"
+                            />
+                        </IonButton>
+                    )}
                 </div>
             </IonContent>
         </IonPage>
