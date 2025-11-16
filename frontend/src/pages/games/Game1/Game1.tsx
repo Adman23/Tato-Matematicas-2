@@ -436,6 +436,28 @@ const Game1: React.FC = () => {
         setGameFinished(true);
     };
 
+
+    /**
+      * Maneja la salida anticipada del juego (botón home).
+      * Guarda el estado actual como intento final y redirige al dashboard.
+      */
+    const handleEarlyExit = async () => {
+        // Si hay una sesión activa, guardar el estado actual
+        if (sessionId) {
+            try {
+                // Finalizar la sesión
+                const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
+                await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+            } catch (error) {
+                console.error('Error saving early exit:', error);
+            }
+        }
+
+        // Redirigir al dashboard
+        const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
+        history.push(dashboardRoute);
+    };
+
     /**
      * Reproduce el sonido del número actual.
      * - Busca un archivo en /assets/sounds/ con el nombre en español (uno.mp3, dos.mp3, ...)
@@ -637,6 +659,7 @@ const Game1: React.FC = () => {
                     pictogram2={imgJuego}
                     currentRound={currentRound}
                     totalRounds={TOTAL_ROUNDS}
+                    onHomeClick={handleEarlyExit}
                 />
 
                 {/* Zona de juego */}
