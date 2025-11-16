@@ -113,7 +113,6 @@ const Game1: React.FC = () => {
 
     // Determinar si usar voz femenina o masculina
     const useWomanVoice = config?.settings?.voice === 'woman';
-    console.log(config);
 
     // Cargar configuración al montar (solo una vez)
     useEffect(() => {
