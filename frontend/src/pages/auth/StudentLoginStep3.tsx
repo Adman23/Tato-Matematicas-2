@@ -37,17 +37,11 @@ const PICTOGRAMS = [
 ];
 
 /** Longitud mínima requerida para validar la secuencia. */
-const REQUIRED_LENGTH = 3; // Longitud mínima de la secuencia
-const MAX_LENGTH = REQUIRED_LENGTH; // Se muestran solo 3 posiciones fijas
+const REQUIRED_LENGTH = 3;
+const MAX_LENGTH = REQUIRED_LENGTH;
 
 /**
  * Paso 3 del login de estudiante: Secuencia de pictogramas (contraseña).
- *
- * Flujo:
- * 1) El alumno toca pictogramas para formar su secuencia.
- * 2) Se valida la longitud mínima.
- * 3) Se envía a `login()` con group_id, username y password (secuencia unida por guiones).
- * 4) Redirige a `/student-dashboard` si es correcta; muestra error si no.
  */
 export default function StudentLoginStep3() {
   const params = useParams<{ groupId: string; username: string }>();
@@ -69,20 +63,14 @@ export default function StudentLoginStep3() {
     setError('');
   });
 
-  // Temporizador para ocultar el mensaje de error después de 4 segundos
+  // Temporizador para ocultar el mensaje de error
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 4000);
+      const timer = setTimeout(() => setError(''), 4000);
       return () => clearTimeout(timer);
     }
   }, [error]);
 
-  /**
-   * Añade un pictograma a la secuencia seleccionada.
-   * @param pictogramId Identificador del pictograma elegido.
-   */
   const addPicto = (pictogramId: string) => {
     setSelected(prev => {
       if (prev.length >= MAX_LENGTH) {
@@ -90,21 +78,30 @@ export default function StudentLoginStep3() {
         return prev;
       }
       setError('');
-      return [...prev, pictogramId];
+
+      const newSequence = [...prev, pictogramId];
+
+      // Auto-submit al completar los 3 pictogramas
+      if (newSequence.length === REQUIRED_LENGTH) {
+        setTimeout(() => {
+          handleLoginWithSequence(newSequence);
+        }, 100);
+      }
+
+      return newSequence;
     });
   };
 
-  /** Limpia la secuencia actual y cualquier error mostrado. */
-  const clearSequence = () => {
-    setSelected([]);
+  const removeLastPictogram = () => {
+    setSelected(prev => {
+      if (prev.length === 0) return prev;
+      return prev.slice(0, -1);
+    });
     setError('');
   };
 
-  /**
-   * Intenta autenticar al estudiante con la secuencia actual.
-   */
-  const handleLogin = async () => {
-    if (selected.length < REQUIRED_LENGTH) {
+  const handleLoginWithSequence = async (sequence: string[]) => {
+    if (sequence.length < REQUIRED_LENGTH) {
       setError('Aún faltan imágenes');
       return;
     }
@@ -113,7 +110,7 @@ export default function StudentLoginStep3() {
     setError('');
 
     try {
-      const password = selected.join('-');
+      const password = sequence.join('-');
 
       await login({
         group_id: groupId,
@@ -130,6 +127,10 @@ export default function StudentLoginStep3() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogin = () => {
+    handleLoginWithSequence(selected);
   };
 
   return (
@@ -231,15 +232,16 @@ export default function StudentLoginStep3() {
               </div>
             </div>
 
-            {/* Botón borrar */}
+            {/* Botón: borrar último pictograma */}
             <IonButton
               fill="clear"
               className="auth-action-button"
-              onClick={clearSequence}
+              onClick={removeLastPictogram}
+              disabled={selected.length === 0}
             >
               <img
                 src="/assets/pictograms/boton_borrar.png"
-                alt="Borrar"
+                alt="Borrar último pictograma"
                 className="auth-boton-imagen"
               />
             </IonButton>
