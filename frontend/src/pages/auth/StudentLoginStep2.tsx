@@ -1,11 +1,3 @@
-/**
- * !! EDITED
- *  -> Now there is no student
- * Pantalla de Paso 2: Selección de Usuario
- * ---------------------------------------------------------
- * El estudiante selecciona su username de la lista de estudiantes del grupo.
- */
-
 import {
   IonPage,
   IonContent,
@@ -18,30 +10,63 @@ import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
 import type { User } from '../../lib/api';
-import './StudentLogin.css';
+import './StudentLoginSelection.css';
 
-/**
- * Paso 2 del login de estudiante: Selección de username.
- *
- * Flujo:
- * 1) Carga la lista de estudiantes del grupo
- * 2) El alumno selecciona su usuario (con foto si está disponible)
- * 3) Navega al paso 3 con el group_id y username
- */
 export default function StudentLoginStep2() {
   const params = useParams<{ groupId: string }>();
   const history = useHistory();
-
-  // Extract groupId from URL pathname as fallback (IonReactRouter issue workaround)
   const groupId = params.groupId || history.location.pathname.split('/').pop() || '';
 
   const [students, setStudents] = useState<User[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
+  const [confirmPendingId, setConfirmPendingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hasLoaded, setHasLoaded] = useState(false);
 
-  // Cargar estudiantes cuando groupId esté disponible (solo una vez)
+  const [currentPage, setCurrentPage] = useState(0); // ✅ currentPage
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  // ✅ Paginación SIN solapamiento
+  const startIndex = currentPage * visibleCount;
+  const visibleStudents = students.slice(startIndex, startIndex + visibleCount);
+
+  const showArrows = students.length > visibleCount;
+  const canGoPrev = currentPage > 0;
+  const canGoNext = (currentPage + 1) * visibleCount < students.length;
+
+  const goToPrevPage = () => {
+    if (canGoPrev) setCurrentPage(prev => prev - 1);
+  };
+
+  const goToNextPage = () => {
+    if (canGoNext) setCurrentPage(prev => prev + 1);
+  };
+
+  const calculateVisibleCount = () => {
+    const isMobile = window.innerWidth <= 860;
+    return isMobile ? 2 : 4;
+  };
+
+  // ✅ Reset currentPage si cambia visibleCount
+  useEffect(() => {
+    if (students.length > 0) {
+      const maxPage = Math.max(0, Math.ceil(students.length / visibleCount) - 1);
+      if (currentPage > maxPage) {
+        setCurrentPage(maxPage);
+      }
+    }
+  }, [visibleCount, students.length, currentPage]);
+
+  useEffect(() => {
+    const updateCount = () => {
+      setVisibleCount(calculateVisibleCount());
+    };
+    updateCount();
+    window.addEventListener('resize', updateCount);
+    return () => window.removeEventListener('resize', updateCount);
+  }, []);
+
   useEffect(() => {
     if (groupId && !hasLoaded) {
       loadStudents();
@@ -49,11 +74,12 @@ export default function StudentLoginStep2() {
     }
   }, [groupId, hasLoaded]);
 
-  // Resetear selección y recargar estudiantes cada vez que la vista se muestra
   useIonViewWillEnter(() => {
     setSelectedStudent(null);
+    setConfirmPendingId(null);
     setError('');
-    setHasLoaded(false); // Permite recargar estudiantes cuando se vuelve a la vista
+    setHasLoaded(false);
+    setCurrentPage(0); // ✅ reset currentPage
   });
 
   const loadStudents = async () => {
@@ -70,8 +96,16 @@ export default function StudentLoginStep2() {
     }
   };
 
-  const handleStudentClick = (student: User) => {
+  const handleTileClick = (student: User) => {
+    if (loading) return;
+
+    if (selectedStudent?.id === student.id && confirmPendingId === String(student.id)) {
+      handleAdvance();
+      return;
+    }
+
     setSelectedStudent(student);
+    setConfirmPendingId(String(student.id));
     setError('');
   };
 
@@ -80,138 +114,174 @@ export default function StudentLoginStep2() {
       setError('Selecciona un estudiante');
       return;
     }
-    // Navegar al paso 3 con el group_id y username
     history.push(`/student-login/step3/${groupId}/${selectedStudent.username}`);
   };
 
   return (
     <IonPage>
-
-
       <IonContent className="student-login-content">
-        <div className="student-login-container">
-
-          {/* Fila de botones superior */}
-
-
-          <div className="student-button-row">
+        <div className="sel-login-container">
+          <div className="sel-button-row">
             <IonButton
               fill="clear"
-              className="default-action-button"
+              className="sel-action-button"
               onClick={() => history.goBack()}
             >
               <img
                 src="/assets/pictograms/boton_volver.png"
                 alt="Volver"
-                className="student-boton-imagen"
+                className="sel-boton-imagen"
               />
             </IonButton>
 
-            <div className='action-card'>
+            <div className="sel-action-card">
               <IonButton
                 fill="clear"
-                className="default-action-button"
+                className="sel-action-button"
                 onClick={() => history.push('/')}
               >
                 <img
                   src="/assets/pictograms/home.png"
-                  alt="Volver a la pagina principal"
-                  className="student-boton-imagen"
+                  alt="Volver a la página principal"
+                  className="sel-boton-imagen"
                 />
               </IonButton>
-              <span className="default-action-button-label">Ir a inicio</span>
             </div>
 
-            {/* Espacio vacío para mantener el layout */}
-            <div style={{ width: 'clamp(45px, 8vw, 80px)' }}></div>
+            <IonButton
+              fill="clear"
+              className="sel-action-button"
+              onClick={handleAdvance}
+              disabled={loading || !selectedStudent}
+            >
+              <img
+                src="/assets/pictograms/si.png"
+                alt="Avanzar"
+                className="sel-boton-imagen"
+              />
+            </IonButton>
           </div>
 
-          {/* Título y arriba */}
-          <div className="student-login-header">
-
-
-            <h1 className="student-login-title">Selección de usuario</h1>
-            <p className="student-login-subtitle">
-              Toca tu foto o nombre y pulsa avanzar
-            </p>
+          <div className="sel-login-header">
+            <h1 className="sel-login-title">Selecciona tu usuario</h1>
           </div>
 
-          {/* Grid de estudiantes */}
           {loading ? (
-            <div className="student-loading">
+            <div className="sel-loading">
               <IonSpinner name="crescent" />
             </div>
           ) : students.length === 0 ? (
-            <div className="student-error-message ">
-              <IonText color="warning">
-                <p>No hay estudiantes en este grupo</p>
-              </IonText>
+            <div className="sel-error">
+              <p>No hay estudiantes en este grupo</p>
             </div>
           ) : (
-            <div className="student-pictograms-grid">
-              {students.map((student) => (
-                <div
-                  key={student.id}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 'clamp(0.3rem, 0.8vw, 0.6rem)'
-                  }}
+            <div className="sel-group-grid-wrapper">
+              {showArrows && (
+                <button
+                  className="sel-group-grid-arrow left-outside"
+                  onClick={goToPrevPage}
+                  disabled={!canGoPrev}
+                  aria-label="Estudiantes anteriores"
                 >
-                  <button
-                    onClick={() => handleStudentClick(student)}
-                    disabled={loading}
-                    className={`student-pictogram-button ${selectedStudent?.id === student.id ? 'selected' : ''}`}
-                    aria-label={student.username}
-                  >
-                    <div className="student-user-card">
-                      {student.photo_url ? (
-                        <img
-                          src={student.photo_url}
-                          alt={student.username}
-                          className="student-user-photo"
-                        />
-                      ) : (
-                        <img
-                          src="/assets/pictograms/user_default.png"
-                          alt={student.username}
-                          className="student-user-photo"
-                        />
-                      )}
-                      <h3>{student.username}</h3>
-                    </div>
-                  </button>
+                  <img src="/assets/pictograms/flecha.png" alt="Anterior" />
+                </button>
+              )}
 
-                  {/* Botón de avanzar - solo aparece debajo cuando este estudiante está seleccionado */}
-                  {selectedStudent?.id === student.id && (
-                    <IonButton
-                      fill="clear"
-                      className="default-action-button student-advance-button"
-                      onClick={handleAdvance}
+              <div className="sel-classes-card">
+                <div className="sel-group-grid">
+                  {visibleStudents.map((student) => (
+                    <button
+                      key={student.id}
+                      onClick={() => handleTileClick(student)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleTileClick(student);
+                        }
+                      }}
+                      disabled={loading}
+                      className={`sel-group-tile ${
+                        selectedStudent?.id === student.id ? 'selected' : ''
+                      }`}
+                      aria-label={`${student.username} — ${
+                        selectedStudent?.id === student.id
+                          ? confirmPendingId === String(student.id)
+                            ? 'listo para confirmar: presiona Enter o haz clic para continuar'
+                            : 'seleccionado'
+                          : 'no seleccionado'
+                      }`}
+                      aria-pressed={selectedStudent?.id === student.id ? 'true' : 'false'}
+                      tabIndex={0}
                     >
-                      <img
-                        src="/assets/pictograms/correcto.png"
-                        alt="Avanzar"
-                        className="student-boton-imagen student-boton-rotado"
-                      />
-                    </IonButton>
-                  )}
+                      <div className="sel-user-content">
+                        {student.photo_url ? (
+                          <img
+                            src={student.photo_url}
+                            alt={student.username}
+                            className="sel-group-icon"
+                          />
+                        ) : (
+                          <img
+                            src="/assets/pictograms/user_default.png"
+                            alt={student.username}
+                            className="sel-group-icon"
+                          />
+                        )}
+                        <span className="sel-group-label">{student.username}</span>
+                      </div>
+
+                      {confirmPendingId === String(student.id) && (
+                        <div className="sel-confirm-overlay">
+                          <img
+                            src="/assets/pictograms/si.png"
+                            alt=""
+                            className="sel-confirm-icon"
+                          />
+                        </div>
+                      )}
+                    </button>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {showArrows && (
+                <button
+                  className="sel-group-grid-arrow right-outside"
+                  onClick={goToNextPage}
+                  disabled={!canGoNext}
+                  aria-label="Más estudiantes"
+                >
+                  <img src="/assets/pictograms/flecha.png" alt="Siguiente" />
+                </button>
+              )}
             </div>
           )}
 
-          {/* Mensaje de error */}
+          {/* ✅ Indicadores de página */}
+          {showArrows && students.length > 0 && (
+            <ul className="sel-page-indicators" role="tablist" aria-label="Navegación por páginas">
+              {Array.from({ length: Math.ceil(students.length / visibleCount) }, (_, i) => (
+                <li key={i}>
+                  <button
+                    className="sel-page-indicator"
+                    onClick={() => setCurrentPage(i)}
+                    aria-label={`Ir a la página ${i + 1}`}
+                    aria-selected={currentPage === i}
+                    role="tab"
+                    tabIndex={currentPage === i ? 0 : -1}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+
           {error && (
             <IonText color="danger">
-              <div className="student-error-message">
+              <div className="sel-error-message">
                 <p>{error}</p>
               </div>
             </IonText>
           )}
-
-
         </div>
       </IonContent>
     </IonPage>
