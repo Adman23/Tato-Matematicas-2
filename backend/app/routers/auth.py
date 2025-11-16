@@ -444,7 +444,8 @@ async def get_students_by_group(group_id: int):
 
     Retrieves the list of students belonging to a given group, including
     their `id`, `username` (derived from the email prefix), and `photo_url`.
-    Uses a single batch call to get all auth users to avoid connection issues.
+    Authentication data (username) is fetched in parallel using threads to
+    improve performance for large groups.
 
     Args:
         group_id (int): The ID of the group to retrieve students from.
@@ -459,6 +460,9 @@ async def get_students_by_group(group_id: int):
             - username (str): Username extracted from the email.
             - photo_url (str): URL of the student's photo (if any).
     """
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+
     try:
         # Get students from public.users (id and photo_url)
         resp = supabase_admin.table("users") \
@@ -470,67 +474,33 @@ async def get_students_by_group(group_id: int):
         if not resp.data:
             return []
 
-        # Get ALL auth users in a SINGLE call (much more efficient!)
-        try:
-            all_auth_users = supabase_admin.auth.admin.list_users(page=1, per_page=1000)
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error fetching auth users: {str(e)}"
-            )
-
-        # Create a map of user_id -> email for fast lookup
-        auth_user_map = {}
-        if all_auth_users:
-            for auth_user in all_auth_users:
-                try:
-                    # Get user ID and email safely
-                    user_id = getattr(auth_user, "id", None)
-                    user_email = getattr(auth_user, "email", None)
-
-                    if not user_id and isinstance(auth_user, dict):
-                        user_id = auth_user.get("id")
-                    if not user_email and isinstance(auth_user, dict):
-                        user_email = auth_user.get("email")
-
-                    if user_id and user_email:
-                        auth_user_map[user_id] = user_email
-                except Exception as e:
-                    print(f"Warning: Could not process auth user: {e}")
-                    continue
-
-        # Build the student list by matching with auth data
-        students = []
-        for user_data in resp.data:
-            user_id = user_data["id"]
-
-            # Get email from our map
-            email = auth_user_map.get(user_id)
-            if not email:
-                print(f"Warning: Could not find email for user {user_id}")
-                continue
-
-            # Extract username from email
+        # Function to get auth user (will run in thread pool)
+        def get_auth_user(user_data):
             try:
-                username = email.split("@")[0]
-            except Exception:
-                print(f"Warning: Invalid email format for user {user_id}: {email}")
-                continue
+                auth_user = supabase_admin.auth.admin.get_user_by_id(user_data["id"])
+                username = auth_user.user.email.split("@")[0]
+                return {
+                    "id": user_data["id"],
+                    "username": username,
+                    "photo_url": user_data.get("photo_url")
+                }
+            except Exception as e:
+                print(f"Warning: Could not get username for user {user_data['id']}: {e}")
+                return None
 
-            # Convert photo_url to public URL if exists
-            photo_url_raw = user_data.get("photo_url")
-            photo_url = None
-            if photo_url_raw:
-                try:
-                    photo_url = supabase_admin.storage.from_("user_photo").get_public_url(photo_url_raw)
-                except Exception as e:
-                    print(f"Warning: Could not get photo URL for user {user_id}: {e}")
+        # Get all auth users in parallel using ThreadPoolExecutor
+        loop = asyncio.get_event_loop()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            # Create futures for all auth calls
+            futures = [
+                loop.run_in_executor(executor, get_auth_user, user)
+                for user in resp.data
+            ]
+            # Wait for all to complete
+            results = await asyncio.gather(*futures)
 
-            students.append({
-                "id": user_id,
-                "username": username,
-                "photo_url": photo_url
-            })
+        # Filter out None values (failed auth calls)
+        students = [student for student in results if student is not None]
 
         return students
 

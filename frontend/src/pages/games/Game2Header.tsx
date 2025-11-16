@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { IonText } from '@ionic/react';
-import './GameHeader.css';
+import './Game2Header.css';
 
 /**
  * Props del componente Game2Header.
@@ -25,7 +25,6 @@ import './GameHeader.css';
  * @property {string} pictogram2 - URL o ruta del tercer pictograma (imagen derecha)
  * @property {number} currentRound - Número de ronda actual (1-based, ej: 1, 2, 3...)
  * @property {number} totalRounds - Total de rondas del juego (ej: 5 para "1/5")
- * @property {() => void} [onHomeClick] - Función opcional para manejar el click en el botón de home
  */
 interface Game2HeaderProps {
   title: string;
@@ -34,7 +33,6 @@ interface Game2HeaderProps {
   pictogram2: string;
   currentRound: number;
   totalRounds: number;
-  onHomeClick?: () => void;
 }
 
 /**
@@ -84,20 +82,10 @@ const Game2Header: React.FC<Game2HeaderProps> = ({
   pictogramArrow,
   pictogram2,
   currentRound,
-  totalRounds,
-  onHomeClick
+  totalRounds
 }) => {
   return (
     <div className="game2-header-component">
-      {/* Botón Home a la izquierda (opcional) */}
-      <div className="game2-header-left">
-        {onHomeClick && (
-          <button onClick={onHomeClick} className="game2-header-home-button">
-            <img src="/assets/pictograms/home.png" alt="Volver al inicio" />
-          </button>
-        )}
-      </div>
-
       <div className="game2-header-center">
         <IonText>
           <h2 className="game2-header-title">{title}</h2>

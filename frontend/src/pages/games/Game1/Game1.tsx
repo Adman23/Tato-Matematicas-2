@@ -18,7 +18,8 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
 
-import GameHeader from '../GameHeader';
+
+import Game2Header from '../Game2Header';
 import './Game1.css';
 
 
@@ -631,7 +632,7 @@ const Game1: React.FC = () => {
         <IonPage>
             <IonContent className="game1-content">
                 {/* Header */}
-                <GameHeader
+                <Game2Header
                     title="Asociar Nº"
                     pictogram1={imgSonido}
                     pictogramArrow={imgFlecha}

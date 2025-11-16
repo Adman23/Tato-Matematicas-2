@@ -220,15 +220,13 @@
 
 .student-pictograms-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(clamp(80px, 14vw, 130px), 1fr));
-  gap: clamp(0.5rem, 1.5vw, 1.2rem);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(60px, 12vw, 100px), 1fr));
+  gap: clamp(0.25rem, 1.2vw, 0.8rem);
   flex: 1;
-  align-content: start; /* Cambiado de center a start para que use más espacio */
+  align-content: center;
+  max-height: clamp(22vh, 35vh, 40vh);
   width: 100%;
-  height: 100%;
-  overflow-y: hidden; /* Eliminamos el scroll */
-  /* Las filas del grid se ajustarán automáticamente al espacio disponible */
-  grid-auto-rows: minmax(clamp(80px, 14vh, 130px), auto);
+  overflow-y: auto;
 }
 
 .student-pictogram-button {
@@ -245,9 +243,8 @@
   aspect-ratio: 1;
   min-height: 0;
   min-width: 0;
-  /* Aumentamos el tamaño máximo para aprovechar el espacio disponible */
-  max-width: min(25vh, 220px);
-  max-height: min(25vh, 220px);
+  max-width: min(20vh, 180px);
+  max-height: min(20vh, 180px);
   width: 100%;
   height: 100%;
   margin: 0 auto;
