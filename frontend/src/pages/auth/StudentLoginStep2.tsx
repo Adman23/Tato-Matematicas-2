@@ -95,9 +95,6 @@ export default function StudentLoginStep2() {
 
 
           <div className="student-button-row">
-
-
-
             <IonButton
               fill="clear"
               className="default-action-button"
@@ -109,6 +106,7 @@ export default function StudentLoginStep2() {
                 className="student-boton-imagen"
               />
             </IonButton>
+
             <div className='action-card'>
               <IonButton
                 fill="clear"
@@ -120,28 +118,12 @@ export default function StudentLoginStep2() {
                   alt="Volver a la pagina principal"
                   className="student-boton-imagen"
                 />
-
               </IonButton>
               <span className="default-action-button-label">Ir a inicio</span>
             </div>
 
-
-            {/* Botón de avanzar */}
-
-            <IonButton
-              fill="clear"
-              className="default-action-button"
-              onClick={handleAdvance}
-              disabled={loading}
-            >
-              <img
-                src="/assets/pictograms/correcto.png"
-                alt="Avanzar"
-                className="student-boton-imagen student-boton-rotado"
-              />
-            </IonButton>
-
-
+            {/* Espacio vacío para mantener el layout */}
+            <div style={{ width: 'clamp(45px, 8vw, 80px)' }}></div>
           </div>
 
           {/* Título y arriba */}
@@ -168,30 +150,54 @@ export default function StudentLoginStep2() {
           ) : (
             <div className="student-pictograms-grid">
               {students.map((student) => (
-                <button
+                <div
                   key={student.id}
-                  onClick={() => handleStudentClick(student)}
-                  disabled={loading}
-                  className={`student-pictogram-button ${selectedStudent?.id === student.id ? 'selected' : ''}`}
-                  aria-label={student.username}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 'clamp(0.3rem, 0.8vw, 0.6rem)'
+                  }}
                 >
-                  <div className="student-user-card">
-                    {student.photo_url ? (
+                  <button
+                    onClick={() => handleStudentClick(student)}
+                    disabled={loading}
+                    className={`student-pictogram-button ${selectedStudent?.id === student.id ? 'selected' : ''}`}
+                    aria-label={student.username}
+                  >
+                    <div className="student-user-card">
+                      {student.photo_url ? (
+                        <img
+                          src={student.photo_url}
+                          alt={student.username}
+                          className="student-user-photo"
+                        />
+                      ) : (
+                        <img
+                          src="/assets/pictograms/user_default.png"
+                          alt={student.username}
+                          className="student-user-photo"
+                        />
+                      )}
+                      <h3>{student.username}</h3>
+                    </div>
+                  </button>
+
+                  {/* Botón de avanzar - solo aparece debajo cuando este estudiante está seleccionado */}
+                  {selectedStudent?.id === student.id && (
+                    <IonButton
+                      fill="clear"
+                      className="default-action-button student-advance-button"
+                      onClick={handleAdvance}
+                    >
                       <img
-                        src={student.photo_url}
-                        alt={student.username}
-                        className="student-user-photo"
+                        src="/assets/pictograms/correcto.png"
+                        alt="Avanzar"
+                        className="student-boton-imagen student-boton-rotado"
                       />
-                    ) : (
-                      <img
-                        src="/assets/pictograms/user_default.png"
-                        alt={student.username}
-                        className="student-user-photo"
-                      />
-                    )}
-                    <h3>{student.username}</h3>
-                  </div>
-                </button>
+                    </IonButton>
+                  )}
+                </div>
               ))}
             </div>
           )}
