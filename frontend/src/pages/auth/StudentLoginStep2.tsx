@@ -66,7 +66,7 @@ export default function StudentLoginStep2() {
 
   // ✅ Lógica responsive: basada en ancho (sincronizada con @media (max-width: 600px))
   const calculateVisibleCount = () => {
-    const isMobile = window.innerWidth <= 600;
+    const isMobile = window.innerWidth <= 715;
     return isMobile ? 2 : 4;
   };
 

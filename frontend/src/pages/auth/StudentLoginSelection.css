@@ -161,7 +161,7 @@
   /* ✅ Asegura que haya 2 filas, aunque no haya suficientes elementos */
 }
 
-@media (max-width: 600px) {
+@media (max-width: 715px) {
   .sel-group-grid {
     /* En móvil: forzar 2 filas × 1 columna */
     grid-template-columns: 1fr;
@@ -170,22 +170,30 @@
 }
 
 /* Botón de grupo: tamaño fijo y con imagen de fondo */
+/* Botón de grupo: tamaño fijo y con imagen de fondo */
 .sel-group-tile {
   position: relative;
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1;
+  /* ⚠️ Fijamos un tamaño constante en px para garantizar consistencia */
+  width: 225px; /* Tamaño fijo horizontal */
+  height: 225px; /* Tamaño fijo vertical */
+  /* Eliminamos aspect-ratio para evitar conflictos con el tamaño fijo */
+  /* aspect-ratio: 1; */
   background: white;
   border: 2px solid #000;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* Tamaño constante */
-  min-width: clamp(100px, 20vw, 150px);
-  min-height: clamp(100px, 20vw, 150px);
-  /* Eliminar padding para que la imagen ocupe todo el espacio */
+  /* ✅ Eliminamos min-width/min-height porque ya tenemos tamaño fijo */
   padding: 0;
-  overflow: hidden; /* Evitar que la letra sobresalga si es muy grande */
+  overflow: hidden;
+}
+
+/* Para pantallas pequeñas, puedes usar un tamaño menor, pero aún fijo */
+@media (max-width: 715px) {
+  .sel-group-tile {
+    width: 225px;
+    height: 225px;
+  }
 }
 
 .sel-group-tile:empty {
@@ -219,13 +227,14 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* Imagen del pictograma: ocupa todo el tile */
+/* Imagen del pictograma: ocupa todo el tile sin distorsionar */
 .sel-group-icon {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Asegura que cubra todo el tile */
+  object-fit: cover; /* Cubre todo el tile, recortando si es necesario */
   object-position: center;
-  display: block; /* Evita espacios extra */
+  display: block;
+  /* ✅ Si no hay imagen, el fondo blanco del tile sigue siendo visible */
 }
 
 /* Letra superpuesta en la esquina superior izquierda */
