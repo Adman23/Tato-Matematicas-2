@@ -82,7 +82,8 @@ async def get_game_config(student_id: str, game_key: str):
         # 4. Si no existe, devolver configuración por defecto 
         if game_key == "touch_number":
             default_settings = {
-                "options_count": 5  # 5 opciones para tocar
+                "options_count": 5,  # 5 opciones para tocar
+                "voice": "woman"  # Voz femenina por defecto
             }
         if game_key == "order_sequence":
             default_settings = {

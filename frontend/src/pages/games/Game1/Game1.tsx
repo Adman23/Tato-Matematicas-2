@@ -111,6 +111,10 @@ const Game1: React.FC = () => {
     // Determinar si usar pictogramas (solo para rango 0-10)
     const usePictograms = config?.number_range === '0-10';
 
+    // Determinar si usar voz femenina o masculina
+    const useWomanVoice = config?.settings?.voice === 'woman';
+    console.log(config);
+
     // Cargar configuración al montar (solo una vez)
     useEffect(() => {
         loadGameConfig();
@@ -129,12 +133,11 @@ const Game1: React.FC = () => {
 
     // Generar nueva ronda cuando cambia currentRound
     useEffect(() => {
-        if (config && currentRound <= TOTAL_ROUNDS) {
+        if (config && sessionId && currentRound <= TOTAL_ROUNDS) {
             generateRound();
         }
 
-    }, [config, currentRound]);
-
+    }, [config, currentRound, sessionId]);
     // Efecto para redirigir cuando el juego termine
     useEffect(() => {
         if (gameFinished) {
@@ -174,9 +177,10 @@ const Game1: React.FC = () => {
             // Validar que la configuración tenga valores válidos
             const validatedConfig: GameConfig = {
                 ...data,
-                number_range: data.number_range || '0-10',
+                number_range: data.number_range,
                 settings: {
-                    options_count: data.settings?.options_count || 5
+                    options_count: data.settings?.options_count,
+                    voice: data.settings?.voice
                 }
             };
 
@@ -188,11 +192,12 @@ const Game1: React.FC = () => {
             // Si falla la carga, usar configuración por defecto
             const defaultConfig: GameConfig = {
                 game_id: 0,
-                game_key: 'order_sequence',
+                game_key: 'touch_number',
                 user_id: currentUser?.id || '',
                 number_range: '0-10',
                 settings: {
-                    options_count: 5
+                    options_count: 5,
+                    voice: 'woman'
                 }
             };
 
@@ -295,8 +300,7 @@ const Game1: React.FC = () => {
             // Generar número a escuchar (currentNumber)
             let roundNumber: number;
             do {
-                const randomIndex = Math.floor(Math.random() * numbersArray.length);
-                roundNumber = numbersArray[randomIndex];
+                roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
             } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
 
             setCurrentNumber(roundNumber);
@@ -319,8 +323,7 @@ const Game1: React.FC = () => {
         // Generar número a escuchar (currentNumber)
         let roundNumber: number;
         do {
-            const randomIndex = Math.floor(Math.random() * numbersArray.length);
-            roundNumber = numbersArray[randomIndex];
+            roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
         } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
 
         // Asegurarse de que el número correcto esté en las opciones
@@ -498,14 +501,24 @@ const Game1: React.FC = () => {
             return files;
         };
 
-        // Reproduce una secuencia de archivos de audio de forma secuencial
+
+        let path = '';
+
+
+        // Reproduce una secuencia de archivos de audio de forma secuenciall pat
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
             setListeningAudio(true);
 
             for (const f of files) {
-                const path = `/assets/sounds/man/${f}`;
+
+                if (useWomanVoice) {
+                    path = `/assets/sounds/woman/${f}`;
+                } else {
+                    path = `/assets/sounds/man/${f}`;
+                }
+
 
                 // Detener audio anterior si existe
                 if (audioRef.current) {
