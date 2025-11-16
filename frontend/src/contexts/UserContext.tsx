@@ -35,17 +35,19 @@ import { authAPI } from '../lib/api';
 import type { User, LoginData, RegisterData } from '../lib/api';
 */
 
-import React, { createContext, useEffect, } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import type { UserData } from '../lib/api';
+import { userAPI } from '../lib/api';
 
 /**
  * Structure of the UserContext.
  * Data and functions.
  */
 interface UserContextType {
-    userData: string;
+    userData: UserData | null;
     loading: boolean;
-    // TODO Add the functions created below
+    refreshUserData: () => Promise<void>;
 }
 
 // Create the Context based on the interface
@@ -66,26 +68,79 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
  * ```
 */
 export const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    // Here we would have the state and functions to manage user data
-    const userData = "Sample User Data"; // Placeholder for actual user data
-    const loading = false; // Placeholder for loading state
+  // temporal variables and setters for them 
+  const [userData, setUserData] = useState<UserData | null>(null); 
+  // Loading state is to use the guard pattern to avoid showing anything before the data is loaded
+  const [loading, setLoading] = useState(true);
 
+  
+  /**
+   * @brief Fetch user data from the API
+   * @summary This function should return the json with all the user data
+   *          the structure will be defined in UserData interface in api.ts
+   *          Anywhere in the provider we can call this function to get the data
+   *          but its recommended to use it only when needed, not on every render
+   * @returns the response data from the API call
+   */
+  const fetchUserData = async (): Promise<UserData> => {
+    const response = await userAPI.fetchUserData(); // Example API call
+    return response.data; // Assuming the API returns user data in response.data
+  }
+
+  // Its important to understand that when data is stored on the local storage its 
+  // stored as a string, so we need to stringify when savind and parse when retrieving
   useEffect(() => {
-    // Logic to fetch and set user data would go here
+    const fetchData = async () => {
+      const savedUserData = localStorage.getItem('user_data');
+      if (savedUserData) {
+        // The page is trying to access user data and its already in local storage
+        setUserData(JSON.parse(savedUserData));
+      } else {
+        // In case there is no userData in local storage, fetch it from the API
+        const fetchedUserData = await fetchUserData();
+        // Save it to local storage for future use
+        localStorage.setItem('user_data', JSON.stringify(fetchedUserData));
+        setUserData(fetchedUserData); 
+      }
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
-  // Functions related to user data managemente would go here
 
-    return (
-        <UserContext.Provider 
-        value={{ 
-                userData, 
-                loading 
-            }}
-        >
-            {children}
-        </UserContext.Provider>
-    );
+
+
+  //-Functions related to user data managemente would go here----------------------------------
+  /**
+   * @brief Refresh the entire user data from the API
+   * @summary This function fetches the latest user data from the API
+   *          and updates both the context state and local storage
+   */
+  const refreshUserData = async () => {
+    setLoading(true);
+    const fetchedUserData = await fetchUserData();
+    localStorage.setItem('user_data', JSON.stringify(fetchedUserData));
+    setUserData(fetchedUserData);
+    setLoading(false);
+  }
+
+  // TODO: Functions to update specific parts of the user data can be added here
+
+  //-------------------------------------------------------------------------------------------
+  
+  
+  // Return of the context provider
+  return (
+      <UserContext.Provider 
+      value={{ 
+              userData,
+              loading,
+              refreshUserData,
+          }}
+      >
+          {children}
+      </UserContext.Provider>
+  );
 
 };
 

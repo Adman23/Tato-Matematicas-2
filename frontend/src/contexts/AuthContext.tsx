@@ -68,7 +68,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
           const currentUser = JSON.parse(savedUser);
           setUser(currentUser);
-          localStorage.setItem('user', JSON.stringify(currentUser));
         } catch (error) {
           // Mostrar también la respuesta del servidor (si la hay) para facilitar el debug
           console.error('Error loading user:', error, (error as any)?.response?.data);
@@ -117,6 +116,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('user');
     localStorage.removeItem('student_id');
     localStorage.removeItem('student');
+    localStorage.removeItem('user_data'); // Added to clear UserContext
     
     try {
       await authAPI.logout();

@@ -67,6 +67,7 @@ function emptyStorage() {
  * Exception handler for every type of error.
  * Expired or invalid tokens -> clears localStorage and redirects to login.
  * 
+ * TODO: Finish error handling for Type 1 and Type 2 errors.
  * !!EDITED
  * Type 1: Network and client side errors
  *  -> Request fails to reach the API
@@ -212,7 +213,6 @@ export interface RoundResult {
   is_final_attempt?: boolean; // Opcional, por defecto true en backend
   omissions?: number; // Números que no colocó (dejó sin colocar)
 }
-
 
 
 
@@ -385,6 +385,21 @@ export const authAPI = {
     return response.data;
   },
 };
+
+
+
+// TODO: userAPI, it should handle user data fetching and updating
+// === USER API ===
+/**
+ * !! NEW
+ * User endpoints.
+ * Manages user data fetching and updating.
+ */
+export const userAPI = {
+
+};
+
+
 
 
 // === OTHER ENDPOINTS ===
