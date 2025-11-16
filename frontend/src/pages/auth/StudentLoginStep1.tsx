@@ -15,42 +15,38 @@ import './StudentLoginSelection.css';
 export default function StudentLoginStep1() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [confirmPendingId, setConfirmPendingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(4); // Valor inicial optimista (desktop)
+  const [currentPage, setCurrentPage] = useState(0); // ✅ currentPage (no currentIndex)
+  const [visibleCount, setVisibleCount] = useState(4);
   const history = useHistory();
 
-  // ✅ Nueva lógica: basada en ancho (sincronizada con @media (max-width: 600px))
   const calculateVisibleCount = () => {
     const isMobile = window.innerWidth <= 860;
     return isMobile ? 2 : 4;
   };
 
-    // ⚠️ Si cambia visibleCount (por resize), resetea currentIndex para evitar páginas inválidas
+  // ✅ Reset currentPage si cambia visibleCount (evita página inválida)
   useEffect(() => {
     if (groups.length > 0) {
-      // Asegurar que currentIndex sea válido para el nuevo visibleCount
-      const maxIndex = Math.max(0, groups.length - visibleCount);
-      if (currentIndex > maxIndex) {
-        setCurrentIndex(maxIndex);
+      const maxPage = Math.max(0, Math.ceil(groups.length / visibleCount) - 1);
+      if (currentPage > maxPage) {
+        setCurrentPage(maxPage);
       }
     }
-  }, [visibleCount, groups.length, currentIndex]);
+  }, [visibleCount, groups.length, currentPage]);
 
-  // Recalcular visibleCount al montar y en resize
   useEffect(() => {
     const updateCount = () => {
       setVisibleCount(calculateVisibleCount());
     };
-
-    updateCount(); // Inicial
+    updateCount();
     window.addEventListener('resize', updateCount);
     return () => window.removeEventListener('resize', updateCount);
   }, []);
 
-  // Cargar grupos
   useEffect(() => {
     if (!hasLoaded) {
       loadGroups();
@@ -60,9 +56,10 @@ export default function StudentLoginStep1() {
 
   useIonViewWillEnter(() => {
     setSelectedGroup(null);
+    setConfirmPendingId(null);
     setError('');
     setHasLoaded(false);
-    setCurrentIndex(0);
+    setCurrentPage(0); // ✅ reset currentPage
   });
 
   const loadGroups = async () => {
@@ -79,8 +76,16 @@ export default function StudentLoginStep1() {
     }
   };
 
-  const handleGroupClick = (group: Group) => {
+  const handleTileClick = (group: Group) => {
+    if (loading) return;
+
+    if (selectedGroup?.id === group.id && confirmPendingId === String(group.id)) {
+      handleAdvance();
+      return;
+    }
+
     setSelectedGroup(group);
+    setConfirmPendingId(String(group.id));
     setError('');
   };
 
@@ -92,22 +97,20 @@ export default function StudentLoginStep1() {
     history.push(`/student-login/step2/${selectedGroup.id}`);
   };
 
-  // ✅ Flechas: visible si hay más grupos que los que caben actualmente
-  const showArrows = groups.length > visibleCount;
+  // ✅ Paginación SIN solapamiento
+  const startIndex = currentPage * visibleCount;
+  const visibleGroups = groups.slice(startIndex, startIndex + visibleCount);
 
-  const canGoPrev = currentIndex > 0;
-  const canGoNext = currentIndex + visibleCount < groups.length;
+  const showArrows = groups.length > visibleCount;
+  const canGoPrev = currentPage > 0;
+  const canGoNext = (currentPage + 1) * visibleCount < groups.length;
 
   const goToPrevPage = () => {
-    if (canGoPrev) {
-      setCurrentIndex(prev => Math.max(0, prev - visibleCount));
-    }
+    if (canGoPrev) setCurrentPage(prev => prev - 1);
   };
 
   const goToNextPage = () => {
-    if (canGoNext) {
-      setCurrentIndex(prev => prev + visibleCount);
-    }
+    if (canGoNext) setCurrentPage(prev => prev + 1);
   };
 
   const getLetterFromAlias = (alias: string) => {
@@ -115,13 +118,10 @@ export default function StudentLoginStep1() {
     return parts.length > 1 ? parts[1].charAt(0).toUpperCase() : alias.charAt(0).toUpperCase();
   };
 
-  const visibleGroups = groups.slice(currentIndex, currentIndex + visibleCount);
-
   return (
     <IonPage>
       <IonContent className="student-login-content">
         <div className="sel-login-container">
-          {/* Fila de botones superior */}
           <div className="sel-button-row">
             <IonButton
               fill="clear"
@@ -154,21 +154,18 @@ export default function StudentLoginStep1() {
               disabled={loading || !selectedGroup}
             >
               <img
-                src="/assets/pictograms/correcto.png"
+                src="/assets/pictograms/si.png"
                 alt="Avanzar"
                 className="sel-boton-imagen"
               />
             </IonButton>
           </div>
 
-          {/* Título y subtítulo */}
           <div className="sel-login-header">
             <h1 className="sel-login-title">Selecciona tu clase</h1>
           </div>
 
-          {/* Contenedor de grid + flechas (sin card) */}
           <div className="sel-group-grid-wrapper">
-            {/* Flecha izquierda */}
             {showArrows && (
               <button
                 className="sel-group-grid-arrow left-outside"
@@ -180,7 +177,6 @@ export default function StudentLoginStep1() {
               </button>
             )}
 
-            {/* Card con solo el grid */}
             <div className="sel-classes-card">
               {loading ? (
                 <div className="sel-loading">
@@ -195,10 +191,26 @@ export default function StudentLoginStep1() {
                   {visibleGroups.map((group) => (
                     <button
                       key={group.id}
-                      onClick={() => handleGroupClick(group)}
+                      onClick={() => handleTileClick(group)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleTileClick(group);
+                        }
+                      }}
                       disabled={loading}
-                      className={`sel-group-tile ${selectedGroup?.id === group.id ? 'selected' : ''}`}
-                      aria-label={group.alias}
+                      className={`sel-group-tile ${
+                        selectedGroup?.id === group.id ? 'selected' : ''
+                      }`}
+                      aria-label={`${group.alias} — ${
+                        selectedGroup?.id === group.id
+                          ? confirmPendingId === String(group.id)
+                            ? 'listo para confirmar: presiona Enter o haz clic para continuar'
+                            : 'seleccionado'
+                          : 'no seleccionado'
+                      }`}
+                      aria-pressed={selectedGroup?.id === group.id ? 'true' : 'false'}
+                      tabIndex={0}
                     >
                       <img
                         src="/assets/pictograms/clase.png"
@@ -208,13 +220,22 @@ export default function StudentLoginStep1() {
                       <span className="sel-group-letter">
                         {getLetterFromAlias(group.alias)}
                       </span>
+
+                      {confirmPendingId === String(group.id) && (
+                        <div className="sel-confirm-overlay">
+                          <img
+                            src="/assets/pictograms/si.png"
+                            alt=""
+                            className="sel-confirm-icon"
+                          />
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Flecha derecha */}
             {showArrows && (
               <button
                 className="sel-group-grid-arrow right-outside"
@@ -227,7 +248,24 @@ export default function StudentLoginStep1() {
             )}
           </div>
 
-          {/* Mensaje de error */}
+          {/* ✅ Indicadores de página */}
+          {showArrows && groups.length > 0 && (
+            <ul className="sel-page-indicators" role="tablist" aria-label="Navegación por páginas">
+              {Array.from({ length: Math.ceil(groups.length / visibleCount) }, (_, i) => (
+                <li key={i}>
+                  <button
+                    className="sel-page-indicator"
+                    onClick={() => setCurrentPage(i)}
+                    aria-label={`Ir a la página ${i + 1}`}
+                    aria-selected={currentPage === i}
+                    role="tab"
+                    tabIndex={currentPage === i ? 0 : -1}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+
           {error && (
             <IonText color="danger">
               <div className="sel-error-message">
