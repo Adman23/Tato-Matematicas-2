@@ -314,6 +314,20 @@ export const authAPI = {
   },
 
   /**
+   * !!! EDITED
+   *  -> Name changed from 'me' to 'fetchBasicUserInfo'
+   *  -> It was only used on AuthContext.tsx to reload the user
+   *  -> Now it does the same, but the api call has been changed
+   * Get the basic info from a user
+   * @returns Basic user info
+   */
+  fetchBasicUserInfo: async (): Promise<User> => {
+    const response = await api.get<User>('/user/basic_info');
+    return response.data;
+  },
+  
+
+  /**
    * Comprueba si un username existe en la base de datos (tabla public.users).
    * @param username - Nombre de usuario a comprobar
    * @returns { exists: boolean }
@@ -333,14 +347,6 @@ export const authAPI = {
     return response.data;
   },
 
-  /**
-   * Obtener información del usuario autenticado actual.
-   * @returns Perfil del usuario actual.
-   */
-  me: async (): Promise<User> => {
-    const response = await api.get<User>('/auth/me');
-    return response.data;
-  },
 
   /**
    * Cerrar sesión del usuario actual.
@@ -352,19 +358,6 @@ export const authAPI = {
     localStorage.removeItem('user');
   },
 
-
-  /**
-   * !! DEPRECATED
-   * Iniciar sesión de estudiante mediante secuencia de pictogramas.
-   * @param data - Datos de pictogramas del estudiante.
-   * @returns Token y perfil del estudiante autenticado.
-   */
-  /*
-  loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
-    const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
-    return response.data;
-  },
-  */
 
   /**
    * Obtener todos los grupos disponibles.
@@ -384,6 +377,19 @@ export const authAPI = {
     const response = await api.get<User[]>(`/auth/groups/${groupId}/students`);
     return response.data;
   },
+
+    /**
+   * !! DEPRECATED
+   * Iniciar sesión de estudiante mediante secuencia de pictogramas.
+   * @param data - Datos de pictogramas del estudiante.
+   * @returns Token y perfil del estudiante autenticado.
+   */
+  /*
+  loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
+    const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
+    return response.data;
+  },
+  */
 };
 
 
@@ -396,7 +402,15 @@ export const authAPI = {
  * Manages user data fetching and updating.
  */
 export const userAPI = {
-
+  /**
+   * !! NEW 
+   * @param id -> id of the user in question
+   * @returns the structure UserData with all the data of the user identified by id
+   */
+  fetchUserData: async(id: string): Promise<UserData> => {
+    const response = await api.get<UserData>(`/user/${encodeURIComponent(id)}/user_data`);
+    return response.data;
+  }
 };
 
 
@@ -408,7 +422,7 @@ export const userAPI = {
  * @returns  Lista de profesores
  */
 export async function fetchTeachers() {
-  const response = await api.get("/api/admin/teachers");
+  const response = await api.get("/admin/teachers");
   return response.data;
 }
 
@@ -417,7 +431,7 @@ export async function fetchTeachers() {
  * @returns Lista de alumnos
  */
 export async function fetchStudents() {
-  const response = await api.get("/api/admin/students");
+  const response = await api.get("/admin/students");
   return response.data;
 }
 
@@ -427,7 +441,7 @@ export async function fetchStudents() {
  */
 export async function fetchStudentsByTeacher() {
   try {
-    const response = await api.get("/api/teacher/students");
+    const response = await api.get("/teacher/students");
     return response.data;
   } catch (err) {
     console.error("Error obteniendo estudiantes:", err);
@@ -441,7 +455,7 @@ export async function fetchStudentsByTeacher() {
  */
 export async function fetchStudentsByTeacherProfile() {
   try {
-    const response = await api.get("/api/teacher/students");
+    const response = await api.get("/teacher/students");
     return response.data;
   } catch (err) {
     console.error("Error obteniendo estudiantes:", err);
@@ -450,17 +464,17 @@ export async function fetchStudentsByTeacherProfile() {
 }
 
 export async function fetchTeachersWithGroups() {
-  const response = await api.get("/api/teacher/all");
+  const response = await api.get("/teacher/all");
   return response.data;
 }
 
 export async function fetchStudentsWithGroups() {
-  const response = await api.get("/api/student/all");
+  const response = await api.get("/student/all");
   return response.data;
 }
 
 export async function assignStudentsToGroup(groupId: number, studentIds: string[]) {
-  const response = await api.post('/api/admin/students/assign', {
+  const response = await api.post('/admin/students/assign', {
     group_id: groupId,
     student_ids: studentIds,
   });
@@ -468,7 +482,7 @@ export async function assignStudentsToGroup(groupId: number, studentIds: string[
 }
 
 export async function assignTeachersToGroup(groupId: number, teacherIds: string[]) {
-  const response = await api.post('/api/admin/teachers/assign', {
+  const response = await api.post('/admin/teachers/assign', {
     group_id: groupId,
     teacher_ids: teacherIds,
   });
@@ -476,14 +490,14 @@ export async function assignTeachersToGroup(groupId: number, teacherIds: string[
 }
 
 export async function unassignStudentsFromGroup(studentIds: string[]) {
-  const response = await api.post('/api/admin/students/unassign', {
+  const response = await api.post('/admin/students/unassign', {
     student_ids: studentIds,
   });
   return response.data;
 }
 
 export async function unassignTeachersFromGroup(groupId: number, teacherIds: string[]) {
-  const response = await api.post('/api/admin/teachers/unassign', {
+  const response = await api.post('/admin/teachers/unassign', {
     group_id: groupId,
     teacher_ids: teacherIds,
   });
@@ -491,7 +505,7 @@ export async function unassignTeachersFromGroup(groupId: number, teacherIds: str
 }
 
 export async function fetchGroups() {
-  const response = await api.get("/api/admin/groups");
+  const response = await api.get("/admin/groups");
   return response.data;
 }
 
@@ -500,7 +514,7 @@ export async function fetchGroups() {
  * @param groupId - id del grupo a eliminar
  */
 export async function deleteGroup(groupId: number) {
-  const response = await api.delete(`/api/admin/groups/${groupId}`);
+  const response = await api.delete(`/admin/groups/${groupId}`);
   return response.data;
 }
 // === SUBIDA Y RECUPERACIÓN DE IMÁGENES ===
@@ -517,8 +531,8 @@ export const uploadImage = async (file: File, filename: string): Promise<string>
   formData.append('file', file);
   formData.append('filename', filename);
 
-  // ✅ Usa la ruta completa si está en /api/admin
-  const response = await api.post<{ name: string, url: string }>('/api/admin/upload_image', formData, {
+  // ✅ Usa la ruta completa si está en admin
+  const response = await api.post<{ name: string, url: string }>('/admin/upload_image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -532,7 +546,7 @@ export const uploadImage = async (file: File, filename: string): Promise<string>
  * @returns Mapa: { "filename.png": "https://public-url.com/..." }
  */
 export async function getImages(): Promise<Record<string, string>> {
-  const response = await api.get<Record<string, string>>('/api/admin/get_images');
+  const response = await api.get<Record<string, string>>('/admin/get_images');
   return response.data;
 }
 
@@ -633,7 +647,7 @@ export const gamesAPI = {
    * console.log(config.number_range); // '0-10'
    */
   getGameConfig: async (userId: string, gameKey: string): Promise<GameConfig> => {
-    const response = await api.get<GameConfig>(`/api/games/config/${userId}/${gameKey}`);
+    const response = await api.get<GameConfig>(`/games/config/${userId}/${gameKey}`);
     return response.data;
   },
 
@@ -654,7 +668,7 @@ export const gamesAPI = {
    * console.log(session.session_id); // 'session-uuid-456'
    */
   createGameSession: async (userId: string, gameKey: string): Promise<GameSessionResponse> => {
-    const response = await api.post<GameSessionResponse>('/api/games/sessions', {
+    const response = await api.post<GameSessionResponse>('/games/sessions', {
       student_id: userId,
       game_key: gameKey
     });
@@ -684,7 +698,7 @@ export const gamesAPI = {
  * });
  */
   saveRoundResultGame1: async (sessionId: string, roundResult: RoundResultGame1): Promise<void> => {
-    await api.post(`/api/games/sessions/${sessionId}/round`, {
+    await api.post(`/games/sessions/${sessionId}/round`, {
       round_result: roundResult
     });
   },
@@ -713,7 +727,7 @@ export const gamesAPI = {
    * });
    */
   saveRoundResultGame2: async (sessionId: string, roundResult: RoundResultGame2): Promise<void> => {
-    await api.post(`/api/games/sessions/${sessionId}/round`, {
+    await api.post(`/games/sessions/${sessionId}/round`, {
       round_result: roundResult
     });
   },
@@ -735,7 +749,7 @@ export const gamesAPI = {
    * // La sesión ahora está marcada como completada en BD
    */
   finishGameSession: async (sessionId: string, totalTimeSeconds: number): Promise<void> => {
-    await api.post(`/api/games/sessions/${sessionId}/finish`, {
+    await api.post(`/games/sessions/${sessionId}/finish`, {
       total_time_seconds: totalTimeSeconds
     });
   }

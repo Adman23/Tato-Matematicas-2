@@ -53,11 +53,13 @@ interface UserContextType {
 // Create the Context based on the interface
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+
 /** 
  * Context provider
  * 
  * @brief This is the provider for the context that will hold the user data
  * @param children - children pages that will have access
+ * @param user_id  - The authenticated user logged in 
  * @returns provider that gives the context to the app
  * 
  * @example
@@ -67,7 +69,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
  * </UserDataProvider>
  * ```
 */
-export const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const UserDataProvider: React.FC<{ children: ReactNode, user_id: string}> = ({ children, user_id }) => {
   // temporal variables and setters for them 
   const [userData, setUserData] = useState<UserData | null>(null); 
   // Loading state is to use the guard pattern to avoid showing anything before the data is loaded
@@ -83,8 +85,8 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }
    * @returns the response data from the API call
    */
   const fetchUserData = async (): Promise<UserData> => {
-    const response = await userAPI.fetchUserData(); // Example API call
-    return response.data; // Assuming the API returns user data in response.data
+    const response = await userAPI.fetchUserData(user_id); // Example API call
+    return response; // Assuming the API returns user data in response.data
   }
 
   // Its important to understand that when data is stored on the local storage its 

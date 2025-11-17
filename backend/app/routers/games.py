@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 from ..services.supabase import supabase_admin
-from ..dependencies import get_current_user
+from ..dependencies import is_auth_current_user
 
 from ..schemas.games import (
     GameConfigResponse,

@@ -8,7 +8,7 @@ import jwt
 
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
-from ..dependencies import get_current_user, get_current_admin
+from ..dependencies import is_auth_current_user, is_admin_current_user
 from ..config import settings
 
 router = APIRouter()
@@ -16,7 +16,7 @@ router = APIRouter()
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
 @router.get("/students", summary="Gets all the students of a teacher")
-async def list_students(teacher=Depends(get_current_user)):
+async def list_students(teacher=Depends(is_auth_current_user)):
     """
     Returns a list of all students assigned to the teacher, each one with id, name and photo_url.
     """
@@ -79,7 +79,7 @@ async def list_students(teacher=Depends(get_current_user)):
 
 
 @router.get("/all", summary="Gets all teachers with photo, username and groups")
-async def list_teachers(admin=Depends(get_current_admin)):
+async def list_teachers(admin=Depends(is_admin_current_user)):
     """
     List all teachers with groups.
 

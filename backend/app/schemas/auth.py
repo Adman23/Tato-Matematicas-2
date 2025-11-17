@@ -67,16 +67,15 @@ class User(BaseModel):
         from_attributes = True
 
 
-class UserProfile(User):
+class UserData(User):
     """
-    Complete user profile including preferences from user_profiles table
+    Complete user data including preferences from user_profiles table
     """
-    notes: str | None = None
-    visual_preferences: dict | None = None
-    audio_preferences: dict | None = None
-    accessibility_settings: dict | None = None
-    game_preferences: dict | None = None
-
+    group_id: int | None = None
+    user_profile: dict | None = None
+    game_configurations: list | None = None
+    reinforcement_messages: list | None = None
+    
     class Config:
         from_attributes = True
 
@@ -84,7 +83,7 @@ class UserProfile(User):
 class AuthResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    user: User | UserProfile  # Can be basic User or full UserProfile
+    user: User | UserData  # Can be basic User or full UserProfile
     
 class UserResponse(BaseModel):
     """
@@ -151,7 +150,7 @@ class StudentAuthResponse(BaseModel):
     """
     access_token: str
     token_type: str = "bearer"
-    student: UserProfile
+    student: UserData
 
     class Config:
         from_attributes = True
