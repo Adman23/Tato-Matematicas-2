@@ -23,7 +23,7 @@ from ..dependencies import is_auth_current_user
 # Config router
 router = APIRouter()
 
-DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
+DEFAULT_AVATAR = "https://ionicframework.com/do	cs/img/demos/avatar.svg"
 
 # !! NEW 1.2.0
 #	-> Replaces "me" endpoint, uses is_auth_current_user to check for the user launching this
