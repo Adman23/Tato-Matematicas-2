@@ -43,6 +43,8 @@ import {
     IonSearchbar
 
 } from '@ionic/react';
+import { setupIonicReact } from '@ionic/react';
+setupIonicReact();
 
 import './LinkProfiles.css';
 import { Redirect, useHistory } from 'react-router-dom';
@@ -330,19 +332,6 @@ export default function LinkProfiles() {
         }
     };
 
-    // Show spinner while loading
-    if (loadingGroups || loadingUsers) {
-        return (
-            <IonPage>
-                <IonContent>
-                    <div className='LinkProfiles-spinner'>
-                        <IonSpinner name="crescent" />
-                    </div>
-                </IonContent>
-            </IonPage>
-        );
-    }
-
     // Redirect if no authenticated user
     if (!user || user.role !== 'admin') {
         return <Redirect to="/login" />;
@@ -371,10 +360,36 @@ export default function LinkProfiles() {
         });
     })();
 
+    // Prepare the list of teachers to display: filter by query and, if there is
+    // a selected class, sort so that teachers belonging to that class appear first.
+    // We do not mutate `teachers`.
+    const displayedTeachers = (() => {
+        const filtered = teacherQuery === '' ? teachers : teachers.filter(t => {
+            const q = teacherQuery.toLowerCase();
+            const uname = (t.username || '').toLowerCase();
+            const inUsername = uname.includes(q);
+            // Teachers may belong to multiple groups; check any group's alias
+            const inGroup = (t.groups && t.groups.length > 0)
+                ? t.groups.some(g => (g.alias || '').toLowerCase().includes(q))
+                : false;
+            return inUsername || inGroup;
+        });
+
+        if (selectedClass === null) return filtered;
+
+        return [...filtered].sort((a, b) => {
+            const aIn = a.groups?.some(g => g.id === selectedClass) ? 0 : 1;
+            const bIn = b.groups?.some(g => g.id === selectedClass) ? 0 : 1;
+            if (aIn !== bIn) return aIn - bIn; // those belonging to the class appear first
+            // Fallback: sort by username for consistency
+            return (a.username || '').localeCompare(b.username || '');
+        });
+    })();
+
     return (
         <IonPage>
             <SimpleHeaderAdmin adminName={user.username} />
-            <IonContent className="ion-padding">
+            <IonContent className="ion-text-center ion-padding">
                 <ClassSelect
                     classes={groups}
                     value={selectedClass}
@@ -397,27 +412,32 @@ export default function LinkProfiles() {
                             />
                         </div>
                         <div className='LinkProfiles-items'>
-                            <IonList>
-                                {displayedStudents.map(student => (
-                                    <UserItem
-                                        key={student.id}
-                                        avatar={student.photo_url}
-                                        alias={student.username}
-                                        classes={student.group ? [student.group.alias] : []}
-                                        highlight={selectedClass !== null && student.group?.id === selectedClass}
-                                        isChecked={selectedStudentIds.includes(student.id)}
-                                        onCheckChange={(checked) => {
-                                            setSelectedStudentIds(prev => {
-                                                if (checked) {
-                                                    return [...prev, student.id];
-                                                }
-                                                return prev.filter(id => id !== student.id);
-                                            });
-                                        }}
-                                    />
-                                ))}
-                            </IonList>
-
+                            {loadingUsers ? (
+                                <div className='LinkProfiles-spinner'>
+                                    <IonSpinner name="crescent" />
+                                </div>
+                            ) : (
+                                <IonList>
+                                    {displayedStudents.map(student => (
+                                        <UserItem
+                                            key={student.id}
+                                            avatar={student.photo_url}
+                                            alias={student.username}
+                                            classes={student.group ? [student.group.alias] : []}
+                                            highlight={selectedClass !== null && student.group?.id === selectedClass}
+                                            isChecked={selectedStudentIds.includes(student.id)}
+                                            onCheckChange={(checked) => {
+                                                setSelectedStudentIds(prev => {
+                                                    if (checked) {
+                                                        return [...prev, student.id];
+                                                    }
+                                                    return prev.filter(id => id !== student.id);
+                                                });
+                                            }}
+                                        />
+                                    ))}
+                                </IonList>
+                            )}
                         </div>
                     </div>
 
@@ -433,38 +453,32 @@ export default function LinkProfiles() {
                             />
                         </div>
                         <div className='LinkProfiles-items'>
-
-                            <IonList>
-                                {(
-                                    // Filter teachers client-side (by username and group alias).
-                                    // Use debounced query for better UX.
-                                    (teacherQuery === '' ? teachers : teachers.filter(t => {
-                                        const q = teacherQuery.toLowerCase();
-                                        const uname = (t.username || '').toLowerCase();
-                                        const inUsername = uname.includes(q);
-                                        const inGroups = (t.groups || []).some(g => (g.alias || '').toLowerCase().includes(q));
-                                        return inUsername || inGroups;
-                                    }))
-                                ).map(teacher => (
-                                    <UserItem
-                                        key={teacher.id}
-                                        avatar={teacher.photo_url}
-                                        alias={teacher.username}
-                                        classes={teacher.groups?.map(g => g.alias) || []}
-                                        highlight={selectedClass !== null && teacher.groups?.some(g => g.id === selectedClass)}
-                                        isChecked={selectedTeacherIds.includes(teacher.id)}
-                                        onCheckChange={(checked) => {
-                                            setSelectedTeacherIds(prev => {
-                                                if (checked) {
-                                                    return [...prev, teacher.id];
-                                                }
-                                                return prev.filter(id => id !== teacher.id);
-                                            });
-                                        }}
-                                    />
-                                ))}
-                            </IonList>
-
+                            {loadingUsers ? (
+                                <div className='LinkProfiles-spinner'>
+                                    <IonSpinner name="crescent" />
+                                </div>
+                            ) : (
+                                <IonList>
+                                    {displayedTeachers.map(teacher => (
+                                        <UserItem
+                                            key={teacher.id}
+                                            avatar={teacher.photo_url}
+                                            alias={teacher.username}
+                                            classes={teacher.groups?.map(g => g.alias) || []}
+                                            highlight={selectedClass !== null && teacher.groups?.some(g => g.id === selectedClass)}
+                                            isChecked={selectedTeacherIds.includes(teacher.id)}
+                                            onCheckChange={(checked) => {
+                                                setSelectedTeacherIds(prev => {
+                                                    if (checked) {
+                                                        return [...prev, teacher.id];
+                                                    }
+                                                    return prev.filter(id => id !== teacher.id);
+                                                });
+                                            }}
+                                        />
+                                    ))}
+                                </IonList>
+                            )}
                         </div>
                     </div>
                 </div>
