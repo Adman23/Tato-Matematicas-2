@@ -60,7 +60,7 @@
 
 .student-item__icons ion-icon{
 
-  color: #50BFE6;
+  color: var(--ion-color-primary);
   background-color: white;
   width: 30px;
   height: 30px;
@@ -70,7 +70,7 @@
 
 ion-button.StudentItem_perfilProfesor_Button {
   background: white;   
-  border: 2px solid #50BFE6;
+  border: 2px solid var(--ion-color-primary);
   border-radius: 10px;
   box-shadow: none;
 }

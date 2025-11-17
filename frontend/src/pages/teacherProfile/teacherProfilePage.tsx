@@ -89,6 +89,7 @@ export default function TeacherProfilePage() {
                     studentAvatar={student.photo_url}
                     studentName={student.username}
                     studentClass={student.group_alias}
+                    onEditClick={() => history.push(`/student-edit-menu/${student.id}/${student.username}`)}
                   />
                 ))}
               </IonList>
