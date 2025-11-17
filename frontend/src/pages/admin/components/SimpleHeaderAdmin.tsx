@@ -1,21 +1,20 @@
 /**
- * Resumen Funcional.
+ * Functional Summary.
  *
- * Header simple reutilizable para las vistas de administración. Muestra el
- * nombre del admin, un botón para ir al dashboard y un botón para cerrar
- * sesión.
+ * Reusable simple header for admin views. Displays the
+ * admin's name, a button to go to the dashboard, and a button to log out.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - Se renderiza el título con el nombre del administrador pasado vía props.
- * - `handleHome` redirige al dashboard del administrador.
- * - `handleLogout` llama a `logout` del contexto de autenticación y redirige
- *   a la pantalla de login.
+ * - Renders the title with the admin's name passed via props.
+ * - `handleHome` navigates to the admin dashboard.
+ * - `handleLogout` calls `logout` from the auth context and redirects
+ *   to the login screen.
  *
- * @param {Props} props - Propiedades del componente (ver interface `Props`).
- * @returns {JSX.Element} Encabezado para vistas de admin.
+ * @param {Props} props - Component props (see `Props` interface).
+ * @returns {JSX.Element} Header for admin views.
  *
- * @example Ejemplo de uso
+ * @example Example usage
  *
  * ```tsx
  * <SimpleHeaderAdmin adminName="Admin" />
@@ -40,18 +39,18 @@ import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
 
 /**
- * Props del SimpleHeaderAdmin
+ * Props of SimpleHeaderAdmin
  *
- * @property adminName - Nombre a mostrar en el header
+ * @property adminName - Name to display in the header
  */
 interface Props {
     adminName: String;
 }
 
 /**
- * Componente de encabezado simple para la sección de administración.
- * - `handleLogout` cierra la sesión y redirige a la raíz.
- * - `handleHome` redirige al dashboard del admin.
+ * Simple header component for the admin section.
+ * - `handleLogout` logs out and redirects to the root.
+ * - `handleHome` redirects to the admin dashboard.
  */
 const SimpleHeaderAdmin: React.FC<Props> = ({
     adminName
@@ -60,45 +59,45 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
     const history = useHistory();
     const { logout } = useAuth();
 
-        /**
-         * Resumen Funcional.
-         *
-         * Cierra la sesión del usuario y redirige al login.
-         *
-         * Flujo de ejecución.
-         *
-         * - Llama a `logout` del contexto.
-         * - Reemplaza la ruta actual por '/login' con `history.replace`.
-         *
-         * @param {void}
-         * @returns {Promise<void>}
-         *
-         * @example
-         * ```ts
-         * await handleLogout();
-         * ```
-         */
-        const handleLogout = async () => {
-            await logout();
-            history.replace('/login');
-        };
+    /**
+     * Functional Summary.
+     *
+     * Logs out the user and redirects to the login screen.
+     *
+     * Execution flow.
+     *
+     * - Calls `logout` from the context.
+     * - Replaces the current route with '/login' using `history.replace`.
+     *
+     * @param {void}
+     * @returns {Promise<void>}
+     *
+     * @example
+     * ```ts
+     * await handleLogout();
+     * ```
+     */
+    const handleLogout = async () => {
+        await logout();
+        history.replace('/login');
+    };
 
-        /**
-         * Resumen Funcional.
-         *
-         * Navega al dashboard del administrador.
-         *
-         * @param {void}
-         * @returns {void}
-         *
-         * @example
-         * ```ts
-         * handleHome();
-         * ```
-         */
-        const handleHome = () => {
-            history.replace('/admin-dashboard');
-        }
+    /**
+     * Functional Summary.
+     *
+     * Navigates to the admin dashboard.
+     *
+     * @param {void}
+     * @returns {void}
+     *
+     * @example
+     * ```ts
+     * handleHome();
+     * ```
+     */
+    const handleHome = () => {
+        history.replace('/admin-dashboard');
+    }
 
     return (
         <IonHeader>

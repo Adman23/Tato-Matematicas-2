@@ -1,6 +1,6 @@
 /**
  * @file ClassSelect.tsx
- * @description Componente reutilizable para seleccionar una clase (grupo).
+ * @description Component for selecting a class (group) in the admin panel.
  */
 
 import {
@@ -18,13 +18,13 @@ setupIonicReact();
 
 
 /**
- * Props del componente ClassSelect
- * @property classes - Lista de grupos disponibles
- * @property value - Id del grupo seleccionado
- * @property onChange - Callback cuando cambia la selección (recibe id o null)
- * @property label - Etiqueta para el control
- * @property max_width - Estilo inline para limitar ancho
- * @property placeholder_text - Texto placeholder
+ * Props of the ClassSelect component
+ * @property classes - List of available groups
+ * @property value - Id of the selected group
+ * @property onChange - Callback when the selection changes (receives id or null)
+ * @property label - Label for the control
+ * @property max_width - Inline style to limit width
+ * @property placeholder_text - Placeholder text
  */
 interface ClassSelectProps {
     classes: Group[];
@@ -36,23 +36,23 @@ interface ClassSelectProps {
 }
 
 /**
- * Select control para elegir un grupo. Renderiza una lista de opciones
- * proveniente de `classes`.
+ * Select control to choose a group. Renders a list of options
+ * coming from `classes`.
  */
 /**
- * Resumen Funcional.
+ * Functional Summary.
  *
- * Control reutilizable para seleccionar una clase (grupo). Renderiza un
- * `IonSelect` con las opciones provistas a través de `classes`.
+ * Reusable control to select a class (group). Renders an
+ * `IonSelect` with options provided through `classes`.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - Muestra una etiqueta y un control select con las opciones.
- * - Al cambiar la selección invoca `onChange` con el id seleccionado o
- *   `null` si no hay selección.
+ * - Displays a label and a select control with the options.
+ * - When the selection changes, it invokes `onChange` with the selected id or
+ *   `null` if there is no selection.
  *
- * @param {ClassSelectProps} props - Props del componente (classes, value, onChange, label, max_width, placeholder_text).
- * @returns {JSX.Element} Control de selección de clase.
+ * @param {ClassSelectProps} props - Props of the component (classes, value, onChange, label, max_width, placeholder_text).
+ * @returns {JSX.Element} Class select control.
  *
  * @example
  * ```tsx

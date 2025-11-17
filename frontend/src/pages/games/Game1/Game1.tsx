@@ -1,8 +1,8 @@
 /**
- * Juego 1: Relacionar sonido con número
+ * Game 1: Associate Sound with Number.
  *
- * El estudiante escucha un sonido que representa un número y debe
- * seleccionar el número correcto entre varias opciones.
+ * The student listens to a sound representing a number and must
+ * select the correct number from several options.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -44,33 +44,33 @@ const TOTAL_ROUNDS = 5;
 
 
 /**
- * Componente principal del Juego 1: Relacionar sonido con número.
+ * Main component: Associate Sound with Number.
  *
- * Este juego educativo presenta números que el usuario debe relacionar
- * con el sonido correspondiente.
+ * This educational game presents numbers that the user must associate
+ * with the corresponding sound.
  *
- * Características principales:
- * - Disponible para estudiantes y profesores con las mismas características
- * - 5 rondas con números aleatorios diferentes
- * - Pictogramas visuales para el rango 0-10
- * - Validación con feedback inmediato (check/cruz)
- * - Tracking completo en backend (tiempo, intentos, resultados)
+ * Main features:
+ * - Available for students and teachers with the same features
+ * - 5 rounds with different random numbers
+ * - Visual pictograms for the range 0-10
+ * - Validation with immediate feedback (check/cross)
+ * - Complete tracking in backend (time, attempts, results)
  *
- * Flujo del juego:
- * 1. Carga configuración personalizada del usuario
- * 2. Crea sesión de juego en BD
- * 3. Por cada ronda:
- *    - Genera un número aleatorio para escuchar
- *    - Aparecen varias opciones visuales
- *    - Usuario selecciona una opción
- *    - Proporciona feedback visual inmediato
- *    - Valida y guarda resultado
- * 4. Tras 5 rondas, finaliza sesión y redirige al dashboard correspondiente
+ * Game flow:
+ * 1. Load user-customized configuration
+ * 2. Create game session in DB
+ * 3. For each round:
+ *    - Generate a random number to listen to
+ *    - Display several visual options
+ *    - User selects an option
+ *    - Provide immediate visual feedback
+ *    - Validate and save result
+ * 4. After 5 rounds, end session and redirect to the appropriate dashboard
  *
- * @returns Componente React con UI completa del juego
+ * @returns React component with complete game UI
  *
  * @example
- * // Usado en el routing de la app:
+ * // Used in app routing:
  * <Route path="/game1" component={Game1} />
  */
 const Game1: React.FC = () => {
@@ -80,15 +80,15 @@ const Game1: React.FC = () => {
 
     const currentUser = user;
 
-    // Flag para prevenir creación duplicada de sesión (React 18 StrictMode)
+    // Flag to prevent duplicate session creation (React 18 StrictMode)
     const sessionCreatedRef = useRef(false);
 
-    // Estados principales
+    // Main states
     const [loading, setLoading] = useState(true);
     const [config, setConfig] = useState<GameConfig | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
 
-    // Estados del juego
+    // Game states
     const [currentRound, setCurrentRound] = useState(1);
     const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]);
     const [currentNumber, setCurrentNumber] = useState<number | null>(null);
@@ -96,31 +96,31 @@ const Game1: React.FC = () => {
     const [usedNumbers, setUsedNumbers] = useState<number[]>([]);
 
 
-    // Estados de UI
+    // UI states
     const [showFeedback, setShowFeedback] = useState(false);
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [listeningAudio, setListeningAudio] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    // Estados de resultados
+    // Result states
     const [gameFinished, setGameFinished] = useState(false);
 
 
-    // Determinar si usar pictogramas (solo para rango 0-10)
+    // Determine if pictograms should be used (only for range 0-10)
     const usePictograms = config?.number_range === '0-10';
 
-    // Determinar si usar voz femenina o masculina
+    // Determine if female or male voice should be used
     const useWomanVoice = config?.settings?.voice === 'woman';
 
-    // Cargar configuración al montar (solo una vez)
+    // Load configuration on mount (only once)
     useEffect(() => {
         loadGameConfig();
         setGameStartTime(Date.now());
     },
         []);
 
-    // Crear sesión cuando la configuración esté cargada (solo una vez)
+    // Create session when configuration is loaded (only once)
     useEffect(() => {
         if (config && !sessionId && !sessionCreatedRef.current) {
             sessionCreatedRef.current = true;
@@ -129,18 +129,18 @@ const Game1: React.FC = () => {
 
     }, [config]);
 
-    // Generar nueva ronda cuando cambia currentRound
+    // Generate new round when currentRound changes
     useEffect(() => {
         if (config && sessionId && currentRound <= TOTAL_ROUNDS) {
             generateRound();
         }
 
     }, [config, currentRound, sessionId]);
-    // Efecto para redirigir cuando el juego termine
+    // Effect to redirect when the game finishes
     useEffect(() => {
         if (gameFinished) {
             const timer = setTimeout(() => {
-                // Redirigir al dashboard correspondiente según el tipo de usuario
+                // Redirect to the appropriate dashboard based on user type
                 const dashboardRoute = user?.role === "student" ? '/student-dashboard' : '/tutor-dashboard';
                 history.push(dashboardRoute);
             }, 2000);
@@ -151,19 +151,19 @@ const Game1: React.FC = () => {
 
 
     /**
-     * Carga la configuración personalizada del juego desde el backend.
+     * Load the custom game configuration from the backend.
      *
-     * Flujo de ejecución:
-     * 1. Verifica que existe un usuario autenticado (estudiante o profesor)
-     * 2. Llama a la API para obtener la config del juego 'touch_number'
-     * 3. Valida que la configuración recibida sea correcta, o usa valores por defecto
-     * 4. Actualiza el estado con la configuración recibida (rango, cantidad, orden)
-     * 5. Desactiva el indicador de carga
+     * Execution flow:
+     * 1. Verify that an authenticated user exists (student or teacher)
+     * 2. Call the API to get the config for the 'touch_number' game
+     * 3. Validate that the received configuration is correct, or use default values
+     * 4. Update the state with the received configuration (range, quantity, order)
+     * 5. Disable the loading indicator
      *
-     * @returns Promesa que resuelve cuando se carga la configuración
+     * @returns Promise that resolves when the configuration is loaded
      *
      * @example
-     * // Al montar el componente se carga automáticamente:
+     * // When the component mounts, it loads automatically:
      * // config = { number_range: '0-10', settings: { quantity: 5 } }
      */
     const loadGameConfig = async () => {
@@ -172,7 +172,7 @@ const Game1: React.FC = () => {
 
             const data = await gamesAPI.getGameConfig(currentUser.id, 'touch_number');
 
-            // Validar que la configuración tenga valores válidos
+            // Validate that the configuration has valid values
             const validatedConfig: GameConfig = {
                 ...data,
                 number_range: data.number_range,
@@ -187,7 +187,7 @@ const Game1: React.FC = () => {
         } catch (error) {
             console.error('Error loading game config:', error);
 
-            // Si falla la carga, usar configuración por defecto
+            // If loading fails, use default configuration
             const defaultConfig: GameConfig = {
                 game_id: 0,
                 game_key: 'touch_number',
@@ -206,19 +206,19 @@ const Game1: React.FC = () => {
 
 
     /**
-     * Crea una nueva sesión de juego en el backend para tracking de progreso.
+     * Create a new game session in the backend for progress tracking.
      *
-     * Flujo de ejecución:
-     * 1. Verifica que existe un usuario autenticado (estudiante o profesor)
-     * 2. Llama a la API para crear sesión vinculada al usuario y juego
-     * 3. Guarda el session_id en estado para usarlo al guardar rondas
-     * 4. El session_id permite vincular todas las rondas a esta partida
+     * Execution flow:
+     * 1. Verify that an authenticated user exists (student or teacher)
+     * 2. Call the API to create a session linked to the user and game
+     * 3. Save the session_id in state to use it when saving rounds
+     * 4. The session_id allows linking all rounds to this game session
      *
-     * @returns Promesa que resuelve cuando se crea la sesión
+     * @returns Promise that resolves when the session is created
      *
      * @example
-     * // Al montar el componente:
-     * // sessionId = 'uuid-session-789' (se guarda en estado)
+     * // When the component mounts:
+     * // sessionId = 'uuid-session-789' (saved in state)
      */
     const createGameSession = async () => {
         try {
@@ -232,59 +232,59 @@ const Game1: React.FC = () => {
     };
 
     /**
-      * Genera los números y configuración para una nueva ronda del juego.
+      * Generates the numbers and configuration for a new game round.
       *
-      * Flujo de ejecución:
-      * 1. Calcula cantidad de opciones: números entre los que elegir el correcto
-      * 2. Genera número que se va a escuchar (currentNumber)
-      * 3. Si el número ya se ha usado en otra ronda, genera otro
-      * 4. Genera números únicos aleatorios dentro del rango configurado
-      * 5. Añade a la lista el número correcto
-      * 6. Mezcla los números disponibles para que no estén en orden
-      * 7. Reinicia el timer de la ronda
+      * Execution flow:
+      * 1. Calculates the number of options: numbers among which to choose the correct one
+      * 2. Generates the number to be heard (currentNumber)
+      * 3. If the number has already been used in another round, generates another one
+      * 4. Generates unique random numbers within the configured range
+      * 5. Adds the correct number to the list
+      * 6. Shuffles the available numbers so they are not in order
+      * 7. Resets the round timer
       *
-      * @returns void - Actualiza múltiples estados del componente
+      * @returns void - Updates multiple component states
       *
       * @example
-      * // Si config.settings.options_count = 5:
-      * // - Genera 4 números
-      * // - currentNumber = 9 (número a escuchar)
-      * // - availableNumbers = [2, 9, 5, 12, 7] (mezclados, sin ayuda)
+      * // If config.settings.options_count = 5:
+      * // - Generates 4 numbers
+      * // - currentNumber = 9 (number to be heard)
+      * // - availableNumbers = [2, 9, 5, 12, 7] (shuffled, without hints)
       */
     const generateRound = () => {
         if (!config) return;
 
         const [min, max] = config.number_range.split('-').map(Number);
 
-        // Validar que min y max sean números válidos
+        // Validate that min and max are valid numbers
         if (isNaN(min) || isNaN(max) || min >= max) {
             console.error('Invalid number range:', config.number_range);
             return;
         }
 
-        const totalNumbers = config.settings.options_count || 5; // opciones disponibles
+        const totalNumbers = config.settings.options_count || 5; // available options
 
-        // Validar que totalNumbers sea un número válido
+        // Validate that totalNumbers is a valid number
         if (isNaN(totalNumbers) || totalNumbers <= 0) {
             console.error('Invalid totalNumbers:', config.settings.options_count);
             return;
         }
 
-        // Calcular números disponibles en el rango
+        // Calculate available numbers in the range
         const availableInRange = max - min + 1;
 
-        // Validar que no se pidan más números de los disponibles en el rango
+        // Validate that totalNumbers does not exceed available numbers in the range
         if (totalNumbers > availableInRange) {
             console.error(
                 `Cannot generate ${totalNumbers} unique numbers from range ${min}-${max} (only ${availableInRange} available). ` +
                 `Please reduce options_count or increase range.`
             );
-            // Ajustar totalNumbers al máximo disponible
+            // Adjust totalNumbers to the maximum available
             const adjustedTotal = availableInRange;
 
             console.warn(`Adjusting: options_count=${adjustedTotal}`);
 
-            // Usar todos los números del rango
+            // Use all numbers in the range
             const numbers = new Set<number>();
             for (let i = min; i <= max; i++) {
                 numbers.add(i);
@@ -292,10 +292,10 @@ const Game1: React.FC = () => {
 
             const numbersArray = Array.from(numbers);
 
-            // Mezclar aleatoriamente los números disponibles
+            // Shuffle the available numbers randomly
             const poolNumbers = numbersArray.sort(() => Math.random() - 0.5);
 
-            // Generar número a escuchar (currentNumber)
+            // Generate number to be heard (currentNumber)
             let roundNumber: number;
             do {
                 roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -309,7 +309,7 @@ const Game1: React.FC = () => {
             return;
         }
 
-        // Generar totalNumbers números únicos aleatorios
+        // Generate totalNumbers unique random numbers
         const numbers = new Set<number>();
         while (numbers.size < totalNumbers) {
             const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -318,20 +318,20 @@ const Game1: React.FC = () => {
 
         const numbersArray = Array.from(numbers);
 
-        // Generar número a escuchar (currentNumber)
+        // Generate number to be heard (currentNumber)
         let roundNumber: number;
         do {
             roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
         } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
 
-        // Asegurarse de que el número correcto esté en las opciones
+        // Ensure the correct number is in the options
         if (!numbers.has(roundNumber)) {
-            // Reemplazar un número aleatorio por el correcto
+            // Replace a random number with the correct one
             const replaceIndex = Math.floor(Math.random() * numbersArray.length);
             numbersArray[replaceIndex] = roundNumber;
         }
 
-        // Mezclar aleatoriamente los números disponibles (para que no estén en orden)
+        // Shuffle the available numbers randomly (so they are not in order)
         const poolNumbers = numbersArray.sort(() => Math.random() - 0.5);
 
         setCurrentNumber(roundNumber);
@@ -344,81 +344,53 @@ const Game1: React.FC = () => {
 
 
     /**
-   * Proporciona una pista colocando automáticamente un número correcto.
-   * Busca el primer slot vacío y coloca el número que debería ir ahí.
-   */
+     * Provides a hint by automatically placing a correct number.
+     *
+     * @remarks
+     * This function is prepared to implement a logic of "placing"
+     * a correct number automatically in the interface (for example, moving
+     * a number from available to ordered). Currently the body is
+     * commented out because the existing UI does not use an ordered list.
+     *
+     * @returns void
+     */
     const useHint = () => {
-        // // No permitir pistas cuando se muestra feedback
-        // if (showFeedback) return;
 
-        // // Buscar el primer slot vacío en orderedNumbers
-        // const emptyIndex = orderedNumbers.findIndex(num => num === undefined);
-
-        // if (emptyIndex === -1) {
-        //     // No hay slots vacíos
-        //     return;
-        // }
-
-        // // Obtener el número correcto para esa posición
-        // const correctNumber = correctOrder[emptyIndex];
-
-        // // Buscar el número en availableNumbers
-        // const availableIndex = availableNumbers.findIndex(num => num === correctNumber);
-
-        // if (availableIndex === -1) {
-        //     // El número no está disponible (ya está colocado en otro lugar)
-        //     return;
-        // }
-
-        // // Incrementar contador de pistas
-        // setHintsCount(prev => prev + 1);
-
-        // // Mover el número de available a ordered
-        // const newAvailable = [...availableNumbers];
-        // newAvailable[availableIndex] = undefined;
-        // setAvailableNumbers(newAvailable);
-
-        // const newOrdered = [...orderedNumbers];
-        // newOrdered[emptyIndex] = correctNumber;
-        // setOrderedNumbers(newOrdered);
-
-        // // Deseleccionar cualquier número seleccionado
-        // setSelectedNumber(null);
     };
 
     /**
-     * Valida la respuesta del usuario y guarda el resultado de la ronda.
+     * Validates the user's answer and saves the round result.
      *
-     * Flujo de ejecución:
-     * 1. Calcula el tiempo transcurrido en la ronda
-     * 2. Compara el número seleccionado con el correcto
-     * 3. Muestra feedback visual (botón verde/rojo, iconos check/cruz)
-     * 4. Guarda el resultado en el backend vía API
-     * 5. Tras 2 segundos, avanza a la siguiente ronda o finaliza el juego
+     * Execution flow:
+     * 1. Calculates the elapsed time in the round
+     * 2. Compares the selected number with the correct one
+     * 3. Shows visual feedback (green/red button, check/cross icons)
+     * 4. Saves the result in the backend via API
+     * 5. After 2 seconds, advances to the next round or finishes the game
      *
-     * @returns Promesa que resuelve cuando se completa la validación
+     * @returns Promise that resolves when validation is complete
      *
      * @example
-     * // Usuario selecciona número 7 cuando el correcto es 7:
-     * // → is_correct = true, muestra botón verde "¡Correcto!"
-     * // → Guarda en BD y avanza a ronda 2
+     * // User selects number 7 when the correct one is 7:
+     * // → is_correct = true, shows green "Correct!" button
+     * // → Saves in DB and advances to round 2
      */
     const checkAnswer = async () => {
-        // Verificar que haya un número seleccionado
+        // Verify that a number is selected
         if (selectedNumber === null) {
             return;
         }
 
         const timeSeconds = (Date.now() - roundStartTime) / 1000;
 
-        // Comparar el número seleccionado con el correcto
+        // Compare the selected number with the correct one
         const correct = selectedNumber === currentNumber;
 
-        // Mostrar feedback y guardar el resultado en backend.
-        // No avanzamos automáticamente: esperamos a que el usuario pulse 'siguiente'.
+        // Show feedback and save the result in the backend.
+        // We do not advance automatically: we wait for the user to press 'next'.
         setShowFeedback(true);
 
-        // Guardar en el backend
+        // Save in the backend
         if (sessionId) {
             try {
                 await gamesAPI.saveRoundResultGame1(sessionId, {
@@ -435,9 +407,18 @@ const Game1: React.FC = () => {
         }
     };
 
-    // Avanzar al siguiente paso cuando el usuario pulse 'siguiente' en la pantalla de feedback
+    /**
+     * Advances to the next round or finishes the game when the user presses "next".
+     *
+     * Effects:
+     * - Resets the number selection and hides the feedback.
+     * - Increments `currentRound` up to `TOTAL_ROUNDS` or calls {@link finishGame} if the
+     *   total number of rounds has been completed.
+     *
+     * @returns void
+     */
     const handleNext = () => {
-        // Reset de selección y ocultar feedback
+        // Reset the selection and hide feedback
         setShowFeedback(false);
         setSelectedNumber(null);
 
@@ -449,21 +430,21 @@ const Game1: React.FC = () => {
     };
 
     /**
-     * Finaliza la sesión de juego y registra el tiempo total en el backend.
+     * Ends the game session and records the total time in the backend.
      *
-     * Flujo de ejecución:
-     * 1. Calcula el tiempo total desde que empezó el juego
-     * 2. Envía el tiempo al backend para cerrar la sesión
-     * 3. Marca el juego como finalizado en el estado
-     * 4. El efecto useEffect redirige al dashboard tras 2 segundos
+     * Execution flow:
+     * 1. Calculates the total time since the game started
+     * 2. Sends the time to the backend to close the session
+     * 3. Marks the game as finished in the state
+     * 4. The useEffect redirects to the dashboard after 2 seconds
      *
-     * @returns Promesa que resuelve cuando se finaliza la sesión
+     * @returns Promise that resolves when the session is finished
      *
      * @example
-     * // Al completar la ronda 5:
-     * // totalTimeSeconds = 150.2 (2 minutos y medio)
-     * // → Guarda en BD y marca gameFinished = true
-     * // → Muestra "¡Juego completado!" y redirige
+     * // When completing round 5:
+     * // totalTimeSeconds = 150.2 (2 and a half minutes)
+     * // → Saves in DB and sets gameFinished = true
+     * // → Shows "Juego completado!" and redirects
      */
     const finishGame = async () => {
         const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
@@ -481,14 +462,19 @@ const Game1: React.FC = () => {
 
 
     /**
-      * Maneja la salida anticipada del juego (botón home).
-      * Guarda el estado actual como intento final y redirige al dashboard.
-      */
+     * Handles early exit from the game (home button).
+     *
+     * @remarks
+     * If there is an active session in the backend, it tries to finish it by saving
+     * the elapsed time. After that, it redirects to the dashboard according to the user's role.
+     *
+     * @returns Promise<void>
+     */
     const handleEarlyExit = async () => {
-        // Si hay una sesión activa, guardar el estado actual
+        // If there is an active session, save the current state
         if (sessionId) {
             try {
-                // Finalizar la sesión
+                // Finish the session
                 const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
                 await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
             } catch (error) {
@@ -496,30 +482,37 @@ const Game1: React.FC = () => {
             }
         }
 
-        // Redirigir al dashboard
+        // Redirect to the dashboard
         const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
         history.push(dashboardRoute);
     };
 
     /**
-     * Reproduce el sonido del número actual.
-     * - Busca un archivo en /assets/sounds/ con el nombre en español (uno.mp3, dos.mp3, ...)
-     * - Si la reproducción falla o no existe el fichero, usa speechSynthesis como fallback
+     * Plays the sound of the indicated number.
+     *
+     * @remarks
+     * Builds the sequence of audio files needed to pronounce the number
+     *
+     * This function protects against concurrent playbacks using the
+     * `listeningAudio` state and the `audioRef` reference.
+     *
+     * @param num - Number to play. If `null`, the function returns without action.
+     * @returns void
      */
     const speakNumber = (num: number | null) => {
         if (num === null) return;
-        if (listeningAudio) return; // evitar múltiples reproducciones simultáneas
-        // Construir la secuencia de ficheros que hay que reproducir
+        if (listeningAudio) return; // avoid multiple simultaneous playbacks
+        // Build the sequence of files to play
         const filesForNumber = (n: number): string[] => {
             const files: string[] = [];
 
-            // Casos directos
+            // Direct cases
             if ((n >= 0 && n <= 30) || (n < 100 && n % 10 === 0) || n % 100 === 0 || n === 100) {
                 files.push(`${n}.m4a`);
                 return files;
             }
 
-            // 31..99 compuestos: decena + 'y' + unidad
+            // 31..99 compounds: tens + 'y' + units
             if (n > 30 && n < 100) {
                 const unidades = n % 10;
                 const decenas = n - unidades;
@@ -529,19 +522,19 @@ const Game1: React.FC = () => {
                 return files;
             }
 
-            // 101..999: cientos + resto
+            // 101..999: hundreds + remainder
             if (n > 100 && n < 1000) {
                 const centenas = Math.floor(n / 100) * 100;
                 const resto = n % 100;
 
-                // Centenas
+                // Hundreds
                 if (centenas === 100) {
                     files.push(`ciento.m4a`);
                 } else {
                     files.push(`${centenas}.m4a`); // 200,300,...900
                 }
 
-                // Añadir el resto usando las mismas reglas que arriba
+                // Add the remainder using the same rules as above
                 if ((resto >= 0 && resto <= 30) || (resto < 100 && resto % 10 === 0) || resto % 100 === 0) {
                     files.push(`${resto}.m4a`);
                 } else {
@@ -568,7 +561,7 @@ const Game1: React.FC = () => {
         let path = '';
 
 
-        // Reproduce una secuencia de archivos de audio de forma secuenciall pat
+        // Play files sequentially
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
@@ -583,7 +576,7 @@ const Game1: React.FC = () => {
                 }
 
 
-                // Detener audio anterior si existe
+                // Stop previous audio if exists
                 if (audioRef.current) {
                     try {
                         audioRef.current.pause();
@@ -624,11 +617,11 @@ const Game1: React.FC = () => {
             return;
         }
 
-        // Lanzar la reproducción (no await en el handler para no bloquear la UI)
+        // Launch playback (no await in the handler to avoid blocking the UI)
         void playFilesSequentially(files);
     };
 
-    // Limpiar audio cuando se desmonte el componente
+    // Clean up audio when the component unmounts
     useEffect(() => {
         return () => {
             if (audioRef.current) {
@@ -640,7 +633,7 @@ const Game1: React.FC = () => {
         };
     }, []);
 
-    // Pantalla de carga de autenticación
+    // Authentication loading screen
     if (authLoading) {
         return (
             <IonPage>
@@ -657,7 +650,7 @@ const Game1: React.FC = () => {
         return <Redirect to="/student-login" />;
     }
 
-    // Pantalla de carga del juego
+    // Game loading screen
     if (loading) {
         return (
             <IonPage>
@@ -673,7 +666,7 @@ const Game1: React.FC = () => {
         );
     }
 
-    // Si el juego terminó, mostrar mensaje
+    // If the game is finished, show message
     if (gameFinished) {
         return (
             <IonPage>
@@ -705,8 +698,8 @@ const Game1: React.FC = () => {
                     onHomeClick={handleEarlyExit}
                 />
 
-                {/* Zona de juego */}
-                {/* Números disponibles */}
+                {/* Game area */}
+                {/* Available numbers */}
 
                 <BubblesZone
                     availableNumbers={availableNumbers}
@@ -717,22 +710,23 @@ const Game1: React.FC = () => {
                     usePictograms={usePictograms}
                 />
 
-                {/* Botones de control */}
+                {/* Control buttons */}
                 <div className="game1-buttons-container">
-                    {/* Botón de pistas - siempre visible a la izquierda */}
+                    {/* Hint button - always visible on the left */}
                     <IonButton
                         fill="clear"
                         className="game1-check-button game1-hint-button"
                         onClick={useHint}
                     >
                         <img
-                            src={imgTato}
+                            src={showFeedback && selectedNumber === currentNumber ? imgTatoFeliz :
+                                showFeedback && selectedNumber !== currentNumber ? imgTatoTriste : imgTato}
                             alt="Pista"
                             className="game1-check-button-image"
                         />
                     </IonButton>
 
-                    {/*Botón de escuchar*/}
+                    {/* Listen button */}
                     <div className="game1-check-button-container">
                         <IonButton
                             fill="clear"
@@ -748,7 +742,7 @@ const Game1: React.FC = () => {
                         </IonButton>
                     </div>
 
-                    {/* Botón Aceptar/Comprobar cuando no hay feedback */}
+                    {/* Accept/Check button when there is no feedback */}
                     {!showFeedback && (
                         <IonButton
                             fill="clear"
@@ -763,18 +757,12 @@ const Game1: React.FC = () => {
                         </IonButton>
                     )}
 
-                    {/* Botón Flecha para continuar cuando está correcto */}
+                    {/* Arrow button to continue when correct */}
                     {showFeedback && (
                         <IonButton
                             fill="clear"
                             className="game1-check-button"
-                            onClick={() => {
-                                if (currentRound < TOTAL_ROUNDS) {
-                                    setCurrentRound(prev => prev + 1);
-                                } else {
-                                    finishGame();
-                                }
-                            }}
+                            onClick={handleNext}
                         >
                             <img
                                 src={imgSiguiente}

@@ -1,9 +1,9 @@
 /**
  * @file MenuAdmin.tsx
- * @description Dashboard / menú de administración. Provee rutas rápidas para
- * ver profesores, ver alumnos y gestionar matrículas. Utiliza `SimpleHeaderAdmin`
- * y el contexto de autenticación para mostrar el nombre del admin y proteger
- * la vista.
+ * @description Dashboard / main menu for the admin section.
+ * Provides quick links to manage teachers, students,
+ * profile links, and groups. Protects the view by checking
+ * authentication context.
  */
 
 import {
@@ -22,21 +22,19 @@ import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
 /**
- * Resumen Funcional.
+ * Functional Summary.
  *
- * Componente principal del Dashboard de administración. Proporciona enlaces
- * rápidos para gestionar profesores, alumnos, matrículas y grupos. Protege la
- * vista comprobando el contexto de autenticación.
+ * Main component of the admin dashboard. Provides quick links to manage teachers, students, enrollments, and groups. Protects the view by checking the authentication context.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - Si `loading` está activo en el contexto de auth, muestra un spinner.
- * - Si no hay `user`, redirige a `/login`.
- * - Renderiza `SimpleHeaderAdmin` con el nombre del usuario y botones que
- *   navegan a las páginas administrativas.
+ * - If `loading` is active in the auth context, shows a spinner.
+ * - If there is no `user`, redirects to `/login`.
+ * - Renders `SimpleHeaderAdmin` with the user's name and buttons that
+ *   navigate to the administrative pages.
  *
  * @param {void}
- * @returns {JSX.Element} Dashboard / menú de administración.
+ * @returns {JSX.Element} Admin dashboard / main menu.
  *
  * @example
  * ```tsx
@@ -48,7 +46,7 @@ export default function AdminDashboard() {
     const { user, loading } = useAuth();
     const history = useHistory();
 
-    // Mostrar spinner mientras carga
+    // Show spinner while loading
     if (loading) {
         return (
             <IonPage>
@@ -59,7 +57,7 @@ export default function AdminDashboard() {
         );
     }
 
-    // Redirigir si no hay usuario autenticado
+    // Redirect if there is no authenticated user
     if (!user) {
         return <Redirect to="/login" />;
     }

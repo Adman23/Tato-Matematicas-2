@@ -4,19 +4,18 @@ import { trashOutline } from 'ionicons/icons';
 import './GroupItem.css';
 
 /**
- * Resumen Funcional.
+ * Functional Summary.
  *
- * Item de lista que representa un grupo en la UI. Muestra el nombre del
- * grupo y proporciona botones para editar o eliminar.
+ * List item representing a group in the UI. Displays the group's name and provides buttons to edit or delete.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - Rinde el nombre del grupo y dos botones: editar y eliminar.
- * - `handleDelete` pide confirmación al usuario y, si se confirma, llama a
- *   `onDelete` (si se proporcionó) con el id del grupo.
+ * - Renders the group's name and two buttons: edit and delete.
+ * - `handleDelete` asks the user for confirmation and, if confirmed, calls
+ *   `onDelete` (if provided) with the group's id.
  *
- * @param {Props} props - Propiedades del componente (id, groupName, onDelete).
- * @returns {JSX.Element} Elemento de lista que representa un grupo.
+ * @param {Props} props - Component props (id, groupName, onDelete).
+ * @returns {JSX.Element} List item representing a group.
  *
  * @example
  * ```tsx
@@ -37,15 +36,15 @@ const GroupItem: React.FC<Props> = ({
     onDelete
 }) => {
     /**
-     * Resumen Funcional.
+     * Functional Summary.
      *
-     * Solicita confirmación y notifica al padre para eliminar el grupo.
+     * Requests confirmation and notifies the parent to delete the group.
      *
-     * Flujo de ejecución.
+     * Execution flow.
      *
-     * - Muestra un `window.confirm` con el nombre del grupo.
-     * - Si el usuario confirma y existe la prop `onDelete`, la invoca con
-     *   el `id` del grupo.
+     * - Shows a `window.confirm` with the group's name.
+     * - If the user confirms and the `onDelete` prop exists, it invokes it with
+     *   the group's `id`.
      *
      * @param {void}
      * @returns {void}
@@ -64,7 +63,7 @@ const GroupItem: React.FC<Props> = ({
 
         <IonItem lines="none" className="groupItem-item">
 
-            {/* Contenedor interno para controlar flex sin tocar el ion-item por fuera */}
+            {/* Internal container to control flex without touching the outer ion-item */}
             <div className="groupItem-mainContainer">
 
                 <div className="groupItem-name">{groupName}</div>

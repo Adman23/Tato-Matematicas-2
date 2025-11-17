@@ -155,6 +155,8 @@ class StudentAuthResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+        
 class ExistsResponse(BaseModel):
     """
     Response for username existence checks

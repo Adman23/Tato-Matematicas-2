@@ -1,27 +1,24 @@
 /**
- * Resumen Funcional.
+ * Functional summary.
  *
- * Página de inicio de sesión para tutores y administradores. Renderiza un
- * formulario que solicita 'username' y 'password', valida la existencia del
- * usuario mientras se escribe, realiza la autenticación y redirige según el
- * rol del usuario.
+ * Login page for tutors and administrators. Renders a form requesting 'username' and 'password', 
+ * validates the existence of the user while typing, performs authentication, and redirects based on the user's role.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * 1. Renderiza los campos de entrada y botones.
- * 2. Mientras el usuario escribe en 'Usuario', se aplica un debounce y se
- *    solicita a `authAPI.checkUsername` la existencia del nombre. Se muestra
- *    un icono indicando si el usuario existe o no.
- * 3. Al enviar el formulario (`handleLogin`):
- *    - Se llama a `login` del contexto de autenticación.
- *    - Si la autenticación es correcta, se obtiene el rol desde
- *      `localStorage` y se redirige a `/admin-dashboard` o `/tutor-dashboard`.
- *    - Si hay un error, se muestra un `IonToast` con el mensaje correspondiente.
+ * 1. Renders input fields and buttons.
+ * 2. While the user types in 'Username', a debounce is applied and
+ *    requests `authAPI.checkUsername` to verify the existence of the username. An icon is displayed indicating whether the user exists or not.
+ * 3. Upon form submission (`handleLogin`):
+ *    - Calls `login` from the authentication context.
+ *    - If authentication is successful, retrieves the role from
+ *      `localStorage` and redirects to `/admin-dashboard` or `/tutor-dashboard`.
+ *    - If there is an error, displays an `IonToast` with the corresponding message.
  *
- * @param {void} No recibe props; utiliza hooks y contexto.
- * @returns {JSX.Element} Componente de la pantalla de login.
+ * @param {void} Does not receive props; uses hooks and context.
+ * @returns {JSX.Element} Login screen component.
  *
- * @example Ejemplo de uso
+ * @example Example of usage
  *
  * ```tsx
  * import Login from './pages/auth/Login';
@@ -52,24 +49,22 @@ import './Login.css';
 setupIonicReact();
 
 /**
- * Resumen Funcional.
+ * Functional summary.
  *
- * Componente de la pantalla de inicio de sesión. Gestiona el formulario de
- * autenticación, validación en tiempo real del nombre de usuario y muestra
- * retroalimentación (toasts) en caso de error.
+ * Login screen component. Manages the authentication form, real-time username validation, and displays feedback (toasts) in case of errors.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - Usuario introduce 'username' y 'password'.
- * - Mientras escribe 'username', se realiza una comprobación debounce para
- *   verificar existencia mediante `authAPI.checkUsername`.
- * - Al enviar el formulario, `handleLogin` llama a `login` del contexto y
- *   redirige según el rol almacenado en `localStorage`.
+ * - User enters 'username' and 'password'.
+ * - While typing 'username', a debounce check is performed to
+ *   verify existence using `authAPI.checkUsername`.
+ * - Upon form submission, `handleLogin` calls `login` from the context and
+ *   redirects based on the role stored in `localStorage`.
  *
- * @param {void} No recibe props; usa hooks y contexto.
- * @returns {JSX.Element} Elemento JSX que representa la pantalla de login.
+ * @param {void} Does not receive props; uses hooks and context.
+ * @returns {JSX.Element} JSX element representing the login screen.
  *
- * @example Ejemplo de uso
+ * @example Example of usage
  *
  * ```tsx
  * import Login from './pages/auth/Login';
@@ -91,16 +86,16 @@ export default function Login() {
   const history = useHistory();
 
   /**
-   * Resumen Funcional.
+   * Functional summary.
    *
-   * Resetea el formulario de inicio de sesión.
+   * Resets the login form.
    *
-   * Flujo de ejecución.
+   * Execution flow.
    *
-   * - Se invoca tras un inicio de sesión exitoso o cuando el usuario pulsa
-   *   "Volver al inicio".
-   * - Limpia los estados locales `username` y `password` para dejar el
-   *   formulario en su estado inicial.
+   * - It is invoked after a successful login or when the user clicks
+   *   "Return to home".
+   * - Clears the local states `username` and `password` to reset the
+   *   form to its initial state.
    *
    * @param {void}
    * @returns {void}
@@ -115,23 +110,23 @@ export default function Login() {
     setPassword('');
   };
   /**
-   * Resumen Funcional.
+   * Functional summary.
    *
-   * Procesa el envío del formulario de autenticación. Llama a la función
-   * `login` del contexto de autenticación y gestiona redirecciones y errores.
+   * Processes the submission of the authentication form. Calls the `login` function
+   * from the authentication context and manages redirections and errors.
    *
-   * Flujo de ejecución.
+   * Execution flow.
    *
-   * - Previene el comportamiento por defecto del formulario.
-   * - Limpia mensajes previos y activa el estado de carga.
-   * - Llama a `login({ username, password })`.
-   * - Si la respuesta es exitosa: extrae el rol desde `localStorage`, limpia
-   *   el formulario y redirige a la ruta correspondiente.
-   * - Si hay error: construye un mensaje adecuado (según status) y muestra
-   *   un `IonToast` con color 'danger'.
+   * - Prevents the default form submission behavior.
+   * - Clears previous messages and sets loading state.
+   * - Calls `login({ username, password })`.
+   * - If the response is successful: extracts the role from `localStorage`, clears
+   *   the form, and redirects to the corresponding route.
+   * - If there is an error: constructs an appropriate message (based on status) and displays
+   *   an `IonToast` with color 'danger'.
    *
-   * @param {React.FormEvent} e - Evento de envío del formulario.
-   * @returns {Promise<void>} Promesa que resuelve cuando termina la operación.
+   * @param {React.FormEvent} e - Form submission event.
+   * @returns {Promise<void>} Promise that resolves when the operation completes.
    *
    * @example
    * ```tsx
@@ -147,7 +142,7 @@ export default function Login() {
 
     try {
       await login({ username, password });
-      //En si la funcion no devolvia role, asi qeu lo cojo de localStorage
+      // The function did not return the role, so I get it from localStorage
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       clearForm();
       if (userData.role === 'admin') {
@@ -157,7 +152,7 @@ export default function Login() {
       };
     } catch (err: any) {
 
-      // Manejar diferentes tipos de errores
+      // Handle different types of errors
       if (err.response) {
         const status = err.response.status;
         const detail = err.response.data?.detail;
@@ -175,7 +170,7 @@ export default function Login() {
       }
       console.error('Login error:', current_error);
 
-      // Mostramos el toast con el error
+      // Show the toast with the error
       setToastMessage(current_error);
       setToastColor('danger');
       setShowToast(true);
@@ -186,14 +181,14 @@ export default function Login() {
   };
 
   /**
-   * Resumen Funcional.
+   * Functional summary.
    *
-   * Alterna la visibilidad del campo de contraseña (`password`).
+   * Toggles the visibility of the password field (`password`).
    *
-   * Flujo de ejecución.
+   * Execution flow.
    *
-   * - Invierte el valor booleano de `showPassword`.
-   * - Este estado controla el tipo del `IonInput` ("text" | "password").
+   * - Inverts the boolean value of `showPassword`.
+   * - This state controls the type of the `IonInput` ("text" | "password").
    *
    * @param {void}
    * @returns {void}
@@ -207,44 +202,44 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
-  // Estado para existencia del username: null = desconocido/vacío, true = existe, false = no existe
+  // State for username existence: null = unknown/empty, true = exists, false = does not exist
   const [isUsernameValid, setIsUsernameValid] = useState<boolean | null>(null);
   const requestIdRef = useRef(0);
 
   /**
-   * Resumen Funcional.
+   * Functional summary.
    *
-   * Valida de forma asíncrona la existencia del nombre de usuario mientras el
-   * usuario escribe, evitando llamadas innecesarias mediante debounce y
-   * previniendo condiciones de carrera con `requestIdRef`.
+   * Asynchronously validates the existence of the username while the
+   * user types, avoiding unnecessary calls through debounce and
+   * preventing race conditions with `requestIdRef`.
    *
-   * Flujo de ejecución.
+   * Execution flow.
    *
-   * - Se ejecuta cada vez que cambia `username`.
-   * - Si el campo está vacío o demasiado corto, marca como inválido sin pedir al
-   *   servidor.
-   * - Tras 400ms sin cambios, llama a `authAPI.checkUsername(trimmed)`.
-   * - Solo la respuesta con `currentId === requestIdRef.current` actualiza el estado
+   * - Executes every time `username` changes.
+   * - If the field is empty or too short, marks as invalid without asking the
+   *   server.
+   * - After 400ms without changes, calls `authAPI.checkUsername(trimmed)`.
+   * - Only the response with `currentId === requestIdRef.current` updates the state
    *   `isUsernameValid`.
    *
-   * @param {void} (usa `username` desde el cierre lexical)
+   * @param {void} (uses `username` from lexical closure)
    * @returns {void}
    *
    * @example
    * ```ts
-   * // El efecto se ejecuta automáticamente; no se llama manualmente.
+   * // The effect runs automatically; it is not called manually.
    * ```
    */
   useEffect(() => {
     const trimmed = username.trim();
 
-    // Resetear si campo vacío
+    // Reset if field is empty
     if (trimmed.length === 0) {
       setIsUsernameValid(false);
       return;
     }
 
-    // Validación rápida local: evitar peticiones para nombres muy cortos
+    // Quick local validation: avoid requests for very short names
     if (trimmed.length < 3) {
       setIsUsernameValid(false);
       return;
@@ -261,7 +256,7 @@ export default function Login() {
         })
         .catch(() => {
           if (currentId === requestIdRef.current) {
-            // En caso de error de red, dejamos como inválido para no dar falsas esperanzas
+            // In case of network error, leave as invalid to avoid false hopes
             setIsUsernameValid(false);
           }
         })

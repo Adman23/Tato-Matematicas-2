@@ -1,17 +1,18 @@
 /* =============================================================================
-   ESTILOS GENERALES DE LA PÁGINA - Game1
+   CSS Styles for Game1 page
    ========================================================================== */
 
-/* ========================================
-    Spinner de carga
-   ======================================== */
 
+/* ========================================
+    Loading spinner
+   ======================================== */
 .Game1-spinner {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
+
 
 /* ========================================
     Layout general
@@ -34,7 +35,7 @@
 
 
 /* ========================================
-    Botones
+    Buttons
    ======================================== */
 .game1-buttons-container {
     display: flex;
@@ -79,8 +80,6 @@
     opacity: 0.4;
 }
 
-
-/* Botón de pista (a la izquierda) */
 .game1-hint-button {
     order: -1;
 }
