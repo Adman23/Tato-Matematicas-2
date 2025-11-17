@@ -79,18 +79,18 @@ export default function AdminDashboard() {
                                     className='admin-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/link-profiles')}
+                                    onClick={() => history.push('/admin-dashboard/groups-management')}
                                 >
-                                    Gestionar matrículas
+                                    Gestionar grupos
                                 </IonButton>
 
                                 <IonButton
                                     className='admin-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/groups-management')}
+                                    onClick={() => history.push('/admin-dashboard/link-profiles')}
                                 >
-                                    Gestionar grupos
+                                    Gestionar matrículas
                                 </IonButton>
 
                             </div>

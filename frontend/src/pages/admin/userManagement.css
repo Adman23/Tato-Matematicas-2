@@ -16,10 +16,20 @@
     padding: 20px 20px;
 }
 
+.userManagement-buscador{
+
+    width: 50%;
+    justify-content: center;
+    margin-right: 30px;
+
+}
+
 .teacherManagement-TextTeacher {
 
     color: #50BFE6;
     font-size: 30px;
+    width: 40px;
+    text-align: left;;
 }
 
 ion-button.teacherManagement-AddButoon::part(native) {
