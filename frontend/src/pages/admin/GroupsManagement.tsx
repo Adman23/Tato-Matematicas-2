@@ -24,7 +24,7 @@ setupIonicReact();
  * ```
  */
 
-import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton } from '@ionic/react';
+import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, IonSearchbar } from '@ionic/react';
 import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -42,6 +42,7 @@ export default function GroupsManagement() {
 
     const [loading, setLoading] = useState(true);
     const [groups, setGroups] = useState<{ id: string; name: string; }[]>([]);
+    const [groupQuery, setGroupQuery] = useState<string>('');
 
     const history = useHistory();
 
@@ -64,6 +65,15 @@ export default function GroupsManagement() {
 
         loadData();
     }, []);
+
+    const displayedGroups = (() => {
+        const filtered = groupQuery === '' ? groups : groups.filter(g => {
+            const q = groupQuery.toLowerCase();
+            const name = (g.name || '').toLowerCase();
+            return name.includes(q);
+        });
+        return filtered;
+    })();
 
     if (authLoading || loading) {
         return (
@@ -91,6 +101,14 @@ export default function GroupsManagement() {
                         <IonLabel className="groupManagement-Text">
                             <h2>{'Grupos'}</h2>
                         </IonLabel>
+                        <IonSearchbar
+                            placeholder="Buscar grupo"
+                            value={groupQuery}
+                            onIonInput={(e) => setGroupQuery(e.detail.value ?? '')}
+                            onIonClear={() => setGroupQuery('')}
+                            onIonCancel={() => setGroupQuery('')}
+                            className='groupManagement-Searchbar'
+                        />
                         <IonButton
                             className="groupManagement-AddButoon"
                             onClick={() =>
@@ -104,7 +122,7 @@ export default function GroupsManagement() {
                     </div>
                     <div className="groupManagement-Table">
                         <IonList>
-                            {groups.map((group) => (
+                            {displayedGroups.map((group) => (
                                 <GroupItem
                                     key={group.id}
                                     id={group.id}
