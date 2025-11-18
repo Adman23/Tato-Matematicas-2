@@ -20,8 +20,8 @@ type Props = {
     setSelectedNumber: React.Dispatch<React.SetStateAction<number | null>>;
     showFeedback: boolean;
     currentNumber: number | null;
-    // Use plural to match Game1's variable name
     usePictograms?: boolean;
+    hintsUsed?: number[];
 };
 
 /**
@@ -39,7 +39,8 @@ const BubblesZone: React.FC<Props> = ({
     setSelectedNumber,
     showFeedback,
     currentNumber,
-    usePictograms
+    usePictograms,
+    hintsUsed = []
 }) => {
     return (
         <IonGrid className="numbers-grid">
@@ -53,18 +54,19 @@ const BubblesZone: React.FC<Props> = ({
                     const showAsCorrect = showFeedback && num === currentNumber;
                     const showAsIncorrect = showFeedback && selectedNumber !== null && selectedNumber === num && selectedNumber !== currentNumber;
 
+                    const isHinted = hintsUsed.includes(num);
+
                     return (
                         <IonCol size="4" size-md="3" size-lg="2" key={`available-${num}-${index}`} className="ion-text-center">
                             <Bubble
                                 value={num}
-                                // Bubble expects `usePictogram` (singular) so pass the boolean here
-                                usePictogram={!!usePictograms}
+                                usePictogram={usePictograms}
                                 isSelected={isSelected}
                                 isCorrect={showAsCorrect}
                                 isIncorrect={showAsIncorrect}
+                                isHinted={isHinted}
                                 disabled={showFeedback}
                                 onClick={(v: number) => {
-                                    if (showFeedback) return;
                                     setSelectedNumber(prev => (prev === v ? null : v));
                                 }}
                             />

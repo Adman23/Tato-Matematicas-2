@@ -226,7 +226,8 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "selected_number": request.round_result.selected_number,
                 "correct_number": request.round_result.correct_number,
                 "is_correct": request.round_result.is_correct,
-                "time": request.round_result.time_seconds
+                "time": request.round_result.time_seconds,
+                "hints": request.round_result.hints or 0
             }
         elif session.get("game_id") == 2:
             # Game 2: Order sequence
