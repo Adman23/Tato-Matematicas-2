@@ -55,6 +55,15 @@ ion-button.groupManagement-AddButton::part(native) {
 
 
 /* ========================================
+    Search bar
+   ======================================== */
+.groupManagement-Searchbar {
+    width: 500px;
+
+}
+
+
+/* ========================================
     Table
    ======================================== */
 .groupManagement-Table {
