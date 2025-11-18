@@ -95,6 +95,10 @@ const Game1: React.FC = () => {
     const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
     const [usedNumbers, setUsedNumbers] = useState<number[]>([]);
 
+    // Clues
+    const [hintsUsed, setHintsUsed] = useState<number[]>([]);
+    const [hintsCount, setHintsCount] = useState(0);
+
 
     // UI states
     const [showFeedback, setShowFeedback] = useState(false);
@@ -344,18 +348,43 @@ const Game1: React.FC = () => {
 
 
     /**
-     * Provides a hint by automatically placing a correct number.
+     * Provides a hint by removing an incorrect option from the available numbers.
      *
      * @remarks
-     * This function is prepared to implement a logic of "placing"
-     * a correct number automatically in the interface (for example, moving
-     * a number from available to ordered). Currently the body is
-     * commented out because the existing UI does not use an ordered list.
+     * This function finds the first available number that is not the correct answer
+     * and has not already been used as a hint. It then marks that number as "hinted",
+     * which will disable it and reduce its opacity in the UI.
      *
      * @returns void
      */
     const useHint = () => {
+        // No hints when feedback is shown
+        if (showFeedback) return;
 
+        // Do not allow hints if there is no current number
+        if (currentNumber === null) return;
+
+        // Search for an available number that is not correct
+        // and has not already been used as a hint
+        const availableIncorrectNumbers = availableNumbers.filter(
+            n => n !== undefined && n !== currentNumber && !hintsUsed.includes(n)
+        );
+
+        if (availableIncorrectNumbers.length === 0) {
+            // No more numbers available to use as hints
+            console.log('No hay más opciones incorrectas disponibles para usar como pista');
+            return;
+        }
+
+        // Select a random incorrect number to disable
+        const randomIndex = Math.floor(Math.random() * availableIncorrectNumbers.length);
+        const hintNumber = availableIncorrectNumbers[randomIndex] as number;
+
+        // Mark the number as used in hints
+        setHintsUsed(prev => [...prev, hintNumber]);
+        setHintsCount(prev => prev + 1);
+
+        console.log(`Pista usada: se ha deshabilitado el número ${hintNumber}`);
     };
 
     /**
@@ -399,7 +428,8 @@ const Game1: React.FC = () => {
                     selected_number: selectedNumber,
                     correct_number: currentNumber,
                     is_correct: correct,
-                    time_seconds: timeSeconds
+                    time_seconds: timeSeconds,
+                    hints: hintsCount
                 });
             } catch (error) {
                 console.error('Error saving round:', error);
@@ -421,6 +451,9 @@ const Game1: React.FC = () => {
         // Reset the selection and hide feedback
         setShowFeedback(false);
         setSelectedNumber(null);
+        // Reset hints for the new round
+        setHintsUsed([]);
+        setHintsCount(0);
 
         if (currentRound < TOTAL_ROUNDS) {
             setCurrentRound(prev => prev + 1);
@@ -708,6 +741,7 @@ const Game1: React.FC = () => {
                     showFeedback={showFeedback}
                     currentNumber={currentNumber}
                     usePictograms={usePictograms}
+                    hintsUsed={hintsUsed}
                 />
 
                 {/* Control buttons */}
@@ -717,6 +751,7 @@ const Game1: React.FC = () => {
                         fill="clear"
                         className="game1-check-button game1-hint-button"
                         onClick={useHint}
+                        disabled={showFeedback}
                     >
                         <img
                             src={showFeedback && selectedNumber === currentNumber ? imgTatoFeliz :
