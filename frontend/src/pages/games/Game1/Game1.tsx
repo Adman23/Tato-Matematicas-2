@@ -28,6 +28,7 @@ import imgSonido from '/assets/juegosImg/game1/sonido.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
+import imgReproducir from '/assets/juegosImg/game1/reproducir.png';
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
@@ -761,21 +762,34 @@ const Game1: React.FC = () => {
                         />
                     </IonButton>
 
+                    {/* Video button - always visible on the left */}
+                    <IonButton
+                        fill="clear"
+                        className="game1-check-button game1"
+                        onClick={() => { }}
+                        disabled={showFeedback}
+                    >
+                        <img
+                            src={imgReproducir}
+                            alt="Video de ayuda"
+                            className="game1-check-button-image"
+                        />
+                    </IonButton>
+
                     {/* Listen button */}
-                    <div className="game1-check-button-container">
-                        <IonButton
-                            fill="clear"
-                            className="game1-check-button"
-                            disabled={listeningAudio || showFeedback}
-                            onClick={() => speakNumber(currentNumber)}
-                        >
-                            <img
-                                src={imgSonidoConTexto}
-                                alt="Escuchar"
-                                className="game1-check-button-image"
-                            />
-                        </IonButton>
-                    </div>
+                    <IonButton
+                        fill="clear"
+                        className="game1-check-button"
+                        disabled={listeningAudio || showFeedback}
+                        onClick={() => speakNumber(currentNumber)}
+                    >
+                        <img
+                            src={imgSonidoConTexto}
+                            alt="Escuchar"
+                            className="game1-check-button-image"
+                        />
+                    </IonButton>
+
 
                     {/* Accept/Check button when there is no feedback */}
                     {!showFeedback && (

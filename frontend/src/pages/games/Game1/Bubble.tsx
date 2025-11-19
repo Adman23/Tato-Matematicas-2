@@ -99,7 +99,6 @@ const Bubble: React.FC<Props> = ({
             {(isCorrect || isIncorrect) && (
                 <div
                     className={`nm-feedback-icon ${isCorrect ? 'correct' : ''} ${isIncorrect ? 'incorrect' : ''}`}
-                    aria-hidden
                 >
                     {isCorrect ? (
                         <IonIcon icon={checkmarkSharp} className="nm-ion-icon" />
