@@ -21,6 +21,7 @@
     font-size: clamp(1.5rem, 5vw, 3em);
     font-weight: bold;
     transition: transform 0.2s ease-in-out;
+
 }
 
 
