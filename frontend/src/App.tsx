@@ -47,6 +47,7 @@ import GroupRegister from './pages/admin/GroupRegister';
 
 // === Perfil profesor ===
 import TeacherProfilePage from './pages/teacherProfile/teacherProfilePage';
+import TeacherEditProfile from './pages/teacherProfile/teacherEditProfile';
 
 import TeacherRegister from './pages/auth/TeacherRegister';
 import RegisterConfirmation from './pages/auth/RegisterConfirmation';
@@ -103,6 +104,7 @@ export default function App() {
             <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin-dashboard/groups-management" exact component={GroupsManagement} />
             <Route path="/teacher-profile" exact component={TeacherProfilePage} />
+            <Route path="/teacher-edit-profile" exact component={TeacherEditProfile} />
             <Route path="/register/confirmation/:tipo" component={RegisterConfirmation} exact />
 
 

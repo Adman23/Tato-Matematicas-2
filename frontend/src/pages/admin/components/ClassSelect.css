@@ -1,11 +1,11 @@
 /* =============================================================================
-   ESTILOS GENERALES DE LA PÁGINA - ClassSelect
+   CSS Styles for ClassSelect component
    ========================================================================== */
 
-/* ========================================
-    Contenedor
-   ======================================== */
 
+/* ========================================
+    Container
+   ======================================== */
 .class-select-container {
     display: flex;
     flex-direction: column;
@@ -15,10 +15,10 @@
     padding: 30px 30px;
 }
 
-/* ========================================
-    Seleccionar clase
-   ======================================== */
 
+/* ========================================
+    Select class
+   ======================================== */
 ion-label.select-class-label {
     font-family: var(--ion-font-family);
     font-weight: var(--ion-weight-regular);
@@ -50,7 +50,6 @@ ion-select.select-class {
 /* ========================================
     Placeholder
    ======================================== */
-
 ion-select.select-class::part(placeholder) {
     position: absolute;
     top: 50%;
@@ -60,10 +59,10 @@ ion-select.select-class::part(placeholder) {
     text-align: center;
 }
 
-/* ========================================
-    Texto seleccionado
-   ======================================== */
 
+/* ========================================
+    Selected text
+   ======================================== */
 ion-select.select-class::part(text) {
     position: absolute;
     top: 50%;
@@ -73,10 +72,10 @@ ion-select.select-class::part(text) {
     text-align: center;
 }
 
-/* ========================================
-    Ícono
-   ======================================== */
 
+/* ========================================
+    Icon
+   ======================================== */
 ion-select.select-class::part(icon) {
     opacity: 1;
     color: #565353;

@@ -1,33 +1,32 @@
 /**
- * Resumen Funcional.
+ * Functional summary.
  *
- * Pantalla de administración para vincular perfiles (alumnos y profesores) a
- * clases (grupos). Proporciona interfaces para buscar, seleccionar, asignar y
- * desasignar usuarios a grupos, así como para recargar los datos desde el
+ * Administration screen for linking profiles (students and teachers) to
+ * classes (groups). Provides interfaces to search, select, assign, and
+ * unassign users to groups, as well as to reload data from the
  * backend.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * 1. Al montar el componente carga la lista de grupos (`authAPI.getGroups`) y
- *    las listas de profesores y alumnos (`fetchTeachersWithGroups`,
- *    `fetchStudentsWithGroups`). Usa flags por recurso para controlar spinners
- *    independientes (`loadingGroups`, `loadingUsers`).
- * 2. El usuario puede filtrar la lista de alumnos/profesores mediante barras
- *    de búsqueda (client-side). Puede seleccionar múltiples usuarios.
- * 3. `handleAssign` asigna los usuarios seleccionados a la clase escogida; si
- *    hay errores muestra mensajes y refresca las listas tras éxito/fracaso.
- * 4. `handleUnassign` desasigna los seleccionados (con validaciones similares).
+ * 1. On component mount, loads the list of groups (`authAPI.getGroups`) and
+ *    the lists of teachers and students (`fetchTeachersWithGroups`,
+ *    `fetchStudentsWithGroups`). Uses flags per resource to control independent spinners
+ *    (`loadingGroups`, `loadingUsers`).
+ * 2. The user can filter the list of students/teachers using search bars (client-side). Multiple users can be selected.
+ * 3. `handleAssign` assigns the selected users to the chosen class; if
+ *    there are errors, it shows messages and refreshes the lists after success/failure.
+ * 4. `handleUnassign` unassigns the selected users (with similar validations).
  *
- * Contrato (resumen):
- * - Entradas: interacción del usuario con la UI (selección, búsqueda, botones).
- * - Salidas: llamadas a las APIs de backend para asignar/desasignar y actualización
- *   de los estados `students`, `teachers`, `groups`.
- * - Errores: se muestran en pantalla mediante el estado `_error`.
+ * Contract (summary):
+ * - Inputs: user interaction with the UI (selection, search, buttons).
+ * - Outputs: calls to backend APIs to assign/unassign and update
+ *   the states `students`, `teachers`, `groups`.
+ * - Errors: displayed on screen using the `_error` state.
  *
- * @param {void} No recibe props; usa el contexto de autenticación y hooks internos.
- * @returns {JSX.Element} Componente que renderiza la UI de vinculación de perfiles.
+ * @param {void} Does not receive props; uses authentication context and internal hooks.
+ * @returns {JSX.Element} Component that renders the link profiles UI.
  *
- * @example Ejemplo de uso
+ * @example Example usage
  *
  * ```tsx
  * <Route path="/admin-dashboard/link-profiles" component={LinkProfiles} />
@@ -44,6 +43,8 @@ import {
     IonSearchbar
 
 } from '@ionic/react';
+import { setupIonicReact } from '@ionic/react';
+setupIonicReact();
 
 import './LinkProfiles.css';
 import { Redirect, useHistory } from 'react-router-dom';
@@ -56,31 +57,31 @@ import { authAPI, fetchTeachersWithGroups, fetchStudentsWithGroups, assignStuden
 import type { Group } from '../../lib/api';
 
 /**
- * Representa un usuario en la UI de selección (alumno o profesor).
- * - `groups` se usa para profesores (lista de grupos asociados).
- * - `group` se usa para estudiantes (grupo asignado único).
+ * Represents a user in the selection UI (student or teacher).
+ * - `groups` is used for teachers (list of associated groups).
+ * - `group` is used for students (single assigned group).
  */
 interface User {
-    /** UUID del usuario */
+    /** UUID of the user */
     id: string;
-    /** Nombre de usuario (extracto del email) */
+    /** Username (extracted from email) */
     username: string;
-    /** URL de la foto de perfil */
+    /** URL of the profile picture */
     photo_url: string;
-    /** Grupos asociados (solo profesores) */
+    /** Associated groups (teachers only) */
     groups?: Group[];
-    /** Grupo asignado (solo estudiantes) */
+    /** Assigned group (students only) */
     group?: Group | null;
 }
 
 /**
- * Componente principal de la pantalla "Link Profiles".
- * Permite:
- * - Cargar la lista de grupos, profesores y alumnos.
- * - Buscar (filtrar) por nombre/alias de grupo en cliente.
- * - Seleccionar varios usuarios y asignarlos/desasignarlos a un grupo.
+ * Main component for the "Link Profiles" screen.
+ * Allows:
+ * - Loading the list of groups, teachers, and students.
+ * - Searching (filtering) by group name/alias on the client side.
+ * - Selecting multiple users and assigning/unassigning them to a group.
  *
- * No recibe props; obtiene el usuario actual del contexto de autenticación.
+ * Does not receive props; obtains the current user from the authentication context.
  */
 export default function LinkProfiles() {
 
@@ -96,44 +97,41 @@ export default function LinkProfiles() {
 
 
 
-    // Estado para la selección de la clase (id del grupo)
+    // State for the class selection (group id)
     const [selectedClass, setSelectedClass] = useState<number | null>(null);
-    // Estado para los estudiantes seleccionados (ids)
+    // State for selected students (ids)
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
     const [selectedTeacherIds, setSelectedTeacherIds] = useState<string[]>([]);
-    // Flags de carga por recurso para evitar que un fetch independiente apague
-    // el spinner global antes de que todos los recursos hayan terminado.
+    // Loading flags per resource to prevent an independent fetch from turning off
+    // the global spinner before all resources have finished.
     const [loadingGroups, setLoadingGroups] = useState<boolean>(true);
     const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
     /**
-     * Resumen Funcional.
+     * Functional Summary.
      *
-     * Efecto que carga la lista de grupos desde el backend cuando el componente
-     * se monta o cuando cambia el estado de autenticación.
+     * Effect that loads the list of groups from the backend when the component
+     * mounts or when the authentication state changes.
      *
-     * Flujo de ejecución.
+     * Execution flow.
      *
-     * - Espera a que el `AuthProvider` haya terminado (si `loading` es true
-     *   sale temprano).
-     * - Si no hay usuario autenticado o no es admin, desactiva la flag de
-     *   carga local y no realiza la petición.
-     * - Llama a `authAPI.getGroups()` y guarda la respuesta en `groups`.
-     * - Gestiona errores actualizando `_error` y siempre limpia la flag
-     *   `loadingGroups` al finalizar.
+     * - Waits for the `AuthProvider` to finish (if `loading` is true, exits early).
+     * - If there is no authenticated user or the user is not an admin, disables the local loading flag and does not make the request.
+     * - Calls `authAPI.getGroups()` and stores the response in `groups`.
+     * - Handles errors by updating `_error` and always clears the `loadingGroups` flag at the end.
      *
      * @param {void}
      * @returns {void}
      *
      * @example
      * ```ts
-     * // Ejecutado automáticamente al montar el componente
+     * // Automatically executed when the component mounts
      * ```
      */
     useEffect(() => {
-        // Esperar a que el AuthProvider termine de rehidratar
+        // Wait for the AuthProvider to finish rehydrating
         if (loading) return;
-        // Solo cargar grupos si es admin autenticado
+        // Only load groups if the user is an authenticated admin
         if (!user || user.role !== 'admin') {
             setLoadingGroups(false);
             return;
@@ -156,36 +154,36 @@ export default function LinkProfiles() {
     }, [loading, user]);
 
     /**
-     * Resumen Funcional.
+     * Functional Summary.
      *
-     * Efecto responsable de cargar (o recargar) la lista de profesores y
-     * estudiantes. Se ejecuta al montar el componente y cuando cambia
-     * `selectedClass` (es decir, cuando el admin cambia la clase objetivo).
+     * Effect responsible for loading (or reloading) the list of teachers and
+     * students. It runs when the component mounts and when `selectedClass`
+     * changes (i.e., when the admin changes the target class).
      *
-     * Flujo de ejecución.
+     * Execution flow.
      *
-     * - Si `loading` del AuthProvider es true, sale temprano.
-     * - Si no hay usuario o no es admin, desactiva la flag `loadingUsers`.
-     * - Llama a `fetchTeachersWithGroups()` y `fetchStudentsWithGroups()` y
-     *   actualiza los estados `teachers` y `students` respectivamente.
-     * - Maneja errores con console.error y siempre limpia la flag de carga.
+     * - If `loading` from the AuthProvider is true, exits early.
+     * - If there is no user or the user is not an admin, disables the `loadingUsers` flag.
+     * - Calls `fetchTeachersWithGroups()` and `fetchStudentsWithGroups()` and
+     *   updates the `teachers` and `students` states respectively.
+     * - Handles errors with console.error and always clears the loading flag.
      *
-     * Consideraciones de rendimiento/UX:
-     * - Esta carga se realiza en cliente y refresca toda la lista; para
-     *   datasets grandes se podría paginar o aplicar búsquedas server-side.
+     * Performance/UX considerations:
+     * - This loading is done client-side and refreshes the entire list; for
+     *   large datasets, pagination or server-side searches could be applied.
      *
      * @param {void}
      * @returns {void}
      *
      * @example
      * ```ts
-     * // Ejecutado automáticamente; no llamar manualmente
+     * // Automatically executed; do not call manually
      * ```
      */
     useEffect(() => {
-        // Esperar a que el AuthProvider termine de rehidratar
+        // Wait for the AuthProvider to finish rehydrating
         if (loading) return;
-        // Solo cargar usuarios si es admin autenticado
+        // Only load users if authenticated admin
         if (!user || user.role !== 'admin') {
             setLoadingUsers(false);
             return;
@@ -215,24 +213,23 @@ export default function LinkProfiles() {
     }, [loading, user]);
 
     /**
-     * Resumen Funcional.
+     * Functional Summary.
      *
-     * Asigna los alumnos y/o profesores seleccionados a la clase actualmente
-     * seleccionada (`selectedClass`). Valida entradas, llama a las APIs de
-     * asignación y refresca las listas locales tras la operación.
+     * Assigns the selected students and/or teachers to the currently selected
+     * class (`selectedClass`). Validates inputs, calls the assignment APIs,
+     * and refreshes the local lists after the operation.
      *
-     * Flujo de ejecución.
+     * Execution flow.
      *
-     * - Si no hay `selectedClass` o no hay usuarios seleccionados, establece
-     *   `_error` y aborta.
-     * - Activa la flag `loadingUsers` y llama a `assignStudentsToGroup` y/o
-     *   `assignTeachersToGroup` según corresponda.
-     * - Tras éxito, recarga los datos (`fetchStudentsWithGroups`,
-     *   `fetchTeachersWithGroups`) y limpia la selección.
-     * - En caso de error registra en consola y actualiza `_error`.
+     * - If there is no `selectedClass` or no users selected, sets `_error` and aborts.
+     * - Activates the `loadingUsers` flag and calls `assignStudentsToGroup` and/or
+     *   `assignTeachersToGroup` as appropriate.
+     * - Upon success, reloads the data (`fetchStudentsWithGroups`,
+     *   `fetchTeachersWithGroups`) and clears the selection.
+     * - In case of error, logs to console and updates `_error`.
      *
      * @param {void}
-     * @returns {Promise<void>} Promesa que se resuelve al completar la operación.
+     * @returns {Promise<void>} Promise that resolves upon completion of the operation.
      *
      * @example
      * ```ts
@@ -258,12 +255,12 @@ export default function LinkProfiles() {
             if (selectedTeacherIds.length > 0) {
                 await assignTeachersToGroup(selectedClass, selectedTeacherIds);
             }
-            // refrescar la lista de estudiantes para mostrar cambios
+            // refresh the students list to show changes
             const refreshedStudents = await fetchStudentsWithGroups();
             const refreshedTeachers = await fetchTeachersWithGroups();
             setStudents(refreshedStudents);
             setTeachers(refreshedTeachers);
-            // limpiar selección
+            // clear selection
             setSelectedStudentIds([]);
             setSelectedTeacherIds([]);
             setError('');
@@ -276,22 +273,22 @@ export default function LinkProfiles() {
     };
 
     /**
-     * Resumen Funcional.
+     * Functional Summary.
      *
-     * Desasigna los alumnos y/o profesores seleccionados de sus clases. Valida
-     * la selección y clase (cuando procede), llama a las APIs de desasignación
-     * y refresca las listas.
+     * Unassigns the selected students and/or teachers from their classes. Validates
+     * the selection and class (when applicable), calls the unassignment APIs,
+     * and refreshes the lists.
      *
-     * Flujo de ejecución.
+     * Execution flow.
      *
-     * - Si no hay usuarios seleccionados establece `_error` y aborta.
-     * - Si hay profesores seleccionados, exige que `selectedClass` esté
-     *   definida.
-     * - Llama a `unassignStudentsFromGroup` y/o `unassignTeachersFromGroup`.
-     * - Refresca `students` y `teachers`, limpia la selección y gestiona errores.
+     * - If there are no selected users, sets `_error` and aborts.
+     * - If there are selected teachers, requires that `selectedClass` is
+     *   defined.
+     * - Calls `unassignStudentsFromGroup` and/or `unassignTeachersFromGroup`.
+     * - Refreshes `students` and `teachers`, clears the selection, and handles errors.
      *
      * @param {void}
-     * @returns {Promise<void>} Promesa que se resuelve al completar la operación.
+     * @returns {Promise<void>} Promise that resolves upon completion of the operation.
      *
      * @example
      * ```ts
@@ -318,12 +315,12 @@ export default function LinkProfiles() {
             if (selectedTeacherIds.length > 0 && selectedClass) {
                 await unassignTeachersFromGroup(selectedClass, selectedTeacherIds);
             }
-            // refrescar la lista de estudiantes para mostrar cambios
+            // refresh the students list to show changes
             const refreshedStudents = await fetchStudentsWithGroups();
             const refreshedTeachers = await fetchTeachersWithGroups();
             setStudents(refreshedStudents);
             setTeachers(refreshedTeachers);
-            // limpiar selección
+            // clear selection
             setSelectedStudentIds([]);
             setSelectedTeacherIds([]);
             setError('');
@@ -335,27 +332,14 @@ export default function LinkProfiles() {
         }
     };
 
-    // Mostrar spinner mientras carga
-    if (loadingGroups || loadingUsers) {
-        return (
-            <IonPage>
-                <IonContent>
-                    <div className='LinkProfiles-spinner'>
-                        <IonSpinner name="crescent" />
-                    </div>
-                </IonContent>
-            </IonPage>
-        );
-    }
-
-    // Redirigir si no hay usuario autenticado
+    // Redirect if no authenticated user
     if (!user || user.role !== 'admin') {
         return <Redirect to="/login" />;
     }
 
-    // Preparar la lista de estudiantes a mostrar: filtrar por query y, si hay
-    // una clase seleccionada, ordenar para que los alumnos que pertenezcan a
-    // esa clase aparezcan primero. No mutamos `students`.
+    // Prepare the list of students to display: filter by query and, if there is
+    // a selected class, sort so that students belonging to that class appear first.
+    // We do not mutate `students`.
     const displayedStudents = (() => {
         const filtered = studentQuery === '' ? students : students.filter(s => {
             const q = studentQuery.toLowerCase();
@@ -370,8 +354,34 @@ export default function LinkProfiles() {
         return [...filtered].sort((a, b) => {
             const aIn = a.group?.id === selectedClass ? 0 : 1;
             const bIn = b.group?.id === selectedClass ? 0 : 1;
-            if (aIn !== bIn) return aIn - bIn; // los que pertenecen a la clase van primero
-            // Fallback: ordenar por username para consistencia
+            if (aIn !== bIn) return aIn - bIn; // those belonging to the class appear first
+            // Fallback: sort by username for consistency
+            return (a.username || '').localeCompare(b.username || '');
+        });
+    })();
+
+    // Prepare the list of teachers to display: filter by query and, if there is
+    // a selected class, sort so that teachers belonging to that class appear first.
+    // We do not mutate `teachers`.
+    const displayedTeachers = (() => {
+        const filtered = teacherQuery === '' ? teachers : teachers.filter(t => {
+            const q = teacherQuery.toLowerCase();
+            const uname = (t.username || '').toLowerCase();
+            const inUsername = uname.includes(q);
+            // Teachers may belong to multiple groups; check any group's alias
+            const inGroup = (t.groups && t.groups.length > 0)
+                ? t.groups.some(g => (g.alias || '').toLowerCase().includes(q))
+                : false;
+            return inUsername || inGroup;
+        });
+
+        if (selectedClass === null) return filtered;
+
+        return [...filtered].sort((a, b) => {
+            const aIn = a.groups?.some(g => g.id === selectedClass) ? 0 : 1;
+            const bIn = b.groups?.some(g => g.id === selectedClass) ? 0 : 1;
+            if (aIn !== bIn) return aIn - bIn; // those belonging to the class appear first
+            // Fallback: sort by username for consistency
             return (a.username || '').localeCompare(b.username || '');
         });
     })();
@@ -379,7 +389,7 @@ export default function LinkProfiles() {
     return (
         <IonPage>
             <SimpleHeaderAdmin adminName={user.username} />
-            <IonContent className="ion-padding">
+            <IonContent className="ion-text-center ion-padding">
                 <ClassSelect
                     classes={groups}
                     value={selectedClass}
@@ -402,27 +412,32 @@ export default function LinkProfiles() {
                             />
                         </div>
                         <div className='LinkProfiles-items'>
-                            <IonList>
-                                {displayedStudents.map(student => (
-                                    <UserItem
-                                        key={student.id}
-                                        avatar={student.photo_url}
-                                        alias={student.username}
-                                        classes={student.group ? [student.group.alias] : []}
-                                        highlight={selectedClass !== null && student.group?.id === selectedClass}
-                                        isChecked={selectedStudentIds.includes(student.id)}
-                                        onCheckChange={(checked) => {
-                                            setSelectedStudentIds(prev => {
-                                                if (checked) {
-                                                    return [...prev, student.id];
-                                                }
-                                                return prev.filter(id => id !== student.id);
-                                            });
-                                        }}
-                                    />
-                                ))}
-                            </IonList>
-
+                            {loadingUsers ? (
+                                <div className='LinkProfiles-spinner'>
+                                    <IonSpinner name="crescent" />
+                                </div>
+                            ) : (
+                                <IonList>
+                                    {displayedStudents.map(student => (
+                                        <UserItem
+                                            key={student.id}
+                                            avatar={student.photo_url}
+                                            alias={student.username}
+                                            classes={student.group ? [student.group.alias] : []}
+                                            highlight={selectedClass !== null && student.group?.id === selectedClass}
+                                            isChecked={selectedStudentIds.includes(student.id)}
+                                            onCheckChange={(checked) => {
+                                                setSelectedStudentIds(prev => {
+                                                    if (checked) {
+                                                        return [...prev, student.id];
+                                                    }
+                                                    return prev.filter(id => id !== student.id);
+                                                });
+                                            }}
+                                        />
+                                    ))}
+                                </IonList>
+                            )}
                         </div>
                     </div>
 
@@ -438,38 +453,32 @@ export default function LinkProfiles() {
                             />
                         </div>
                         <div className='LinkProfiles-items'>
-
-                            <IonList>
-                                {(
-                                    // Filter teachers client-side (by username and group alias).
-                                    // Use debounced query for better UX.
-                                    (teacherQuery === '' ? teachers : teachers.filter(t => {
-                                        const q = teacherQuery.toLowerCase();
-                                        const uname = (t.username || '').toLowerCase();
-                                        const inUsername = uname.includes(q);
-                                        const inGroups = (t.groups || []).some(g => (g.alias || '').toLowerCase().includes(q));
-                                        return inUsername || inGroups;
-                                    }))
-                                ).map(teacher => (
-                                    <UserItem
-                                        key={teacher.id}
-                                        avatar={teacher.photo_url}
-                                        alias={teacher.username}
-                                        classes={teacher.groups?.map(g => g.alias) || []}
-                                        highlight={selectedClass !== null && teacher.groups?.some(g => g.id === selectedClass)}
-                                        isChecked={selectedTeacherIds.includes(teacher.id)}
-                                        onCheckChange={(checked) => {
-                                            setSelectedTeacherIds(prev => {
-                                                if (checked) {
-                                                    return [...prev, teacher.id];
-                                                }
-                                                return prev.filter(id => id !== teacher.id);
-                                            });
-                                        }}
-                                    />
-                                ))}
-                            </IonList>
-
+                            {loadingUsers ? (
+                                <div className='LinkProfiles-spinner'>
+                                    <IonSpinner name="crescent" />
+                                </div>
+                            ) : (
+                                <IonList>
+                                    {displayedTeachers.map(teacher => (
+                                        <UserItem
+                                            key={teacher.id}
+                                            avatar={teacher.photo_url}
+                                            alias={teacher.username}
+                                            classes={teacher.groups?.map(g => g.alias) || []}
+                                            highlight={selectedClass !== null && teacher.groups?.some(g => g.id === selectedClass)}
+                                            isChecked={selectedTeacherIds.includes(teacher.id)}
+                                            onCheckChange={(checked) => {
+                                                setSelectedTeacherIds(prev => {
+                                                    if (checked) {
+                                                        return [...prev, teacher.id];
+                                                    }
+                                                    return prev.filter(id => id !== teacher.id);
+                                                });
+                                            }}
+                                        />
+                                    ))}
+                                </IonList>
+                            )}
                         </div>
                     </div>
                 </div>

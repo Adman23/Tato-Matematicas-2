@@ -1,8 +1,18 @@
+"""
+Game schemas
+
+This module defines schemas for managing game configurations, sessions, and round results.
+
+"""
+
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
+
 class GameConfigResponse(BaseModel):
-    """Configuración del juego para un estudiante"""
+    """
+    Game configuration data model
+    """
     game_id: int
     game_key: str
     user_id: str
@@ -11,16 +21,19 @@ class GameConfigResponse(BaseModel):
 
 
 class CreateSessionRequest(BaseModel):
-    """Crear nueva sesión de juego"""
+    """
+    Game session creation request model
+    """
     student_id: str
     game_key: str  # 'game2'
 
 
 class RoundResult(BaseModel):
-    """Resultado de una ronda.
+    """
+    Round result.
 
-    Los distintos juegos envían campos diferentes. Hacemos opcionales
-    los campos que no aplican a todos los juegos (por ejemplo
+    Different games send different fields. We make optional
+    the fields that do not apply to all games (for example
     `user_number`/`correct_number` vs `user_order`/`correct_order`).
     """
     round: int
@@ -48,11 +61,15 @@ class RoundResult(BaseModel):
 
 
 class SaveRoundRequest(BaseModel):
-    """Guardar resultado de ronda"""
+    """
+    Save round result
+    """
     round_result: RoundResult
 
 
 class FinishSessionRequest(BaseModel):
-    """Finalizar sesión de juego"""
+    """
+    Finish game session
+    """
     total_time_seconds: float
 

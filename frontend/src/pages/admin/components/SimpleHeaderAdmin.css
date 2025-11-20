@@ -1,11 +1,11 @@
 /* =============================================================================
-   ESTILOS GENERALES DE LA PÁGINA - SimpleHeaderAdmin
+   CSS Styles for SimpleHeaderAdmin component
    ========================================================================== */
+
 
 /* ========================================
     Toolbar
    ======================================== */
-
 ion-toolbar.toolbar-header-admin {
   --background: var(--ion-color-primary);
   height: 120px;
@@ -14,10 +14,10 @@ ion-toolbar.toolbar-header-admin {
   padding: 0px 30px;
 }
 
-/* ========================================
-   Botones
-   ======================================== */
 
+/* ========================================
+   Buttons
+   ======================================== */
 ion-buttons[slot="start"],
 ion-buttons[slot="end"] {
   width: 160px;
@@ -34,10 +34,10 @@ ion-buttons[slot="end"] {
   justify-content: flex-end;
 }
 
-/* ========================================
-   Botón de inicio
-   ======================================== */
 
+/* ========================================
+   Home button
+   ======================================== */
 ion-button.homeButton-header-admin {
   align-self: center;
 }
@@ -61,10 +61,10 @@ ion-button.homeButton-header-admin ion-icon {
   height: 50px;
 }
 
-/* ========================================
-    Titulo
-   ======================================== */
 
+/* ========================================
+    Title
+   ======================================== */
 ion-title.title-header-admin {
   font-family: var(--ion-font-family);
   font-weight: var(--ion-weight-regular);
@@ -81,10 +81,10 @@ ion-title.title-header-admin {
   text-overflow: clip;
 }
 
-/* ========================================
-   Botón de cerrar sesión
-   ======================================== */
 
+/* ========================================
+   Logout button
+   ======================================== */
 ion-button.logout-header-admin::part(native) {
   width: 150px;
   height: 48px;

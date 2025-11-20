@@ -2,22 +2,21 @@ import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
 
 /**
- * Resumen Funcional.
+ * Functional summary.
  *
- * Página de gestión de grupos para administradores. Lista grupos, permite
- * eliminar y navegar al registro de nuevos grupos.
+ * Groups management page for administrators. Lists groups, allows
+ * deleting and navigating to the registration of new groups.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - Al montar, carga la lista de grupos mediante `fetchGroups` y la muestra en
- *   una lista.
- * - Muestra un spinner mientras se cargan los datos o el contexto de auth está
- *   en estado de carga.
- * - Si el usuario no está autenticado o no es admin, redirige al login.
- * - Permite eliminar grupos y, en caso de fallo, intenta recargar la lista.
+ * - On mount, loads the list of groups using `fetchGroups` and displays them in
+ *   a list.
+ * - Shows a spinner while data is loading or the auth context is in a loading state.
+ * - If the user is not authenticated or not an admin, redirects to login.
+ * - Allows deleting groups and, in case of failure, attempts to reload the list.
  *
  * @param {void}
- * @returns {JSX.Element} Componente de gestión de grupos.
+ * @returns {JSX.Element} Groups management component.
  *
  * @example
  * ```tsx
@@ -25,7 +24,7 @@ setupIonicReact();
  * ```
  */
 
-import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton } from '@ionic/react';
+import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, IonSearchbar } from '@ionic/react';
 import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -43,6 +42,7 @@ export default function GroupsManagement() {
 
     const [loading, setLoading] = useState(true);
     const [groups, setGroups] = useState<{ id: string; name: string; }[]>([]);
+    const [groupQuery, setGroupQuery] = useState<string>('');
 
     const history = useHistory();
 
@@ -66,6 +66,15 @@ export default function GroupsManagement() {
         loadData();
     }, []);
 
+    const displayedGroups = (() => {
+        const filtered = groupQuery === '' ? groups : groups.filter(g => {
+            const q = groupQuery.toLowerCase();
+            const name = (g.name || '').toLowerCase();
+            return name.includes(q);
+        });
+        return filtered;
+    })();
+
     if (authLoading || loading) {
         return (
             <IonPage>
@@ -78,7 +87,7 @@ export default function GroupsManagement() {
         );
     }
 
-    // Redirige si no está autenticado 
+    // Redirects if not authenticated 
     if (!user || user.role !== 'admin') {
         return <Redirect to="/login" />;
     }
@@ -92,6 +101,14 @@ export default function GroupsManagement() {
                         <IonLabel className="groupManagement-Text">
                             <h2>{'Grupos'}</h2>
                         </IonLabel>
+                        <IonSearchbar
+                            placeholder="Buscar grupo"
+                            value={groupQuery}
+                            onIonInput={(e) => setGroupQuery(e.detail.value ?? '')}
+                            onIonClear={() => setGroupQuery('')}
+                            onIonCancel={() => setGroupQuery('')}
+                            className='groupManagement-Searchbar'
+                        />
                         <IonButton
                             className="groupManagement-AddButoon"
                             onClick={() =>
@@ -105,7 +122,7 @@ export default function GroupsManagement() {
                     </div>
                     <div className="groupManagement-Table">
                         <IonList>
-                            {groups.map((group) => (
+                            {displayedGroups.map((group) => (
                                 <GroupItem
                                     key={group.id}
                                     id={group.id}

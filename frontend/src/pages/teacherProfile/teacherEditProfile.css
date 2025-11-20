@@ -1,0 +1,318 @@
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA - TeacherEditProfile
+   ========================================================================== */
+
+.teacher-edit-profile-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  background-color: #ffffff;
+  min-height: 100vh;
+  width: 100%;
+  padding: 1.5rem;
+  transform: scale(1.5);
+  transform-origin: top center;
+}
+
+/* =============================================================================
+   TARJETA DEL FORMULARIO
+   ========================================================================== */
+
+.teacher-edit-profile-form-card {
+  width: 95%;
+  max-width: 600px;
+  background-color: #50BFE6;
+  border-radius: 24px;
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.teacher-edit-profile-form-container-header {
+  text-align: center;
+}
+
+.teacher-edit-profile-form-container-header h2 {
+  color: white;
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.teacher-edit-profile-form-container-header p {
+  color: rgb(0, 0, 0);
+  font-size: 1rem;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .teacher-edit-profile-form-card {
+    padding: 2rem;
+  }
+
+  .teacher-edit-profile-form-container-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* =============================================================================
+   GRID DE CONTENIDO
+   ========================================================================== */
+
+.teacher-edit-profile-grid-content {
+  display: grid;
+  grid-template-columns: 2fr 2fr;
+  gap: 1.2rem;
+}
+
+.teacher-edit-profile-form-left,
+.teacher-edit-profile-form-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.teacher-edit-profile-form-right .teacher-edit-profile-field-label {
+  text-align: center;
+}
+
+.teacher-edit-profile-profile-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+
+.teacher-edit-profile-profile-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  background-color: #50BFE6;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: white;
+  font-size: 48px;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.teacher-edit-profile-selected-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* =============================================================================
+   CAMPOS COMUNES
+   ========================================================================== */
+
+.teacher-edit-profile-field-wrapper {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.teacher-edit-profile-field-label {
+  color: #000000;
+  font-size: 0.9rem;
+  margin: 0.4rem 0; 
+}
+
+.teacher-edit-profile-input-item {
+  --background: white;
+  --border-radius: 20px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  width: 100%;
+  border: none;
+  margin: 0;
+}
+
+.teacher-edit-profile-input-with-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.teacher-edit-profile-input-with-icon ion-icon:last-child {
+  position: absolute;
+  right: 12px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.teacher-edit-profile-input-with-icon ion-icon:first-child {
+  padding-left: 12px;
+  font-size: 1.4rem;
+  color: var(--ion-color-medium);
+}
+
+/* =============================================================================
+   BOTÓN
+   ========================================================================== */
+
+.teacher-edit-profile-form-button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.teacher-edit-profile-cancel-button {
+  --background: white;
+  --color: #50BFE6;
+  --border-radius: 20px;
+  --padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 0.5rem;
+}
+
+.teacher-edit-profile-confirm-button {
+  --background: white;
+  --color: #50BFE6;
+  --border-radius: 20px;
+  --padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.teacher-edit-profile-confirm-button::part(native) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  outline: none;
+}
+
+.teacher-edit-profile-confirm-button:hover::part(native) {
+  background-color: #f0f0f0;
+}
+
+.teacher-edit-profile-confirm-button--disabled {
+  opacity: 0.8;
+}
+
+.teacher-edit-profile-confirm-button--disabled::part(native) {
+  cursor: not-allowed !important;
+}
+
+/* =============================================================================
+   TOAST
+   ========================================================================== */
+
+.teacher-edit-profile-toast ion-toast {
+  --background: #f44336;
+  --color: white;
+}
+
+/* =============================================================================
+   MODAL DE AVATAR (igual que StudentRegister)
+   ========================================================================== */
+
+.teacher-edit-profile-avatar-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.teacher-edit-profile-avatar-picker {
+  background: white;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.teacher-edit-profile-avatar-picker-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.teacher-edit-profile-picto-picker-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.teacher-edit-profile-picto-picker-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.teacher-edit-profile-picto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+  flex: 1;
+  place-items: center;
+}
+
+.teacher-edit-profile-picto-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+}
+
+.teacher-edit-profile-picto-option ion-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
+.teacher-edit-profile-picto-option span {
+  font-size: 12px;
+  color: #333;
+}
+
+.teacher-edit-profile-upload-avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  border: 2px dashed var(--ion-color-medium);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ion-color-light);
+}
+
+.teacher-edit-profile-upload-icon {
+  font-size: 24px;
+  color: var(--ion-color-medium);
+}
