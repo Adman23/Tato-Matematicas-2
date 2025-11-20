@@ -14,6 +14,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Route, Redirect } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { UserDataProvider } from './contexts/UserContext';
 
 // === Páginas principales ===
 import Home from './pages/Home';

@@ -22,7 +22,7 @@ import {
 } from 'ionicons/icons';
 import { Redirect } from 'react-router-dom';         // Used for redirection
 import { useAuth } from '../../contexts/AuthContext';// Authentication context
-import { useUserData } from "../../contexts/UserContext"
+//import { useUserData } from "../../contexts/UserContext"
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import './StudentProfile.css';
@@ -47,8 +47,8 @@ export default function StudentProfile() {
      *               photo_url?: string;
      *           }  
      */ 
-    const { user } = useAuth();
-    const { userData, loading } = useUserData();
+    const { user, loading } = useAuth();
+    //const { userData, loading } = useUserData();
 
     // Variables and functions---------------------------------
     const [color, setColor] = useState('original');
