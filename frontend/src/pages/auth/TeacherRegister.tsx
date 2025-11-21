@@ -144,8 +144,7 @@ export default function TeacherRegister() {
 
     try {
       let photoUrl = DEFAULT_AVATAR;
-
-      // Si se seleccionó un avatar del modal, usamos su URL completa
+      
       if (avatarOptions.some(a => a.id === selectedAvatar)) {
         photoUrl = selectedAvatarUrl;
       } else if (fileInputRef.current?.files?.[0]) {
