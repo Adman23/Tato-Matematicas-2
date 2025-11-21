@@ -138,7 +138,7 @@ export interface User {
  */
 export interface UserData {
   user_profile: any;
-  game_configuration: any;
+  game_configurations: any;
   reinforcement_messages: any;
 }
 

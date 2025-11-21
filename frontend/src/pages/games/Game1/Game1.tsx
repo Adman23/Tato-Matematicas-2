@@ -76,7 +76,7 @@ const TOTAL_ROUNDS = 5;
 const Game1: React.FC = () => {
 
     const history = useHistory();
-    const { user, loading: authLoading } = useAuth();
+    const { user, loadingAuth: authLoading } = useAuth();
 
     const currentUser = user;
 

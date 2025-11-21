@@ -84,7 +84,7 @@ interface User {
  */
 export default function LinkProfiles() {
 
-    const { user, loading } = useAuth();
+    const { user, loadingAuth: loading } = useAuth();
 
     const [students, setStudents] = useState<User[]>([]);
     const [teachers, setTeachers] = useState<User[]>([]);

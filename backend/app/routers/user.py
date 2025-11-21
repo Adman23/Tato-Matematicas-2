@@ -97,6 +97,9 @@ async def get_user_data(user_id: str):
 		username: "email without the @",        not null
 		role:     "student, admin or teacher",  not null
 		photo_url:"url of the photo associated, can be null"
+		user_profile
+		game_configurations
+		reinforcemente_messages
 	}
 	-> 	group_id could be aded, but its only for students and not really of much use
 			its only used to get the students of a group, this function is to get the basic
@@ -145,8 +148,8 @@ async def get_user_data(user_id: str):
 				status_code=status.HTTP_404_NOT_FOUND,
 				detail="User not found"
 			)
-		print(resp.data)
 
+		print("SE EJECUTA EL GET_USER_DATA")
 		return UserData(id=user.id, 
 						username=user.username,
 						role=user.role,

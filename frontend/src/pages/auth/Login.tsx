@@ -39,10 +39,11 @@ import {
   IonText,
   IonIcon,
   IonToast,
+  IonSpinner,
 } from '@ionic/react';
 import { eyeOutline, eyeOffOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
@@ -77,6 +78,9 @@ setupIonicReact();
  * ```
  */
 export default function Login() {
+
+
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -87,8 +91,33 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login } = useAuth();
+  const { user, loadingAuth, login } = useAuth();
   const history = useHistory();
+
+
+  // Show loading icon
+  if (loadingAuth) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <IonSpinner name="crescent" />
+        </IonContent>
+      </IonPage>
+    );
+  }
+
+  // Redirigir si hay estudiante autenticado
+  if (user) {
+    console.log("Redirect to login because there is a user");
+    if (user.role === "student")
+      return <Redirect to="/student-dashboard" />;
+    else
+    if (user.role === "admin")
+      return <Redirect to="/admin-dashboard" />;
+    else
+    if (user.role === "teacher")
+      return <Redirect to="/tutor-dashboard" />;
+  }
 
   /**
    * Resumen Funcional.

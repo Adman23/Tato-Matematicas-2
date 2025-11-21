@@ -89,7 +89,7 @@ const TOTAL_ROUNDS = 5;
  */
 const Game2: React.FC = () => {
   const history = useHistory();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loadingAuth: authLoading } = useAuth();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = user;

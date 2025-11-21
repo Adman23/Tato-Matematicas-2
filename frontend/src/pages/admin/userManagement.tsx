@@ -17,7 +17,7 @@ import { useHistory } from 'react-router-dom';
 export default function UserManagement() {
 
   const { tipo } = useParams<{ tipo: string }>();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loadingAuth: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<{ id: string; username: string; photo_url: string }[]>([]);

@@ -13,8 +13,10 @@
 import {
   IonPage,
   IonContent,
+  IonSpinner,
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Home.css';
 
 /**
@@ -35,6 +37,31 @@ import './Home.css';
  */
 export default function Home() {
   const history = useHistory();
+  const {user, loadingAuth} = useAuth();
+
+  // Show loading icon
+  if (loadingAuth) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <IonSpinner name="crescent" />
+        </IonContent>
+      </IonPage>
+    );
+  }
+
+  // Redirigir si hay estudiante autenticado
+  if (user) {
+    console.log("Redirect to login because there is a user");
+    if (user.role === "student")
+      return <Redirect to="/student-dashboard" />;
+    else
+    if (user.role === "admin")
+      return <Redirect to="/admin-dashboard" />;
+    else
+    if (user.role === "teacher")
+      return <Redirect to="/tutor-dashboard" />;
+  }
 
   return (
     <IonPage>

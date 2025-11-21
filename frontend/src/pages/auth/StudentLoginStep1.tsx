@@ -7,8 +7,9 @@ import {
   useIonViewWillEnter,
 } from '@ionic/react';
 import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
+import { useAuth } from '../../contexts/AuthContext'
 import type { Group } from '../../lib/api';
 import './StudentLoginSelection.css';
 
@@ -22,6 +23,32 @@ export default function StudentLoginStep1() {
   const [currentPage, setCurrentPage] = useState(0); // ✅ currentPage (no currentIndex)
   const [visibleCount, setVisibleCount] = useState(4);
   const history = useHistory();
+
+  const {user, loadingAuth} = useAuth();
+
+  // Show loading icon
+  if (loadingAuth) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <IonSpinner name="crescent" />
+        </IonContent>
+      </IonPage>
+    );
+  }
+
+  // Redirigir si hay estudiante autenticado
+  if (user) {
+    console.log("Redirect to login because there is a user");
+    if (user.role === "student")
+      return <Redirect to="/student-dashboard" />;
+    else
+    if (user.role === "admin")
+      return <Redirect to="/admin-dashboard" />;
+    else
+    if (user.role === "teacher")
+      return <Redirect to="/tutor-dashboard" />;
+  }
 
   const calculateVisibleCount = () => {
     const isMobile = window.innerWidth <= 860;

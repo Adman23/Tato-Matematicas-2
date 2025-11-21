@@ -11,6 +11,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import './Dashboard.css';
+import { useUserData } from '../../contexts/UserContext';
 
 
 /**
@@ -37,13 +38,13 @@ import './Dashboard.css';
  * ```
  */
 export default function StudentDashboard() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
+  const { loadingUser } = useUserData();
   const history = useHistory();
 
 
-
   // Mostrar spinner mientras carga
-  if (loading) {
+  if (loadingUser) {
     return (
       <IonPage>
         <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -55,6 +56,7 @@ export default function StudentDashboard() {
 
   // Redirigir si no hay estudiante autenticado
   if (!user) {
+    console.log("Redirect to login because ther is no user");
     return <Redirect to="/student-login" />;
   }
 

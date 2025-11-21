@@ -120,6 +120,7 @@ export default function StudentLoginStep3() {
 
       setSelected([]);
       setError('');
+      console.log("A");
       history.push('/student-dashboard');
     } catch (err: any) {
       setError('Oh, te has equivocado, inténtalo otra vez');

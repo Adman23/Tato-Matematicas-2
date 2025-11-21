@@ -14,10 +14,13 @@ import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Route, Redirect } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { UserDataWrapper } from './contexts/UserContext';
 
 // === Páginas principales ===
 import Home from './pages/Home';
 
+// === Routes ===
+import { UserDataRoute } from './Routes/UserDataRoute';
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
@@ -85,23 +88,28 @@ export default function App() {
             <Route path="/student-login/step2/:groupId" exact component={StudentLoginStep2} />
             <Route path="/student-login/step3/:groupId/:username" exact component={StudentLoginStep3} />
 
-            <Route path="/student-dashboard" exact component={StudentDashboard} />
-            <Route path="/student-profile" exact component={StudentProfile} />
+            {/* Game Routes */}
+            <UserDataRoute path="/game1" exact component={Game1} />
+            <UserDataRoute path="/game2" exact component={Game2} />
 
-            {/* Rutas de juegos */}
-            <Route path="/game1" exact component={Game1} />
-            <Route path="/game2" exact component={Game2} />
+            {/* Users Routes (except admin) */}
+            <UserDataRoute path="/student-dashboard" exact component={StudentDashboard} />
+            <UserDataRoute path="/student-profile" exact component={StudentProfile} />
+            <UserDataRoute path="/tutor-dashboard" exact component={TutorDashboard} />
+            <UserDataRoute path="/teacher-profile" exact component={TeacherProfilePage} />
+
+
 
             {/* Nueva ruta de registro de tutores */}
             <Route path="/teacher-register" exact component={TeacherRegister} />
-            <Route path="/tutor-dashboard" exact component={TutorDashboard} />
+
             <Route path="/group-register" exact component={GroupRegister} />
             <Route path="/admin-dashboard" exact component={AdminDashboard} />
             <Route path="/student-register" exact component={StudentRegister} />
             <Route path="/admin-dashboard/:tipo" exact component={userManagement} />
             <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
             <Route path="/admin-dashboard/groups-management" exact component={GroupsManagement} />
-            <Route path="/teacher-profile" exact component={TeacherProfilePage} />
+
             <Route path="/register/confirmation/:tipo" component={RegisterConfirmation} exact />
 
 

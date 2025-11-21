@@ -22,7 +22,7 @@ import {
 } from 'ionicons/icons';
 import { Redirect } from 'react-router-dom';         // Used for redirection
 import { useAuth } from '../../contexts/AuthContext';// Authentication context
-import { useUserData } from "../../contexts/UserContext"
+import { useUserData } from "../../contexts/UserContext" // UserData context
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import './StudentProfile.css';
@@ -32,7 +32,7 @@ import './StudentProfile.css';
  * !! EDITED
  *  -> Fixed some problems with the UI
  *  -> Integrated with the backend
- * 
+ *  -> Added the userData context
  * @returns {JSX.Element} Interface of the student profile page.
  */
 export default function StudentProfile() {
@@ -48,7 +48,7 @@ export default function StudentProfile() {
      *           }  
      */ 
     const { user } = useAuth();
-    const { userData, loading } = useUserData();
+    const { userData, loadingUser } = useUserData();
 
     // Variables and functions---------------------------------
     const [color, setColor] = useState('original');
@@ -57,7 +57,7 @@ export default function StudentProfile() {
     // End of variables and functions--------------------------
 
     // Show loading icon
-    if (loading) {
+    if (loadingUser) {
         return (
             <IonPage>
                 <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
