@@ -29,6 +29,7 @@ import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
 import imgReproducir from '/assets/juegosImg/game1/reproducir.png';
+import imgRepetir from '/assets/juegosImg/volver.png';
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
@@ -96,10 +97,12 @@ const Game1: React.FC = () => {
     const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
     const [usedNumbers, setUsedNumbers] = useState<number[]>([]);
 
-    // Clues
+    // Hints
     const [hintsUsed, setHintsUsed] = useState<number[]>([]);
     const [hintsCount, setHintsCount] = useState(0);
 
+    // Attempts
+    const [attemptsCount, setAttemptsCount] = useState(0);
 
     // UI states
     const [showFeedback, setShowFeedback] = useState(false);
@@ -120,8 +123,21 @@ const Game1: React.FC = () => {
 
     // Load configuration on mount (only once)
     useEffect(() => {
+        sessionCreatedRef.current = false;
+
+        setGameFinished(false);
+        setCurrentRound(1);
+        setShowFeedback(false);
+        setSessionId(null);
+        setSelectedNumber(null);
+        setUsedNumbers([]);
+
         loadGameConfig();
         setGameStartTime(Date.now());
+
+        return () => {
+            sessionCreatedRef.current = false;
+        };
     },
         []);
 
@@ -282,35 +298,8 @@ const Game1: React.FC = () => {
         if (totalNumbers > availableInRange) {
             console.error(
                 `Cannot generate ${totalNumbers} unique numbers from range ${min}-${max} (only ${availableInRange} available). ` +
-                `Please reduce options_count or increase range.`
+                `Please reduce totalNumbers or increase range.`
             );
-            // Adjust totalNumbers to the maximum available
-            const adjustedTotal = availableInRange;
-
-            console.warn(`Adjusting: options_count=${adjustedTotal}`);
-
-            // Use all numbers in the range
-            const numbers = new Set<number>();
-            for (let i = min; i <= max; i++) {
-                numbers.add(i);
-            }
-
-            const numbersArray = Array.from(numbers);
-
-            // Shuffle the available numbers randomly
-            const poolNumbers = numbersArray.sort(() => Math.random() - 0.5);
-
-            // Generate number to be heard (currentNumber)
-            let roundNumber: number;
-            do {
-                roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-            } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
-
-            setCurrentNumber(roundNumber);
-            setUsedNumbers(prev => [...prev, roundNumber]);
-            setAvailableNumbers(poolNumbers);
-            setShowFeedback(false);
-            setRoundStartTime(Date.now());
             return;
         }
 
@@ -345,6 +334,9 @@ const Game1: React.FC = () => {
         console.log('Generated round', currentRound, 'with numbers:', poolNumbers);
         setShowFeedback(false);
         setRoundStartTime(Date.now());
+        setAttemptsCount(0);
+        setHintsUsed([]);
+        setHintsCount(0);
     };
 
 
@@ -416,12 +408,11 @@ const Game1: React.FC = () => {
         // Compare the selected number with the correct one
         const correct = selectedNumber === currentNumber;
 
-        // Show feedback and save the result in the backend.
-        // We do not advance automatically: we wait for the user to press 'next'.
+        // Show feedback
         setShowFeedback(true);
 
         // Save in the backend
-        if (sessionId) {
+        if (sessionId && correct) {
             try {
                 await gamesAPI.saveRoundResultGame1(sessionId, {
                     round: currentRound,
@@ -430,6 +421,8 @@ const Game1: React.FC = () => {
                     correct_number: currentNumber,
                     is_correct: correct,
                     time_seconds: timeSeconds,
+                    is_final_attempt: true,
+                    attempts: attemptsCount,
                     hints: hintsCount
                 });
             } catch (error) {
@@ -438,23 +431,54 @@ const Game1: React.FC = () => {
         }
     };
 
+    const repeatExercise = () => {
+        setAttemptsCount(prev => prev + 1);
+        setShowFeedback(false);
+        setHintsUsed([]);
+        setRoundStartTime(Date.now());
+        setSelectedNumber(null);
+    }
+
     /**
      * Advances to the next round or finishes the game when the user presses "next".
      *
      * Effects:
-     * - Resets the number selection and hides the feedback.
+     * - If the answer was incorrect, saves it in the database as final attempt
+     * - If the answer was correct, it was already saved in checkAnswer
+     * - Resets the number selection and hides the feedback
      * - Increments `currentRound` up to `TOTAL_ROUNDS` or calls {@link finishGame} if the
-     *   total number of rounds has been completed.
+     *   total number of rounds has been completed
      *
      * @returns void
      */
-    const handleNext = () => {
-        // Reset the selection and hide feedback
-        setShowFeedback(false);
-        setSelectedNumber(null);
-        // Reset hints for the new round
-        setHintsUsed([]);
-        setHintsCount(0);
+    const advanceToNextRound = async () => {
+
+        // Compare the selected number with the correct one
+        const correct = selectedNumber === currentNumber;
+
+        if (selectedNumber === null) {
+            return;
+        }
+
+        if (sessionId && !correct) {
+            try {
+                const timeSeconds = (Date.now() - roundStartTime) / 1000;
+
+                await gamesAPI.saveRoundResultGame1(sessionId, {
+                    round: currentRound,
+                    numbers: availableNumbers.filter((n): n is number => n !== undefined),
+                    selected_number: selectedNumber,
+                    correct_number: currentNumber,
+                    is_correct: false,
+                    time_seconds: timeSeconds,
+                    is_final_attempt: true,
+                    attempts: attemptsCount,
+                    hints: hintsCount
+                });
+            } catch (error) {
+                console.error('Error saving final attempt:', error);
+            }
+        }
 
         if (currentRound < TOTAL_ROUNDS) {
             setCurrentRound(prev => prev + 1);
@@ -507,6 +531,7 @@ const Game1: React.FC = () => {
     const handleEarlyExit = async () => {
         // If there is an active session, save the current state
         if (sessionId) {
+
             try {
                 // Finish the session
                 const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
@@ -732,95 +757,121 @@ const Game1: React.FC = () => {
                     onHomeClick={handleEarlyExit}
                 />
 
-                {/* Game area */}
-                {/* Available numbers */}
+                {/* Game area with grid layout */}
+                <div className="game1-grid-container">
+                    {/* Left column: Tato */}
+                    <div className="game1-tato-column">
+                        <div className="game1-tato-container">
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button"
+                                onClick={useHint}
+                                disabled={showFeedback}
+                            >
+                                <img
+                                    src={showFeedback && selectedNumber === currentNumber ? imgTatoFeliz :
+                                        showFeedback && selectedNumber !== currentNumber ? imgTatoTriste : imgTato}
+                                    alt="Pista"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
+                        </div>
+                    </div>
 
-                <BubblesZone
-                    availableNumbers={availableNumbers}
-                    selectedNumber={selectedNumber}
-                    setSelectedNumber={setSelectedNumber}
-                    showFeedback={showFeedback}
-                    currentNumber={currentNumber}
-                    usePictograms={usePictograms}
-                    hintsUsed={hintsUsed}
-                />
-
-                {/* Control buttons */}
-                <div className="game1-buttons-container">
-                    {/* Hint button - always visible on the left */}
-                    <IonButton
-                        fill="clear"
-                        className="game1-check-button game1-hint-button"
-                        onClick={useHint}
-                        disabled={showFeedback}
-                    >
-                        <img
-                            src={showFeedback && selectedNumber === currentNumber ? imgTatoFeliz :
-                                showFeedback && selectedNumber !== currentNumber ? imgTatoTriste : imgTato}
-                            alt="Pista"
-                            className="game1-check-button-image"
+                    {/* Right column: Numbers and buttons */}
+                    <div className="game1-game-column">
+                        {/* Available numbers */}
+                        <BubblesZone
+                            availableNumbers={availableNumbers}
+                            selectedNumber={selectedNumber}
+                            setSelectedNumber={setSelectedNumber}
+                            showFeedback={showFeedback}
+                            currentNumber={currentNumber}
+                            usePictograms={usePictograms}
+                            hintsUsed={hintsUsed}
                         />
-                    </IonButton>
 
-                    {/* Video button - always visible on the left */}
-                    <IonButton
-                        fill="clear"
-                        className="game1-check-button game1"
-                        onClick={() => { }}
-                        disabled={showFeedback}
-                    >
-                        <img
-                            src={imgReproducir}
-                            alt="Video de ayuda"
-                            className="game1-check-button-image"
-                        />
-                    </IonButton>
+                        {/* Control buttons */}
+                        <div className="game1-buttons-container">
 
-                    {/* Listen button */}
-                    <IonButton
-                        fill="clear"
-                        className="game1-check-button"
-                        disabled={listeningAudio || showFeedback}
-                        onClick={() => speakNumber(currentNumber)}
-                    >
-                        <img
-                            src={imgSonidoConTexto}
-                            alt="Escuchar"
-                            className="game1-check-button-image"
-                        />
-                    </IonButton>
+                            {/* Listen button */}
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button"
+                                disabled={listeningAudio || showFeedback}
+                                onClick={() => speakNumber(currentNumber)}
+                            >
+                                <img
+                                    src={imgSonidoConTexto}
+                                    alt="Escuchar"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
 
+                            {/*Botón repetir ejercicio*/}
+                            {showFeedback && currentNumber !== selectedNumber && (
+                                <IonButton
+                                    fill="clear"
+                                    className="game1-check-button"
+                                    onClick={repeatExercise}
+                                    disabled={!showFeedback}
+                                >
+                                    <img
+                                        src={imgRepetir}
+                                        alt="Repetir"
+                                        className="game1-check-button-image"
+                                    />
+                                </IonButton>
+                            )}
 
-                    {/* Accept/Check button when there is no feedback */}
-                    {!showFeedback && (
-                        <IonButton
-                            fill="clear"
-                            className="game1-check-button"
-                            onClick={checkAnswer}
-                        >
-                            <img
-                                src={imgAceptar}
-                                alt="Comprobar"
-                                className="game1-check-button-image"
-                            />
-                        </IonButton>
-                    )}
+                            {/* Accept/Check button when there is no feedback */}
+                            {!showFeedback && (
+                                <IonButton
+                                    fill="clear"
+                                    className="game1-check-button"
+                                    onClick={checkAnswer}
+                                    disabled={selectedNumber === null}
+                                >
+                                    <img
+                                        src={imgAceptar}
+                                        alt="Comprobar"
+                                        className="game1-check-button-image"
+                                    />
+                                </IonButton>
+                            )}
 
-                    {/* Arrow button to continue when correct */}
-                    {showFeedback && (
-                        <IonButton
-                            fill="clear"
-                            className="game1-check-button"
-                            onClick={handleNext}
-                        >
-                            <img
-                                src={imgSiguiente}
-                                alt="Continuar"
-                                className="game1-check-button-image"
-                            />
-                        </IonButton>
-                    )}
+                            {/* Arrow button to continue when correct */}
+                            {showFeedback && (
+                                <IonButton
+                                    fill="clear"
+                                    className="game1-check-button"
+                                    onClick={advanceToNextRound}
+                                >
+                                    <img
+                                        src={imgSiguiente}
+                                        alt="Continuar"
+                                        className="game1-check-button-image"
+                                    />
+                                </IonButton>
+                            )}
+
+                            {/* Video button - always visible on the left */}
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button game1"
+                                onClick={() => { }}
+                                disabled={showFeedback}
+                            >
+                                <img
+                                    src={imgReproducir}
+                                    alt="Video de ayuda"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
+                        </div>
+                    </div>
                 </div>
+                {/* End grid container */}
             </IonContent>
         </IonPage>
     );

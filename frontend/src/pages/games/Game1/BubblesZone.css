@@ -8,25 +8,16 @@
    ======================================== */
 .numbers-grid {
     width: 100%;
-    max-width: 1500px;
+    max-width: 80vw;
     margin: 30px auto;
     background: white;
     flex-grow: 1;
     overflow-y: hidden;
     overflow-x: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
-
-.numbers-grid ion-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(clamp(60px, 20vw, 200px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(clamp(80px, 22vw, 220px), 1fr));
     justify-items: center;
     align-content: center;
-    gap: clamp(8px, 3.5vw, 60px);
-    width: 100%;
-    max-width: 1200px;
-    padding: 0;
+    gap: clamp(10px, 10vw, 60px);
+    padding: 2rem;
 }

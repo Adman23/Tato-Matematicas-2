@@ -227,6 +227,7 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "correct_number": request.round_result.correct_number,
                 "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds,
+                "attempts": request.round_result.attempts or 0,
                 "hints": request.round_result.hints or 0
             }
         elif session.get("game_id") == 2:
@@ -261,26 +262,34 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         total_omissions = session.get("total_omissions", 0)
 
         if request.round_result.is_final_attempt:
-            # Count how many numbers were placed correctly/incorrectly
-            # user_order and correct_order have the same length (fixed positions)
-            # -1 in user_order means empty position (omission)
-            correct_count = 0
-            incorrect_count = 0
-
-            for i, (user_num, correct_num) in enumerate(zip(request.round_result.user_order, request.round_result.correct_order)):
-                if user_num == -1:
-                    # Empty position, already counted in omissions
-                    continue
-                elif user_num == correct_num:
-                    correct_count += 1
+            if session.get("game_id") == 1:
+                # For Game 1: Touch number, use is_correct field
+                if request.round_result.is_correct:
+                    total_correct += 1
                 else:
-                    incorrect_count += 1
+                    total_incorrect += 1
 
-            omissions_count = request.round_result.omissions
+            elif session.get("game_id") == 2:
+                # Count how many numbers were placed correctly/incorrectly
+                # user_order and correct_order have the same length (fixed positions)
+                # -1 in user_order means empty position (omission)
+                correct_count = 0
+                incorrect_count = 0
 
-            total_correct += correct_count
-            total_incorrect += incorrect_count
-            total_omissions += omissions_count
+                for i, (user_num, correct_num) in enumerate(zip(request.round_result.user_order, request.round_result.correct_order)):
+                    if user_num == -1:
+                        # Empty position, already counted in omissions
+                        continue
+                    elif user_num == correct_num:
+                        correct_count += 1
+                    else:
+                        incorrect_count += 1
+
+                omissions_count = request.round_result.omissions    
+                total_omissions += omissions_count
+                total_correct += correct_count
+                total_incorrect += incorrect_count
+            
 
         # 4. Update the session in the database
         update_data = {
