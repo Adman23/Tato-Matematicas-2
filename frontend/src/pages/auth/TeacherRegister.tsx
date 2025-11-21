@@ -200,7 +200,7 @@ export default function TeacherRegister() {
     // Guardamos tanto el ID como la URL completa
     setSelectedAvatar(avatarId);
     setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
-    setSelectedAvatarUrl(selected?.name || DEFAULT_AVATAR);
+    setSelectedAvatarUrl(selected?.id || DEFAULT_AVATAR);
     closeAvatarModal();
   };
 
