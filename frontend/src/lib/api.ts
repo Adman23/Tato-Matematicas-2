@@ -200,21 +200,6 @@ export interface GameSessionResponse {
   session_id: string;
 }
 
-/**
- * Datos de una ronda de juego
- */
-export interface RoundResult {
-  round: number;
-  numbers: number[];
-  user_order: number[];
-  correct_order: number[];
-  is_correct: boolean;
-  time_seconds: number;
-  is_final_attempt?: boolean; // Opcional, por defecto true en backend
-  omissions?: number; // Números que no colocó (dejó sin colocar)
-}
-
-
 
 
 /**
@@ -575,21 +560,6 @@ export interface GameSessionResponse {
   session_id: string;
 }
 
-/**
- * Datos de una ronda de juego
- */
-export interface RoundResult {
-  round: number;
-  numbers: number[];
-  user_order: number[];
-  correct_order: number[];
-  is_correct: boolean;
-  time_seconds: number;
-  is_final_attempt?: boolean; // Opcional, por defecto true en backend
-  omissions?: number; // Números que no colocó (dejó sin colocar)
-  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
-  hints?: number; // Contador de pistas usadas
-}
 
 /**
  * Datos de una ronda del juego 1: Elegir Número
@@ -601,6 +571,7 @@ export interface RoundResultGame1 {
   correct_number: number | null;
   is_correct: boolean;
   time_seconds: number;
+  hints?: number;
 }
 
 
@@ -694,7 +665,8 @@ export const gamesAPI = {
  *   selected_number: 5,
  *   correct_number: 5,
  *   is_correct: true,
- *   time_seconds: 12.5
+ *   time_seconds: 12.5,
+ *   hints: 2
  * });
  */
   saveRoundResultGame1: async (sessionId: string, roundResult: RoundResultGame1): Promise<void> => {

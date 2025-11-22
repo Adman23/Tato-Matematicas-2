@@ -23,22 +23,20 @@ router = APIRouter()
 @router.get("/config/{student_id}/{game_key}", response_model=GameConfigResponse)
 async def get_game_config(student_id: str, game_key: str):
     """
-    Obtiene la configuración del juego para un estudiante específico.
+    Get the configuration for a specific student's game.
 
-    Busca una configuración personalizada del estudiante para el juego dado.
-    Si no existe, devuelve una configuración por defecto.
+    Searches for a custom configuration in the `game_configurations` table.
+    If none exists, returns the default configuration for the specified game.
 
     Args:
-        student_id (str): ID del estudiante.
-        game_key (str): Clave única del juego (por ejemplo, "game2").
-
+        student_id (str): ID of the student.
+        game_key (str): Unique key of the game (e.g., "game2").
     Raises:
         HTTPException:
-            - 404 NOT FOUND: Si el juego no existe.
-            - 500 INTERNAL SERVER ERROR: Si ocurre un error al obtener la configuración.
-
+            - 404 NOT FOUND: If the game does not exist.
+            - 500 INTERNAL SERVER ERROR: If an error occurs while fetching the configuration.
     Returns:
-        GameConfigResponse: Objeto con la configuración del juego, incluyendo:
+        GameConfigResponse: Object with the game configuration, including:
             - game_id (int)
             - game_key (str)
             - user_id (str)
@@ -46,7 +44,7 @@ async def get_game_config(student_id: str, game_key: str):
             - settings (dict)
     """
     try:
-        # 1. Obtener el game_id desde la tabla games
+        # 1. Get the game_id from the games table
         game_resp = supabase_admin.table("games") \
             .select("id, key, name") \
             .eq("key", game_key) \
@@ -61,14 +59,14 @@ async def get_game_config(student_id: str, game_key: str):
         game = game_resp.data[0]
         game_id = game["id"]
 
-        # 2. Buscar configuración personalizada del estudiante
+        # 2. Search for a custom configuration for the student
         config_resp = supabase_admin.table("game_configurations") \
             .select("*") \
             .eq("user_id", student_id) \
             .eq("game_id", game_id) \
             .execute()
 
-        # 3. Si existe, devolverla
+        # 3. If it exists, return it
         if config_resp.data and len(config_resp.data) > 0:
             config = config_resp.data[0]
             return GameConfigResponse(
@@ -79,16 +77,16 @@ async def get_game_config(student_id: str, game_key: str):
                 settings=config.get("settings", {})
             )
 
-        # 4. Si no existe, devolver configuración por defecto 
+        # 4. If it does not exist, return the default configuration
         if game_key == "touch_number":
             default_settings = {
-                "options_count": 5,  # 5 opciones para tocar
-                "voice": "woman"  # Voz femenina por defecto
+                "options_count": 5,  # 5 options to touch
+                "voice": "woman"  # Default female voice
             }
         if game_key == "order_sequence":
             default_settings = {
-                "quantity": 5,  # 5 números a ordenar
-                "order": "ascending"  # orden ascendente
+                "quantity": 5,  # 5 numbers to order
+                "order": "ascending"  # ascending order
             }
 
         return GameConfigResponse(
@@ -112,26 +110,26 @@ async def get_game_config(student_id: str, game_key: str):
 @router.post("/sessions")
 async def create_game_session(request: CreateSessionRequest):
     """
-    Crea una nueva sesión de juego para un estudiante.
+    Creates a new game session for a student.
 
-    La sesión se guarda en la tabla `game_sessions` con los contadores inicializados
-    y un campo `results` vacío para almacenar los intentos.
+    The session is saved in the `game_sessions` table with counters initialized
+    and an empty `results` field to store attempts.
 
     Args:
-        request (CreateSessionRequest): Datos con `student_id` y `game_key`.
+        request (CreateSessionRequest): Data with `student_id` and `game_key`.
 
     Raises:
         HTTPException:
-            - 404 NOT FOUND: Si el juego no existe.
-            - 500 INTERNAL SERVER ERROR: Si ocurre un error al crear la sesión.
+            - 404 NOT FOUND: If the game does not exist.
+            - 500 INTERNAL SERVER ERROR: If an error occurs while creating the session.
 
     Returns:
-        dict: Contiene:
-            - session_id (str): ID de la sesión creada.
-            - message (str): Mensaje de confirmación.
+        dict: Contains:
+            - session_id (str): ID of the created session.
+            - message (str): Confirmation message.
     """
     try:
-        # 1. Obtener el game_id desde la tabla games
+        # 1. Get the game_id from the games table
         game_resp = supabase_admin.table("games") \
             .select("id") \
             .eq("key", request.game_key) \
@@ -145,11 +143,11 @@ async def create_game_session(request: CreateSessionRequest):
 
         game_id = game_resp.data[0]["id"]
 
-        # 2. Crear la sesión en game_sessions
+        # 2. Create the session in game_sessions
         session_data = {
             "student_id": request.student_id,
             "game_id": game_id,
-            "results": {"attempts": []},  # Array vacío para ir guardando rondas
+            "results": {"attempts": []},  # Empty array to store rounds
             "total_correct": 0,
             "total_incorrect": 0,
             "total_omissions": 0,
@@ -184,28 +182,26 @@ async def create_game_session(request: CreateSessionRequest):
 @router.post("/sessions/{session_id}/round")
 async def save_round_result(session_id: str, request: SaveRoundRequest):
     """
-    Guarda el resultado de una ronda dentro de una sesión activa.
+    Saves the result of a round within an active session.
 
-    El resultado se añade al array de intentos en el campo `results.attempts`,
-    y se actualizan los contadores de aciertos y errores.
+    The result is added to the attempts array in the `results.attempts` field,
+    and the counters for correct and incorrect answers are updated.
 
     Args:
-        session_id (str): ID de la sesión de juego.
-        request (SaveRoundRequest): Datos con el resultado de la ronda.
-
+        session_id (str): ID of the game session.
+        request (SaveRoundRequest): Data with the round result.
     Raises:
         HTTPException:
-            - 404 NOT FOUND: Si la sesión no existe.
-            - 500 INTERNAL SERVER ERROR: Si ocurre un error al guardar la ronda.
-
+            - 404 NOT FOUND: If the session does not exist.
+            - 500 INTERNAL SERVER ERROR: If an error occurs while saving the round.
     Returns:
-        dict: Contiene:
-            - message (str): Confirmación.
-            - total_correct (int): Total de respuestas correctas.
-            - total_incorrect (int): Total de respuestas incorrectas.
+        dict: Contains:
+            - message (str): Confirmation.
+            - total_correct (int): Total correct answers.
+            - total_incorrect (int): Total incorrect answers.
     """
     try:
-        # 1. Obtener la sesión actual
+        # 1. Get the current session
         session_resp = supabase_admin.table("game_sessions") \
             .select("*") \
             .eq("id", session_id) \
@@ -220,20 +216,21 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         session = session_resp.data[0]
         results = session.get("results", {"attempts": []})
 
-        # 2. Añadir la nueva ronda al array de attempts
-        # Diferenciar por tipo de juego
+        # 2. Add the new round to the attempts array
+        # Differentiate by game type
         if session.get("game_id") == 1:
-            # Juego 1: Tocar número
+            # Game 1: Touch number
             round_data = {
                 "round": request.round_result.round,
                 "numbers": request.round_result.numbers,
                 "selected_number": request.round_result.selected_number,
                 "correct_number": request.round_result.correct_number,
                 "is_correct": request.round_result.is_correct,
-                "time": request.round_result.time_seconds
+                "time": request.round_result.time_seconds,
+                "hints": request.round_result.hints or 0
             }
         elif session.get("game_id") == 2:
-            # Juego 2: Ordenar secuencia
+            # Game 2: Order sequence
             round_data = {
                 "round": request.round_result.round,
                 "numbers": request.round_result.numbers,
@@ -245,7 +242,7 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "hints": request.round_result.hints or 0
             }
         else:
-            # Juego desconocido, usar campos genéricos
+            # Unknown game, use generic fields
             round_data = {
                 "round": request.round_result.round,
                 "numbers": request.round_result.numbers,
@@ -258,21 +255,21 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
 
         results["attempts"].append(round_data)
 
-        # 3. Actualizar totales solo si es el intento final de la ronda
+        # 3. Update totals only if it is the final attempt of the round
         total_correct = session.get("total_correct", 0)
         total_incorrect = session.get("total_incorrect", 0)
         total_omissions = session.get("total_omissions", 0)
 
         if request.round_result.is_final_attempt:
-            # Contar cuántos números colocó correctamente/incorrectamente
-            # user_order y correct_order tienen la misma longitud (posiciones fijas)
-            # -1 en user_order significa posición vacía (omisión)
+            # Count how many numbers were placed correctly/incorrectly
+            # user_order and correct_order have the same length (fixed positions)
+            # -1 in user_order means empty position (omission)
             correct_count = 0
             incorrect_count = 0
 
             for i, (user_num, correct_num) in enumerate(zip(request.round_result.user_order, request.round_result.correct_order)):
                 if user_num == -1:
-                    # Posición vacía, ya contada en omissions
+                    # Empty position, already counted in omissions
                     continue
                 elif user_num == correct_num:
                     correct_count += 1
@@ -285,7 +282,7 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
             total_incorrect += incorrect_count
             total_omissions += omissions_count
 
-        # 4. Actualizar la sesión en la base de datos
+        # 4. Update the session in the database
         update_data = {
             "results": results,
             "total_correct": total_correct,
@@ -317,26 +314,26 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
 @router.post("/sessions/{session_id}/finish")
 async def finish_game_session(session_id: str, request: FinishSessionRequest):
     """
-    Finaliza una sesión de juego y guarda el tiempo total.
+    Finish a game session and save the total time.
 
-    Actualiza el campo `finished_at` y añade `total_time` dentro del campo `results`.
+    Updates the `finished_at` field and adds `total_time` inside the `results` field.
 
     Args:
-        session_id (str): ID de la sesión de juego.
-        request (FinishSessionRequest): Tiempo total de la sesión.
+        session_id (str): ID of the game session.
+        request (FinishSessionRequest): Total time of the session.
 
     Raises:
         HTTPException:
-            - 404 NOT FOUND: Si la sesión no existe.
-            - 500 INTERNAL SERVER ERROR: Si ocurre un error al finalizar la sesión.
+            - 404 NOT FOUND: If the session does not exist.
+            - 500 INTERNAL SERVER ERROR: If an error occurs while finishing the session.
 
     Returns:
-        dict: Contiene:
-            - message (str): Confirmación.
-            - session_id (str): ID de la sesión finalizada.
+        dict: Contains:
+            - message (str): Confirmation.
+            - session_id (str): ID of the finished session.
     """
     try:
-        # 1. Verificar que la sesión existe
+        # 1. Verify that the session exists
         session_resp = supabase_admin.table("game_sessions") \
             .select("*") \
             .eq("id", session_id) \
@@ -348,12 +345,12 @@ async def finish_game_session(session_id: str, request: FinishSessionRequest):
                 detail="Game session not found"
             )
 
-        # 2. Actualizar la sesión con el tiempo de finalización
+        # 2. Update the session with the finish time
         update_data = {
             "finished_at": datetime.utcnow().isoformat()
         }
 
-        # Opcionalmente guardar el tiempo total en results
+        # Optionally save the total time in results
         session = session_resp.data[0]
         results = session.get("results", {})
         results["total_time"] = request.total_time_seconds
@@ -382,21 +379,21 @@ async def finish_game_session(session_id: str, request: FinishSessionRequest):
 @router.get("/sessions/student/{student_id}")
 async def get_student_sessions(student_id: str, game_key: Optional[str] = None):
     """
-    Obtiene todas las sesiones de juego de un estudiante.
+    Gets all game sessions of a student.
 
-    Permite filtrar opcionalmente por una clave de juego (`game_key`).
+    Allows optional filtering by a game key (`game_key`).
 
     Args:
-        student_id (str): ID del estudiante.
-        game_key (Optional[str]): Clave del juego para filtrar (opcional).
+        student_id (str): ID of the student.
+        game_key (Optional[str]): Game key to filter by (optional).
 
     Raises:
         HTTPException:
-            - 500 INTERNAL SERVER ERROR: Si ocurre un error al obtener las sesiones.
+            - 500 INTERNAL SERVER ERROR: If an error occurs while getting the sessions.
 
     Returns:
-        dict: Contiene:
-            - sessions (list): Lista de sesiones del estudiante, ordenadas por fecha de inicio descendente.
+        dict: Contains:
+            - sessions (list): List of the student's sessions, ordered by start date descending.
     """
     try:
         query = supabase_admin.table("game_sessions") \
@@ -404,7 +401,7 @@ async def get_student_sessions(student_id: str, game_key: Optional[str] = None):
             .eq("student_id", student_id) \
             .order("started_at", desc=True)
 
-        # Si se especifica un juego, filtrar por él
+        # If a game is specified, filter by it
         if game_key:
             game_resp = supabase_admin.table("games") \
                 .select("id") \

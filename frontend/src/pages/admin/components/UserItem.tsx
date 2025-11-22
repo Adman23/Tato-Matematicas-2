@@ -1,25 +1,25 @@
 /**
  * @file UserItem.tsx
- * @description Item reutilizable que muestra avatar, nombre y clases de un usuario
- * junto a un checkbox para selección.
+ * @description Reuse item to display a user with avatar, name, classes
+ * along with a checkbox for selection.
  */
 import React from 'react';
 import { IonAvatar, IonItem, IonCheckbox } from '@ionic/react';
 import './UserItem.css';
 
 /**
- * Props para UserItem
- * @property avatar - URL de la imagen/avatar
- * @property alias - Texto a mostrar (nombre/alias)
- * @property classes - Lista de alias de clase a mostrar
- * @property isChecked - Estado del checkbox
- * @property onCheckChange - Callback cuando cambia el checkbox
+ * Props for UserItem
+ * @property avatar - URL of the image/avatar
+ * @property alias - Text to display (name/alias)
+ * @property classes - List of class aliases to display
+ * @property isChecked - State of the checkbox
+ * @property onCheckChange - Callback when the checkbox changes
  */
 interface Props {
     avatar: string;
     alias: string;
     classes: string[];
-    /** Si true, resalta el fondo del item (por ejemplo: pertenece a la clase seleccionada) */
+    /** If true, highlights the background of the item (e.g., belongs to the selected class) */
     highlight?: boolean;
 
     isChecked?: boolean;
@@ -28,18 +28,18 @@ interface Props {
 }
 
 /**
- * Resumen Funcional.
+ * Functional Summary.
  *
- * Componente visual para mostrar un usuario con avatar, nombre y lista de
- * clases. Incluye un checkbox que notifica cambios mediante `onCheckChange`.
+ * Visual component to display a user with avatar, name, and list of
+ * classes. Includes a checkbox that notifies changes via `onCheckChange`.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - Renderiza un avatar, el alias del usuario y una lista de clases.
- * - El checkbox refleja `isChecked` y al cambiar ejecuta `onCheckChange`.
+ * - Renders an avatar, the user's alias, and a list of classes.
+ * - The checkbox reflects `isChecked` and on change executes `onCheckChange`.
  *
- * @param {Props} props - Propiedades del componente (avatar, alias, classes, isChecked, onCheckChange, highlight).
- * @returns {JSX.Element} Item visual que representa un usuario.
+ * @param {Props} props - Component properties (avatar, alias, classes, isChecked, onCheckChange, highlight).
+ * @returns {JSX.Element} Visual item representing a user.
  *
  * @example
  * ```tsx
@@ -59,7 +59,7 @@ const UserItem: React.FC<Props> = ({
 
         <IonItem lines="none" className="userItem-item ">
 
-            {/* Contenedor interno para controlar flex sin tocar el ion-item por fuera */}
+            {/* Internal container to control flex without touching the outer ion-item */}
             <div className={`userItem-mainContainer ${highlight ? 'userItem-highlight' : ''}`}>
 
                 <IonCheckbox

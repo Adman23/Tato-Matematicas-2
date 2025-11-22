@@ -1,20 +1,20 @@
 // src/pages/GroupRegister.tsx
 
 /**
- * Resumen Funcional.
+ * Functional Summary.
  *
- * Pantalla para registrar un nuevo grupo. Permite introducir un alias, validar
- * su disponibilidad y enviar la petición de registro al backend.
+ * Screen to register a new group. Allows entering an alias, validating
+ * its availability, and sending the registration request to the backend.
  *
- * Flujo de ejecución.
+ * Execution flow.
  *
- * - El campo del nombre se valida localmente (mínimo 3 caracteres) y mediante
- *   una petición debounce a `authAPI.checkGroup` para comprobar disponibilidad.
- * - Al enviar, `handleSubmit` valida los datos, llama a la API y muestra un
- *   `IonToast` con el resultado. En caso de éxito, redirige a la confirmación.
+ * - The name field is validated locally (minimum 3 characters) and through
+ *   a debounce request to `authAPI.checkGroup` to check availability.
+ * - On submit, `handleSubmit` validates the data, calls the API, and shows an
+ *   `IonToast` with the result. On success, it redirects to the confirmation.
  *
  * @param {void}
- * @returns {JSX.Element} Pantalla de registro de grupos.
+ * @returns {JSX.Element} Group registration screen.
  *
  * @example
  * ```tsx
@@ -88,23 +88,23 @@ export default function GroupRegister() {
     }, [groupName]);
 
     /**
-     * Resumen Funcional.
+     * Functional Summary.
      *
-     * Efecto que valida la disponibilidad del nombre del grupo con debounce.
+     * Effect that validates the availability of the group name with debounce.
      *
-     * Flujo de ejecución.
+     * Execution flow.
      *
-     * - Si el nombre es menor a 3 caracteres marca como no disponible localmente.
-     * - Tras 400ms sin cambios llama a `authAPI.checkGroup(trimmed)` y actualiza
-     *   `isGroupNameAvailable` solo si la respuesta corresponde al último
-     *   `groupCheckIdRef` (evitar condiciones de carrera).
+     * - If the name is less than 3 characters, it marks as unavailable locally.
+     * - After 400ms without changes, it calls `authAPI.checkGroup(trimmed)` and updates
+     *   `isGroupNameAvailable` only if the response corresponds to the last
+     *   `groupCheckIdRef` (to avoid race conditions).
      *
      * @param {void}
      * @returns {void}
      *
      * @example
      * ```ts
-     * // Ejecutado automáticamente al cambiar `groupName`
+     * // Automatically executed when `groupName` changes
      * ```
      */
 
@@ -154,21 +154,21 @@ export default function GroupRegister() {
     };
 
     /**
-     * Resumen Funcional.
+     * Functional summary.
      *
-     * Maneja el envío del formulario de registro de grupo. Valida los campos,
-     * llama a la API `authAPI.register_group` y muestra un toast con el
-     * resultado. En caso de éxito redirige a la página de confirmación.
+     * Handles the submission of the group registration form. Validates the fields,
+     * calls the `authAPI.register_group` API, and shows a toast with the
+     * result. On success, it redirects to the confirmation page.
      *
-     * Flujo de ejecución.
+     * Execution flow.
      *
-     * - Previene el comportamiento por defecto del formulario.
-     * - Comprueba la longitud y disponibilidad del nombre.
-     * - Si hay errores muestra un `IonToast` con los mensajes correspondientes.
-     * - Si todo es correcto hace la petición y redirige tras 2s.
+     * - Prevents the default form behavior.
+     * - Checks the length and availability of the name.
+     * - If there are errors, it shows an `IonToast` with the corresponding messages.
+     * - If everything is correct, it makes the request and redirects after 2s.
      *
-     * @param {React.FormEvent} e - Evento de envío del formulario.
-     * @returns {Promise<void>} Promesa que se resuelve al completar la operación.
+     * @param {React.FormEvent} e - Form submission event.
+     * @returns {Promise<void>} Promise that resolves upon completion of the operation.
      *
      * @example
      * ```tsx
@@ -182,9 +182,9 @@ export default function GroupRegister() {
     };
 
     /**
-     * Resumen Funcional.
+     * Functional summary.
      *
-     * Cancela el registro, limpia el formulario y vuelve a la gestión de grupos.
+     * Cancels the registration, clears the form, and returns to group management.
      *
      * @param {void}
      * @returns {void}

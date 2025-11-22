@@ -14,7 +14,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Route, Redirect } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { UserDataWrapper } from './contexts/UserContext';
+
 
 // === Páginas principales ===
 import Home from './pages/Home';
@@ -49,6 +49,7 @@ import GroupRegister from './pages/admin/GroupRegister';
 
 // === Perfil profesor ===
 import TeacherProfilePage from './pages/teacherProfile/teacherProfilePage';
+import TeacherEditProfile from './pages/teacherProfile/teacherEditProfile';
 
 import TeacherRegister from './pages/auth/TeacherRegister';
 import RegisterConfirmation from './pages/auth/RegisterConfirmation';
@@ -97,6 +98,7 @@ export default function App() {
             <UserDataRoute path="/student-profile" exact component={StudentProfile} />
             <UserDataRoute path="/tutor-dashboard" exact component={TutorDashboard} />
             <UserDataRoute path="/teacher-profile" exact component={TeacherProfilePage} />
+            <UserDataRoute path="/teacher-edit-profile" exact component={TeacherEditProfile} />
 
 
 

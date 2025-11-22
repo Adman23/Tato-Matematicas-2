@@ -1,11 +1,11 @@
 /* =============================================================================
-   ESTILOS GENERALES DE LA PÁGINA - Game1
+   CSS Styles for Game1 page
    ========================================================================== */
 
-/* ========================================
-    Spinner de carga
-   ======================================== */
 
+/* ========================================
+    Loading spinner
+   ======================================== */
 .Game1-spinner {
     display: flex;
     justify-content: center;
@@ -13,44 +13,48 @@
     height: 100vh;
 }
 
+
 /* ========================================
     Layout general
    ======================================== */
 .game1-content {
     --background: #ffffff;
-    /* Altura reservada para el footer (ajustable). Usamos esta variable
-       para separar el contenido principal y evitar que los números
-       queden bajo el footer en pantallas pequeñas. */
     --footer-height: 220px;
-    /* Altura aproximada del header del juego; ajusta si tu header ocupa más/menos */
     --header-height: 15vh;
 
     display: flex;
     flex-direction: column;
     height: 100vh;
-    width: 100%;
+    width: 100vw;
+    --overflow: hidden;
 
 }
 
 
 /* ========================================
-    Botones
+    Buttons
    ======================================== */
 .game1-buttons-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 2rem;
-    max-width: 900px;
-    margin: -1rem auto 2rem auto;
+    padding: 0 2rem 2rem 2rem;
+    max-width: 1500px;
+    margin: 0 auto;
     gap: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--background, #ffffff);
+    z-index: 10;
 }
 
 .game1-check-button {
     --padding-start: 0;
     --padding-end: 0;
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     margin: 0;
 }
 
@@ -79,8 +83,6 @@
     opacity: 0.4;
 }
 
-
-/* Botón de pista (a la izquierda) */
 .game1-hint-button {
     order: -1;
 }
