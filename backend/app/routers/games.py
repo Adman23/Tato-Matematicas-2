@@ -235,12 +235,12 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
             round_data = {
                 "round": request.round_result.round,
                 "numbers": request.round_result.numbers,
-                "user_order": request.round_result.user_order,
                 "correct_order": request.round_result.correct_order,
                 "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds,
-                "attempts": request.round_result.attempts or 0,
-                "hints": request.round_result.hints or 0
+                "hints": request.round_result.hints or 0,
+                "total_incorrect": request.round_result.total_incorrect or 0,
+                "omissions": request.round_result.omissions or 0
             }
         else:
             # Unknown game, use generic fields
@@ -256,7 +256,7 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
 
         results["attempts"].append(round_data)
 
-        # 3. Update totals only if it is the final attempt of the round
+        # 3. Update totals
         total_correct = session.get("total_correct", 0)
         total_incorrect = session.get("total_incorrect", 0)
         total_omissions = session.get("total_omissions", 0)
@@ -268,28 +268,22 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                     total_correct += 1
                 else:
                     total_incorrect += 1
-
-            elif session.get("game_id") == 2:
-                # Count how many numbers were placed correctly/incorrectly
-                # user_order and correct_order have the same length (fixed positions)
-                # -1 in user_order means empty position (omission)
-                correct_count = 0
-                incorrect_count = 0
-
-                for i, (user_num, correct_num) in enumerate(zip(request.round_result.user_order, request.round_result.correct_order)):
-                    if user_num == -1:
-                        # Empty position, already counted in omissions
-                        continue
-                    elif user_num == correct_num:
-                        correct_count += 1
-                    else:
-                        incorrect_count += 1
-
-                omissions_count = request.round_result.omissions    
-                total_omissions += omissions_count
-                total_correct += correct_count
-                total_incorrect += incorrect_count
             
+        # Para Game 2: sumar los valores de la ronda
+        if session.get("game_id") == 2:
+            # Contar números correctos: total menos errores menos omisiones
+            total_numbers = len(request.round_result.correct_order or [])
+            errors = request.round_result.total_incorrect or 0
+            omissions = request.round_result.omissions or 0
+            correct_in_round = total_numbers - omissions
+
+            total_correct += correct_in_round
+
+            # Sumar errores (intentos incorrectos)
+            total_incorrect += errors
+
+            # Sumar omisiones (números que no colocó)
+            total_omissions += omissions
 
         # 4. Update the session in the database
         update_data = {
