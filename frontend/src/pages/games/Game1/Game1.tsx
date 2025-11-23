@@ -28,7 +28,7 @@ import imgSonido from '/assets/juegosImg/game1/sonido.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
-import imgReproducir from '/assets/juegosImg/game1/reproducir.png';
+import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
 import imgRepetir from '/assets/juegosImg/volver.png';
 
 // Flecha desde assets
@@ -196,10 +196,10 @@ const Game1: React.FC = () => {
             // Validate that the configuration has valid values
             const validatedConfig: GameConfig = {
                 ...data,
-                number_range: data.number_range,
+                number_range: data.number_range || '0-10',
                 settings: {
-                    options_count: data.settings?.options_count,
-                    voice: data.settings?.voice
+                    options_count: data.settings?.options_count || 6,
+                    voice: data.settings?.voice || 'woman'
                 }
             };
 
@@ -215,7 +215,7 @@ const Game1: React.FC = () => {
                 user_id: currentUser?.id || '',
                 number_range: '0-10',
                 settings: {
-                    options_count: 5,
+                    options_count: 6,
                     voice: 'woman'
                 }
             };
@@ -808,6 +808,20 @@ const Game1: React.FC = () => {
                                 />
                             </IonButton>
 
+                            {/* Video button - always visible on the left */}
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button game1"
+                                onClick={() => { }}
+                                disabled={showFeedback}
+                            >
+                                <img
+                                    src={imgInstrucciones}
+                                    alt="Video de ayuda"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
+
                             {/*Botón repetir ejercicio*/}
                             {showFeedback && currentNumber !== selectedNumber && (
                                 <IonButton
@@ -855,19 +869,6 @@ const Game1: React.FC = () => {
                                 </IonButton>
                             )}
 
-                            {/* Video button - always visible on the left */}
-                            <IonButton
-                                fill="clear"
-                                className="game1-check-button game1"
-                                onClick={() => { }}
-                                disabled={showFeedback}
-                            >
-                                <img
-                                    src={imgReproducir}
-                                    alt="Video de ayuda"
-                                    className="game1-check-button-image"
-                                />
-                            </IonButton>
                         </div>
                     </div>
                 </div>
