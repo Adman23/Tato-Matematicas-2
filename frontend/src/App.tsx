@@ -131,9 +131,11 @@ export default function App() {
               exact component={GroupsManagement} />
             <PrivateRoute path="/admin/register-confirmation/:tipo" allowedRoles={["admin"]}
               component={RegisterConfirmation} exact />
-            <Route path="/student-edit-menu/:id/:name" exact component={EditMenu} />
-            <Route path="/student-edit-color/:id/:name" exact component={EditColor} />
-            <Route path="/prueba" exact component={Prueba} />
+            <PrivateRoute path="/student-edit-menu/:id/:name" allowedRoles={["teacher"]}
+              exact component={EditMenu} />
+            <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]} 
+              exact component={EditColor} />
+            <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
             {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
             <Redirect to="/student/login" />
           </IonRouterOutlet>

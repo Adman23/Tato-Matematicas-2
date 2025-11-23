@@ -51,7 +51,7 @@ import ColorPaletteCard from './components/ColorPaletteCard';
  */
 export default function EditColor() {
 
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
     const history = useHistory();
     //const { id, name } = useParams();
     const { id } = useParams<{ id: string }>();
@@ -91,7 +91,7 @@ export default function EditColor() {
     
 
     // Show spinner while loading
-    if (loading) {
+    /*if (loading) {
         return (
             <IonPage>
                 <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -99,7 +99,7 @@ export default function EditColor() {
                 </IonContent>
             </IonPage>
         );
-    }
+    }*/
 
     // Redirect if there is no authenticated user
     if (!user) {
