@@ -44,7 +44,7 @@ export default function TutorDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game1')}
+              onClick={() => history.push('/game/game1')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juego2.png" alt="Juego 1" className="game-image" />
@@ -56,7 +56,7 @@ export default function TutorDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game2')}
+              onClick={() => history.push('/game/game2')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juegoX.png" alt="Juego 2" className="game-image" />
