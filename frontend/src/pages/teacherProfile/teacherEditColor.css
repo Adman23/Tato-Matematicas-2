@@ -1,0 +1,263 @@
+/* =========================================
+   CONTENEDOR PRINCIPAL
+   ========================================= */
+.teacher-edit-color-content {
+  --background: #ffffff;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+
+.teacher-edit-color-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  box-sizing: border-box;
+}
+
+/* =========================================
+   TITULOS
+   ========================================= */
+.teacher-edit-color-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.teacher-edit-color-subtitle {
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+  align-self: flex-start;
+  padding-left: clamp(1rem, 5vw, 4rem);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.teacher-edit-color-section {
+  width: 100%;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================================
+   PALETAS PREDEFINIDAS (Círculos)
+   ========================================= */
+.teacher-edit-color-presets-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  position: relative;
+}
+
+.teacher-edit-color-nav-arrow {
+  background-color: #50BFE6;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.teacher-edit-color-nav-arrow:hover {
+  transform: scale(1.1);
+  background-color: #3eaacd;
+}
+
+.teacher-edit-color-presets-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(1rem, 2vw, 2.5rem);
+}
+
+.teacher-edit-color-preset-item {
+  width: 90px;
+  height: 90px;
+  position: relative;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.teacher-edit-color-preset-item:hover {
+  transform: translateY(-5px);
+}
+
+/* Indicador de selección (borde o sombra) */
+.teacher-edit-color-preset-item.selected::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 3px solid #50BFE6;
+  border-radius: 18px;
+  animation: pulseSelection 0.3s ease-out;
+}
+
+@keyframes pulseSelection {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Círculo de Fondo (Grande) */
+.teacher-edit-color-bubble-bg {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  border: 1px solid rgba(0,0,0,0.1);
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+/* Círculo Principal/App (Pequeño) */
+.teacher-edit-color-bubble-fg {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 2;
+  box-shadow: -2px -2px 0px 2px rgba(255,255,255,1); /* Borde blanco falso para separar */
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* =========================================
+   PERSONALIZADO (Pickers)
+   ========================================= */
+.teacher-edit-color-pickers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  padding: 0 clamp(1rem, 5vw, 4rem);
+  box-sizing: border-box;
+}
+
+.teacher-edit-color-picker-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 16px;
+}
+
+.teacher-edit-color-picker-card label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Ajustes visuales para el componente react-colorful */
+.picker-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.picker-wrapper .react-colorful {
+  width: 100%;
+  height: 140px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.picker-wrapper .react-colorful__saturation {
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 12px;
+}
+
+.picker-wrapper .react-colorful__hue {
+  height: 12px;
+  border-radius: 8px;
+}
+
+/* Input Hexadecimal inferior */
+.hex-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.color-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1);
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.hex-input-wrapper ion-input {
+  --padding-start: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+}
+
+/* =========================================
+   BOTONES ACCIÓN
+   ========================================= */
+.teacher-edit-color-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.action-btn {
+  width: 200px;
+  height: 52px;
+  font-size: 1.1rem;
+  text-transform: none;
+  --border-radius: 100px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.action-btn.apply {
+  --background: #50BFE6;
+  --background-hover: #3eaacd;
+  --box-shadow: 0 4px 12px rgba(80, 191, 230, 0.3);
+  color: white;
+}
+
+.action-btn.cancel {
+  --background: #e0e0e0;
+  --color: #666;
+  --background-hover: #d0d0d0;
+  --box-shadow: none;
+}

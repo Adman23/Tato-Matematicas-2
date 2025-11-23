@@ -26,7 +26,7 @@ import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
 import StudentLoginStep2 from './pages/auth/StudentLoginStep2';
 import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
 // Importamos tu nueva página de prueba
-import PruebaColor from './pages/auth/pruebaColor';
+import TeacherEditColor from './pages/teacherProfile/teacherEditColor';
 
 
 // === Páginas de estudiante ===
@@ -85,7 +85,7 @@ export default function App() {
             <Route path="/login" exact component={Login} />
 
             {/* Ruta para tu nueva página de prueba */}
-            <Route path="/prueba-color" exact component={PruebaColor} />
+            <Route path="/teacher-edit-color" exact component={TeacherEditColor} />
 
             {/* Rutas del login de estudiante en 3 pasos */}
             <Route path="/student-login" exact component={StudentLoginStep1} />

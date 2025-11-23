@@ -175,12 +175,14 @@ export default function TeacherEditProfile() {
     if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
       const cardRect = formCardRef.current.getBoundingClientRect();
       const modal = avatarPickerRef.current;
+      
       modal.style.position = 'fixed';
-      modal.style.left = `${cardRect.left + window.scrollX}px`;
-      modal.style.top = `${cardRect.top + window.scrollY}px`;
+      modal.style.left = `${cardRect.left}px`;
+      modal.style.top = `${cardRect.top}px`;
       modal.style.width = `${cardRect.width}px`;
       modal.style.height = `${cardRect.height}px`;
       modal.style.zIndex = '1002';
+      modal.style.margin = '0'; 
     }
   };
 
