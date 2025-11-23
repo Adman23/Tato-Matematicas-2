@@ -29,7 +29,7 @@
  * @example Example usage
  *
  * ```tsx
- * <Route path="/admin-dashboard/link-profiles" component={LinkProfiles} />
+ * <Route path="/admin/dashboard/link-profiles" component={LinkProfiles} />
  * ```
  */
 
@@ -519,7 +519,7 @@ export default function LinkProfiles() {
                         expand="block"
                         type="submit"
                         className='LinkProfiles-button'
-                        onClick={() => history.push('/admin-dashboard')}
+                        onClick={() => history.push('/admin/dashboard')}
                     >
                         Cancelar
                     </IonButton>

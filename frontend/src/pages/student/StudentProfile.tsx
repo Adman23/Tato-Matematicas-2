@@ -15,12 +15,11 @@ import {
     IonIcon,
 } from '@ionic/react';
 
-import { 
+import {
     volumeMute,   
     volumeMedium, 
     volumeHigh    
 } from 'ionicons/icons';
-import { Redirect } from 'react-router-dom';         // Used for redirection
 import { useAuth } from '../../contexts/AuthContext';// Authentication context
 import { useUserData } from "../../contexts/UserContext" // UserData context
 
@@ -67,17 +66,21 @@ export default function StudentProfile() {
         );
     }
 
+    /* 
+    !! DEPRECATED
+        -> RouteController should manage this
     // Redirect if not authenticated
     if (!user) {
-        return <Redirect to="/student-login" />;
+        return <Redirect to="/student/login" />;
     }
+    */
 
     // Component-----------------------------------------------
     return (
         <IonPage>
             {/* Header */}
-            <SimpleHeaderUser userName={user.username} 
-                    photoUrl={user.photo_url} url="/student-dashboard" />
+            <SimpleHeaderUser userName={user?.username || "username"} 
+                    photoUrl={user?.photo_url} url="/student/dashboard" />
 
             {/* Main Content */}
             <IonContent className="ion-padding">

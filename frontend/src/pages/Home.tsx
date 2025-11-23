@@ -12,11 +12,10 @@
 
 import {
   IonPage,
-  IonContent,
-  IonSpinner,
+  IonContent
 } from '@ionic/react';
-import { Redirect, useHistory } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useHistory } from 'react-router-dom';
+// import { useAuth } from '../contexts/AuthContext';
 import './Home.css';
 
 /**
@@ -37,8 +36,12 @@ import './Home.css';
  */
 export default function Home() {
   const history = useHistory();
-  const {user, loadingAuth} = useAuth();
+  // const {user, loadingAuth} = useAuth();
 
+  /*
+  !! DEPRECATED
+    -> Now redirection happens in /routes/RouteController.tsx
+    
   // Show loading icon
   if (loadingAuth) {
     return (
@@ -54,14 +57,15 @@ export default function Home() {
   if (user) {
     console.log("Redirect to login because there is a user");
     if (user.role === "student")
-      return <Redirect to="/student-dashboard" />;
+      return <Redirect to="/student/dashboard" />;
     else
     if (user.role === "admin")
       return <Redirect to="/admin-dashboard" />;
     else
     if (user.role === "teacher")
-      return <Redirect to="/tutor-dashboard" />;
+      return <Redirect to="/teacher/dashboard" />;
   }
+  */
 
   return (
     <IonPage>
@@ -92,7 +96,7 @@ export default function Home() {
 
             <button
               className=" tatomaths-button "
-              onClick={() => history.push('/student-login')}
+              onClick={() => history.push('/student/login')}
               aria-label="Acceso para estudiantes"
             >
               <div className="home-button-content">

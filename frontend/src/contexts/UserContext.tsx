@@ -215,7 +215,7 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string}> = ({ c
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [user_id]);
 
 
   /**
@@ -227,7 +227,7 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string}> = ({ c
           const root = document.documentElement;
           const userVisual = userData.user_profile.visual_preferences;
 
-          console.log(userData.user_profile);
+          // console.log(userData.user_profile);
           // Apply the color palette
           if (userVisual.color_palettes){
             const color_palette = userVisual.color_palettes[userVisual.active_palette_idx];

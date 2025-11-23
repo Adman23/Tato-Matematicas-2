@@ -27,6 +27,8 @@ export default function TutorDashboard() {
     );
   }
 
+  console.log("HEMOS ENTRADO EN EL DASHBOARD?");
+
   // Redirigir si no hay usuario autenticado o no es tutor
   if (!user || user.role !== 'teacher') {
     return <Redirect to="/login" />;

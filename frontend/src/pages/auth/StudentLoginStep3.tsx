@@ -6,7 +6,7 @@
  * ---------------------------------------------------------
  * El estudiante selecciona una secuencia de pictogramas (animales) que
  * es su contraseña. Si coincide con la registrada en backend, se le
- * autentica y redirige a su panel (`/student-dashboard`).
+ * autentica y redirige a su panel (`/student/dashboard`).
  *
  * Utiliza:
  * - **Ionic React** (estructura y botones).
@@ -121,7 +121,7 @@ export default function StudentLoginStep3() {
       setSelected([]);
       setError('');
       console.log("A");
-      history.push('/student-dashboard');
+      history.push('/student/dashboard');
     } catch (err: any) {
       setError('Oh, te has equivocado, inténtalo otra vez');
       setSelected([]);

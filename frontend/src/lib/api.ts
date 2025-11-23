@@ -120,6 +120,13 @@ api.interceptors.response.use(
 // ==== DATA INTERFACES ====
 
 /**
+ * !! NEW
+ *  -> Created to unify the role
+ * @brief Represents the role of a User
+ */
+export type Role = 'admin' | 'teacher' | 'student';
+
+/**
  * !!EDITED
  *  -> Removed full_name and email fields. -> Not needed.
  * @brief Represents a user.
@@ -127,7 +134,7 @@ api.interceptors.response.use(
 export interface User {
   id: string;
   username: string;
-  role: 'admin' | 'teacher' | 'student';
+  role: Role;
   photo_url?: string;
 }
 
@@ -159,7 +166,7 @@ export interface AuthResponse {
 export interface RegisterData {
   username: string;
   password: string;
-  role: 'admin' | 'teacher' | 'student';
+  role: Role;
   photo_url?: string;
 }
 

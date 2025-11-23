@@ -72,7 +72,7 @@ const TOTAL_ROUNDS = 5;
  *
  * @example
  * // Used in app routing:
- * <Route path="/game1" component={Game1} />
+ * <Route path="/game/game1" component={Game1} />
  */
 const Game1: React.FC = () => {
 
@@ -681,7 +681,7 @@ const Game1: React.FC = () => {
     }
 
     if (!user) {
-        return <Redirect to="/student-login" />;
+        return <Redirect to="/student/login" />;
     }
 
     // Game loading screen

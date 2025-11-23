@@ -20,7 +20,7 @@ setupIonicReact();
  *
  * @example
  * ```tsx
- * <Route path="/admin-dashboard/groups-management" component={GroupsManagement} />
+ * <Route path="/admin/dashboard"/groups-management" component={GroupsManagement} />
  * ```
  */
 

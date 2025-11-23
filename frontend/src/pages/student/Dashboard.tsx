@@ -34,7 +34,7 @@ import { useUserData } from '../../contexts/UserContext';
  * ```tsx
  * import StudentDashboard from "./pages/student/Dashboard";
  *
- * <Route path="/student-dashboard" component={StudentDashboard} />
+ * <Route path="/student/dashboard" component={StudentDashboard} />
  * ```
  */
 export default function StudentDashboard() {
@@ -54,22 +54,24 @@ export default function StudentDashboard() {
     );
   }
 
+  /*
   // Redirigir si no hay estudiante autenticado
   if (!user) {
     console.log("Redirect to login because ther is no user");
-    return <Redirect to="/student-login" />;
+    return <Redirect to="/student/login" />;
   }
+  */
 
   return (
     <IonPage>
-      <SimpleHeaderUser userName={user.username} photoUrl={user.photo_url} />
+      <SimpleHeaderUser userName={user?.username || "username"} photoUrl={user?.photo_url} />
 
       <IonContent className="student-dashboard-content">
         <div className="games-container">
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game1')}
+              onClick={() => history.push('/game/game1')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juego2.png" alt="Juego 1" className="game-image" />
@@ -81,7 +83,7 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game2')}
+              onClick={() => history.push('/game/game2')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juegoX.png" alt="Juego 2" className="game-image" />
@@ -93,7 +95,7 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game3')}
+              onClick={() => history.push('/game/game3')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/repartir.png" alt="Juego 3" className="game-image" />
@@ -105,7 +107,7 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game4')}
+              onClick={() => history.push('/game/game4')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/meter.png" alt="Juego 4" className="game-image" />

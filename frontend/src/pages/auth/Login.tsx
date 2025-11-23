@@ -36,11 +36,10 @@ import {
   IonText,
   IonIcon,
   IonToast,
-  IonSpinner,
 } from '@ionic/react';
 import { eyeOutline, eyeOffOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { useState, useEffect, useRef } from 'react';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
@@ -86,9 +85,13 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { user, loadingAuth, login } = useAuth();
+  const { login } = useAuth();
   const history = useHistory();
 
+
+  /*
+  !! DEPRECATED
+    -> Now redirection happens in /routes/RouteController.tsx
 
   // Show loading icon
   if (loadingAuth) {
@@ -105,14 +108,15 @@ export default function Login() {
   if (user) {
     console.log("Redirect to login because there is a user");
     if (user.role === "student")
-      return <Redirect to="/student-dashboard" />;
+      return <Redirect to="/student/dashboard" />;
     else
     if (user.role === "admin")
       return <Redirect to="/admin-dashboard" />;
     else
     if (user.role === "teacher")
-      return <Redirect to="/tutor-dashboard" />;
+      return <Redirect to="/teacher/dashboard" />;
   }
+  */
 
   /**
    * Functional summary.
@@ -175,9 +179,9 @@ export default function Login() {
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       clearForm();
       if (userData.role === 'admin') {
-        history.push('/admin-dashboard');
+        history.push('/admin/dashboard');
       } else if (userData.role === 'teacher') {
-        history.push('/tutor-dashboard');
+        history.push('/tutor/dashboard');
       };
     } catch (err: any) {
 
