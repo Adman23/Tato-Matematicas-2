@@ -19,6 +19,7 @@ import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
 
 import GameHeader from '../GameHeader';
+import FeedbackScreen from './FeedbackScreen';
 import './Game1.css';
 
 
@@ -106,10 +107,16 @@ const Game1: React.FC = () => {
 
     // UI states
     const [showFeedback, setShowFeedback] = useState(false);
+    const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
+    const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [listeningAudio, setListeningAudio] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Video modal state
+    const [showVideoModal, setShowVideoModal] = useState(false);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
     // Result states
     const [gameFinished, setGameFinished] = useState(false);
@@ -386,16 +393,15 @@ const Game1: React.FC = () => {
      * Execution flow:
      * 1. Calculates the elapsed time in the round
      * 2. Compares the selected number with the correct one
-     * 3. Shows visual feedback (green/red button, check/cross icons)
+     * 3. Shows visual feedback screen with Tato happy/sad
      * 4. Saves the result in the backend via API
-     * 5. After 2 seconds, advances to the next round or finishes the game
      *
      * @returns Promise that resolves when validation is complete
      *
      * @example
      * // User selects number 7 when the correct one is 7:
-     * // → is_correct = true, shows green "Correct!" button
-     * // → Saves in DB and advances to round 2
+     * // → is_correct = true, shows feedback screen with Tato happy
+     * // → Saves in DB
      */
     const checkAnswer = async () => {
         // Verify that a number is selected
@@ -408,8 +414,9 @@ const Game1: React.FC = () => {
         // Compare the selected number with the correct one
         const correct = selectedNumber === currentNumber;
 
-        // Show feedback
-        setShowFeedback(true);
+        // Store if answer is correct and show feedback screen
+        setIsCorrectAnswer(correct);
+        setShowFeedbackScreen(true);
 
         // Save in the backend
         if (sessionId && correct) {
@@ -434,6 +441,7 @@ const Game1: React.FC = () => {
     const repeatExercise = () => {
         setAttemptsCount(prev => prev + 1);
         setShowFeedback(false);
+        setShowFeedbackScreen(false);
         setHintsUsed([]);
         setRoundStartTime(Date.now());
         setSelectedNumber(null);
@@ -479,6 +487,9 @@ const Game1: React.FC = () => {
                 console.error('Error saving final attempt:', error);
             }
         }
+
+        // Hide feedback screen
+        setShowFeedbackScreen(false);
 
         if (currentRound < TOTAL_ROUNDS) {
             setCurrentRound(prev => prev + 1);
@@ -692,6 +703,24 @@ const Game1: React.FC = () => {
         };
     }, []);
 
+    /**
+     * Opens the video modal for instructions.
+     */
+    const openVideoModal = () => {
+        setShowVideoModal(true);
+    };
+
+    /**
+     * Closes the video modal and stops video playback.
+     */
+    const closeVideoModal = () => {
+        if (videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+        }
+        setShowVideoModal(false);
+    };
+
     // Authentication loading screen
     if (authLoading) {
         return (
@@ -743,6 +772,25 @@ const Game1: React.FC = () => {
     }
 
 
+    // Show feedback screen after checking answer
+    if (showFeedbackScreen) {
+        return (
+            <FeedbackScreen
+                isCorrect={isCorrectAnswer}
+                currentRound={currentRound}
+                totalRounds={TOTAL_ROUNDS}
+                imgTatoFeliz={imgTatoFeliz}
+                imgTatoTriste={imgTatoTriste}
+                imgSiguiente={imgSiguiente}
+                imgSonido={imgSonido}
+                imgFlecha={imgFlecha}
+                imgJuego={imgJuego}
+                onNext={advanceToNextRound}
+                onHomeClick={handleEarlyExit}
+            />
+        );
+    }
+
     return (
         <IonPage>
             <IonContent className="game1-content">
@@ -766,11 +814,9 @@ const Game1: React.FC = () => {
                                 fill="clear"
                                 className="game1-check-button"
                                 onClick={useHint}
-                                disabled={showFeedback}
                             >
                                 <img
-                                    src={showFeedback && selectedNumber === currentNumber ? imgTatoFeliz :
-                                        showFeedback && selectedNumber !== currentNumber ? imgTatoTriste : imgTato}
+                                    src={imgTato}
                                     alt="Pista"
                                     className="game1-check-button-image"
                                 />
@@ -798,7 +844,7 @@ const Game1: React.FC = () => {
                             <IonButton
                                 fill="clear"
                                 className="game1-check-button"
-                                disabled={listeningAudio || showFeedback}
+                                disabled={listeningAudio}
                                 onClick={() => speakNumber(currentNumber)}
                             >
                                 <img
@@ -812,8 +858,7 @@ const Game1: React.FC = () => {
                             <IonButton
                                 fill="clear"
                                 className="game1-check-button game1"
-                                onClick={() => { }}
-                                disabled={showFeedback}
+                                onClick={openVideoModal}
                             >
                                 <img
                                     src={imgInstrucciones}
@@ -822,57 +867,44 @@ const Game1: React.FC = () => {
                                 />
                             </IonButton>
 
-                            {/*Botón repetir ejercicio*/}
-                            {showFeedback && currentNumber !== selectedNumber && (
-                                <IonButton
-                                    fill="clear"
-                                    className="game1-check-button"
-                                    onClick={repeatExercise}
-                                    disabled={!showFeedback}
-                                >
-                                    <img
-                                        src={imgRepetir}
-                                        alt="Repetir"
-                                        className="game1-check-button-image"
-                                    />
-                                </IonButton>
-                            )}
-
-                            {/* Accept/Check button when there is no feedback */}
-                            {!showFeedback && (
-                                <IonButton
-                                    fill="clear"
-                                    className="game1-check-button"
-                                    onClick={checkAnswer}
-                                    disabled={selectedNumber === null}
-                                >
-                                    <img
-                                        src={imgAceptar}
-                                        alt="Comprobar"
-                                        className="game1-check-button-image"
-                                    />
-                                </IonButton>
-                            )}
-
-                            {/* Arrow button to continue when correct */}
-                            {showFeedback && (
-                                <IonButton
-                                    fill="clear"
-                                    className="game1-check-button"
-                                    onClick={advanceToNextRound}
-                                >
-                                    <img
-                                        src={imgSiguiente}
-                                        alt="Continuar"
-                                        className="game1-check-button-image"
-                                    />
-                                </IonButton>
-                            )}
+                            {/* Accept/Check button */}
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button"
+                                onClick={checkAnswer}
+                                disabled={selectedNumber === null}
+                            >
+                                <img
+                                    src={imgAceptar}
+                                    alt="Comprobar"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
 
                         </div>
                     </div>
                 </div>
                 {/* End grid container */}
+
+                {/* Video Modal */}
+                {showVideoModal && (
+                    <div className="game1-video-modal-overlay" onClick={closeVideoModal}>
+                        <div className="game1-video-modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="game1-video-close-button" onClick={closeVideoModal}>
+                                ✕
+                            </button>
+                            <video
+                                ref={videoRef}
+                                controls
+                                autoPlay
+                                className="game1-video-player"
+                            >
+                                <source src="/assets/videos/prueba.webm" type="video/webm" />
+                                Tu navegador no soporta la reproducción de videos.
+                            </video>
+                        </div>
+                    </div>
+                )}
             </IonContent>
         </IonPage>
     );
