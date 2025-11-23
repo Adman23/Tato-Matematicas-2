@@ -128,7 +128,7 @@ export default function App() {
             <PrivateRoute path="/admin/register-confirmation/:tipo" allowedRoles={["admin"]}
               component={RegisterConfirmation} exact />
             {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
-            <Redirect to="/student-login" />
+            <Redirect to="/student/login" />
           </IonRouterOutlet>
         </IonReactRouter>
       </AuthProvider>
