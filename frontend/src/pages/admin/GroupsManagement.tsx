@@ -87,14 +87,18 @@ export default function GroupsManagement() {
         );
     }
 
+    /* 
+    !! DEPRECATED
+        -> The route managers already do this shit
     // Redirects if not authenticated 
     if (!user || user.role !== 'admin') {
         return <Redirect to="/login" />;
     }
+    */
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName={user.username} />
+            <SimpleHeaderAdmin adminName={user?.username || "username"} />
             <IonContent>
                 <div className="groupManagement-MainContainer">
                     <div className="groupManagement-TextAddButton">

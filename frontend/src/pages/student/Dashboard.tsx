@@ -6,7 +6,7 @@ import {
   IonButton,
   IonSpinner
 } from '@ionic/react';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';

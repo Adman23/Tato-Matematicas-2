@@ -81,7 +81,7 @@ async def list_students(data:tuple=Depends(is_auth_current_user)):
 
 
 @router.get("/all", summary="Gets all teachers with photo, username and groups")
-async def list_teachers(admin=Depends(is_admin_current_user)):
+async def list_teachers(data=Depends(is_admin_current_user)):
     """
     List all teachers with groups.
 
@@ -103,6 +103,7 @@ async def list_teachers(admin=Depends(is_admin_current_user)):
     Requires admin authentication.
     """
     try:
+        admin_id, email = data
         # Get all users with role 'teacher'
         resp = supabase_admin.table("users") \
                     .select("id, photo_url") \
