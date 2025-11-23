@@ -57,6 +57,8 @@ async def is_auth_current_user(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token"
             )
+            
+        print(user_id)
         
         response = supabase_admin.auth.admin.get_user_by_id(user_id) 
         if not response.user:
@@ -88,6 +90,7 @@ async def is_auth_current_user(
         """
         
         email = response.user.email or None
+        print(email)
         return (user_id,email)
         
     except jwt.InvalidTokenError:
@@ -96,7 +99,7 @@ async def is_auth_current_user(
             detail="Expired or invalid token"
         )
     except Exception as e:
-        print("Error in is_auht_current_user:", str(e))
+        print("Error in is_auth_current_user:", str(e))
         traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -119,7 +122,7 @@ async def is_admin_current_user(data: tuple = Depends(is_auth_current_user)):
         user_id: id associated to the token
     """
     user_id, email = data
-    role = supabase_admin.table("users").select("role").eq("id", user_id).execute()
+    role = (supabase_admin.table("users").select("role").eq("id", user_id).execute()).data[0].get("role")
     if role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
