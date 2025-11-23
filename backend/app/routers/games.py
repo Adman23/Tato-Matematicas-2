@@ -228,6 +228,7 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds,
                 "attempts": request.round_result.attempts or 0,
+                "is_final_attempt": request.round_result.is_final_attempt or False,
                 "hints": request.round_result.hints or 0
             }
         elif session.get("game_id") == 2:

@@ -750,8 +750,8 @@ const Game2: React.FC = () => {
                   feedbackType === 'correct'
                     ? imgTatoFeliz
                     : feedbackType === 'incorrect'
-                    ? imgTatoTriste
-                    : imgTato
+                      ? imgTatoTriste
+                      : imgTato
                 }
                 alt="Pista"
                 className="game2-check-button-image"

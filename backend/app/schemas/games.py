@@ -53,6 +53,8 @@ class RoundResult(BaseModel):
     omissions: Optional[int] = 0
     # hints: contador de pistas usadas
     hints: Optional[int] = 0
+    # attempts: número de intentos realizados en la ronda (usado por juego 1)
+    attempts: Optional[int] = 0
     # total_incorrect: contador de errores (colocaciones incorrectas)
     total_incorrect: Optional[int] = 0
     # is_final_attempt: indica si es el último intento de la ronda (usado en juego 1)

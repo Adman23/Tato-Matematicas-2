@@ -317,7 +317,7 @@ export const authAPI = {
     const response = await api.get<User>('/user/basic_info');
     return response.data;
   },
-  
+
 
   /**
    * Comprueba si un username existe en la base de datos (tabla public.users).
@@ -370,12 +370,12 @@ export const authAPI = {
     return response.data;
   },
 
-    /**
-   * !! DEPRECATED
-   * Iniciar sesión de estudiante mediante secuencia de pictogramas.
-   * @param data - Datos de pictogramas del estudiante.
-   * @returns Token y perfil del estudiante autenticado.
-   */
+  /**
+ * !! DEPRECATED
+ * Iniciar sesión de estudiante mediante secuencia de pictogramas.
+ * @param data - Datos de pictogramas del estudiante.
+ * @returns Token y perfil del estudiante autenticado.
+ */
   /*
   loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
     const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
@@ -399,7 +399,7 @@ export const userAPI = {
    * @param id -> id of the user in question
    * @returns the structure UserData with all the data of the user identified by id
    */
-  fetchUserData: async(id: string): Promise<UserData> => {
+  fetchUserData: async (id: string): Promise<UserData> => {
     const response = await api.get<UserData>(`/user/${encodeURIComponent(id)}/user_data`);
     return response.data;
   }

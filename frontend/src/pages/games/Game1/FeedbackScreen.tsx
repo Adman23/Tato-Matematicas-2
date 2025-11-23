@@ -5,7 +5,7 @@
  * Shows Tato happy/sad and a button to continue or retry.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
     IonContent,
     IonPage,
@@ -13,6 +13,7 @@ import {
 } from '@ionic/react';
 import GameHeader from '../GameHeader';
 import './FeedbackScreen.css';
+import audioManager from '../../../lib/AudioManager';
 
 interface FeedbackScreenProps {
     isCorrect: boolean;
@@ -61,31 +62,17 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     ,
     onRepeat
 }) => {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-
-    // Play correct or incorrect sound when component mounts
+    // Play correct or incorrect sound when component mounts using central AudioManager
     useEffect(() => {
         const soundPath = isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3';
 
-        // Create and play audio
-        const audio = new Audio(soundPath);
-        audioRef.current = audio;
+        void audioManager.play(soundPath);
 
-        audio.play().catch((err) => {
-            console.error('Error playing feedback sound:', err);
-        });
-
-        // Cleanup function to stop audio when component unmounts
+        // Cleanup: stop playback when the component unmounts
         return () => {
-            if (audioRef.current) {
-                try {
-                    audioRef.current.pause();
-                    audioRef.current.currentTime = 0;
-                    audioRef.current = null;
-                } catch (e) {
-                    // Ignore cleanup errors
-                }
-            }
+            try {
+                audioManager.stop();
+            } catch (e) { /* ignore */ }
         };
     }, [isCorrect]);
 
@@ -119,14 +106,14 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                         {!isCorrect && (
                             <IonButton
                                 fill="clear"
-                                className="game1-check-button"
+                                className="game1-check-button-feedback"
                                 onClick={onRepeat}
                             >
                                 {imgRepetir ? (
                                     <img
                                         src={imgRepetir}
                                         alt="Repetir"
-                                        className="game1-check-button-image"
+                                        className="game1-check-button-feedback-image"
                                     />
                                 ) : (
                                     <>Repetir</>
@@ -136,13 +123,13 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
                         <IonButton
                             fill="clear"
-                            className="game1-check-button"
+                            className="game1-check-button-feedback"
                             onClick={onNext}
                         >
                             <img
                                 src={imgSiguiente}
                                 alt="Siguiente"
-                                className="game1-check-button-image"
+                                className="game1-check-button-feedback-image"
                             />
                         </IonButton>
                     </div>

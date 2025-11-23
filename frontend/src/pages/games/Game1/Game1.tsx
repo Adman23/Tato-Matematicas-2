@@ -40,6 +40,7 @@ import imgTato from '/assets/Tato/Tato.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import BubblesZone from './BubblesZone';
+import audioManager from '../../../lib/AudioManager';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -112,7 +113,6 @@ const Game1: React.FC = () => {
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [listeningAudio, setListeningAudio] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Video modal state
     const [showVideoModal, setShowVideoModal] = useState(false);
@@ -628,57 +628,22 @@ const Game1: React.FC = () => {
         };
 
 
-        let path = '';
 
 
-        // Play files sequentially
+
+        // Play files sequentially using AudioManager
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
             setListeningAudio(true);
 
-            for (const f of files) {
-
-                if (useWomanVoice) {
-                    path = `/assets/sounds/woman/${f}`;
-                } else {
-                    path = `/assets/sounds/man/${f}`;
-                }
-
-
-                // Stop previous audio if exists
-                if (audioRef.current) {
-                    try {
-                        audioRef.current.pause();
-                        audioRef.current.currentTime = 0;
-                    } catch (e) { /* ignore */ }
-                    audioRef.current = null;
-                }
-
-                // Play single file and wait until it ends (or errors)
-                await new Promise<void>((resolve) => {
-                    const audio = new Audio(path);
-                    audioRef.current = audio;
-
-                    const finish = () => {
-                        if (audioRef.current === audio) audioRef.current = null;
-                        resolve();
-                    };
-
-                    audio.addEventListener('ended', finish);
-                    audio.addEventListener('error', (err) => {
-                        console.error('Error reproduciendo audio', path, err);
-                        finish();
-                    });
-
-                    audio.play().catch((err) => {
-                        console.error('play() falló para', path, err);
-                        finish();
-                    });
-                });
+            try {
+                const base = useWomanVoice ? '/assets/sounds/woman/' : '/assets/sounds/man/';
+                const paths = files.map(f => `${base}${f}`);
+                await audioManager.playSequential(paths);
+            } finally {
+                setListeningAudio(false);
             }
-
-            setListeningAudio(false);
         };
 
         const files = filesForNumber(num);
@@ -694,12 +659,9 @@ const Game1: React.FC = () => {
     // Clean up audio when the component unmounts
     useEffect(() => {
         return () => {
-            if (audioRef.current) {
-                try {
-                    audioRef.current.pause();
-                    audioRef.current = null;
-                } catch (e) { /* ignore */ }
-            }
+            try {
+                audioManager.stop();
+            } catch (e) { /* ignore */ }
         };
     }, []);
 
