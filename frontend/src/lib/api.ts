@@ -586,16 +586,14 @@ export interface RoundResultGame1 {
  * Datos de una ronda del juego 2: Ordenar Secuencia
  */
 export interface RoundResultGame2 {
-  round: number;
-  numbers: number[];
-  user_order: number[];
-  correct_order: number[];
-  is_correct: boolean;
-  time_seconds: number;
-  is_final_attempt?: boolean; // Opcional, por defecto true en backend
-  omissions?: number; // Números que no colocó (dejó sin colocar)
-  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
-  hints?: number; // Contador de pistas usadas
+  round: number; // Número de ronda (1-5)
+  numbers: number[]; // Secuencia desordenada presentada al usuario
+  correct_order: number[]; // Orden correcto esperado
+  is_correct: boolean; // Si completó correctamente la ronda
+  time_seconds: number; // Tiempo de la ronda en segundos
+  hints: number; // Número de pistas usadas
+  total_incorrect: number; // Número de errores (colocaciones incorrectas)
+  omissions: number; // Números que no colocó (dejó sin colocar)
 }
 
 

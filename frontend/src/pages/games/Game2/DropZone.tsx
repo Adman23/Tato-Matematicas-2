@@ -34,8 +34,9 @@ import './DropZone.css';
  * @property {number} totalSlots - Número total de slots a renderizar
  * @property {boolean} [usePictogram] - Si usar pictogramas en vez de números (rango 0-10)
  * @property {Set<number>} [lockedIndices] - Set de índices bloqueados (números de ayuda)
- * @property {object} [selectedNumber] - Número actualmente seleccionado mediante click
- * @property {(targetIndex: number) => void} [onSlotClick] - Callback al hacer click en un slot
+ * @property {(e: React.DragEvent) => void} [onDragOver] - Callback para drag over
+ * @property {(e: React.DragEvent, targetIndex: number) => void} [onDrop] - Callback para drop
+ * @property {'correct' | 'incorrect' | null} [feedbackType] - Tipo de feedback a mostrar
  */
 interface DropZoneProps {
   numbers: (number | undefined)[];
@@ -44,12 +45,9 @@ interface DropZoneProps {
   totalSlots: number;
   usePictogram?: boolean;
   lockedIndices?: Set<number>;
-  selectedNumber?: {
-    value: number;
-    source: 'available' | 'ordered';
-    index: number;
-  } | null;
-  onSlotClick?: (targetIndex: number) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent, targetIndex: number) => void;
+  feedbackType?: 'correct' | 'incorrect' | null;
 }
 
 /**
@@ -101,8 +99,9 @@ const DropZone: React.FC<DropZoneProps> = ({
   totalSlots,
   usePictogram = false,
   lockedIndices = new Set(),
-  selectedNumber = null,
-  onSlotClick
+  onDragOver,
+  onDrop,
+  feedbackType = null
 }) => {
   // Crear array de slots con posiciones fijas (evita reordenamiento visual)
   const slots = Array.from({ length: totalSlots }, (_, index) => {
@@ -119,8 +118,9 @@ const DropZone: React.FC<DropZoneProps> = ({
       isIncorrect = num !== correctOrder[index];
     }
 
-    // Verificar si este slot está seleccionado
-    const isSelected = selectedNumber?.source === 'ordered' && selectedNumber.index === index;
+    // Verificar si este slot es el primero vacío (el que acepta el drop)
+    const firstEmptyIndex = numbers.findIndex(n => n === undefined);
+    const isDropTarget = index === firstEmptyIndex;
 
     return (
       <DroppableSlot
@@ -132,8 +132,10 @@ const DropZone: React.FC<DropZoneProps> = ({
         isIncorrect={isIncorrect}
         usePictogram={usePictogram}
         isLocked={isLocked}
-        isSelected={isSelected}
-        onSlotClick={onSlotClick}
+        isDropTarget={isDropTarget}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
+        feedbackType={feedbackType}
       />
     );
   });
