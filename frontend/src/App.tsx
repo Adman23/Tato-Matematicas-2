@@ -90,9 +90,6 @@ export default function App() {
             <PublicRoute path="/home" exact component={Home} />
             <PublicRoute path="/login" exact component={Login} />
 
-            {/* Ruta para tu nueva página de prueba */}
-            <Route path="/teacher-edit-color" exact component={TeacherEditColor} />
-
             {/* Rutas del login de estudiante en 3 pasos */}
             <PublicRoute path="/student/login" exact component={StudentLoginStep1} />
             <PublicRoute path="/student/login/step2/:groupId" exact component={StudentLoginStep2} />
@@ -115,6 +112,8 @@ export default function App() {
               exact component={TeacherProfilePage} />
             <UserDataRoute path="/teacheredit/profile" allowedRoles={["teacher"]} 
               exact component={TeacherEditProfile} />
+            <UserDataRoute path="/teacheredit/color" allowedRoles={["teacher"]}
+              exact component={TeacherEditColor} />
 
 
             <PrivateRoute path="/teacher/register" allowedRoles={["teacher"]} 

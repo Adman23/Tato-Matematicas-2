@@ -1,229 +1,278 @@
 /* =========================================
-   CONTENEDOR PRINCIPAL
+   CONTENEDOR GLOBAL
    ========================================= */
 .teacher-edit-color-content {
-  --background: #ffffff;
-  font-family: 'Atkinson Hyperlegible', sans-serif;
+  --background: var(--tatomaths-background);
+  font-family: var(--font-family-primary);
+  height: 100vh; 
+  overflow: hidden;
 }
 
+/* Wrapper para Flecha - Contenido - Flecha */
+.teacher-edit-color-layout-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 1rem; 
+  box-sizing: border-box;
+}
+
+/* Flechas Laterales */
+.teacher-edit-color-side-arrow {
+  width: clamp(50px, 8vw, 70px);
+  height: clamp(50px, 8vw, 70px);
+  border-radius: 50%;
+  background-color: var(--ion-color-primary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  flex-shrink: 0; 
+  z-index: 10;
+}
+
+.teacher-edit-color-side-arrow:not(.disabled):hover {
+  transform: scale(1.1);
+}
+
+.teacher-edit-color-side-arrow.disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* =========================================
+   CONTENEDOR CENTRAL
+   ========================================= */
 .teacher-edit-color-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: clamp(1rem, 3vw, 2rem);
+  justify-content: space-between;
+  flex-grow: 1;
+  height: 100%;
+  max-width: 1400px; 
+  padding: 0.5rem 2rem; 
   box-sizing: border-box;
 }
 
-/* =========================================
-   TITULOS
-   ========================================= */
+/* Titulos */
 .teacher-edit-color-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
-  color: #000;
-  margin-bottom: 2rem;
+  font-size: clamp(1.8rem, 4vh, 2.8rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--tatomaths-text);
+  margin: 0.5rem 0;
   text-align: center;
+  flex-shrink: 0; 
 }
 
 .teacher-edit-color-subtitle {
-  font-size: clamp(1.2rem, 3vw, 1.5rem);
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 1.5rem;
-  align-self: flex-start;
-  padding-left: clamp(1rem, 5vw, 4rem);
-  width: 100%;
-  box-sizing: border-box;
+  font-size: clamp(1.1rem, 2.5vh, 1.4rem);
+  font-weight: var(--font-weight-medium);
+  color: var(--ion-color-dark);
+  margin-bottom: 0.5rem;
+  align-self: flex-start; 
+  padding-left: 0.5rem;
+  flex-shrink: 0;
 }
 
 .teacher-edit-color-section {
   width: 100%;
-  margin-bottom: 3rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  flex-shrink: 0; 
 }
 
 /* =========================================
-   PALETAS PREDEFINIDAS (Círculos)
+   SECCIÓN 1: PALETAS (PRESETS)
    ========================================= */
-.teacher-edit-color-presets-row {
-  display: flex;
+.section-presets {
+  flex: 0 0 auto; 
+  margin-bottom: 1vh;
   align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  width: 100%;
-  position: relative;
-}
-
-.teacher-edit-color-nav-arrow {
-  background-color: #50BFE6;
-  color: white;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-  flex-shrink: 0;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.teacher-edit-color-nav-arrow:hover {
-  transform: scale(1.1);
-  background-color: #3eaacd;
 }
 
 .teacher-edit-color-presets-grid {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: clamp(1rem, 2vw, 2.5rem);
+  gap: clamp(1rem, 4vw, 4rem); 
+  padding: 10px;
 }
 
 .teacher-edit-color-preset-item {
-  width: 90px;
-  height: 90px;
+  width: clamp(60px, 9vh, 90px);
+  height: clamp(60px, 9vh, 90px);
   position: relative;
   cursor: pointer;
-  border-radius: 12px;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s;
+  flex-shrink: 0;
 }
 
 .teacher-edit-color-preset-item:hover {
-  transform: translateY(-5px);
+  transform: scale(1.05);
 }
 
-/* Indicador de selección (borde o sombra) */
 .teacher-edit-color-preset-item.selected::after {
   content: '';
   position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
-  border: 3px solid #50BFE6;
-  border-radius: 18px;
-  animation: pulseSelection 0.3s ease-out;
+  top: -6px; left: -6px; right: -6px; bottom: -6px;
+  border: 2px solid var(--ion-color-primary);
 }
 
-@keyframes pulseSelection {
-  0% { transform: scale(0.9); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* Círculo de Fondo (Grande) */
 .teacher-edit-color-bubble-bg {
-  width: 65px;
-  height: 65px;
+  width: 70%; height: 70%;
   border-radius: 50%;
-  position: absolute;
-  top: 5px;
-  left: 5px;
+  position: absolute; top: 0; left: 0;
   border: 1px solid rgba(0,0,0,0.1);
+  background-color: white; 
   z-index: 1;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
-/* Círculo Principal/App (Pequeño) */
 .teacher-edit-color-bubble-fg {
-  width: 45px;
-  height: 45px;
+  width: 60%; height: 60%;
   border-radius: 50%;
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
+  position: absolute; bottom: 0; right: 0;
+  border: 2px solid white; 
   z-index: 2;
-  box-shadow: -2px -2px 0px 2px rgba(255,255,255,1); /* Borde blanco falso para separar */
-  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: -2px -2px 5px rgba(0,0,0,0.1);
 }
 
 /* =========================================
-   PERSONALIZADO (Pickers)
+   SECCIÓN 2: PICKERS (GRID ADAPTABLE)
    ========================================= */
+.section-pickers {
+  flex: 1 1 auto; 
+  min-height: 0; 
+  justify-content: center;
+  width: 100%;
+}
+
 .teacher-edit-color-pickers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 2rem;
   width: 100%;
-  padding: 0 clamp(1rem, 5vw, 4rem);
+  /* CAMBIO: Quitamos height 100% fijo para evitar colapso forzado, usamos flex-grow en el padre */
+  height: auto; 
+  flex-grow: 1;
+  gap: clamp(1rem, 2vw, 2rem);
   box-sizing: border-box;
+  
+  /* MÓVIL / TABLET: 2 Columnas x 2 Filas */
+  grid-template-columns: 1fr 1fr;
+  /* CAMBIO CRÍTICO: Usamos minmax para bloquear el encogimiento vertical */
+  grid-template-rows: repeat(2, minmax(220px, 1fr)); 
+}
+
+/* ESCRITORIO (> 1000px): 4 Columnas x 1 Fila */
+@media (min-width: 1000px) {
+  .teacher-edit-color-pickers-grid {
+    grid-template-columns: repeat(4, 1fr);
+    /* CAMBIO CRÍTICO: También aquí bloqueamos la altura mínima */
+    grid-template-rows: minmax(220px, 1fr); 
+  }
 }
 
 .teacher-edit-color-picker-card {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  background: #f9f9f9;
-  padding: 1rem;
-  border-radius: 16px;
+  background: transparent; 
+  padding: 0; 
+  border-radius: var(--border-radius-md);
+  min-width: 0;
+  height: 100%;
+  justify-content: space-between;
+  
+  /* Refuerzo: altura mínima por tarjeta */
+  min-height: 220px; 
 }
 
 .teacher-edit-color-picker-card label {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
+  font-size: clamp(1rem, 2vh, 1.2rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--ion-color-dark);
+  text-align: left; 
   margin-bottom: 0.5rem;
+  padding-left: 5px;
 }
 
-/* Ajustes visuales para el componente react-colorful */
+/* Wrapper del Color Picker */
 .picker-wrapper {
   width: 100%;
+  flex: 1; 
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  
+  /* Asegura espacio para el picker */
+  min-height: 140px; 
 }
 
 .picker-wrapper .react-colorful {
   width: 100%;
-  height: 140px;
+  height: 100% !important;
+  /* Refuerzo interno */
+  min-height: 120px; 
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
 .picker-wrapper .react-colorful__saturation {
   border-radius: 12px 12px 0 0;
-  margin-bottom: 12px;
+  margin-bottom: 8px; 
+  flex: 1; 
 }
 
 .picker-wrapper .react-colorful__hue {
   height: 12px;
-  border-radius: 8px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  flex-shrink: 0;
 }
 
-/* Input Hexadecimal inferior */
+.picker-wrapper .react-colorful__pointer {
+  width: 20px; height: 20px;
+  border: 3px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Input Hex */
 .hex-input-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid #eee;
+  gap: 10px;
+  margin-top: 0.5rem;
+  border-bottom: 2px solid #e0e0e0; 
+  padding-bottom: 5px;
+  width: 100%;
+  max-width: 150px; 
+  
+  flex-shrink: 0;
+  min-height: 40px; 
 }
 
 .color-dot {
-  width: 32px;
-  height: 32px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.1);
   flex-shrink: 0;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .hex-input-wrapper ion-input {
   --padding-start: 0;
-  font-family: 'Courier New', monospace;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  font-family: monospace;
   font-size: 1rem;
-  font-weight: 600;
-  color: #555;
+  color: var(--ion-color-dark);
+  --placeholder-color: #999;
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 /* =========================================
@@ -231,33 +280,35 @@
    ========================================= */
 .teacher-edit-color-actions {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 2rem;
-  margin-bottom: 4rem;
+  gap: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   flex-wrap: wrap;
   justify-content: center;
+  flex-shrink: 0; 
 }
 
 .action-btn {
-  width: 200px;
-  height: 52px;
+  width: clamp(160px, 20vw, 220px);
+  height: 48px;
   font-size: 1.1rem;
   text-transform: none;
   --border-radius: 100px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.5px;
 }
 
 .action-btn.apply {
-  --background: #50BFE6;
-  --background-hover: #3eaacd;
-  --box-shadow: 0 4px 12px rgba(80, 191, 230, 0.3);
+  --background: var(--ion-color-primary);
+  --background-hover: var(--ion-color-primary-shade);
+  --box-shadow: none;
   color: white;
 }
 
 .action-btn.cancel {
-  --background: #e0e0e0;
-  --color: #666;
-  --background-hover: #d0d0d0;
+  --background: var(--ion-color-primary); 
+  --background-hover: var(--ion-color-primary-shade);
+  --opacity: 0.7; 
+  color: white;
   --box-shadow: none;
 }

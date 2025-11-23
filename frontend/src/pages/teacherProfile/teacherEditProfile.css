@@ -2,17 +2,60 @@
    ESTILOS GENERALES DE LA PÁGINA - TeacherEditProfile
    ========================================================================== */
 
+/* Wrapper Global para Flechas y Contenido */
+.teacher-edit-profile-layout-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 1rem; 
+  box-sizing: border-box;
+}
+
+/* Flechas Laterales */
+.teacher-edit-profile-side-arrow {
+  width: clamp(50px, 8vw, 70px);
+  height: clamp(50px, 8vw, 70px);
+  border-radius: 50%;
+  background-color: var(--ion-color-primary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.teacher-edit-profile-side-arrow:not(.disabled):hover {
+  transform: scale(1.1);
+}
+
+.teacher-edit-profile-side-arrow.disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Contenedor Central */
 .teacher-edit-profile-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; 
+  justify-content: center;
   font-family: 'Atkinson Hyperlegible', sans-serif;
-  background-color: #ffffff;
-  min-height: 100%; 
+  background-color: transparent; 
+  
+  flex-grow: 1;
   height: 100%;
   width: 100%;
-  /* CAMBIO: Padding fluido que se reduce en móviles y crece en escritorio */
+  
+  max-width: 1200px; 
+  
   padding: clamp(1rem, 3vw, 2rem); 
   box-sizing: border-box;
 }
@@ -23,34 +66,31 @@
 
 .teacher-edit-profile-form-card {
   width: 100%; 
-  max-width: 1000px; /* Aumentado ligeramente para dar aire en pantallas grandes */
-  background-color: #50BFE6;
+  max-width: 900px; 
+  
+  background-color: var(--ion-color-primary);
   border-radius: 24px;
-  
-  /* CAMBIO: Padding interno dinámico. Más espacio en pantallas grandes */
   padding: clamp(1.2rem, 4vw, 3rem);
-  
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   flex-grow: 1; 
-  
-  /* CAMBIO: Gap dinámico entre secciones */
   gap: clamp(1rem, 2vw, 2rem); 
-  
   position: relative;
   z-index: 1;
-  margin: 0 auto; 
+  margin: 0 auto;
+  overflow: hidden; 
 }
 
 .teacher-edit-profile-form-container-header {
   text-align: center;
   margin-bottom: 0.5rem;
+  /* Evitamos que el header crezca o se encoja */
+  flex-shrink: 0; 
 }
 
 .teacher-edit-profile-form-container-header h2 {
   color: white;
-  /* CAMBIO: Texto del título escala con la pantalla */
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   margin: 0 0 0.2rem 0;
   font-weight: 700;
@@ -59,7 +99,6 @@
 
 .teacher-edit-profile-form-container-header p {
   color: rgb(0, 0, 0);
-  /* CAMBIO: Subtítulo escalable */
   font-size: clamp(1rem, 2vw, 1.3rem);
   margin: 0;
 }
@@ -78,10 +117,9 @@
 
 @media (min-width: 900px) {
   .teacher-edit-profile-grid-content {
-    grid-template-columns: 1.2fr 1fr; /* Ligeramente más espacio a los inputs */
+    grid-template-columns: 1.2fr 1fr;
     align-content: center; 
     align-items: center; 
-    /* CAMBIO: Gap horizontal muy generoso en pantallas grandes */
     gap: clamp(2rem, 5vw, 5rem); 
   }
 }
@@ -94,7 +132,6 @@
   width: 100%;
 }
 
-/* En móvil, foto arriba */
 @media (max-width: 899px) {
   .teacher-edit-profile-grid-content {
     display: flex; 
@@ -113,7 +150,6 @@
 .teacher-edit-profile-form-right .teacher-edit-profile-field-label {
   text-align: center;
   color: white;
-  /* CAMBIO: Etiqueta de foto escalable */
   font-size: clamp(1rem, 2vw, 1.2rem);
   margin-bottom: 0.5rem;
 }
@@ -125,6 +161,8 @@
   margin-top: 0;
   cursor: pointer;
   transition: transform 0.2s ease;
+  /* Aseguramos que la imagen no se deforme tampoco */
+  flex-shrink: 0;
 }
 
 .teacher-edit-profile-profile-image-container:hover {
@@ -135,20 +173,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  
-  /* CAMBIO: El tamaño del círculo ahora es fluido */
   width: clamp(100px, 20vw, 160px); 
   height: clamp(100px, 20vw, 160px); 
-  
-  border-radius: 50%; /* Más moderno que 20px fijo, lo hace totalmente redondo */
+  border-radius: 50%; 
   background-color: rgba(255,255,255,0.2); 
   border: 4px solid white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   color: white;
-  
-  /* CAMBIO: Icono dentro del círculo escala también */
   font-size: clamp(50px, 10vw, 80px);
-  
   line-height: 1;
   margin: 0;
   padding: 0;
@@ -156,10 +188,8 @@
 }
 
 .teacher-edit-profile-selected-image {
-  /* CAMBIO: Misma fluidez para la imagen seleccionada */
   width: clamp(100px, 20vw, 160px);
   height: clamp(100px, 20vw, 160px);
-  
   object-fit: cover;
   border-radius: 50%;
   border: 4px solid white;
@@ -175,45 +205,56 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0; 
 }
 
 .teacher-edit-profile-field-label {
   color: #000000;
-  /* CAMBIO: Etiquetas de inputs escalables */
   font-size: clamp(1rem, 1.5vw, 1.2rem); 
   margin: 0.4rem 0; 
   font-weight: 600;
 }
 
-.teacher-edit-profile-input-item {
-  --background: white;
-  --border-radius: 16px; 
-  --padding-start: 1.2rem;
-  --padding-end: 1.2rem;
-  
-  /* CAMBIO: Padding vertical del input fluido para que sean más "gorditos" en desktop */
-  --padding-top: clamp(0.7rem, 1vw, 1rem); 
-  --padding-bottom: clamp(0.7rem, 1vw, 1rem);
-  
-  /* CAMBIO: Texto dentro del input escalable */
-  font-size: clamp(1rem, 1.5vw, 1.2rem); 
-  
-  width: 100%;
-  border: none;
-  margin: 0;
-}
-
+/* CONTENEDOR INPUT: Define altura, borde y fondo */
 .teacher-edit-profile-input-with-icon {
   display: flex;
   align-items: center;
   position: relative;
   width: 100%;
+  background: white; 
+  border: 2px solid #e0e0e0;
+  border-radius: 100px;
+  overflow: hidden; 
+  
+  height: clamp(3rem, 5vh, 4rem); 
+  max-height: 60px; 
+  flex-shrink: 0;   
+  flex-grow: 0;    
+}
+
+/* INPUT ITEM: Limpio y transparente */
+.teacher-edit-profile-input-item {
+  --background: transparent !important; 
+  background: transparent !important;
+  --border-radius: 0; 
+  --padding-start: 1.2rem;
+  --padding-end: 1.2rem;
+  
+  --padding-top: 0; 
+  --padding-bottom: 0;
+  
+  font-size: clamp(1rem, 1.5vw, 1.2rem); 
+  width: 100%;
+  height: 100%; 
+  border: none;
+  margin: 0;
+  
+  /* FIX: Eliminamos display: flex innecesario aquí */
 }
 
 .teacher-edit-profile-input-with-icon ion-icon:last-child {
   position: absolute;
   right: 16px;
-  /* CAMBIO: Icono de ojo/status escala */
   font-size: clamp(1.4rem, 2vw, 1.8rem);
   cursor: pointer;
   z-index: 2;
@@ -227,7 +268,7 @@
 }
 
 /* =============================================================================
-   BOTONES (Parte Inferior)
+   BOTONES
    ========================================================================== */
 
 .teacher-edit-profile-form-button-container {
@@ -238,59 +279,44 @@
   gap: 1rem;
   margin-top: auto; 
   padding-top: 1rem;
-  width: 100%; /* Asegura ancho completo para centrado correcto */
+  width: 100%; 
+  flex-shrink: 0;
 }
 
-/* CAMBIO: Reducido de 768px a 666px para evitar scroll en pantallas intermedias */
 @media (min-width: 666px) {
   .teacher-edit-profile-form-button-container {
     flex-direction: row;
-    /* CAMBIO: Gap entre botones crece */
     gap: clamp(1.5rem, 3vw, 3rem);
   }
 
-  /* Añadido para asegurar que los botones se repartan el espacio equitativamente */
   .teacher-edit-profile-cancel-button,
   .teacher-edit-profile-confirm-button {
     flex: 1;
-    width: auto; /* Dejamos que flex controle el ancho */
+    width: auto; 
   }
 }
 
 .teacher-edit-profile-cancel-button,
 .teacher-edit-profile-confirm-button {
-  --border-radius: 20px;
-  
-  /* CAMBIO: Botones más altos en pantallas grandes */
+  --border-radius: 100px;
   --padding-top: clamp(0.8rem, 1.5vw, 1.2rem);
   --padding-bottom: clamp(0.8rem, 1.5vw, 1.2rem);
-  
-  /* CAMBIO: Texto de botones escalable */
   font-size: clamp(1rem, 1.5vw, 1.2rem);
-  font-weight: bold;
-  
   width: 100%;
-  /* CAMBIO: Ancho máximo también fluido */
   max-width: clamp(250px, 30vw, 350px);
+  height: auto;
+  min-height: 48px;
 }
 
 .teacher-edit-profile-cancel-button {
-  --background: rgba(255,255,255,0.9);
-  --color: #50BFE6;
+  --background: rgba(255, 255, 255, 0.9);
+  --color: var(--ion-color-primary);
   margin-bottom: 0;
 }
 
 .teacher-edit-profile-confirm-button {
   --background: white;
-  --color: #50BFE6;
-}
-
-.teacher-edit-profile-confirm-button::part(native) {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.teacher-edit-profile-confirm-button:hover::part(native) {
-  background-color: #f0f0f0;
+  --color: var(--ion-color-primary);
 }
 
 .teacher-edit-profile-confirm-button--disabled {
@@ -298,7 +324,7 @@
 }
 
 /* =============================================================================
-   TOAST
+   TOAST & MODAL
    ========================================================================== */
 
 .teacher-edit-profile-toast ion-toast {
@@ -306,56 +332,38 @@
   --color: white;
 }
 
-/* =============================================================================
-   MODAL DE AVATAR (Restaurado y centrado)
-   ========================================================================== */
-
 .teacher-edit-profile-avatar-picker-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.5); 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex; justify-content: center; align-items: center;
   z-index: 10001;
 }
 
 .teacher-edit-profile-avatar-picker {
   background: white;
   border-radius: 24px;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  
-  /* CAMBIO: Eliminamos width, max-width y max-height fijos 
-     para permitir que el JS defina el tamaño exacto de la tarjeta */
+  max-height: 80vh;
   animation: pickerPopIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
-  /* Aseguramos que el contenido interno se adapte */
   box-sizing: border-box;
 }
 
 @keyframes pickerPopIn {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
 
 .teacher-edit-profile-picto-picker-header {
   padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
   border-bottom: 1px solid #eee;
 }
 
 .teacher-edit-profile-picto-picker-header h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: #333;
+  margin: 0; font-size: 1.2rem; color: #333;
 }
 
 .teacher-edit-profile-picto-grid {
@@ -367,38 +375,26 @@
 }
 
 .teacher-edit-profile-picto-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; text-align: center;
 }
 
 .teacher-edit-profile-picto-option ion-img {
-  width: 70px;
-  height: 70px;
-  object-fit: contain;
-  margin-bottom: 8px;
+  width: 70px; height: 70px; object-fit: contain; margin-bottom: 8px;
 }
 
 .teacher-edit-profile-picto-option span {
-  font-size: 14px;
-  color: #333;
+  font-size: 14px; color: #333;
 }
 
 .teacher-edit-profile-upload-avatar-placeholder {
-  width: 70px;
-  height: 70px;
+  width: 70px; height: 70px;
   border: 2px dashed var(--ion-color-medium);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--ion-color-light);
-  margin-bottom: 8px;
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background-color: var(--ion-color-light); margin-bottom: 8px;
 }
 
 .teacher-edit-profile-upload-icon {
-  font-size: 30px;
-  color: var(--ion-color-medium);
+  font-size: 30px; color: var(--ion-color-medium);
 }

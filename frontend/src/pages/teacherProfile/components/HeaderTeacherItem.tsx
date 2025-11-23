@@ -9,7 +9,7 @@ import {
   IonAvatar
 } from '@ionic/react';
 import { homeOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom'; // ✅ nuevo
+import { useHistory } from 'react-router-dom'; 
 import './HeaderTeacherItem.css';
 
 interface Props {
@@ -23,14 +23,14 @@ const HeaderItem: React.FC<Props> = ({
   teacherAvatar,
   onLogoutClick,
 }) => {
-  const history = useHistory(); // ✅ hook de navegación
+  const history = useHistory(); 
 
   const handleEditClick = () => {
-    history.push('/teacher-edit-profile'); // ✅ redirige
+    history.push('/teacheredit/profile'); 
   };
 
   const handleHomeClick = () => {
-    history.push('/home'); // ✅ también activamos el botón home
+    history.push('/home'); 
   };
 
   return (
