@@ -1,5 +1,4 @@
 import React from 'react';
-import { IonGrid, IonRow, IonCol } from '@ionic/react';
 import Bubble from './Bubble';
 import './BubblesZone.css';
 
@@ -43,38 +42,35 @@ const BubblesZone: React.FC<Props> = ({
     hintsUsed = []
 }) => {
     return (
-        <IonGrid className="numbers-grid">
-            <IonRow className="ion-justify-content-center">
-                {availableNumbers.map((num, index) => {
-                    if (num === undefined) return null;
+        <div className="numbers-grid">
+            {availableNumbers.map((num, index) => {
+                if (num === undefined) return null;
 
-                    const isSelected = selectedNumber === num;
+                const isSelected = selectedNumber === num;
 
-                    // Determine if we should show correct/incorrect states
-                    const showAsCorrect = showFeedback && num === currentNumber;
-                    const showAsIncorrect = showFeedback && selectedNumber !== null && selectedNumber === num && selectedNumber !== currentNumber;
+                // Determine if we should show correct/incorrect states
+                const showAsCorrect = showFeedback && num === currentNumber;
+                const showAsIncorrect = showFeedback && selectedNumber !== null && selectedNumber === num && selectedNumber !== currentNumber;
 
-                    const isHinted = hintsUsed.includes(num);
+                const isHinted = hintsUsed.includes(num);
 
-                    return (
-                        <IonCol size="4" size-md="3" size-lg="2" key={`available-${num}-${index}`} className="ion-text-center">
-                            <Bubble
-                                value={num}
-                                usePictogram={usePictograms}
-                                isSelected={isSelected}
-                                isCorrect={showAsCorrect}
-                                isIncorrect={showAsIncorrect}
-                                isHinted={isHinted}
-                                disabled={showFeedback}
-                                onClick={(v: number) => {
-                                    setSelectedNumber(prev => (prev === v ? null : v));
-                                }}
-                            />
-                        </IonCol>
-                    );
-                })}
-            </IonRow>
-        </IonGrid>
+                return (
+                    <Bubble
+                        key={`available-${num}-${index}`}
+                        value={num}
+                        usePictogram={usePictograms}
+                        isSelected={isSelected}
+                        isCorrect={showAsCorrect}
+                        isIncorrect={showAsIncorrect}
+                        isHinted={isHinted}
+                        disabled={showFeedback}
+                        onClick={(v: number) => {
+                            setSelectedNumber(prev => (prev === v ? null : v));
+                        }}
+                    />
+                );
+            })}
+        </div>
     );
 };
 

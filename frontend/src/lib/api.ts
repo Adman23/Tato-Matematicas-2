@@ -578,6 +578,8 @@ export interface RoundResultGame1 {
   correct_number: number | null;
   is_correct: boolean;
   time_seconds: number;
+  is_final_attempt?: boolean;
+  attempts?: number;
   hints?: number;
 }
 

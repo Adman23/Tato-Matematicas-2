@@ -227,6 +227,7 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "correct_number": request.round_result.correct_number,
                 "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds,
+                "attempts": request.round_result.attempts or 0,
                 "hints": request.round_result.hints or 0
             }
         elif session.get("game_id") == 2:
@@ -260,6 +261,14 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         total_incorrect = session.get("total_incorrect", 0)
         total_omissions = session.get("total_omissions", 0)
 
+        if request.round_result.is_final_attempt:
+            if session.get("game_id") == 1:
+                # For Game 1: Touch number, use is_correct field
+                if request.round_result.is_correct:
+                    total_correct += 1
+                else:
+                    total_incorrect += 1
+            
         # Para Game 2: sumar los valores de la ronda
         if session.get("game_id") == 2:
             # Contar números correctos: total menos errores menos omisiones

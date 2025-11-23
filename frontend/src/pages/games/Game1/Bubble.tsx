@@ -96,17 +96,7 @@ const Bubble: React.FC<Props> = ({
             </div>
 
             {/* Feedback icon below the circle: tick for correct, cross for incorrect */}
-            {(isCorrect || isIncorrect) && (
-                <div
-                    className={`nm-feedback-icon ${isCorrect ? 'correct' : ''} ${isIncorrect ? 'incorrect' : ''}`}
-                >
-                    {isCorrect ? (
-                        <IonIcon icon={checkmarkSharp} className="nm-ion-icon" />
-                    ) : (
-                        <IonIcon icon={closeSharp} className="nm-ion-icon" />
-                    )}
-                </div>
-            )}
+
         </div>
     );
 };
