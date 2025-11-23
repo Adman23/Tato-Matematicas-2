@@ -20,39 +20,28 @@ from .services.supabase import supabase, supabase_admin
 #: Dependencia de seguridad HTTP Bearer utilizada para extraer el token JWT
 security = HTTPBearer()
 
-
-async def get_current_user(
+# !! EDITED 1.2.0
+# -> Now its called "is_auth_current_user" instead of get_current_user
+# -> Now it only verifies if the current user is authenticated based on the token
+# -> This way its faster and returns the id to use it in is_admin_current_user
+async def is_auth_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
     """
-    Obtiene la información del usuario autenticado a partir del token JWT de Supabase.
-
-    Esta función valida el token JWT emitido por Supabase Auth y recupera el
-    perfil del usuario desde la tabla `user_profiles`. Si el modo desarrollo
-    está activado, devuelve un usuario de prueba (fake).
+    Returns the id of the current authenticated user in case the token is valid
 
     Args:
-        credentials (HTTPAuthorizationCredentials): Token de autorización HTTP
-            enviado en la cabecera `Authorization: Bearer <token>`.
+        credentials (HTTPAuthorizationCredentials): Auth token in `Authorization: Bearer <token>`.
 
     Raises:
-        HTTPException: Si el token es inválido o no contiene un ID de usuario (`401 UNAUTHORIZED`).
-        HTTPException: Si el usuario no se encuentra en la base de datos (`404 NOT FOUND`).
-        HTTPException: Si ocurre un error interno al verificar el token (`500 INTERNAL SERVER ERROR`).
+        HTTPException: If the token is invalid (`401 UNAUTHORIZED`).
+        HTTPException: Internal error verifying the token (`500 INTERNAL SERVER ERROR`).
 
     Returns:
-        dict: Diccionario con los datos del usuario autenticado (id, email, rol).
+        user_id: id associated to the token
+        email: email associated to the id
     """
     token = credentials.credentials
-    
-    # Modo desarrollo: devolver usuario fake
-    if settings.DEV_MODE:
-        return {
-            "id": "dev-user-id",
-            "username": "dev@tatomaths.com",
-            "role": "admin"
-        }
-    
     try:
         # Verificar token con Supabase JWT secret
         payload = jwt.decode(
@@ -66,9 +55,18 @@ async def get_current_user(
         if not user_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token inválido"
+                detail="Invalid token"
             )
+            
+        print(user_id)
         
+        response = supabase_admin.auth.admin.get_user_by_id(user_id) 
+        if not response.user:
+            raise HTTPException(
+                status_code = status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        """
         # Obtener perfil del usuario desde la BD
         responseAuth = supabase_admin.auth.admin.get_user_by_id(user_id)
         
@@ -89,15 +87,11 @@ async def get_current_user(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User public not found"
             )
+        """
         
-        return  {
-                "id": responseAuth.user.id,
-                "username": responseAuth.user.email.split("@")[0],
-                "role": responsePublic.data[0]["role"],
-                "photo_url": supabase_admin.storage.from_("user_photo")\
-                                .get_public_url(responsePublic.data[0].get("photo_url")) or None
-                }
-        
+        email = response.user.email or None
+        print(email)
+        return (user_id,email)
         
     except jwt.InvalidTokenError:
         raise HTTPException(
@@ -105,34 +99,33 @@ async def get_current_user(
             detail="Expired or invalid token"
         )
     except Exception as e:
-        # Print full traceback to help debugging in development
-        print("Error in get_current_user:", str(e))
+        print("Error in is_auth_current_user:", str(e))
         traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error verifiying the token: {str(e)}"
+            detail=f"Unidentified error verifying the token: {str(e)}"
         )
 
 
-async def get_current_admin(current_user: dict = Depends(get_current_user)):
+async def is_admin_current_user(data: tuple = Depends(is_auth_current_user)):
     """
-    Verifica que el usuario autenticado tenga rol de administrador.
-
-    Esta dependencia se utiliza en endpoints que requieren permisos elevados.
-    Si el usuario no tiene el rol `admin`, se lanza una excepción HTTP 403.
-
+    Verifies if the current authenticated user is an admin.
+    For endpoints that require admin access, HTTP 403 exception in case the role isn't admin
+    
     Args:
-        current_user (dict): Datos del usuario autenticado obtenidos desde `get_current_user`.
+        user_id (str): obtained with is_auth_current_user
 
     Raises:
-        HTTPException: Si el usuario no es administrador (`403 FORBIDDEN`).
+        HTTPException: User is not admin (`403 FORBIDDEN`).
 
     Returns:
-        dict: Datos del usuario autenticado con rol de administrador.
+        user_id: id associated to the token
     """
-    if current_user["role"] != "admin":
+    user_id, email = data
+    role = (supabase_admin.table("users").select("role").eq("id", user_id).execute()).data[0].get("role")
+    if role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Solo administradores pueden acceder"
+            detail="Requires admin access"
         )
-    return current_user
+    return (user_id, email)

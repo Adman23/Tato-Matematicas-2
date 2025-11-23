@@ -20,12 +20,13 @@ import type { User, LoginData, RegisterData } from '../lib/api';
  * !! EDITED
  *  -> Removed all the isType booleans, you can check the role of the user
  *  -> Removed deprecated functions
+ *  -> Refactor the name "loading" to "loadingAuth", for compatibility with other contexts
  * Structure of the AuthContext.
  * Data and functions.
  */
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
+  loadingAuth: boolean;
   isAuthenticated: boolean;
   register: (data: RegisterData) => Promise<void>;
   login: (data: LoginData) => Promise<void>;
@@ -68,7 +69,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
           const currentUser = JSON.parse(savedUser);
           setUser(currentUser);
-          localStorage.setItem('user', JSON.stringify(currentUser));
         } catch (error) {
           // Mostrar también la respuesta del servidor (si la hay) para facilitar el debug
           console.error('Error loading user:', error, (error as any)?.response?.data);
@@ -117,6 +117,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('user');
     localStorage.removeItem('student_id');
     localStorage.removeItem('student');
+    localStorage.removeItem('user_data'); // Added to clear UserContext
     
     try {
       await authAPI.logout();
@@ -131,7 +132,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     <AuthContext.Provider
       value={{
         user,
-        loading,
+        loadingAuth: loading,
         isAuthenticated: !!user,
         register,
         login,

@@ -20,7 +20,7 @@ setupIonicReact();
  *
  * @example
  * ```tsx
- * <Route path="/admin-dashboard/groups-management" component={GroupsManagement} />
+ * <Route path="/admin/dashboard"/groups-management" component={GroupsManagement} />
  * ```
  */
 
@@ -38,7 +38,7 @@ import { useHistory } from 'react-router-dom';
 
 export default function GroupsManagement() {
 
-    const { user, loading: authLoading } = useAuth();
+    const { user, loadingAuth: authLoading } = useAuth();
 
     const [loading, setLoading] = useState(true);
     const [groups, setGroups] = useState<{ id: string; name: string; }[]>([]);
@@ -87,14 +87,18 @@ export default function GroupsManagement() {
         );
     }
 
+    /* 
+    !! DEPRECATED
+        -> The route managers already do this shit
     // Redirects if not authenticated 
     if (!user || user.role !== 'admin') {
         return <Redirect to="/login" />;
     }
+    */
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName={user.username} />
+            <SimpleHeaderAdmin adminName={user?.username || "username"} />
             <IonContent>
                 <div className="groupManagement-MainContainer">
                     <div className="groupManagement-TextAddButton">

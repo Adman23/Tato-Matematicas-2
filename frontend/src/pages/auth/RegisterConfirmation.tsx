@@ -18,7 +18,7 @@ import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 
 const RegisterConfirmation = () => {
   const { tipo } = useParams<{ tipo: string }>();
-  const { user, loading } = useAuth();
+  const { user, loadingAuth: loading } = useAuth();
 
   if (loading) {
     return (

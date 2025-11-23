@@ -8,7 +8,7 @@ import jwt
 
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
-from ..dependencies import get_current_user, get_current_admin
+from ..dependencies import is_auth_current_user, is_admin_current_user
 from ..config import settings
 
 router = APIRouter()
@@ -16,15 +16,17 @@ router = APIRouter()
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
 @router.get("/students", summary="Gets all the students of a teacher")
-async def list_students(teacher=Depends(get_current_user)):
+async def list_students(data:tuple=Depends(is_auth_current_user)):
     """
     Returns a list of all students assigned to the teacher, each one with id, name and photo_url.
     """
     try:
+        teacher_id, email = data
+        
         # First we get all the groups assigned to the teacher
         resp = supabase_admin.table("teacher_group_relations") \
                     .select("group_id") \
-                    .eq("teacher_id", teacher['id']) \
+                    .eq("teacher_id", teacher_id) \
                     .execute()
 
         if not resp.data:
@@ -79,7 +81,7 @@ async def list_students(teacher=Depends(get_current_user)):
 
 
 @router.get("/all", summary="Gets all teachers with photo, username and groups")
-async def list_teachers(admin=Depends(get_current_admin)):
+async def list_teachers(data=Depends(is_admin_current_user)):
     """
     List all teachers with groups.
 
@@ -101,6 +103,7 @@ async def list_teachers(admin=Depends(get_current_admin)):
     Requires admin authentication.
     """
     try:
+        admin_id, email = data
         # Get all users with role 'teacher'
         resp = supabase_admin.table("users") \
                     .select("id, photo_url") \

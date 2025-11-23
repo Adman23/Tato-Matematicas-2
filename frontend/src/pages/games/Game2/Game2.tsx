@@ -85,11 +85,11 @@ const TOTAL_ROUNDS = 5;
  *
  * @example
  * // Usado en el routing de la app:
- * <Route path="/game2" component={Game2} />
+ * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
   const history = useHistory();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loadingAuth: authLoading } = useAuth();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = user;
@@ -177,7 +177,7 @@ const Game2: React.FC = () => {
     if (gameFinished) {
       const timer = setTimeout(() => {
         // Redirigir al dashboard correspondiente según el tipo de usuario
-        const dashboardRoute = user?.role === "student" ? '/student-dashboard' : '/tutor-dashboard';
+        const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
         history.push(dashboardRoute);
       }, 2000);
 
@@ -528,7 +528,8 @@ const Game2: React.FC = () => {
       }
     }
 
-    const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
+    // Redirect to dashboard
+    const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/tutor/dashboard';
     history.push(dashboardRoute);
   };
 
@@ -617,7 +618,7 @@ const Game2: React.FC = () => {
 
   // Redirigir si no hay usuario autenticado (estudiante o profesor)
   if (!user) {
-    return <Redirect to="/student-login" />;
+    return <Redirect to="/student/login" />;
   }
 
   // Pantalla de carga del juego

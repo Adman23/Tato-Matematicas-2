@@ -96,7 +96,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
      * ```
      */
     const handleHome = () => {
-        history.replace('/admin-dashboard');
+        history.replace('/admin/dashboard');
     }
 
     return (
