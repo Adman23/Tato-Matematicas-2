@@ -29,7 +29,7 @@
  * @example Example usage
  *
  * ```tsx
- * <Route path="/admin-dashboard/link-profiles" component={LinkProfiles} />
+ * <Route path="/admin/dashboard/link-profiles" component={LinkProfiles} />
  * ```
  */
 
@@ -85,7 +85,7 @@ interface User {
  */
 export default function LinkProfiles() {
 
-    const { user, loading } = useAuth();
+    const { user, loadingAuth: loading } = useAuth();
 
     const [students, setStudents] = useState<User[]>([]);
     const [teachers, setTeachers] = useState<User[]>([]);
@@ -519,7 +519,7 @@ export default function LinkProfiles() {
                         expand="block"
                         type="submit"
                         className='LinkProfiles-button'
-                        onClick={() => history.push('/admin-dashboard')}
+                        onClick={() => history.push('/admin/dashboard')}
                     >
                         Cancelar
                     </IonButton>

@@ -43,7 +43,7 @@ import { useAuth } from '../../contexts/AuthContext';
  */
 export default function AdminDashboard() {
 
-    const { user, loading } = useAuth();
+    const { user, loadingAuth: loading } = useAuth();
     const history = useHistory();
 
     // Show spinner while loading

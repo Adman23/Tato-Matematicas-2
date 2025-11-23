@@ -114,7 +114,7 @@ export default function StudentLoginStep2() {
       setError('Selecciona un estudiante');
       return;
     }
-    history.push(`/student-login/step3/${groupId}/${selectedStudent.username}`);
+    history.push(`/student/login/step3/${groupId}/${selectedStudent.username}`);
   };
 
   return (

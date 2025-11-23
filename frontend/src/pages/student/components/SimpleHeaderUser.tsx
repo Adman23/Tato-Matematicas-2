@@ -65,10 +65,10 @@ const SimpleHeaderUser: React.FC<Props> = ({
     }
     else
     if(user?.role === "teacher"){
-      history.replace('/teacher-profile');
+      history.replace('/teacher/profile');
     }
     else{
-      history.replace('/student-profile');
+      history.replace('/student/profile');
     }
   }
 

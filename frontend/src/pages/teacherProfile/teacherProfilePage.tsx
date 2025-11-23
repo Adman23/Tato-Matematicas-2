@@ -22,7 +22,7 @@ interface Student {
 }
 
 export default function TeacherProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, loadingAuth: loading } = useAuth();
   const history = useHistory();
   const { logout } = useAuth();
   const [students, setStudents] = useState<Student[]>([]);

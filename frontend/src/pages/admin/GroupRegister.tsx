@@ -18,7 +18,7 @@
  *
  * @example
  * ```tsx
- * <Route path="/group-register" component={GroupRegister} />
+ * <Route path="/admin/group/register" component={GroupRegister} />
  * ```
  */
 
@@ -138,7 +138,7 @@ export default function GroupRegister() {
             setIsToastOpen(true);
 
             setTimeout(() => {
-                history.push('/register/confirmation/grupos');
+                history.push('/register-confirmation/grupos');
             }, 2000);
         } catch (err: any) {
             console.error('Error en el registro:', err);
@@ -178,7 +178,7 @@ export default function GroupRegister() {
 
     const handleCancel = () => {
         setGroupName('');
-        history.replace('/admin-dashboard/groups-management');
+        history.replace('/admin/dashboard/groups-management');
     };
 
     /**

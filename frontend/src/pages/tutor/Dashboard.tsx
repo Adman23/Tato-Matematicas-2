@@ -13,11 +13,11 @@ import '../student/Dashboard.css';
 
 
 export default function TutorDashboard() {
-  const { user, loading } = useAuth();
+  const { user, loadingAuth } = useAuth();
   const history = useHistory();
 
   // Mostrar spinner mientras carga
-  if (loading) {
+  if (loadingAuth) {
     return (
       <IonPage>
         <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -26,6 +26,8 @@ export default function TutorDashboard() {
       </IonPage>
     );
   }
+
+  console.log("HEMOS ENTRADO EN EL DASHBOARD?");
 
   // Redirigir si no hay usuario autenticado o no es tutor
   if (!user || user.role !== 'teacher') {

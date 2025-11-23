@@ -72,6 +72,9 @@ setupIonicReact();
  * ```
  */
 export default function Login() {
+
+
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -84,6 +87,36 @@ export default function Login() {
 
   const { login } = useAuth();
   const history = useHistory();
+
+
+  /*
+  !! DEPRECATED
+    -> Now redirection happens in /routes/RouteController.tsx
+
+  // Show loading icon
+  if (loadingAuth) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <IonSpinner name="crescent" />
+        </IonContent>
+      </IonPage>
+    );
+  }
+
+  // Redirigir si hay estudiante autenticado
+  if (user) {
+    console.log("Redirect to login because there is a user");
+    if (user.role === "student")
+      return <Redirect to="/student/dashboard" />;
+    else
+    if (user.role === "admin")
+      return <Redirect to="/admin-dashboard" />;
+    else
+    if (user.role === "teacher")
+      return <Redirect to="/teacher/dashboard" />;
+  }
+  */
 
   /**
    * Functional summary.
@@ -146,9 +179,9 @@ export default function Login() {
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       clearForm();
       if (userData.role === 'admin') {
-        history.push('/admin-dashboard');
+        history.push('/admin/dashboard');
       } else if (userData.role === 'teacher') {
-        history.push('/tutor-dashboard');
+        history.push('/tutor/dashboard');
       };
     } catch (err: any) {
 
