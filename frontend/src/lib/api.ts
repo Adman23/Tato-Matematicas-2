@@ -67,6 +67,7 @@ function emptyStorage() {
  * Exception handler for every type of error.
  * Expired or invalid tokens -> clears localStorage and redirects to login.
  * 
+ * TODO: Finish error handling for Type 1 and Type 2 errors.
  * !!EDITED
  * Type 1: Network and client side errors
  *  -> Request fails to reach the API
@@ -119,6 +120,13 @@ api.interceptors.response.use(
 // ==== DATA INTERFACES ====
 
 /**
+ * !! NEW
+ *  -> Created to unify the role
+ * @brief Represents the role of a User
+ */
+export type Role = 'admin' | 'teacher' | 'student';
+
+/**
  * !!EDITED
  *  -> Removed full_name and email fields. -> Not needed.
  * @brief Represents a user.
@@ -126,7 +134,7 @@ api.interceptors.response.use(
 export interface User {
   id: string;
   username: string;
-  role: 'admin' | 'teacher' | 'student';
+  role: Role;
   photo_url?: string;
 }
 
@@ -137,7 +145,7 @@ export interface User {
  */
 export interface UserData {
   user_profile: any;
-  game_configuration: any;
+  game_configurations: any;
   reinforcement_messages: any;
 }
 
@@ -158,7 +166,7 @@ export interface AuthResponse {
 export interface RegisterData {
   username: string;
   password: string;
-  role: 'admin' | 'teacher' | 'student';
+  role: Role;
   photo_url?: string;
 }
 
@@ -198,22 +206,6 @@ export interface RegisterGroup {
 export interface GameSessionResponse {
   session_id: string;
 }
-
-/**
- * Datos de una ronda de juego
- */
-export interface RoundResult {
-  round: number;
-  numbers: number[];
-  user_order: number[];
-  correct_order: number[];
-  is_correct: boolean;
-  time_seconds: number;
-  is_final_attempt?: boolean; // Opcional, por defecto true en backend
-  omissions?: number; // Números que no colocó (dejó sin colocar)
-}
-
-
 
 
 
@@ -314,6 +306,20 @@ export const authAPI = {
   },
 
   /**
+   * !!! EDITED
+   *  -> Name changed from 'me' to 'fetchBasicUserInfo'
+   *  -> It was only used on AuthContext.tsx to reload the user
+   *  -> Now it does the same, but the api call has been changed
+   * Get the basic info from a user
+   * @returns Basic user info
+   */
+  fetchBasicUserInfo: async (): Promise<User> => {
+    const response = await api.get<User>('/user/basic_info');
+    return response.data;
+  },
+  
+
+  /**
    * Comprueba si un username existe en la base de datos (tabla public.users).
    * @param username - Nombre de usuario a comprobar
    * @returns { exists: boolean }
@@ -333,14 +339,6 @@ export const authAPI = {
     return response.data;
   },
 
-  /**
-   * Obtener información del usuario autenticado actual.
-   * @returns Perfil del usuario actual.
-   */
-  me: async (): Promise<User> => {
-    const response = await api.get<User>('/auth/me');
-    return response.data;
-  },
 
   /**
    * Cerrar sesión del usuario actual.
@@ -352,19 +350,6 @@ export const authAPI = {
     localStorage.removeItem('user');
   },
 
-
-  /**
-   * !! DEPRECATED
-   * Iniciar sesión de estudiante mediante secuencia de pictogramas.
-   * @param data - Datos de pictogramas del estudiante.
-   * @returns Token y perfil del estudiante autenticado.
-   */
-  /*
-  loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
-    const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
-    return response.data;
-  },
-  */
 
   /**
    * Obtener todos los grupos disponibles.
@@ -384,7 +369,43 @@ export const authAPI = {
     const response = await api.get<User[]>(`/auth/groups/${groupId}/students`);
     return response.data;
   },
+
+    /**
+   * !! DEPRECATED
+   * Iniciar sesión de estudiante mediante secuencia de pictogramas.
+   * @param data - Datos de pictogramas del estudiante.
+   * @returns Token y perfil del estudiante autenticado.
+   */
+  /*
+  loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
+    const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
+    return response.data;
+  },
+  */
 };
+
+
+
+// TODO: userAPI, it should handle user data fetching and updating
+// === USER API ===
+/**
+ * !! NEW
+ * User endpoints.
+ * Manages user data fetching and updating.
+ */
+export const userAPI = {
+  /**
+   * !! NEW 
+   * @param id -> id of the user in question
+   * @returns the structure UserData with all the data of the user identified by id
+   */
+  fetchUserData: async(id: string): Promise<UserData> => {
+    const response = await api.get<UserData>(`/user/${encodeURIComponent(id)}/user_data`);
+    return response.data;
+  }
+};
+
+
 
 
 // === OTHER ENDPOINTS ===
@@ -393,7 +414,7 @@ export const authAPI = {
  * @returns  Lista de profesores
  */
 export async function fetchTeachers() {
-  const response = await api.get("/api/admin/teachers");
+  const response = await api.get("/admin/teachers");
   return response.data;
 }
 
@@ -402,7 +423,7 @@ export async function fetchTeachers() {
  * @returns Lista de alumnos
  */
 export async function fetchStudents() {
-  const response = await api.get("/api/admin/students");
+  const response = await api.get("/admin/students");
   return response.data;
 }
 
@@ -412,7 +433,7 @@ export async function fetchStudents() {
  */
 export async function fetchStudentsByTeacher() {
   try {
-    const response = await api.get("/api/teacher/students");
+    const response = await api.get("/teacher/students");
     return response.data;
   } catch (err) {
     console.error("Error obteniendo estudiantes:", err);
@@ -426,7 +447,7 @@ export async function fetchStudentsByTeacher() {
  */
 export async function fetchStudentsByTeacherProfile() {
   try {
-    const response = await api.get("/api/teacher/students");
+    const response = await api.get("/teacher/students");
     return response.data;
   } catch (err) {
     console.error("Error obteniendo estudiantes:", err);
@@ -435,17 +456,17 @@ export async function fetchStudentsByTeacherProfile() {
 }
 
 export async function fetchTeachersWithGroups() {
-  const response = await api.get("/api/teacher/all");
+  const response = await api.get("/teacher/all");
   return response.data;
 }
 
 export async function fetchStudentsWithGroups() {
-  const response = await api.get("/api/student/all");
+  const response = await api.get("/student/all");
   return response.data;
 }
 
 export async function assignStudentsToGroup(groupId: number, studentIds: string[]) {
-  const response = await api.post('/api/admin/students/assign', {
+  const response = await api.post('/admin/students/assign', {
     group_id: groupId,
     student_ids: studentIds,
   });
@@ -453,7 +474,7 @@ export async function assignStudentsToGroup(groupId: number, studentIds: string[
 }
 
 export async function assignTeachersToGroup(groupId: number, teacherIds: string[]) {
-  const response = await api.post('/api/admin/teachers/assign', {
+  const response = await api.post('/admin/teachers/assign', {
     group_id: groupId,
     teacher_ids: teacherIds,
   });
@@ -461,14 +482,14 @@ export async function assignTeachersToGroup(groupId: number, teacherIds: string[
 }
 
 export async function unassignStudentsFromGroup(studentIds: string[]) {
-  const response = await api.post('/api/admin/students/unassign', {
+  const response = await api.post('/admin/students/unassign', {
     student_ids: studentIds,
   });
   return response.data;
 }
 
 export async function unassignTeachersFromGroup(groupId: number, teacherIds: string[]) {
-  const response = await api.post('/api/admin/teachers/unassign', {
+  const response = await api.post('/admin/teachers/unassign', {
     group_id: groupId,
     teacher_ids: teacherIds,
   });
@@ -476,7 +497,7 @@ export async function unassignTeachersFromGroup(groupId: number, teacherIds: str
 }
 
 export async function fetchGroups() {
-  const response = await api.get("/api/admin/groups");
+  const response = await api.get("/admin/groups");
   return response.data;
 }
 
@@ -485,7 +506,7 @@ export async function fetchGroups() {
  * @param groupId - id del grupo a eliminar
  */
 export async function deleteGroup(groupId: number) {
-  const response = await api.delete(`/api/admin/groups/${groupId}`);
+  const response = await api.delete(`/admin/groups/${groupId}`);
   return response.data;
 }
 // === SUBIDA Y RECUPERACIÓN DE IMÁGENES ===
@@ -502,8 +523,8 @@ export const uploadImage = async (file: File, filename: string): Promise<string>
   formData.append('file', file);
   formData.append('filename', filename);
 
-  // ✅ Usa la ruta completa si está en /api/admin
-  const response = await api.post<{ name: string, url: string }>('/api/admin/upload_image', formData, {
+  // ✅ Usa la ruta completa si está en admin
+  const response = await api.post<{ name: string, url: string }>('/admin/upload_image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -517,7 +538,7 @@ export const uploadImage = async (file: File, filename: string): Promise<string>
  * @returns Mapa: { "filename.png": "https://public-url.com/..." }
  */
 export async function getImages(): Promise<Record<string, string>> {
-  const response = await api.get<Record<string, string>>('/api/admin/get_images');
+  const response = await api.get<Record<string, string>>('/admin/get_images');
   return response.data;
 }
 
@@ -546,21 +567,6 @@ export interface GameSessionResponse {
   session_id: string;
 }
 
-/**
- * Datos de una ronda de juego
- */
-export interface RoundResult {
-  round: number;
-  numbers: number[];
-  user_order: number[];
-  correct_order: number[];
-  is_correct: boolean;
-  time_seconds: number;
-  is_final_attempt?: boolean; // Opcional, por defecto true en backend
-  omissions?: number; // Números que no colocó (dejó sin colocar)
-  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
-  hints?: number; // Contador de pistas usadas
-}
 
 /**
  * Datos de una ronda del juego 1: Elegir Número
@@ -572,6 +578,9 @@ export interface RoundResultGame1 {
   correct_number: number | null;
   is_correct: boolean;
   time_seconds: number;
+  is_final_attempt?: boolean;
+  attempts?: number;
+  hints?: number;
 }
 
 
@@ -579,16 +588,14 @@ export interface RoundResultGame1 {
  * Datos de una ronda del juego 2: Ordenar Secuencia
  */
 export interface RoundResultGame2 {
-  round: number;
-  numbers: number[];
-  user_order: number[];
-  correct_order: number[];
-  is_correct: boolean;
-  time_seconds: number;
-  is_final_attempt?: boolean; // Opcional, por defecto true en backend
-  omissions?: number; // Números que no colocó (dejó sin colocar)
-  attempts?: number; // Contador de intentos (veces que presionó "Repetir")
-  hints?: number; // Contador de pistas usadas
+  round: number; // Número de ronda (1-5)
+  numbers: number[]; // Secuencia desordenada presentada al usuario
+  correct_order: number[]; // Orden correcto esperado
+  is_correct: boolean; // Si completó correctamente la ronda
+  time_seconds: number; // Tiempo de la ronda en segundos
+  hints: number; // Número de pistas usadas
+  total_incorrect: number; // Número de errores (colocaciones incorrectas)
+  omissions: number; // Números que no colocó (dejó sin colocar)
 }
 
 
@@ -618,7 +625,7 @@ export const gamesAPI = {
    * console.log(config.number_range); // '0-10'
    */
   getGameConfig: async (userId: string, gameKey: string): Promise<GameConfig> => {
-    const response = await api.get<GameConfig>(`/api/games/config/${userId}/${gameKey}`);
+    const response = await api.get<GameConfig>(`/games/config/${userId}/${gameKey}`);
     return response.data;
   },
 
@@ -639,7 +646,7 @@ export const gamesAPI = {
    * console.log(session.session_id); // 'session-uuid-456'
    */
   createGameSession: async (userId: string, gameKey: string): Promise<GameSessionResponse> => {
-    const response = await api.post<GameSessionResponse>('/api/games/sessions', {
+    const response = await api.post<GameSessionResponse>('/games/sessions', {
       student_id: userId,
       game_key: gameKey
     });
@@ -665,11 +672,12 @@ export const gamesAPI = {
  *   selected_number: 5,
  *   correct_number: 5,
  *   is_correct: true,
- *   time_seconds: 12.5
+ *   time_seconds: 12.5,
+ *   hints: 2
  * });
  */
   saveRoundResultGame1: async (sessionId: string, roundResult: RoundResultGame1): Promise<void> => {
-    await api.post(`/api/games/sessions/${sessionId}/round`, {
+    await api.post(`/games/sessions/${sessionId}/round`, {
       round_result: roundResult
     });
   },
@@ -698,7 +706,7 @@ export const gamesAPI = {
    * });
    */
   saveRoundResultGame2: async (sessionId: string, roundResult: RoundResultGame2): Promise<void> => {
-    await api.post(`/api/games/sessions/${sessionId}/round`, {
+    await api.post(`/games/sessions/${sessionId}/round`, {
       round_result: roundResult
     });
   },
@@ -720,7 +728,7 @@ export const gamesAPI = {
    * // La sesión ahora está marcada como completada en BD
    */
   finishGameSession: async (sessionId: string, totalTimeSeconds: number): Promise<void> => {
-    await api.post(`/api/games/sessions/${sessionId}/finish`, {
+    await api.post(`/games/sessions/${sessionId}/finish`, {
       total_time_seconds: totalTimeSeconds
     });
   }

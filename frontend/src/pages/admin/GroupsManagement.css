@@ -1,5 +1,5 @@
 /* =============================================================================
-   CSS Styles for GroupsManagement page
+    CSS Styles for GroupsManagement page
    ========================================================================== */
 
 
@@ -50,6 +50,15 @@ ion-button.groupManagement-AddButton::part(native) {
     color: white;
     border: none;
     box-shadow: none;
+
+}
+
+
+/* ========================================
+    Search bar
+   ======================================== */
+.groupManagement-Searchbar {
+    width: 500px;
 
 }
 

@@ -27,6 +27,7 @@ type Props = {
     isCorrect?: boolean;
     isIncorrect?: boolean;
     disabled?: boolean;
+    isHinted?: boolean;
     onClick?: (value: number) => void;
 };
 
@@ -50,6 +51,7 @@ const Bubble: React.FC<Props> = ({
     isCorrect = false,
     isIncorrect = false,
     disabled = false,
+    isHinted = false,
     onClick
 }) => {
     // Determine if we should show a pictogram for this value
@@ -60,10 +62,12 @@ const Bubble: React.FC<Props> = ({
     if (isSelected) classes += ' selected';
     if (isCorrect) classes += ' correct';
     if (isIncorrect) classes += ' incorrect';
+    if (isHinted) classes += ' hinted';
+    if (disabled) classes += ' disabled';
 
     /** Handle activation from mouse or keyboard. */
     const handleClick = () => {
-        if (disabled) return;
+        if (disabled || isHinted) return;
         if (onClick) onClick(value);
     };
 
@@ -74,9 +78,10 @@ const Bubble: React.FC<Props> = ({
                 onClick={handleClick}
                 role="button"
                 aria-pressed={isSelected}
-                tabIndex={disabled ? -1 : 0}
+                aria-disabled={disabled || isHinted}
+                tabIndex={disabled || isHinted ? -1 : 0}
                 onKeyDown={(e) => {
-                    if (disabled) return;
+                    if (disabled || isHinted) return;
                     if (e.key === 'Enter' || e.key === ' ') {
                         handleClick();
                         e.preventDefault();
@@ -91,18 +96,7 @@ const Bubble: React.FC<Props> = ({
             </div>
 
             {/* Feedback icon below the circle: tick for correct, cross for incorrect */}
-            {(isCorrect || isIncorrect) && (
-                <div
-                    className={`nm-feedback-icon ${isCorrect ? 'correct' : ''} ${isIncorrect ? 'incorrect' : ''}`}
-                    aria-hidden
-                >
-                    {isCorrect ? (
-                        <IonIcon icon={checkmarkSharp} className="nm-ion-icon" />
-                    ) : (
-                        <IonIcon icon={closeSharp} className="nm-ion-icon" />
-                    )}
-                </div>
-            )}
+
         </div>
     );
 };

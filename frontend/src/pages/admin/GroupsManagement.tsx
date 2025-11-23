@@ -20,11 +20,11 @@ setupIonicReact();
  *
  * @example
  * ```tsx
- * <Route path="/admin-dashboard/groups-management" component={GroupsManagement} />
+ * <Route path="/admin/dashboard"/groups-management" component={GroupsManagement} />
  * ```
  */
 
-import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton } from '@ionic/react';
+import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, IonSearchbar } from '@ionic/react';
 import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -38,10 +38,11 @@ import { useHistory } from 'react-router-dom';
 
 export default function GroupsManagement() {
 
-    const { user, loading: authLoading } = useAuth();
+    const { user, loadingAuth: authLoading } = useAuth();
 
     const [loading, setLoading] = useState(true);
     const [groups, setGroups] = useState<{ id: string; name: string; }[]>([]);
+    const [groupQuery, setGroupQuery] = useState<string>('');
 
     const history = useHistory();
 
@@ -65,6 +66,15 @@ export default function GroupsManagement() {
         loadData();
     }, []);
 
+    const displayedGroups = (() => {
+        const filtered = groupQuery === '' ? groups : groups.filter(g => {
+            const q = groupQuery.toLowerCase();
+            const name = (g.name || '').toLowerCase();
+            return name.includes(q);
+        });
+        return filtered;
+    })();
+
     if (authLoading || loading) {
         return (
             <IonPage>
@@ -77,20 +87,32 @@ export default function GroupsManagement() {
         );
     }
 
+    /* 
+    !! DEPRECATED
+        -> The route managers already do this shit
     // Redirects if not authenticated 
     if (!user || user.role !== 'admin') {
         return <Redirect to="/login" />;
     }
+    */
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName={user.username} />
+            <SimpleHeaderAdmin adminName={user?.username || "username"} />
             <IonContent>
                 <div className="groupManagement-MainContainer">
                     <div className="groupManagement-TextAddButton">
                         <IonLabel className="groupManagement-Text">
                             <h2>{'Grupos'}</h2>
                         </IonLabel>
+                        <IonSearchbar
+                            placeholder="Buscar grupo"
+                            value={groupQuery}
+                            onIonInput={(e) => setGroupQuery(e.detail.value ?? '')}
+                            onIonClear={() => setGroupQuery('')}
+                            onIonCancel={() => setGroupQuery('')}
+                            className='groupManagement-Searchbar'
+                        />
                         <IonButton
                             className="groupManagement-AddButoon"
                             onClick={() =>
@@ -104,7 +126,7 @@ export default function GroupsManagement() {
                     </div>
                     <div className="groupManagement-Table">
                         <IonList>
-                            {groups.map((group) => (
+                            {displayedGroups.map((group) => (
                                 <GroupItem
                                     key={group.id}
                                     id={group.id}

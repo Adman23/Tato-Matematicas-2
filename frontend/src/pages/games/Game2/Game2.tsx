@@ -23,11 +23,11 @@ import GameHeader from '../GameHeader';
 import './Game2.css';
 
 // Importar imágenes para el header
-import imgAceptar from '/assets/juegosImg/aceptar.png';
-import imgVolver from '/assets/juegosImg/volver.png';
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgTato from '/assets/Tato/Tato.png';
+import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
+import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
@@ -85,11 +85,11 @@ const TOTAL_ROUNDS = 5;
  *
  * @example
  * // Usado en el routing de la app:
- * <Route path="/game2" component={Game2} />
+ * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
   const history = useHistory();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loadingAuth: authLoading } = useAuth();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = user;
@@ -104,32 +104,26 @@ const Game2: React.FC = () => {
 
   // Estados del juego
   const [currentRound, setCurrentRound] = useState(1);
-  const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]);
+  const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]); // Grid fijo con números o undefined
   const [orderedNumbers, setOrderedNumbers] = useState<(number | undefined)[]>([]);
   const [correctOrder, setCorrectOrder] = useState<number[]>([]);
+  const [initialNumbers, setInitialNumbers] = useState<number[]>([]); // Números iniciales desordenados de la ronda
 
   // Estados de UI
   const [showFeedback, setShowFeedback] = useState(false);
   const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
   const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
-  const [hasErrors, setHasErrors] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<'correct' | 'incorrect' | null>(null);
+  const [draggingNumber, setDraggingNumber] = useState<number | null>(null);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
 
   // Estados de resultados
   const [gameFinished, setGameFinished] = useState(false);
+  const [roundCompleted, setRoundCompleted] = useState(false); // Si la ronda se completó
 
   // Estados de contadores por ronda
-  const [attemptsCount, setAttemptsCount] = useState(0); // Contador de intentos (Repetir)
   const [hintsCount, setHintsCount] = useState(0); // Contador de pistas usadas
-
-  // Mapeo de números a su posición original en availableNumbers
-  const [originalPositions, setOriginalPositions] = useState<Map<number, number>>(new Map());
-
-  // Estado para el elemento seleccionado (click mode)
-  const [selectedNumber, setSelectedNumber] = useState<{
-    value: number;
-    source: 'available' | 'ordered';
-    index: number;
-  } | null>(null);
+  const [errorsCount, setErrorsCount] = useState(0); // Contador de errores (colocaciones incorrectas)
 
   // Determinar si usar pictogramas (solo para rango 0-10)
   const usePictograms = config?.number_range === '0-10';
@@ -143,8 +137,12 @@ const Game2: React.FC = () => {
     setGameFinished(false);
     setCurrentRound(1);
     setShowFeedback(false);
-    setHasErrors(false);
+    setFeedbackType(null);
     setSessionId(null);
+
+    // Resetear contadores
+    setHintsCount(0);
+    setErrorsCount(0);
 
     loadGameConfig();
     setGameStartTime(Date.now());
@@ -179,7 +177,7 @@ const Game2: React.FC = () => {
     if (gameFinished) {
       const timer = setTimeout(() => {
         // Redirigir al dashboard correspondiente según el tipo de usuario
-        const dashboardRoute = user?.role === "student" ? '/student-dashboard' : '/tutor-dashboard';
+        const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
         history.push(dashboardRoute);
       }, 2000);
 
@@ -269,22 +267,7 @@ const Game2: React.FC = () => {
 
   /**
    * Genera los números y configuración para una nueva ronda del juego.
-   *
-   * Flujo de ejecución:
-   * 1. Genera números únicos aleatorios dentro del rango configurado
-   * 2. Los ordena según configuración (ascendente/descendente)
-   * 3. Mezcla los números disponibles para que no estén en orden
-   * 4. Inicializa la zona de ordenamiento vacía
-   * 5. Reinicia el timer de la ronda
-   *
-   * @returns void - Actualiza múltiples estados del componente
-   *
-   * @example
-   * // Si config.settings.quantity = 5 y order = 'ascending':
-   * // - Genera 5 números aleatorios
-   * // - correctOrder = [1, 3, 5, 7, 9] (ordenados)
-   * // - availableNumbers = [7, 1, 9, 3, 5] (mezclados)
-   * // - orderedNumbers = [undefined, undefined, undefined, undefined, undefined]
+   * Nueva lógica: Arriba todos los números mezclados, abajo una casilla vacía a la vez.
    */
   const generateRound = () => {
     if (!config) return;
@@ -334,263 +317,151 @@ const Game2: React.FC = () => {
     // Crear array de orden correcto
     setCorrectOrder(sorted);
 
-    // Mezclar aleatoriamente los números disponibles (para que no estén en orden)
-    const shuffledAvailable = [...numbersArray].sort(() => Math.random() - 0.5);
+    // Mezclar números para mostrar arriba en orden aleatorio
+    const shuffled = [...numbersArray].sort(() => Math.random() - 0.5);
+    setAvailableNumbers(shuffled);
 
-    // Guardar las posiciones originales de cada número
-    const positions = new Map<number, number>();
-    shuffledAvailable.forEach((num, index) => {
-      positions.set(num, index);
-    });
+    // Guardar números iniciales desordenados para enviar a BD
+    setInitialNumbers(shuffled);
 
-    // Crear array inicial vacío para la zona de ordenamiento
+    // Crear array inicial vacío para la zona de ordenamiento (abajo)
     const initialOrdered = new Array(quantity).fill(undefined);
-
-    setAvailableNumbers(shuffledAvailable);
     setOrderedNumbers(initialOrdered);
-    setOriginalPositions(positions);
+
     setShowFeedback(false);
+    setFeedbackType(null);
     setRoundStartTime(Date.now());
+    setRoundCompleted(false);
+    setSelectedNumber(null); // Resetear número seleccionado
 
     // Reiniciar contadores de ronda
-    setAttemptsCount(0);
     setHintsCount(0);
+    setErrorsCount(0);
   };
 
 
   /**
-   * Valida la respuesta del usuario y muestra feedback visual.
-   *
-   * Flujo de ejecución:
-   * 1. Calcula el tiempo transcurrido en la ronda
-   * 2. Identifica errores y omisiones
-   * 3. Muestra feedback visual (iconos check/cruz, colores)
-   * 4. Si está correcto: guarda en BD y avanza automáticamente
-   * 5. Si hay errores: solo muestra feedback, NO guarda (espera decisión del usuario)
-   *
-   * @returns Promesa que resuelve cuando se completa la validación
-   *
-   * @example
-   * // Usuario coloca: [1, 3, 5, 7, 9] (correcto)
-   * // → Guarda en BD con is_final_attempt: true y avanza automáticamente
-   *
-   * @example
-   * // Usuario coloca: [1, 5, 3, 7, 9] (incorrecto)
-   * // → Muestra feedback pero NO guarda, espera que usuario elija Repetir o Avanzar
+   * Intenta colocar un número arrastrado en el slot especificado.
+   * Valida inmediatamente si es correcto o no.
+   * @param currentHints - Valor actual de hints para evitar problemas de estado asíncrono
    */
-  const checkAnswer = async () => {
-    const timeSeconds = (Date.now() - roundStartTime) / 1000;
+  const tryPlaceNumber = (draggedNumber: number, targetIndex: number, currentHints?: number) => {
+    if (showFeedback) return;
 
-    // Calcular omisiones (números que no colocó)
-    const omissions = availableNumbers.filter(n => n !== undefined).length;
+    // Buscar el primer slot vacío
+    const firstEmptyIndex = orderedNumbers.findIndex(n => n === undefined);
 
-    // Identificar qué posiciones están incorrectas
-    const wrongIndices = new Set<number>();
-    orderedNumbers.forEach((num, index) => {
-      if (correctOrder[index] !== undefined && num !== correctOrder[index]) {
-        wrongIndices.add(index);
-      }
-    });
+    // Solo se puede colocar en el primer slot vacío
+    if (targetIndex !== firstEmptyIndex) return;
 
-    // Solo es correcto si no hay errores NI omisiones
-    const correct = wrongIndices.size === 0 && omissions === 0;
-    const hasProblems = wrongIndices.size > 0 || omissions > 0;
+    // Verificar si el número es correcto para esta posición
+    const isCorrect = draggedNumber === correctOrder[firstEmptyIndex];
 
+    if (!isCorrect) {
+      // Mostrar feedback de error pero NO colocar el número
+      setFeedbackType('incorrect');
+      setShowFeedback(true);
+      setErrorsCount(prev => prev + 1); // Incrementar contador de errores
+
+      // Ocultar feedback después de 1 segundo
+      setTimeout(() => {
+        setShowFeedback(false);
+        setFeedbackType(null);
+      }, 1000);
+      return;
+    }
+
+    // Es correcto: colocar el número y quitarlo de availableNumbers
+    const newOrdered = [...orderedNumbers];
+    newOrdered[firstEmptyIndex] = draggedNumber;
+    setOrderedNumbers(newOrdered);
+
+    // Reemplazar el número con undefined en availableNumbers (mantener posición fija)
+    const newAvailable = availableNumbers.map(n => n === draggedNumber ? undefined : n);
+    setAvailableNumbers(newAvailable);
+
+    // Mostrar feedback de éxito
+    setFeedbackType('correct');
     setShowFeedback(true);
-    setHasErrors(hasProblems);
 
-    // Solo guardar si está CORRECTO (avance automático)
-    // Si hay errores, NO guardamos aquí, esperamos que el usuario decida (Repetir o Avanzar)
-    if (correct && sessionId) {
+    // Verificar si se completó la ronda
+    setTimeout(() => {
+      setShowFeedback(false);
+      setFeedbackType(null);
+
+      // Verificar si todos los números fueron colocados (todos son undefined)
+      if (newAvailable.every(n => n === undefined)) {
+        // Todos los números colocados: guardar y mostrar botón continuar
+        saveRoundResults(currentHints);
+        setRoundCompleted(true);
+      }
+    }, 1500);
+  };
+
+  /**
+   * Guarda los resultados de la ronda actual.
+   * @param currentHints - Valor actual de hints (opcional, usa hintsCount del estado si no se proporciona)
+   */
+  const saveRoundResults = async (currentHints?: number) => {
+    const timeSeconds = (Date.now() - roundStartTime) / 1000;
+    const finalHintsCount = currentHints !== undefined ? currentHints : hintsCount;
+
+    if (sessionId) {
       try {
-        // Convertir undefined a -1 para que el backend pueda procesarlo
-        const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
-
+        // Guardar resultado de ronda completada
         await gamesAPI.saveRoundResultGame2(sessionId, {
           round: currentRound,
-          numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
-          user_order: userOrderWithNulls,
-          correct_order: correctOrder,
-          is_correct: true,
+          numbers: initialNumbers, // Números desordenados que se presentaron al inicio
+          correct_order: correctOrder, // Orden correcto esperado
+          is_correct: true, // Ronda completada correctamente
           time_seconds: timeSeconds,
-          omissions: 0,
-          is_final_attempt: true, // Es correcto, por lo tanto es intento final
-          attempts: attemptsCount,
-          hints: hintsCount
+          hints: finalHintsCount,
+          total_incorrect: errorsCount,
+          omissions: 0 // No hay omisiones porque completó todos
         });
       } catch (error) {
         console.error('Error saving round:', error);
       }
     }
-
-    // Solo avanzar automáticamente si NO hay errores ni omisiones
-    if (correct) {
-      setTimeout(() => {
-        if (currentRound < TOTAL_ROUNDS) {
-          setCurrentRound(prev => prev + 1);
-        } else {
-          finishGame();
-        }
-      }, 2000);
-    }
   };
 
   /**
-   * Repite el ejercicio actual, manteniendo los números correctos en su posición
-   * y devolviendo solo los incorrectos a la zona disponible en sus posiciones originales.
+   * Avanza a la siguiente ronda o finaliza el juego.
+   * Se llama cuando el usuario pulsa el botón de continuar.
    */
-  const repeatExercise = () => {
-    // Incrementar contador de intentos
-    setAttemptsCount(prev => prev + 1);
-
-    const newOrdered = [...orderedNumbers];
-    const newAvailable = [...availableNumbers];
-
-    // Procesar cada número colocado
-    orderedNumbers.forEach((num, index) => {
-      if (num !== undefined) {
-        // Verificar si el número está en la posición correcta
-        const isCorrect = num === correctOrder[index];
-
-        if (!isCorrect) {
-          // Número incorrecto: devolverlo a su posición original en availableNumbers
-          newOrdered[index] = undefined;
-
-          // Obtener la posición original del número
-          const originalIndex = originalPositions.get(num);
-
-          if (originalIndex !== undefined && originalIndex < newAvailable.length) {
-            // Si la posición original está disponible, colocar ahí
-            if (newAvailable[originalIndex] === undefined) {
-              newAvailable[originalIndex] = num;
-            } else {
-              // Si está ocupada, buscar la posición más cercana disponible
-              let leftIndex = originalIndex - 1;
-              let rightIndex = originalIndex + 1;
-              let placed = false;
-
-              while (!placed && (leftIndex >= 0 || rightIndex < newAvailable.length)) {
-                if (leftIndex >= 0 && newAvailable[leftIndex] === undefined) {
-                  newAvailable[leftIndex] = num;
-                  placed = true;
-                } else if (rightIndex < newAvailable.length && newAvailable[rightIndex] === undefined) {
-                  newAvailable[rightIndex] = num;
-                  placed = true;
-                }
-                leftIndex--;
-                rightIndex++;
-              }
-
-              // Si no se encontró ninguna posición, buscar el primer vacío
-              if (!placed) {
-                const emptyIndex = newAvailable.findIndex(n => n === undefined);
-                if (emptyIndex !== -1) {
-                  newAvailable[emptyIndex] = num;
-                }
-              }
-            }
-          } else {
-            // Si no hay posición original, buscar el primer slot vacío
-            const emptyIndex = newAvailable.findIndex(n => n === undefined);
-            if (emptyIndex !== -1) {
-              newAvailable[emptyIndex] = num;
-            }
-          }
-        }
-        // Si es correcto, se mantiene en newOrdered (ya está copiado)
-      }
-    });
-
-    setAvailableNumbers(newAvailable);
-    setOrderedNumbers(newOrdered);
-    setShowFeedback(false);
-    setHasErrors(false);
-    setRoundStartTime(Date.now());
-  };
-
-  /**
-   * Proporciona una pista colocando automáticamente un número correcto.
-   * Busca el primer slot vacío y coloca el número que debería ir ahí.
-   */
-  const useHint = () => {
-    // No permitir pistas cuando se muestra feedback
-    if (showFeedback) return;
-
-    // Buscar el primer slot vacío en orderedNumbers
-    const emptyIndex = orderedNumbers.findIndex(num => num === undefined);
-
-    if (emptyIndex === -1) {
-      // No hay slots vacíos
-      return;
-    }
-
-    // Obtener el número correcto para esa posición
-    const correctNumber = correctOrder[emptyIndex];
-
-    // Buscar el número en availableNumbers
-    const availableIndex = availableNumbers.findIndex(num => num === correctNumber);
-
-    if (availableIndex === -1) {
-      // El número no está disponible (ya está colocado en otro lugar)
-      return;
-    }
-
-    // Incrementar contador de pistas
-    setHintsCount(prev => prev + 1);
-
-    // Mover el número de available a ordered
-    const newAvailable = [...availableNumbers];
-    newAvailable[availableIndex] = undefined;
-    setAvailableNumbers(newAvailable);
-
-    const newOrdered = [...orderedNumbers];
-    newOrdered[emptyIndex] = correctNumber;
-    setOrderedNumbers(newOrdered);
-
-    // Deseleccionar cualquier número seleccionado
-    setSelectedNumber(null);
-  };
-
-  /**
-   * Avanza manualmente a la siguiente ronda o finaliza el juego.
-   * Guarda el intento con errores como final antes de avanzar.
-   *
-   * Esta función se llama cuando el usuario hace clic en "Avanzar" después de ver
-   * que su respuesta tiene errores. Es la PRIMERA y ÚNICA vez que se guarda este intento.
-   */
-  const advanceToNextRound = async () => {
-    // Guardar el intento con errores como final (es la primera vez que se guarda)
-    if (sessionId && hasErrors) {
-      try {
-        const timeSeconds = (Date.now() - roundStartTime) / 1000;
-        const omissions = availableNumbers.filter(n => n !== undefined).length;
-
-        // Convertir undefined a -1 para que el backend pueda procesarlo
-        const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
-
-        await gamesAPI.saveRoundResultGame2(sessionId, {
-          round: currentRound,
-          numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
-          user_order: userOrderWithNulls,
-          correct_order: correctOrder,
-          is_correct: false, // Tiene errores o omisiones
-          time_seconds: timeSeconds,
-          omissions: omissions,
-          is_final_attempt: true, // Usuario decidió avanzar, es intento final
-          attempts: attemptsCount,
-          hints: hintsCount
-        });
-      } catch (error) {
-        console.error('Error saving final attempt:', error);
-      }
-    }
-
-    // Avanzar a la siguiente ronda
+  const advanceToNextRound = () => {
     if (currentRound < TOTAL_ROUNDS) {
       setCurrentRound(prev => prev + 1);
     } else {
       finishGame();
     }
+  };
+
+  /**
+   * Proporciona una pista colocando automáticamente el número correcto.
+   */
+  const useHint = () => {
+    // No permitir usar pista durante feedback o si no hay números disponibles
+    if (showFeedback) return;
+
+    const hasAvailableNumbers = availableNumbers.some(n => n !== undefined);
+    if (!hasAvailableNumbers) return;
+
+    // Calcular el nuevo valor de hints
+    const newHintsCount = hintsCount + 1;
+
+    // Incrementar contador de pistas
+    setHintsCount(newHintsCount);
+
+    // Encontrar el primer slot vacío
+    const firstEmptyIndex = orderedNumbers.findIndex(n => n === undefined);
+    if (firstEmptyIndex === -1) return;
+
+    // Obtener el número correcto para esa posición
+    const correctNumber = correctOrder[firstEmptyIndex];
+
+    // Colocar el número correcto automáticamente, pasando el valor actualizado de hints
+    tryPlaceNumber(correctNumber, firstEmptyIndex, newHintsCount);
   };
 
   /**
@@ -626,35 +497,30 @@ const Game2: React.FC = () => {
 
   /**
    * Maneja la salida anticipada del juego (botón home).
-   * Guarda el estado actual como intento final y redirige al dashboard.
    */
   const handleEarlyExit = async () => {
-    // Si hay una sesión activa, guardar el estado actual
     if (sessionId) {
       try {
-        // Si hay números colocados en la ronda actual, guardar como intento incompleto
         const hasPlacedNumbers = orderedNumbers.some(num => num !== undefined);
 
         if (hasPlacedNumbers) {
           const timeSeconds = (Date.now() - roundStartTime) / 1000;
-          const omissions = availableNumbers.filter(n => n !== undefined).length;
-          const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
+
+          // Contar cuántos números NO fueron colocados (quedaron sin colocar)
+          const omissionsCount = availableNumbers.filter(n => n !== undefined).length;
 
           await gamesAPI.saveRoundResultGame2(sessionId, {
             round: currentRound,
-            numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
-            user_order: userOrderWithNulls,
-            correct_order: correctOrder,
-            is_correct: false,
+            numbers: initialNumbers, // Números desordenados que se presentaron
+            correct_order: correctOrder, // Orden correcto esperado
+            is_correct: false, // No completó la ronda
             time_seconds: timeSeconds,
-            omissions: omissions,
-            is_final_attempt: true,
-            attempts: attemptsCount,
-            hints: hintsCount
+            hints: hintsCount,
+            total_incorrect: errorsCount,
+            omissions: omissionsCount // Números que dejó sin colocar
           });
         }
 
-        // Finalizar la sesión
         const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
         await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
       } catch (error) {
@@ -662,108 +528,77 @@ const Game2: React.FC = () => {
       }
     }
 
-    // Redirigir al dashboard
-    const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
+    // Redirect to dashboard
+    const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/tutor/dashboard';
     history.push(dashboardRoute);
   };
 
   /**
-   * Maneja el click en un número disponible (zona superior).
-   * Solo permite seleccionar números de la zona disponible para colocarlos en la solución.
+   * Maneja el drag start para HTML5 drag and drop.
    */
-  const handleAvailableNumberClick = (num: number, index: number) => {
-    // No permitir seleccionar cuando se muestra feedback
+  const handleDragStart = (e: React.DragEvent, number: number) => {
     if (showFeedback) return;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', number.toString());
 
-    // Si se clickea el mismo número, deseleccionarlo
-    if (selectedNumber?.source === 'available' && selectedNumber.index === index) {
-      setSelectedNumber(null);
-      return;
-    }
+    // Deseleccionar cualquier número previamente seleccionado
+    setSelectedNumber(null);
 
-    // Deseleccionar cualquier otro número y seleccionar este
-    setSelectedNumber({ value: num, source: 'available', index });
+    // Crear imagen personalizada para drag
+    const dragElement = e.currentTarget as HTMLElement;
+    const clone = dragElement.cloneNode(true) as HTMLElement;
+
+    // Aplicar estilos: siempre rosa con borde negro (estilo .number-card-selected)
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.transform = 'scale(1.3)';
+    clone.style.boxShadow = 'none';
+    clone.style.background = '#FFB7FA';
+    clone.style.borderColor = '#000000';
+
+    document.body.appendChild(clone);
+    e.dataTransfer.setDragImage(clone, 55, 55);
+
+    setTimeout(() => {
+      document.body.removeChild(clone);
+    }, 0);
+
+    setDraggingNumber(number);
   };
 
   /**
-   * Maneja el click en un slot de la zona de ordenamiento.
-   * - Si el slot está vacío y hay un número seleccionado: lo coloca
-   * - Si el slot tiene un número: lo devuelve a su posición original en availableNumbers
+   * Maneja el drag end para limpiar el estado.
    */
-  const handleOrderedSlotClick = (targetIndex: number) => {
-    // No permitir clicks cuando se muestra feedback
+  const handleDragEnd = () => {
+    setDraggingNumber(null);
+  };
+
+  /**
+   * Maneja el click en un número para seleccionarlo (rojo).
+   */
+  const handleNumberClick = (number: number) => {
     if (showFeedback) return;
+    setSelectedNumber(selectedNumber === number ? null : number);
+  };
 
-    const targetNumber = orderedNumbers[targetIndex];
+  /**
+   * Maneja el drag over en un slot.
+   */
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
 
-    // Caso 1: El slot tiene un número - devolverlo a su posición original en availableNumbers
-    if (targetNumber !== undefined) {
-      const newOrdered = [...orderedNumbers];
-      newOrdered[targetIndex] = undefined;
-      setOrderedNumbers(newOrdered);
-
-      const newAvailable = [...availableNumbers];
-      // Obtener la posición original del número
-      const originalIndex = originalPositions.get(targetNumber);
-
-      if (originalIndex !== undefined && originalIndex < newAvailable.length) {
-        // Si la posición original está disponible, colocar ahí
-        if (newAvailable[originalIndex] === undefined) {
-          newAvailable[originalIndex] = targetNumber;
-        } else {
-          // Si la posición original está ocupada, buscar la más cercana disponible
-          let leftIndex = originalIndex - 1;
-          let rightIndex = originalIndex + 1;
-          let placed = false;
-
-          while (!placed && (leftIndex >= 0 || rightIndex < newAvailable.length)) {
-            if (leftIndex >= 0 && newAvailable[leftIndex] === undefined) {
-              newAvailable[leftIndex] = targetNumber;
-              placed = true;
-            } else if (rightIndex < newAvailable.length && newAvailable[rightIndex] === undefined) {
-              newAvailable[rightIndex] = targetNumber;
-              placed = true;
-            }
-            leftIndex--;
-            rightIndex++;
-          }
-
-          // Si no se encontró ninguna posición cercana, agregar al final
-          if (!placed) {
-            newAvailable.push(targetNumber);
-          }
-        }
-      } else {
-        // Si no hay posición original guardada, buscar el primer slot vacío
-        const emptyIndex = newAvailable.findIndex(n => n === undefined);
-        if (emptyIndex !== -1) {
-          newAvailable[emptyIndex] = targetNumber;
-        } else {
-          newAvailable.push(targetNumber);
-        }
-      }
-
-      setAvailableNumbers(newAvailable);
-
-      // Deseleccionar si había algo seleccionado
-      setSelectedNumber(null);
-      return;
+  /**
+   * Maneja el drop en un slot.
+   */
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    const draggedNumber = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    if (!isNaN(draggedNumber)) {
+      tryPlaceNumber(draggedNumber, targetIndex);
     }
-
-    // Caso 2: El slot está vacío y hay un número seleccionado de available
-    if (targetNumber === undefined && selectedNumber?.source === 'available') {
-      // Mover desde available a ordered
-      const newAvailable = [...availableNumbers];
-      newAvailable[selectedNumber.index] = undefined;
-      setAvailableNumbers(newAvailable);
-
-      const newOrdered = [...orderedNumbers];
-      newOrdered[targetIndex] = selectedNumber.value;
-      setOrderedNumbers(newOrdered);
-
-      // Deseleccionar después de colocar
-      setSelectedNumber(null);
-    }
+    setDraggingNumber(null);
   };
 
 
@@ -783,7 +618,7 @@ const Game2: React.FC = () => {
 
   // Redirigir si no hay usuario autenticado (estudiante o profesor)
   if (!user) {
-    return <Redirect to="/student-login" />;
+    return <Redirect to="/student/login" />;
   }
 
   // Pantalla de carga del juego
@@ -838,34 +673,39 @@ const Game2: React.FC = () => {
         {/* Zona de juego */}
         <div className="game2-container">
 
-          {/* Números disponibles (arriba) */}
+          {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
           <div className="available-numbers-top" id="available-zone">
             {availableNumbers.map((num, index) => {
               if (num === undefined) {
-                // Mostrar slot vacío (no hace nada al hacer click)
+                // Hueco vacío - círculo gris con borde punteado negro
                 return (
                   <div
-                    key={`available-slot-${index}`}
-                    className="droppable-slot"
-                  >
-                    <div className="empty-slot" />
-                  </div>
+                    key={`empty-${index}`}
+                    className="number-card-v2 number-card-empty"
+                  />
                 );
               }
 
               const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
-              let cardClass = 'number-card-v2 number-card-available';
-              if (usePictograms) cardClass += ' number-card-pictogram';
+              const isBeingDragged = draggingNumber === num;
+              const isSelected = selectedNumber === num;
 
-              // Resaltar si está seleccionado
-              const isSelected = selectedNumber?.source === 'available' && selectedNumber.index === index;
-              if (isSelected) cardClass += ' number-card-selected';
+              // Determinar las clases CSS
+              let classes = 'number-card-v2';
+              // Si está siendo arrastrado O está seleccionado: estilo rosa
+              if (isBeingDragged || isSelected) {
+                classes += ' number-card-selected';
+              }
 
               return (
                 <div
                   key={`available-${num}-${index}`}
-                  className={cardClass}
-                  onClick={() => handleAvailableNumberClick(num, index)}
+                  className={classes}
+                  draggable={!showFeedback}
+                  onDragStart={(e) => handleDragStart(e, num)}
+                  onDragEnd={handleDragEnd}
+                  onClick={() => handleNumberClick(num)}
+                  style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
                 >
                   {pictogramImg ? (
                     <img
@@ -881,7 +721,7 @@ const Game2: React.FC = () => {
             })}
           </div>
 
-          {/* Zona de ordenamiento (abajo con espacios grises) */}
+          {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
           <DropZone
             numbers={orderedNumbers}
             correctOrder={correctOrder}
@@ -889,87 +729,46 @@ const Game2: React.FC = () => {
             totalSlots={orderedNumbers.length}
             usePictogram={usePictograms}
             lockedIndices={new Set()}
-            selectedNumber={selectedNumber}
-            onSlotClick={handleOrderedSlotClick}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            feedbackType={feedbackType}
           />
         </div>
 
         {/* Botones de control */}
         <div className="check-button-container">
-          {/* Botón de pistas - siempre visible a la izquierda */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button game2-hint-button"
-            onClick={useHint}
-          >
-            <img
-              src={imgTato}
-              alt="Pista"
-              className="game2-check-button-image"
-            />
-          </IonButton>
-
-          {/* Mostrar botón Repetir solo cuando hay errores y se muestra feedback */}
-          {showFeedback && hasErrors && (
+          {/* Botón de pistas (Tato) - Solo visible cuando la ronda NO está completada */}
+          {!roundCompleted && (
             <IonButton
               fill="clear"
-              className="game2-check-button game2-repeat-button"
-              onClick={repeatExercise}
+              className="game2-check-button game2-hint-button"
+              onClick={useHint}
+              disabled={availableNumbers.every(n => n === undefined)}
             >
               <img
-                src={imgVolver}
-                alt="Repetir"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
-
-          {/* Botón Aceptar/Comprobar cuando no hay feedback */}
-          {!showFeedback && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button"
-              onClick={checkAnswer}
-            >
-              <img
-                src={imgAceptar}
-                alt="Comprobar"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
-
-          {/* Botón Flecha para continuar cuando está correcto */}
-          {showFeedback && !hasErrors && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button"
-              onClick={() => {
-                if (currentRound < TOTAL_ROUNDS) {
-                  setCurrentRound(prev => prev + 1);
-                } else {
-                  finishGame();
+                src={
+                  feedbackType === 'correct'
+                    ? imgTatoFeliz
+                    : feedbackType === 'incorrect'
+                    ? imgTatoTriste
+                    : imgTato
                 }
-              }}
-            >
-              <img
-                src={imgFlecha2}
-                alt="Continuar"
+                alt="Pista"
                 className="game2-check-button-image"
               />
             </IonButton>
           )}
 
-          {/* Botón Flecha para avanzar cuando hay errores */}
-          {showFeedback && hasErrors && (
+          {/* Botón de continuar - Solo visible cuando la ronda está completada - a la derecha */}
+          {roundCompleted && (
             <IonButton
               fill="clear"
-              className="game2-check-button"
+              className="game2-check-button game2-continue-button"
               onClick={advanceToNextRound}
             >
               <img
                 src={imgFlecha2}
-                alt="Avanzar"
+                alt="Continuar"
                 className="game2-check-button-image"
               />
             </IonButton>

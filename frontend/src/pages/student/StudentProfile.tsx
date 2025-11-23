@@ -15,22 +15,23 @@ import {
     IonIcon,
 } from '@ionic/react';
 
-import { 
+import {
     volumeMute,   
     volumeMedium, 
     volumeHigh    
 } from 'ionicons/icons';
-import { Redirect } from 'react-router-dom';         // Used for redirection
 import { useAuth } from '../../contexts/AuthContext';// Authentication context
+import { useUserData } from "../../contexts/UserContext" // UserData context
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import './StudentProfile.css';
 // End of Imports-------------------------------------------------------
 
 /**
- * !!! This page is for the student, only basic settings are here !!!
- * TODO: Expand functionality to allow students to update their real profile details.
- * 
+ * !! EDITED
+ *  -> Fixed some problems with the UI
+ *  -> Integrated with the backend
+ *  -> Added the userData context
  * @returns {JSX.Element} Interface of the student profile page.
  */
 export default function StudentProfile() {
@@ -39,12 +40,14 @@ export default function StudentProfile() {
      * 'user': Object containing authenticated student data.
      *            it should have the following structure:
      *           {
-     *             username: string,
-     *             photo_url: string,
-     *             other student properties...
+     *               id: string;
+     *               username: string;
+     *               role: 'student';
+     *               photo_url?: string;
      *           }  
      */ 
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
+    const { userData, loadingUser } = useUserData();
 
     // Variables and functions---------------------------------
     const [color, setColor] = useState('original');
@@ -53,7 +56,7 @@ export default function StudentProfile() {
     // End of variables and functions--------------------------
 
     // Show loading icon
-    if (loading) {
+    if (loadingUser) {
         return (
             <IonPage>
                 <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -63,90 +66,94 @@ export default function StudentProfile() {
         );
     }
 
+    /* 
+    !! DEPRECATED
+        -> RouteController should manage this
     // Redirect if not authenticated
     if (!user) {
-        return <Redirect to="/student-login" />;
+        return <Redirect to="/student/login" />;
     }
+    */
 
     // Component-----------------------------------------------
     return (
         <IonPage>
             {/* Header */}
-            <SimpleHeaderUser userName={user.username} 
-                    photoUrl={user.photo_url} url="/student-dashboard" />
+            <SimpleHeaderUser userName={user?.username || "username"} 
+                    photoUrl={user?.photo_url} url="/student/dashboard" />
 
             {/* Main Content */}
             <IonContent className="ion-padding">
                     
-                    <div className='main-container'>
-                        {/* COLOR */}
-                        <div className="settings-section">
-                            <img
-                                src="/assets/pictograms/color.png"
-                                alt="Eligir entre las opciones de color"
-                                className="image-icon"
-                            />
-                            <p className="section-title">Colores</p>
-                            <div className="options-container">
-                            <IonButton fill={color === 'original' ? 'solid' : 'outline'} 
-                                onClick={() => setColor('original')} className="color-btn palette-original"></IonButton>
+                <div className='main-container'>
+                    {/* COLOR */}
+                    <div className="settings-section">
+                        <img
+                            src="/assets/pictograms/color.png"
+                            alt="Eligir entre las opciones de color"
+                            className="image-icon"
+                        />
+                        <p className="section-title">Colores</p>
+                        <div className="options-container">
+                        <IonButton fill={color === 'original' ? 'solid' : 'outline'} 
+                            onClick={() => setColor('original')} className="color-btn palette-original"></IonButton>
 
-                            <IonButton fill={color === 'pastel' ? 'solid' : 'outline'} 
-                                onClick={() => setColor('pastel')} className="color-btn palette-pastel"></IonButton>
+                        <IonButton fill={color === 'pastel' ? 'solid' : 'outline'} 
+                            onClick={() => setColor('pastel')} className="color-btn palette-pastel"></IonButton>
 
-                            <IonButton fill={color === 'vibrante' ? 'solid' : 'outline'} 
-                                onClick={() => setColor('vibrante')} className="color-btn palette-vibrante"></IonButton>
-                            </div>
+                        <IonButton fill={color === 'vibrante' ? 'solid' : 'outline'} 
+                            onClick={() => setColor('vibrante')} className="color-btn palette-vibrante"></IonButton>
                         </div>
-
-                        {/* 2. SOUND */}
-                        <div className="settings-section">
-                            <img
-                                src="/assets/pictograms/sound.png"
-                                alt="Eligir entre las opciones de color"
-                                className="image-icon"
-                            />                            
-                            <p className="section-title">Sonido</p>
-                            <div className="options-container">
-                            <IonButton className="sound-btn" fill={sound === 'mudo' ? 'solid' : 'outline'} 
-                                onClick={() => setSound('mudo')}> Mudo
-                                <IonIcon slot="icon-only" icon={volumeMute}></IonIcon>    
-                            </IonButton>
-
-                            <IonButton className="sound-btn" fill={sound === 'medio' ? 'solid' : 'outline'} 
-                                onClick={() => setSound('medio')}> Medio
-                                <IonIcon slot="icon-only" icon={volumeMedium}></IonIcon>    
-                            </IonButton>
-
-                            <IonButton className="sound-btn" fill={sound === 'alto' ? 'solid' : 'outline'} 
-                                onClick={() => setSound('alto')}> Alto
-                                <IonIcon slot="icon-only" icon={volumeHigh}></IonIcon>    
-                            </IonButton>
-                            </div>
-                        </div>
-
-                        {/* 2. TEXT */}
-                        <div className="settings-section">
-                            <img
-                                src="/assets/pictograms/text.png"
-                                alt="Eligir entre las opciones de color"
-                                className="image-icon"
-                            />                            
-                            <p className="section-title">Texto</p>
-                            <div className="options-container">
-                            <IonButton fill={text === 'normal' ? 'solid' : 'outline'} 
-                                onClick={() => setText('normal')} className="text-normal">Normal</IonButton>
-                            <IonButton fill={text === 'grande' ? 'solid' : 'outline'} 
-                                onClick={() => setText('grande')} className="text-grande">Grande</IonButton>
-                            </div>
-                        </div>
-
-                    </div> 
-
-                    {/* Text preview */}
-                    <div className={`text-preview ${text}`}>
-                        Texto de ejemplo para previsualizar los cambios.
                     </div>
+
+                    {/* 2. SOUND */}
+                    <div className="settings-section">
+                        <img
+                            src="/assets/pictograms/sound.png"
+                            alt="Eligir entre las opciones de color"
+                            className="image-icon"
+                        />                            
+                        <p className="section-title">Sonido</p>
+                        <div className="options-container">
+                        <IonButton className="sound-btn" fill={sound === 'mudo' ? 'solid' : 'outline'} 
+                            onClick={() => setSound('mudo')}> Mudo
+                            <IonIcon slot="icon-only" icon={volumeMute}></IonIcon>    
+                        </IonButton>
+
+                        <IonButton className="sound-btn" fill={sound === 'medio' ? 'solid' : 'outline'} 
+                            onClick={() => setSound('medio')}> Medio
+                            <IonIcon slot="icon-only" icon={volumeMedium}></IonIcon>    
+                        </IonButton>
+
+                        <IonButton className="sound-btn" fill={sound === 'alto' ? 'solid' : 'outline'} 
+                            onClick={() => setSound('alto')}> Alto
+                            <IonIcon slot="icon-only" icon={volumeHigh}></IonIcon>    
+                        </IonButton>
+                        </div>
+                    </div>
+
+                    {/* 2. TEXT */}
+                    <div className="settings-section">
+                        <img
+                            src="/assets/pictograms/text.png"
+                            alt="Eligir entre las opciones de color"
+                            className="image-icon"
+                        />                            
+                        <p className="section-title">Texto</p>
+                        <div className="options-container">
+                        <IonButton fill={text === 'normal' ? 'solid' : 'outline'} 
+                            onClick={() => setText('normal')} className="text-normal">Normal</IonButton>
+                        <IonButton fill={text === 'grande' ? 'solid' : 'outline'} 
+                            onClick={() => setText('grande')} className="text-grande">Grande</IonButton>
+                        </div>
+                    </div>
+
+                </div> 
+
+                {/* Text preview */}
+                <div className={`text-preview ${text}`}>
+                    Texto de ejemplo para previsualizar los cambios.
+                </div>
 
                 </IonContent>
         </IonPage> 

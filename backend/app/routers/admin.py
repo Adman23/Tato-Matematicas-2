@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi import APIRouter, HTTPException, status, Depends
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
-from ..dependencies import get_current_admin
+from ..dependencies import is_admin_current_user
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
 from ..schemas.admin import AssignStudentsPayload, AssignTeachersPayload, UnassignStudentsPayload, UnassignTeachersPayload
@@ -102,7 +102,7 @@ async def list_students():
 
 
 @router.post("/students/assign", summary="Asignar alumnos a un grupo")
-async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends(get_current_admin)):
+async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends(is_admin_current_user)):
     """
     Assign students to a group.
     Assign a list of students to a group by setting their `group_id` in the `users` table.
@@ -140,7 +140,7 @@ async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends
 
 
 @router.post("/teachers/assign", summary="Asignar profesores a un grupo")
-async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends(get_current_admin)):
+async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends(is_admin_current_user)):
     """
     Assign teachers to a group.
 
@@ -206,7 +206,7 @@ async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends
 
 
 @router.post("/students/unassign", summary="Desmatricular alumnos de un grupo")
-async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=Depends(get_current_admin)):
+async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=Depends(is_admin_current_user)):
     """
     Unassign students from their groups.
 
@@ -245,7 +245,7 @@ async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=D
 
 
 @router.post("/teachers/unassign", summary="Desasignar profesores de un grupo")
-async def unassign_teachers_from_group(payload: UnassignTeachersPayload, admin=Depends(get_current_admin)):
+async def unassign_teachers_from_group(payload: UnassignTeachersPayload, admin=Depends(is_admin_current_user)):
     """
     Unassign teachers from a group.
 
@@ -405,7 +405,7 @@ async def list_groups():
 
 
 @router.delete("/groups/{group_id}", summary="Eliminar un grupo")
-async def delete_group(group_id: int, admin=Depends(get_current_admin)):
+async def delete_group(group_id: int, admin=Depends(is_admin_current_user)):
     """
     Delete a group.
 

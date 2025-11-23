@@ -1,46 +1,50 @@
 """
-TatoMaths API - Backend Principal.
+!! EDITED 1.2.0
+    -> Changed all the comments to english and fixed some.
+    -> edited basic config of the routers to not use /api prefix
+    
+TatoMaths API - Backend to connect to Supabase and serve the frontend app.
 
-Este módulo inicializa la aplicación principal de FastAPI, configurando
-los middlewares, rutas y ajustes globales necesarios para el correcto
-funcionamiento del backend de la app.
+This module initializes the main FastAPI app, settings, middlewares, routes
+to provide the necessary backend functionality.
 
 Incluye:
-    - Configuración de CORS.
-    - Inclusión de routers (por ejemplo, autenticación).
-    - Rutas básicas de estado y diagnóstico (raíz y health check).
+    - CORS config.
+    - Routers inclusion.
+    - Basic routes (root, health).
 """
 
-from fastapi import FastAPI, status as http_status
-from fastapi.middleware.cors import CORSMiddleware
-from .config import settings
-from .routers import auth
-from .services.supabase import supabase
-from .services.supabase import supabase_admin
+from fastapi import FastAPI, status as http_status      # FastAPI import
+from fastapi.middleware.cors import CORSMiddleware      # CORS
+from .config import settings                            # config.py settings that use the .env
+from .services.supabase import supabase, supabase_admin # Clients for the database connection
 
+# Routers
+from .routers import auth
 from .routers import admin
 from .routers import teacher
 from .routers import student
 from .routers import games
+from .routers import user
 
-# === Inicialización de la aplicación ===
+# === App initialization ===
 
-#: Instancia principal de la aplicación FastAPI.
+#: Main instance of FastAPI application.
 #: 
-#: Se define el título, descripción y versión de la API para generar la
-#: documentación automática en Swagger y Redoc.
+#: Title, description, and version of the app.
+#: version 1.2.0 -> Includes vast changes in all of the routers and creation of new ones
 app = FastAPI(
     title="TatoMaths API",
-    description="API para la aplicación TatoMaths - Juegos educativos accesibles",
-    version="1.1.0"
+    description="Tatomaths API - creation of accesible math games",
+    version="1.2.0"
 ) 
 
-# === Configuración de CORS ===
+# === CORS  ===
 
-#: Configura los orígenes permitidos para solicitudes desde el frontend.
+#: Allowed origins to connect from the front.
 #: 
-#: Los valores se obtienen desde `settings.ALLOWED_ORIGINS` y se dividen por comas
-#: para admitir múltiples dominios. Se permiten todos los métodos y cabeceras.
+#: settings.ALLOWED_ORIGINS has the needed values 
+#: to allow multiple domains, all methods and headers are allowed
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS.split(","),
@@ -49,43 +53,48 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === Registro de routers ===
+# === ROUTERS ===
 
-#: Se incluyen los routers que gestionan las distintas rutas del backend.
+#: Routers -> These are the containers of the endpoints that connect to the database
 #:
-#: Actualmente, solo se importa el router de autenticación (`auth.router`),
-#: pero se pueden añadir otros módulos en el futuro (por ejemplo, `students`, `games`, etc.).
-app.include_router(auth.router)
+app.include_router(auth.router,     prefix="/auth",     tags=["auth"])
+app.include_router(admin.router,    prefix="/admin",    tags=["admin"])
+app.include_router(teacher.router,  prefix="/teacher",  tags=["teacher"])
+app.include_router(student.router,  prefix="/student",  tags=["student"])
+app.include_router(user.router,     prefix="/user",     tags=["user"])
+app.include_router(games.router,    prefix="/games",    tags=["games"])
 
-# Ruta raíz
+
+# === BASIC ENDPOINTS ===
+#:
+#: These routers don't fall in any category, they serve very elemental functions for the app
+
+# Root
 @app.get("/")
 def read_root():
     """
-    Endpoint raíz de la API.
+    Root endpoint for the API
 
-    Devuelve un mensaje de bienvenida y datos básicos del estado de la API.
+    Basic status and welcome message.
 
     Returns:
-        dict: Información básica con mensaje, estado, versión y enlace a la documentación.
+        dict: Very basic info of the version and title.
     """
     return {
-        "message": "TatoMaths API ",
-        "status": "online",
-        "version": "1.1.0",
+        "message": app.title,
+        "version": app.version,
         "docs": "/docs"
     }
 
-# Ruta de salud
+
+# Health check
 @app.get("/health")
 def health_check():
     """
-    Verificación de salud del servicio (health check).
-
-    Este endpoint permite comprobar rápidamente si el servidor está activo y respondiendo.
-    También verifica la conexión con la base de datos Supabase.
+    Verify the service is up and running.
 
     Returns:
-        dict: Objeto con el estado de la API, incluyendo:
+        dict: API object:
             - status: Estado general ("healthy" o "unhealthy")
             - version: Versión de la API
             - services: Estado de cada servicio (api, database)
@@ -94,39 +103,34 @@ def health_check():
         - 200: Todos los servicios están operativos
         - 503: Algún servicio no está disponible
     """
-    # Estado inicial
+    # Initial state
     db_status = "unavailable"
     overall_status = "unhealthy"
     status_code = http_status.HTTP_503_SERVICE_UNAVAILABLE
 
-    # Intentar verificar la conexión a la base de datos
+    # Try to verify connection
     try:
         # Realizar una consulta simple para verificar conectividad
         # Intentamos obtener el primer registro de users (o cualquier tabla)
         response = supabase_admin.table("users").select("id").limit(1).execute()
 
-        # Si no hay error, la BD está operativa
+        # If no error
         db_status = "operational"
         overall_status = "healthy"
         status_code = http_status.HTTP_200_OK
 
     except Exception as e:
-        # Si hay error, registramos que la BD no está disponible
-        db_status = f"unavailable: {str(e)[:100]}"  # Limitamos el mensaje de error
+        # If any error shows up
+        db_status = f"unavailable: {str(e)[:100]}" 
         overall_status = "unhealthy"
         status_code = http_status.HTTP_503_SERVICE_UNAVAILABLE
 
     return {
         "status": overall_status,
-        "version": "1.1.0",
+        "version": app.version,
         "services": {
-            "api": "operational",
-            "database": db_status,
-            "response": response
+            "status_code": status_code,
+            "database":    db_status,
+            "response":    response
         }
     }
-
-app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
-app.include_router(teacher.router, prefix="/api/teacher", tags=["teacher"])
-app.include_router(student.router, prefix="/api/student", tags=["student"])
-app.include_router(games.router, prefix="/api/games", tags=["games"])

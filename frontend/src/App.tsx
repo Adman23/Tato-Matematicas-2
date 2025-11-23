@@ -12,12 +12,16 @@
 
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Route, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+
 
 // === Páginas principales ===
 import Home from './pages/Home';
 
+// === Routes ===
+import { UserDataRoute } from './routes/UserDataRoute';
+import { PrivateRoute, PublicRoute} from './routes/AppRoutes';
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
@@ -81,41 +85,57 @@ export default function App() {
     <IonApp>
       <AuthProvider>
         <IonReactRouter>
+
           <IonRouterOutlet>
-            <Route path="/home" exact component={Home} />
-            <Route path="/login" exact component={Login} />
+
+            <PublicRoute path="/home" exact component={Home} />
+            <PublicRoute path="/login" exact component={Login} />
 
             {/* Rutas del login de estudiante en 3 pasos */}
-            <Route path="/student-login" exact component={StudentLoginStep1} />
-            <Route path="/student-login/step2/:groupId" exact component={StudentLoginStep2} />
-            <Route path="/student-login/step3/:groupId/:username" exact component={StudentLoginStep3} />
+            <PublicRoute path="/student/login" exact component={StudentLoginStep1} />
+            <PublicRoute path="/student/login/step2/:groupId" exact component={StudentLoginStep2} />
+            <PublicRoute path="/student/login/step3/:groupId/:username" exact component={StudentLoginStep3} />
 
-            <Route path="/student-dashboard" exact component={StudentDashboard} />
-            <Route path="/student-profile" exact component={StudentProfile} />
+            {/* Game Routes */}
+            <UserDataRoute path="/game/game1" allowedRoles={["student", "teacher"]}
+              exact component={Game1} />
+            <UserDataRoute path="/game/game2" allowedRoles={["student", "teacher"]}
+              exact component={Game2} />
 
-            {/* Rutas de juegos */}
-            <Route path="/game1" exact component={Game1} />
-            <Route path="/game2" exact component={Game2} />
+            {/* Users Routes (except admin) */}
+            <UserDataRoute path="/student/dashboard" allowedRoles={["student"]}  
+              exact component={StudentDashboard} />
+            <UserDataRoute path="/student/profile" allowedRoles={["student"]} 
+              exact component={StudentProfile} />
+            <UserDataRoute path="/teacher/dashboard" allowedRoles={["teacher"]} 
+              exact component={TutorDashboard} />
+            <UserDataRoute path="/teacher/profile" allowedRoles={["teacher"]} 
+              exact component={TeacherProfilePage} />
+            <UserDataRoute path="/teacheredit/profile" allowedRoles={["teacher"]} 
+              exact component={TeacherEditProfile} />
 
-            {/* Nueva ruta de registro de tutores */}
-            <Route path="/teacher-register" exact component={TeacherRegister} />
-            <Route path="/tutor-dashboard" exact component={TutorDashboard} />
-            <Route path="/group-register" exact component={GroupRegister} />
-            <Route path="/admin-dashboard" exact component={AdminDashboard} />
-            <Route path="/student-register" exact component={StudentRegister} />
-            <Route path="/admin-dashboard/:tipo" exact component={userManagement} />
-            <Route path="/admin-dashboard/link-profiles" exact component={LinkProfiles} />
-            <Route path="/admin-dashboard/groups-management" exact component={GroupsManagement} />
-            <Route path="/teacher-profile" exact component={TeacherProfilePage} />
-            <Route path="/teacher-edit-profile" exact component={TeacherEditProfile} />
-            <Route path="/register/confirmation/:tipo" component={RegisterConfirmation} exact />
+
+            <PrivateRoute path="/teacher/register" allowedRoles={["teacher"]} 
+              exact component={TeacherRegister} />
+            <PrivateRoute path="/admin/group/register" allowedRoles={["admin"]} 
+              exact component={GroupRegister} />
+            <PrivateRoute path="/admin/dashboard" allowedRoles={["admin"]}
+              exact component={AdminDashboard} />
+            <PrivateRoute path="/student/register" allowedRoles={["student"]}
+              exact component={StudentRegister} />
+            <PrivateRoute path="/admin/dashboard/:tipo" allowedRoles={["admin"]}
+              exact component={userManagement} />
+            <PrivateRoute path="/admin/dashboard/link-profiles" allowedRoles={["admin"]}
+              exact component={LinkProfiles} />
+            <PrivateRoute path="/admin/dashboard/groups-management" allowedRoles={["admin"]}
+              exact component={GroupsManagement} />
+            <PrivateRoute path="/admin/register-confirmation/:tipo" allowedRoles={["admin"]}
+              component={RegisterConfirmation} exact />
             <Route path="/student-edit-menu/:id/:name" exact component={EditMenu} />
             <Route path="/student-edit-color/:id/:name" exact component={EditColor} />
             <Route path="/prueba" exact component={Prueba} />
-
-
             {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
-            <Redirect to="/student-login" />
+            <Redirect to="/student/login" />
           </IonRouterOutlet>
         </IonReactRouter>
       </AuthProvider>
