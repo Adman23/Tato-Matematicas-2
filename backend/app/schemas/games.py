@@ -55,6 +55,8 @@ class RoundResult(BaseModel):
     hints: Optional[int] = 0
     # total_incorrect: contador de errores (colocaciones incorrectas)
     total_incorrect: Optional[int] = 0
+    # is_final_attempt: indica si es el último intento de la ronda (usado en juego 1)
+    is_final_attempt: Optional[bool] = False
 
 
 class SaveRoundRequest(BaseModel):
