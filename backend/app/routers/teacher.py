@@ -16,15 +16,17 @@ router = APIRouter()
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
 @router.get("/students", summary="Gets all the students of a teacher")
-async def list_students(teacher=Depends(is_auth_current_user)):
+async def list_students(data:tuple=Depends(is_auth_current_user)):
     """
     Returns a list of all students assigned to the teacher, each one with id, name and photo_url.
     """
     try:
+        teacher_id, email = data
+        
         # First we get all the groups assigned to the teacher
         resp = supabase_admin.table("teacher_group_relations") \
                     .select("group_id") \
-                    .eq("teacher_id", teacher['id']) \
+                    .eq("teacher_id", teacher_id) \
                     .execute()
 
         if not resp.data:
