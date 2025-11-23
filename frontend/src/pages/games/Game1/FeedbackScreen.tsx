@@ -24,8 +24,10 @@ interface FeedbackScreenProps {
     imgSonido: string;
     imgFlecha: string;
     imgJuego: string;
+    imgRepetir?: string;
     onNext: () => void;
     onHomeClick: () => void;
+    onRepeat?: () => void;
 }
 
 /**
@@ -53,8 +55,11 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     imgSonido,
     imgFlecha,
     imgJuego,
+    imgRepetir,
     onNext,
     onHomeClick
+    ,
+    onRepeat
 }) => {
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -109,8 +114,26 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                         />
                     </div>
 
-                    {/* Button: Next */}
+                    {/* Buttons */}
                     <div className="game1-feedback-button-container">
+                        {!isCorrect && (
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button"
+                                onClick={onRepeat}
+                            >
+                                {imgRepetir ? (
+                                    <img
+                                        src={imgRepetir}
+                                        alt="Repetir"
+                                        className="game1-check-button-image"
+                                    />
+                                ) : (
+                                    <>Repetir</>
+                                )}
+                            </IonButton>
+                        )}
+
                         <IonButton
                             fill="clear"
                             className="game1-check-button"

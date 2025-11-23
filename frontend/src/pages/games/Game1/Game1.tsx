@@ -785,8 +785,10 @@ const Game1: React.FC = () => {
                 imgSonido={imgSonido}
                 imgFlecha={imgFlecha}
                 imgJuego={imgJuego}
+                imgRepetir={imgRepetir}
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}
+                onRepeat={repeatExercise}
             />
         );
     }
@@ -899,7 +901,7 @@ const Game1: React.FC = () => {
                                 autoPlay
                                 className="game1-video-player"
                             >
-                                <source src="/assets/videos/prueba.webm" type="video/webm" />
+                                <source src="/assets/videos/video_game1.mp4" type="video/mp4" />
                                 Tu navegador no soporta la reproducción de videos.
                             </video>
                         </div>
