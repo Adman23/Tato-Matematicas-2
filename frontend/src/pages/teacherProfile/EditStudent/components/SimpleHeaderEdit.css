@@ -74,6 +74,7 @@ ion-title.title-header-editStudentProfile {
   font-weight: var(--ion-weight-regular);
   color: white;
   font-size: 3rem;
+  font-weight: bold;
 
   text-align: center;
   flex-grow: 1;

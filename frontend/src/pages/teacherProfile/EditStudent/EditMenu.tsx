@@ -1,5 +1,5 @@
 /**
- * @file EditAdmin.tsx
+ * @file EditMenu.tsx
  * @description Dashboard / main menu for the edit section for teachers.
  * Provides quick links to edit colors, texts,
  * game configurations, and sounds for one particular student. 
@@ -25,24 +25,25 @@ import { useParams } from "react-router-dom";
 /**
  * Functional Summary.
  *
- * Main component of the admin dashboard. Provides quick links to manage teachers, students, enrollments, and groups. Protects the view by checking the authentication context.
+ * Main component of the edit dashboard. Provides quick links to edit the different configurations of the app.
+ * Protects the view by checking the authentication context.
  *
  * Execution flow.
  *
  * - If `loading` is active in the auth context, shows a spinner.
  * - If there is no `user`, redirects to `/login`.
- * - Renders `SimpleHeaderAdmin` with the user's name and buttons that
- *   navigate to the administrative pages.
+ * - Renders `SimpleHeaderEdit` with the user's name that is being edit and buttons that
+ *   navigate to the edit pages.
  *
  * @param {void}
- * @returns {JSX.Element} Admin dashboard / main menu.
+ * @returns {JSX.Element} edit menu.
  *
  * @example
  * ```tsx
- * <Route path="/admin" component={AdminDashboard} />
+ * <Route path="/student-edit-menu/:id/:name" exact component={EditMenu} />
  * ```
  */
-export default function AdminDashboard() {
+export default function EditMenu() {
 
     const { user, loading } = useAuth();
     const history = useHistory();
@@ -88,7 +89,7 @@ export default function AdminDashboard() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/alumnos')}
+                                    onClick={() => history.push(`/student-edit-color/${id}/${name}`)}
                                 >
                                     Colores
                                 </IonButton>

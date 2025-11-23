@@ -1,0 +1,44 @@
+.ColorPaletteCard-studentEditColor-IonCard{
+    cursor: pointer;
+    border: 1px solid transparent;
+    
+}
+
+.ColorPaletteCard-studentEditColor-IonCard:hover{
+
+    transform: scale(1.03);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.ColorPaletteCard-studentEditColor-IonCardHeader{
+
+    height: 90px;
+    width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.ColorPaletteCard-studentEditColor-IonCardContent{
+
+    height: 150px;
+    width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    font-size: 18px;
+}
+
+.ColorPaletteCard-studentEditColor-IonCardSelected{
+
+    border: 3px solid #1628ca;
+    transform: scale(1.06);
+    transition: 0.2s ease;
+}
