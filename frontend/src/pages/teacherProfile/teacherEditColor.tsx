@@ -166,7 +166,7 @@ export default function TeacherEditColor() {
                     <IonInput value={currentColors.appColor} onIonChange={e => handleColorChange('appColor', e.detail.value!)} maxlength={7}/>
                   </div>
                 </div>
-
+                
                 <div className="teacher-edit-color-picker-card">
                   <label>Texto principal</label>
                   <div className="picker-wrapper">

@@ -264,7 +264,7 @@ export default function TeacherEditProfile() {
     setPassword('');
     setConfirmPassword('');
     setAvatarPreview(user?.photo_url || DEFAULT_AVATAR);
-    router.push('/teacheredit/profile', 'none', 'pop'); // ✅ volver sin animación
+    router.push('/teacher/profile', 'none', 'pop'); // ✅ volver sin animación
   };
 
   if (!user) {
