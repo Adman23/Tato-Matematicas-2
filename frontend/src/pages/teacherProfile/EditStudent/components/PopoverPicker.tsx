@@ -7,6 +7,15 @@ interface PopoverPickerProps {
   color: string;
   onChange: (color: string) => void;
 }
+/**
+ * PopoverPicker component: renders a button that displays an advanced selector for colors.
+ *
+ * @example
+ * <PopoverPicker color={color} onChange={setColor } />
+ *
+ * @param color 
+ * @param onChange
+ */
 
 export const PopoverPicker: React.FC<PopoverPickerProps> = ({ color, onChange }) => {
   const popover = useRef<HTMLDivElement>(null);

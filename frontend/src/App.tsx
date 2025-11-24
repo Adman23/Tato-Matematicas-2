@@ -56,6 +56,7 @@ import TeacherRegister from './pages/auth/TeacherRegister';
 import RegisterConfirmation from './pages/auth/RegisterConfirmation';
 import StudentProfile from './pages/student/StudentProfile';
 
+// === Personalización alumno ===
 import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
 import EditColor from './pages/teacherProfile/EditStudent/EditColors';
 import Prueba from './pages/teacherProfile/EditStudent/prueba';

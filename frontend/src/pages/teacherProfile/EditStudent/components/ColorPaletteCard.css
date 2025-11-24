@@ -1,3 +1,7 @@
+/*=====================================
+            ColorPaletteCard
+=======================================*/
+
 .ColorPaletteCard-studentEditColor-IonCard{
     cursor: pointer;
     border: 1px solid transparent;
@@ -12,6 +16,10 @@
     cursor: pointer;
 }
 
+/*=====================================
+            Card-Header
+=======================================*/
+
 .ColorPaletteCard-studentEditColor-IonCardHeader{
 
     height: 90px;
@@ -24,6 +32,9 @@
     font-weight: bold;
 }
 
+/*=====================================
+            Card-Content
+=======================================*/
 .ColorPaletteCard-studentEditColor-IonCardContent{
 
     height: 150px;
@@ -36,6 +47,9 @@
     font-size: 18px;
 }
 
+/*=====================================
+            Selected- card
+=======================================*/
 .ColorPaletteCard-studentEditColor-IonCardSelected{
 
     border: 3px solid #1628ca;

@@ -45,14 +45,14 @@ import { useParams } from "react-router-dom";
  */
 export default function EditMenu() {
 
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
     const history = useHistory();
     //const { id, name } = useParams();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
 
     // Show spinner while loading
-    if (loading) {
+    /*if (loading) {
         return (
             <IonPage>
                 <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -60,7 +60,7 @@ export default function EditMenu() {
                 </IonContent>
             </IonPage>
         );
-    }
+    }*/
 
     // Redirect if there is no authenticated user
     if (!user) {

@@ -10,7 +10,7 @@
 General user management router
 Endpoints: /user/*
 """
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Body, HTTPException, status, Depends
 from ..schemas.auth import (
 	User,
 	UserData,
@@ -126,7 +126,8 @@ async def get_user_data(user_id: str):
                             id,\
                             visual_preferences,\
                             audio_preferences,\
-                            accessibility_settings\
+                            accessibility_settings,\
+							color_preferences\
                         ),\
                         game_configurations!user_id(\
                             id,\
@@ -134,10 +135,8 @@ async def get_user_data(user_id: str):
                             number_range,\
                             settings\
                         ),\
-                        reinforcement_messages!student_id(\
-                            id,\
-                            media_type,\
-                            content\
+                        reinforcement_messages!user_id(\
+                            id\
                         )") \
                 .eq("id", user_id) \
                 .single() \
@@ -166,3 +165,21 @@ async def get_user_data(user_id: str):
 				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
 				detail=f"Error getting the complete data of the user: {str(e)}"
 		)
+
+@router.post("/{user_id}/update_color_preferences")
+async def update_color_preferences(user_id: str, color_preferences: dict):
+    try:
+        update = supabase_admin.table("user_profiles")\
+            .update({"color_preferences": color_preferences})\
+            .eq("user_id", user_id)\
+            .execute()
+
+        print("Datos guardados:", update.data)  # debería mostrar la fila actualizada
+        return {"message": "Color preferences updated", "saved": color_preferences}
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating color preferences: {str(e)}"
+        )

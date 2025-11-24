@@ -22,10 +22,10 @@ type Props = {
 };
 
 /**
- * Colorcard component: renders a selectable card.
+ * PaletteSelector component: renders a selector for the cards.
  *
  * @example
- * <ColorPaletteCard palette={id:1, colors[-,-,-,-]} onClick={(v) => console.log(v)} />
+ * <PaletteSelector palettes=[] onSelect={() => } />
  *
  * @param props - See {@link Props}
  */

@@ -218,6 +218,7 @@ async def login(data: LoginRequest):
                 "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
                 "accessibility_settings": response_user_profile.data[0].get("accessibility_settings"),
                 "game_preferences": response_user_profile.data[0].get("game_preferences"),
+                "color_preferences": response_user_profile.data[0].get("color_preferences"),
             }
             return AuthResponse(
                 access_token=auth_response.session.access_token,
@@ -610,6 +611,7 @@ async def login_student(data: StudentLoginRequest):
                 "audio_preferences": response_profile.data[0].get("audio_preferences"),
                 "accessibility_settings": response_profile.data[0].get("accessibility_settings"),
                 "game_preferences": response_profile.data[0].get("game_preferences"),
+                "color_preferences": response_profile.data[0].get("color_preferences"),
             }
             return StudentAuthResponse(
                 access_token=auth_response.session.access_token,

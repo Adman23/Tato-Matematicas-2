@@ -4,29 +4,23 @@ import { IonIcon } from '@ionic/react';
 import { checkmarkSharp, closeSharp } from 'ionicons/icons';
 
 /**
- * Props for the Bubble component.
+ * Props for the ExampleBubble component.
  *
  * @remarks
- * A bubble represents a single selectable number option in Game1.
- * It can render either a pictogram (image) or the numeric value as text,
+ * An Examplebubble represents a simplified version of the bubbles used in the games.
+ * It wil render the numeric value as text,
  * and shows optional feedback icons (check / cross) when evaluated.
  *
  * @property value - Numeric value represented by the bubble.
- * @property usePictogram - When true and the value is in the supported pictogram range (0-10),
- *                           the component will render an image from `/assets/numbers/{value}.png`.
  * @property isSelected - Visual state for selection (aria-pressed will reflect this).
  * @property isCorrect - When true, shows the "correct" feedback icon and styles.
  * @property isIncorrect - When true, shows the "incorrect" feedback icon and styles.
- * @property disabled - When true, interaction is blocked and the bubble is not focusable.
- * @property onClick - Callback invoked when the bubble is activated by click or keyboard.
  */
 type Props = {
     value: number;
-    usePictogram?: boolean;
     isSelected?: boolean;
     isCorrect?: boolean;
     isIncorrect?: boolean;
-    disabled?: boolean;
 };
 
 /**
@@ -38,7 +32,7 @@ type Props = {
  * the numeric label.
  *
  * @example
- * <Bubble value={3} usePictogram onClick={(v) => console.log(v)} />
+ * <ExampleBubble value={3} />
  *
  * @param props - See {@link Props}
  */

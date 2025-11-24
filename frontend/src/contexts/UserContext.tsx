@@ -74,6 +74,18 @@
         },
         "accesibility_settings":{
 
+        },
+        "color_preferences":{
+          "primary": "#50BFE6",
+          "text_on_primary": "#FFFFFF",
+          "background": "#F4F4F4",
+          "text_on_bg": "#212121",
+          "bubble": "#A9DAF3",
+          "bubble_selected": "#FFB7FA",
+          "bubble_correct": "#34D399",
+          "bubble_incorrect": "#F87171",
+          "feedback_correct": "#059669",
+          "feedback_incorrect": "#b91c1c"
         }
     },
     "game_configurations": [
@@ -222,7 +234,7 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string}> = ({ c
    * !! NEW 
    *  -> Used to set the app variables
    */
-  useEffect(() => {
+  /*useEffect(() => {
       if (userData){
           const root = document.documentElement;
           const userVisual = userData.user_profile.visual_preferences;
@@ -237,7 +249,19 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string}> = ({ c
           }
           console.log("Styles applied");
       }
-  }, [userData]);
+  }, [userData]);*/
+  useEffect(() => {
+    if (userData?.user_profile?.color_preferences) {
+        const root = document.documentElement;
+        const colorPrefs = userData.user_profile.color_preferences;
+
+        // Aplica cada color según tus variables CSS
+        root.style.setProperty('--ion-color-primary', colorPrefs.primary);
+
+        console.log("Styles applied");
+    }
+}, [userData]);
+
 
 
   //-Functions related to user data managemente would go here----------------------------------

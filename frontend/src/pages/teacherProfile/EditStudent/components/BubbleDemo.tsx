@@ -1,6 +1,15 @@
 import React from 'react';
 import ExampleBubble from './ExampleBubble';
 
+/**
+ * BubbleDemo component: renders a group of 4 bubbles, each one with a different property
+ * in order to visualize the colors used in each state.
+ *
+ * @example
+ * <BubbleDemo colors=[] />
+ *
+ * @param colors 
+ */
 const BubbleDemo: React.FC <{colors: string[] }> = ({ colors }) => {
     return (
 
@@ -18,13 +27,13 @@ const BubbleDemo: React.FC <{colors: string[] }> = ({ colors }) => {
                 {/* Base */}
                 <ExampleBubble value={1} className='bubble-demo' />
                 
-                {/* Seleccionada */}
+                {/* Selected */}
                 <ExampleBubble value={3} isSelected className='bubble-demo' />
 
-                {/* Correcta */}
+                {/* Correct */}
                 <ExampleBubble value={5} isCorrect className='bubble-demo' />
 
-                {/* Incorrecta */}
+                {/* Incorrect */}
                 <ExampleBubble value={7} isIncorrect className='bubble-demo' />
             </div>
         </div>
