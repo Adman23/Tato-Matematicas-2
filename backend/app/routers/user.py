@@ -122,34 +122,50 @@ async def get_user_data(user_id: str):
 			)
 
 		# Fetch all the extra info of the user
+		# Fetch user's direct relations (keep it simple to avoid complex nested selects)
 		resp = supabase_admin.table("users") \
-                .select("group_id,\
-                        user_profiles!user_id(\
-                            id,\
-                            visual_preferences,\
-                            audio_preferences,\
-                            accessibility_settings\
-                        ),\
-                        game_configurations!user_id(\
-                            id,\
-                            game_id,\
-                            number_range,\
-                            settings\
-                        ),\
-                        reinforcement_messages!student_id(\
-                            id,\
-                            media_type,\
-                            content\
-                        )") \
-                .eq("id", user_id) \
-                .single() \
-                .execute()
+				.select("group_id,\
+						user_profiles!user_id(\
+							id,\
+							visual_preferences,\
+							audio_preferences,\
+							accessibility_settings\
+						),\
+						game_configurations!user_id(\
+							id,\
+							game_id,\
+							number_range,\
+							settings\
+						),\
+						reinforcement_messages!user_id(\
+							id,\
+							message_id\
+						)") \
+				.eq("id", user_id) \
+				.single() \
+				.execute()
                 
 		if not resp.data or len(resp.data) == 0:
 			raise HTTPException(
 				status_code=status.HTTP_404_NOT_FOUND,
 				detail="User not found"
 			)
+
+		# If we need the full message payload (with messages.*), fetch them from
+		# the reinforcement_messages table joining messages separately. This
+		# avoids deep nested selects that can fail parsing in PostgREST.
+		reinforcement_messages_full = []
+		try:
+			rresp = supabase_admin.table("reinforcement_messages") \
+						.select("messages(id, type, text_message, icon_url, sound_url)") \
+						.eq("user_id", user_id) \
+						.execute()
+
+			if rresp.data:
+				reinforcement_messages_full = rresp.data
+		except Exception:
+			# If this fails, fall back to the lighter payload already in `resp`
+			reinforcement_messages_full = resp.data.get("reinforcement_messages")
 
 		print("SE EJECUTA EL GET_USER_DATA")
 		return UserData(id=user.id, 
@@ -159,7 +175,7 @@ async def get_user_data(user_id: str):
 						group_id=resp.data.get("group_id") or None,
 						user_profile=resp.data.get("user_profiles"),
 						game_configurations=resp.data.get("game_configurations"),
-						reinforcement_messages=resp.data.get("reinforcement_messages"),
+						reinforcement_messages=reinforcement_messages_full,
 						)
                 
 
