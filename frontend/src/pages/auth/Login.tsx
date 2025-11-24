@@ -181,7 +181,7 @@ export default function Login() {
       if (userData.role === 'admin') {
         history.push('/admin/dashboard');
       } else if (userData.role === 'teacher') {
-        history.push('/tutor/dashboard');
+        history.push('/teacher/dashboard');
       };
     } catch (err: any) {
 
