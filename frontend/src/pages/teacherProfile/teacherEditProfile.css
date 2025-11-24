@@ -1,23 +1,19 @@
 /* =============================================================================
-   ESTILOS PARA TeacherEditProfile
+   ESTILOS GENERALES Y ESTRUCTURA
    ========================================================================== */
 
 .teacher-edit-profile-content {
   --background: #f4f5f8;
 }
 
-/* =============================================================================
-   CONTENEDOR PRINCIPAL
-   ========================================================================== */
-
+/* Contenedor principal que centra todo */
 .teacher-edit-profile-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Alineación superior como en register confirmation */
   font-family: 'Atkinson Hyperlegible', sans-serif;
   background-color: transparent;
-  
   flex-grow: 1;
   height: 100%;
   width: 100%;
@@ -28,7 +24,7 @@
 }
 
 /* =============================================================================
-   TARJETA DEL FORMULARIO
+   FORMULARIO DE EDICIÓN (Se mantiene igual)
    ========================================================================== */
 
 .teacher-edit-profile-form-card {
@@ -67,10 +63,7 @@
   margin: 0;
 }
 
-/* =============================================================================
-   GRID DE CONTENIDO (Inputs + Foto)
-   ========================================================================== */
-
+/* GRID DE CONTENIDO */
 .teacher-edit-profile-grid-content {
   display: grid;
   grid-template-columns: 1fr;
@@ -93,7 +86,6 @@
     flex-direction: column-reverse;
     gap: 1rem;
   }
-  
   .teacher-edit-profile-form-right {
     align-items: center;
     margin-bottom: 0.5rem;
@@ -116,6 +108,7 @@
   margin-bottom: 0.5rem;
 }
 
+/* IMAGEN DE PERFIL */
 .teacher-edit-profile-profile-image-container {
   display: flex;
   justify-content: center;
@@ -157,10 +150,7 @@
   box-shadow: none;
 }
 
-/* =============================================================================
-   CAMPOS COMUNES
-   ========================================================================== */
-
+/* CAMPOS INPUT */
 .teacher-edit-profile-field-wrapper {
   width: 100%;
   margin: 0 auto;
@@ -220,10 +210,7 @@
   color: var(--ion-color-medium);
 }
 
-/* =============================================================================
-   BOTONES
-   ========================================================================== */
-
+/* BOTONES FORMULARIO */
 .teacher-edit-profile-form-button-container {
   display: flex;
   flex-direction: column;
@@ -241,7 +228,6 @@
     flex-direction: row;
     gap: clamp(1.5rem, 3vw, 3rem);
   }
-
   .teacher-edit-profile-cancel-button,
   .teacher-edit-profile-confirm-button {
     flex: 1;
@@ -277,7 +263,100 @@
 }
 
 /* =============================================================================
-   TOAST & MODAL
+   TARJETA DE CONFIRMACIÓN (CLON EXACTO DE REGISTERCONFIRMATION)
+   ========================================================================== */
+
+.teacher-edit-profile-confirmation-card {
+  width: 320px;
+  max-width: 90vw;
+  border-radius: 50px;
+  background-color: #50BFE6; /* Azul cielo exacto */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  margin: auto; /* Centrado vertical/horizontal */
+}
+
+.teacher-edit-profile-confirmation-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  text-align: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.teacher-edit-profile-confirmation-icon-container {
+  background-color: #50BFE6; /* Mismo color fondo para integrarse */
+  width: 80px;
+  height: 80px;
+  border-radius: 50%; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.teacher-edit-profile-confirmation-icon {
+  font-size: 100px; 
+  color: white;
+}
+
+.teacher-edit-profile-confirmation-title {
+  font-size: 1.4rem;
+  color: rgb(0, 0, 0);
+  margin: 0;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-weight: normal; /* Igualando estilo */
+}
+
+.teacher-edit-profile-confirmation-message {
+  color: rgb(0, 0, 0);
+  font-size: 1rem;
+  margin: 16px 0 28px 0;
+  line-height: 1.5;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  padding: 0;
+}
+
+.teacher-edit-profile-confirmation-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.teacher-edit-profile-confirmation-button {
+  --background: white;
+  --color: #29b6f6; /* Azul del texto botón */
+  --border-radius: 24px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  --box-shadow: none !important; 
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 10px;
+  width: 95%;
+  max-width: 280px;
+  min-height: 56px;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+
+.teacher-edit-profile-confirmation-button::part(native) {
+  border-radius: 100px;
+  font-family: 'Atkinson Hyperlegible', sans-serif !important;
+}
+
+/* =============================================================================
+   MODALES Y TOAST
    ========================================================================== */
 
 .teacher-edit-profile-toast ion-toast {
@@ -353,81 +432,9 @@
   font-size: 30px; color: var(--ion-color-medium);
 }
 
-/* Spinner centrado */
 .teacher-edit-profile-spinner {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-}
-
-
-/* =============================================================================
-   TARJETA DE CONFIRMACIÓN (NUEVO)
-   ========================================================================== */
-
-.teacher-edit-profile-confirmation-card {
-  width: 100%;
-  max-width: 450px; /* Ancho más contenido, tipo modal */
-  background-color: white;
-  border-radius: 24px;
-  padding: 2rem 1.5rem;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  margin: auto;
-}
-
-.teacher-edit-profile-confirmation-header {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.teacher-edit-profile-confirmation-icon-container {
-  font-size: 80px;
-  color: var(--ion-color-success);
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.teacher-edit-profile-confirmation-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #333;
-  margin: 0;
-  text-align: center;
-}
-
-.teacher-edit-profile-confirmation-message {
-  color: #666;
-  font-size: 1.2rem;
-  padding: 0;
-  margin: 0;
-}
-
-.teacher-edit-profile-confirmation-button-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.teacher-edit-profile-confirmation-button {
-  --background: var(--ion-color-primary);
-  --color: white;
-  --border-radius: 100px;
-  width: 100%;
-  max-width: 250px;
-  height: 48px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  --box-shadow: none;
 }
