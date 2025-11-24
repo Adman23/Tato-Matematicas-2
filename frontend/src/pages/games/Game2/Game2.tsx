@@ -13,13 +13,14 @@ import {
   IonText,
   IonSpinner
 } from '@ionic/react';
-import { useHistory, Redirect } from 'react-router-dom';
+import { useHistory, Redirect, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig } from '../../../lib/api';
 import DropZone from './DropZone';
 import GameHeader from '../GameHeader';
+import FeedbackScreen from './FeedbackScreen';
 import './Game2.css';
 
 // Importar imágenes para el header
@@ -28,10 +29,11 @@ import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgTato from '/assets/Tato/Tato.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+import imgSiguiente from '/assets/juegosImg/siguiente.png';
+import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
-const imgFlecha2 = '/assets/juegosImg/nextButton.png';
 
 // Mapeo de números a imágenes desde assets
 const PICTOGRAM_IMAGES: { [key: number]: string } = {
@@ -89,6 +91,7 @@ const TOTAL_ROUNDS = 5;
  */
 const Game2: React.FC = () => {
   const history = useHistory();
+  const location = useLocation();
   const { user, loadingAuth: authLoading } = useAuth();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
@@ -111,15 +114,20 @@ const Game2: React.FC = () => {
 
   // Estados de UI
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
   const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
   const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
   const [feedbackType, setFeedbackType] = useState<'correct' | 'incorrect' | null>(null);
   const [draggingNumber, setDraggingNumber] = useState<number | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
 
+  // Video modal state
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   // Estados de resultados
   const [gameFinished, setGameFinished] = useState(false);
-  const [roundCompleted, setRoundCompleted] = useState(false); // Si la ronda se completó
+  const [isRoundCompleted, setIsRoundCompleted] = useState(false); // Si la ronda se completó
 
   // Estados de contadores por ronda
   const [hintsCount, setHintsCount] = useState(0); // Contador de pistas usadas
@@ -129,16 +137,26 @@ const Game2: React.FC = () => {
   const usePictograms = config?.number_range === '0-10';
 
   // Cargar configuración al montar (solo una vez)
+  // Se ejecuta cada vez que cambia la ubicación para forzar reseteo completo
   useEffect(() => {
     // Resetear el ref de sesión al montar el componente
     sessionCreatedRef.current = false;
 
-    // Resetear estados al entrar al juego
+    // Resetear TODOS los estados al entrar al juego
     setGameFinished(false);
     setCurrentRound(1);
     setShowFeedback(false);
+    setShowFeedbackScreen(false);
     setFeedbackType(null);
     setSessionId(null);
+    setAvailableNumbers([]);
+    setOrderedNumbers([]);
+    setCorrectOrder([]);
+    setInitialNumbers([]);
+    setDraggingNumber(null);
+    setSelectedNumber(null);
+    setIsRoundCompleted(false);
+    setShowVideoModal(false);
 
     // Resetear contadores
     setHintsCount(0);
@@ -147,12 +165,28 @@ const Game2: React.FC = () => {
     loadGameConfig();
     setGameStartTime(Date.now());
 
-    // Cleanup al desmontar: resetear ref para la próxima vez
+    // Cleanup al desmontar: resetear TODOS los estados
     return () => {
       sessionCreatedRef.current = false;
+      setGameFinished(false);
+      setCurrentRound(1);
+      setShowFeedback(false);
+      setShowFeedbackScreen(false);
+      setFeedbackType(null);
+      setSessionId(null);
+      setAvailableNumbers([]);
+      setOrderedNumbers([]);
+      setCorrectOrder([]);
+      setInitialNumbers([]);
+      setDraggingNumber(null);
+      setSelectedNumber(null);
+      setIsRoundCompleted(false);
+      setShowVideoModal(false);
+      setHintsCount(0);
+      setErrorsCount(0);
     };
   },
-    []);
+    [location.pathname]); // Se ejecuta cuando cambia la ruta
 
   // Crear sesión cuando la configuración esté cargada (solo una vez)
   useEffect(() => {
@@ -331,7 +365,7 @@ const Game2: React.FC = () => {
     setShowFeedback(false);
     setFeedbackType(null);
     setRoundStartTime(Date.now());
-    setRoundCompleted(false);
+    setIsRoundCompleted(false);
     setSelectedNumber(null); // Resetear número seleccionado
 
     // Reiniciar contadores de ronda
@@ -358,16 +392,10 @@ const Game2: React.FC = () => {
     const isCorrect = draggedNumber === correctOrder[firstEmptyIndex];
 
     if (!isCorrect) {
-      // Mostrar feedback de error pero NO colocar el número
+      // Mostrar pantalla de feedback con error
       setFeedbackType('incorrect');
-      setShowFeedback(true);
+      setShowFeedbackScreen(true);
       setErrorsCount(prev => prev + 1); // Incrementar contador de errores
-
-      // Ocultar feedback después de 1 segundo
-      setTimeout(() => {
-        setShowFeedback(false);
-        setFeedbackType(null);
-      }, 1000);
       return;
     }
 
@@ -380,22 +408,18 @@ const Game2: React.FC = () => {
     const newAvailable = availableNumbers.map(n => n === draggedNumber ? undefined : n);
     setAvailableNumbers(newAvailable);
 
-    // Mostrar feedback de éxito
-    setFeedbackType('correct');
-    setShowFeedback(true);
-
-    // Verificar si se completó la ronda
-    setTimeout(() => {
-      setShowFeedback(false);
-      setFeedbackType(null);
-
-      // Verificar si todos los números fueron colocados (todos son undefined)
-      if (newAvailable.every(n => n === undefined)) {
-        // Todos los números colocados: guardar y mostrar botón continuar
-        saveRoundResults(currentHints);
-        setRoundCompleted(true);
-      }
-    }, 1500);
+    // Verificar si todos los números fueron colocados (todos son undefined)
+    if (newAvailable.every(n => n === undefined)) {
+      // Todos los números colocados: guardar y mostrar pantalla de feedback de éxito
+      saveRoundResults(currentHints);
+      setIsRoundCompleted(true);
+      setFeedbackType('correct');
+      setShowFeedbackScreen(true);
+    } else {
+      // Aún quedan números: mostrar feedback temporal de éxito
+      setFeedbackType('correct');
+      setShowFeedbackScreen(true);
+    }
   };
 
   /**
@@ -423,6 +447,23 @@ const Game2: React.FC = () => {
         console.error('Error saving round:', error);
       }
     }
+  };
+
+  /**
+   * Cierra la pantalla de feedback y continúa según corresponda.
+   */
+  const closeFeedbackScreen = () => {
+    const wasCompleted = isRoundCompleted;
+    const wasCorrect = feedbackType === 'correct';
+
+    setShowFeedbackScreen(false);
+    setFeedbackType(null);
+
+    // Si fue correcto y la ronda está completa, avanzar a la siguiente ronda
+    if (wasCorrect && wasCompleted) {
+      advanceToNextRound();
+    }
+    // Si no está completa, simplemente continúa jugando la ronda actual
   };
 
   /**
@@ -499,6 +540,10 @@ const Game2: React.FC = () => {
    * Maneja la salida anticipada del juego (botón home).
    */
   const handleEarlyExit = async () => {
+    // Primero cerrar cualquier pantalla de feedback
+    setShowFeedbackScreen(false);
+    setFeedbackType(null);
+
     if (sessionId) {
       try {
         const hasPlacedNumbers = orderedNumbers.some(num => num !== undefined);
@@ -582,6 +627,24 @@ const Game2: React.FC = () => {
   };
 
   /**
+   * Opens the video modal for instructions.
+   */
+  const openVideoModal = () => {
+    setShowVideoModal(true);
+  };
+
+  /**
+   * Closes the video modal and stops video playback.
+   */
+  const closeVideoModal = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    setShowVideoModal(false);
+  };
+
+  /**
    * Maneja el drag over en un slot.
    */
   const handleDragOver = (e: React.DragEvent) => {
@@ -657,16 +720,33 @@ const Game2: React.FC = () => {
   return (
     <IonPage>
       <IonContent className="game2-content">
-        {/* Header */}
-        <GameHeader
-          title="Ordenar Nº"
-          pictogram1={imgOrdenar}
-          pictogramArrow={imgFlecha}
-          pictogram2={imgJuego}
-          currentRound={currentRound}
-          totalRounds={TOTAL_ROUNDS}
-          onHomeClick={handleEarlyExit}
-        />
+        {/* Mostrar pantalla de feedback después de colocar un número */}
+        {showFeedbackScreen ? (
+          <FeedbackScreen
+            isCorrect={feedbackType === 'correct'}
+            currentRound={currentRound}
+            totalRounds={TOTAL_ROUNDS}
+            imgTatoFeliz={imgTatoFeliz}
+            imgTatoTriste={imgTatoTriste}
+            imgSiguiente={imgSiguiente}
+            imgOrdenar={imgOrdenar}
+            imgFlecha={imgFlecha}
+            imgJuego={imgJuego}
+            onContinue={closeFeedbackScreen}
+            onHomeClick={handleEarlyExit}
+          />
+        ) : (
+          <>
+            {/* Header */}
+            <GameHeader
+              title="Ordenar Nº"
+              pictogram1={imgOrdenar}
+              pictogramArrow={imgFlecha}
+              pictogram2={imgJuego}
+              currentRound={currentRound}
+              totalRounds={TOTAL_ROUNDS}
+              onHomeClick={handleEarlyExit}
+            />
 
 
 
@@ -737,43 +817,55 @@ const Game2: React.FC = () => {
 
         {/* Botones de control */}
         <div className="check-button-container">
-          {/* Botón de pistas (Tato) - Solo visible cuando la ronda NO está completada */}
-          {!roundCompleted && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button game2-hint-button"
-              onClick={useHint}
-              disabled={availableNumbers.every(n => n === undefined)}
-            >
-              <img
-                src={
-                  feedbackType === 'correct'
-                    ? imgTatoFeliz
-                    : feedbackType === 'incorrect'
-                    ? imgTatoTriste
-                    : imgTato
-                }
-                alt="Pista"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
+          {/* Botón de pistas (Tato) */}
+          <IonButton
+            fill="clear"
+            className="game2-check-button game2-hint-button"
+            onClick={useHint}
+            disabled={availableNumbers.every(n => n === undefined)}
+          >
+            <img
+              src={imgTato}
+              alt="Pista"
+              className="game2-check-button-image"
+            />
+          </IonButton>
 
-          {/* Botón de continuar - Solo visible cuando la ronda está completada - a la derecha */}
-          {roundCompleted && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button game2-continue-button"
-              onClick={advanceToNextRound}
-            >
-              <img
-                src={imgFlecha2}
-                alt="Continuar"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
+          {/* Botón de instrucciones/tutorial */}
+          <IonButton
+            fill="clear"
+            className="game2-check-button"
+            onClick={openVideoModal}
+          >
+            <img
+              src={imgInstrucciones}
+              alt="Video de ayuda"
+              className="game2-check-button-image"
+            />
+          </IonButton>
         </div>
+
+        {/* Video Modal */}
+        {showVideoModal && (
+          <div className="game2-video-modal-overlay" onClick={closeVideoModal}>
+            <div className="game2-video-modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="game2-video-close-button" onClick={closeVideoModal}>
+                ✕
+              </button>
+              <video
+                ref={videoRef}
+                controls
+                autoPlay
+                className="game2-video-player"
+              >
+                <source src="/assets/videos/video_game2.mp4" type="video/mp4" />
+                Tu navegador no soporta la reproducción de videos.
+              </video>
+            </div>
+          </div>
+        )}
+          </>
+        )}
       </IonContent>
     </IonPage>
   );

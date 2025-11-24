@@ -27,24 +27,24 @@ export default function TutorDashboard() {
     );
   }
 
-  console.log("HEMOS ENTRADO EN EL DASHBOARD?");
-
+  /*
   // Redirigir si no hay usuario autenticado o no es tutor
   if (!user || user.role !== 'teacher') {
     return <Redirect to="/login" />;
   }
+  */
 
 
   return (
     <IonPage>
-      <SimpleHeaderUser userName={user.username} photoUrl={user.photo_url} />
+      <SimpleHeaderUser userName={user?.username || "username"} photoUrl={user?.photo_url} />
 
       <IonContent className="student-dashboard-content">
         <div className="games-container">
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game1')}
+              onClick={() => history.push('/game/game1')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juego2.png" alt="Juego 1" className="game-image" />
@@ -56,7 +56,7 @@ export default function TutorDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game2')}
+              onClick={() => history.push('/game/game2')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juegoX.png" alt="Juego 2" className="game-image" />
