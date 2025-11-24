@@ -8,6 +8,7 @@ generación automática de la documentación (OpenAPI/Swagger).
 
 """
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 # === REQUEST MODELS ===
@@ -161,3 +162,13 @@ class ExistsResponse(BaseModel):
     Response for username existence checks
     """
     exists: bool
+
+class UserUpdate(BaseModel):
+    """
+    Schema para actualizar datos del usuario.
+    Todo es opcional para permitir PATCH parcial.
+    """
+    username: Optional[str] = None
+    password: Optional[str] = None  # <--- Agregamos esto
+    photo_url: Optional[str] = None
+    # user_profile: dict | None = None (Para este caso específico no lo usaremos, pero puede estar)

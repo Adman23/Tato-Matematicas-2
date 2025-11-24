@@ -207,6 +207,13 @@ export interface GameSessionResponse {
   session_id: string;
 }
 
+// 1. Actualiza la interfaz (o crea una nueva si no existe)
+export interface UserUpdatePayload {
+  username?: string;
+  password?: string;
+  photo_url?: string;
+}
+
 
 
 /**
@@ -401,6 +408,14 @@ export const userAPI = {
    */
   fetchUserData: async (id: string): Promise<UserData> => {
     const response = await api.get<UserData>(`/user/${encodeURIComponent(id)}/user_data`);
+    return response.data;
+  },
+  /**
+   * Actualiza el perfil del usuario
+   */
+  updateUser: async (id: string, updates: UserUpdatePayload): Promise<UserData> => {
+    // Usamos PATCH y enviamos solo los datos que han cambiado
+    const response = await api.patch<UserData>(`/user/${id}`, updates);
     return response.data;
   }
 };
