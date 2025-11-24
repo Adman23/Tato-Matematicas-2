@@ -10,7 +10,7 @@ import {
   IonImg,
   useIonViewWillEnter,
   IonSpinner,
-  useIonRouter, // ✅ Añadido
+  useIonRouter,
 } from '@ionic/react';
 import {
   checkmarkOutline,
@@ -19,8 +19,6 @@ import {
   eyeOffOutline,
   person,
   addOutline,
-  arrowBack,    
-  arrowForward, 
 } from 'ionicons/icons';
 import { useState, useRef, useEffect } from 'react';
 import { authAPI, uploadImage, getImages } from '../../lib/api';
@@ -31,7 +29,7 @@ import { createPortal } from 'react-dom';
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function TeacherEditProfile() {
-  const router = useIonRouter(); // ✅ Reemplaza useHistory
+  const router = useIonRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const avatarPickerRef = useRef<HTMLDivElement>(null);
   const formCardRef = useRef<HTMLDivElement>(null);
@@ -201,7 +199,7 @@ export default function TeacherEditProfile() {
 
   const handleLogout = async () => {
     await logout();
-    router.push('/', 'none', 'replace'); // ✅ sin animación, reemplaza historial
+    router.push('/', 'none', 'replace');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -247,10 +245,6 @@ export default function TeacherEditProfile() {
       setToastColor('success');
       setShowToast(true);
 
-      // Opcional: ir a color tras guardar
-      // setTimeout(() => {
-      //   router.push('/teacheredit/color', 'none', 'push');
-      // }, 2000);
     } catch (err: any) {
       console.error('Error al actualizar perfil:', err);
       setToastMessage('Error al actualizar perfil');
@@ -264,7 +258,7 @@ export default function TeacherEditProfile() {
     setPassword('');
     setConfirmPassword('');
     setAvatarPreview(user?.photo_url || DEFAULT_AVATAR);
-    router.push('/teacher/profile', 'none', 'pop'); // ✅ volver sin animación
+    router.push('/teacher/profile', 'none', 'pop');
   };
 
   if (!user) {
@@ -288,122 +282,103 @@ export default function TeacherEditProfile() {
       />
 
       <IonContent className="teacher-edit-profile-content">
-        <div className="teacher-edit-profile-layout-wrapper">
-          
-          {/* ⬅️ Flecha Izquierda: Volver sin animación */}
-          <div 
-            className="teacher-edit-profile-side-arrow left disabled"
-            onClick={() => router.push('/teacheredit/profile', 'none', 'pop')}
-          >
-            <IonIcon icon={arrowBack} />
-          </div>
+        {/* ✅ Contenido central directamente, sin wrapper de flechas */}
+        <div className="teacher-edit-profile-main-container">
+          <div className="teacher-edit-profile-form-card" ref={formCardRef}>
+            <div className="teacher-edit-profile-form-container-header">
+              <h2>Edición</h2>
+              <p>Actualice sus datos, por favor</p>
+            </div>
 
-          <div className="teacher-edit-profile-main-container">
-            <div className="teacher-edit-profile-form-card" ref={formCardRef}>
-              <div className="teacher-edit-profile-form-container-header">
-                <h2>Edición</h2>
-                <p>Actualice sus datos, por favor</p>
-              </div>
-
-              <div className="teacher-edit-profile-grid-content">
-                <div className="teacher-edit-profile-form-left">
-                  <div className="teacher-edit-profile-field-wrapper">
-                    <div className="teacher-edit-profile-field-label">Nombre completo*</div>
-                    <div className="teacher-edit-profile-input-with-icon">
-                      <IonInput
-                        placeholder={userName ? "" : "Escribir aquí..."}
-                        value={userName}
-                        onIonInput={(e) => setUserName(e.detail.value || '')}
-                        className="teacher-edit-profile-input-item"
-                      />
-                      <IonIcon icon={
-                        userName.trim().length === 0 ? closeOutline :
-                          (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
-                            isUsernameAvailable === true ? checkmarkOutline : closeOutline
-                      } />
-                    </div>
-                  </div>
-
-                  <div className="teacher-edit-profile-field-wrapper">
-                    <div className="teacher-edit-profile-field-label">Contraseña</div>
-                    <div className="teacher-edit-profile-input-with-icon">
-                      <IonInput
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onIonInput={(e) => setPassword(e.detail.value || '')}
-                        className="teacher-edit-profile-input-item"
-                      />
-                      <IonIcon
-                        icon={showPassword ? eyeOffOutline : eyeOutline}
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="teacher-edit-profile-field-wrapper">
-                    <div className="teacher-edit-profile-field-label">Repita la contraseña</div>
-                    <div className="teacher-edit-profile-input-with-icon">
-                      <IonInput
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={confirmPassword}
-                        onIonInput={(e) => setConfirmPassword(e.detail.value || '')}
-                        className="teacher-edit-profile-input-item"
-                      />
-                      <IonIcon
-                        icon={showConfirmPassword ? eyeOffOutline : eyeOutline}
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </div>
+            <div className="teacher-edit-profile-grid-content">
+              <div className="teacher-edit-profile-form-left">
+                <div className="teacher-edit-profile-field-wrapper">
+                  <div className="teacher-edit-profile-field-label">Nombre completo*</div>
+                  <div className="teacher-edit-profile-input-with-icon">
+                    <IonInput
+                      placeholder={userName ? "" : "Escribir aquí..."}
+                      value={userName}
+                      onIonInput={(e) => setUserName(e.detail.value || '')}
+                      className="teacher-edit-profile-input-item"
+                    />
+                    <IonIcon icon={
+                      userName.trim().length === 0 ? closeOutline :
+                        (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
+                          isUsernameAvailable === true ? checkmarkOutline : closeOutline
+                    } />
                   </div>
                 </div>
 
-                <div className="teacher-edit-profile-form-right">
-                  <div className="teacher-edit-profile-field-wrapper">
-                    <div className="teacher-edit-profile-field-label">Seleccione una foto</div>
-                    <div className="teacher-edit-profile-profile-image-container" onClick={openAvatarModal}>
-                      {avatarPreview ? (
-                        <img
-                          src={avatarPreview}
-                          alt="Perfil"
-                          className="teacher-edit-profile-selected-image"
-                        />
-                      ) : (
-                        <IonIcon icon={person} className="teacher-edit-profile-profile-placeholder" />
-                      )}
-                    </div>
+                <div className="teacher-edit-profile-field-wrapper">
+                  <div className="teacher-edit-profile-field-label">Contraseña</div>
+                  <div className="teacher-edit-profile-input-with-icon">
+                    <IonInput
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onIonInput={(e) => setPassword(e.detail.value || '')}
+                      className="teacher-edit-profile-input-item"
+                    />
+                    <IonIcon
+                      icon={showPassword ? eyeOffOutline : eyeOutline}
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="teacher-edit-profile-field-wrapper">
+                  <div className="teacher-edit-profile-field-label">Repita la contraseña</div>
+                  <div className="teacher-edit-profile-input-with-icon">
+                    <IonInput
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onIonInput={(e) => setConfirmPassword(e.detail.value || '')}
+                      className="teacher-edit-profile-input-item"
+                    />
+                    <IonIcon
+                      icon={showConfirmPassword ? eyeOffOutline : eyeOutline}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={{ cursor: 'pointer' }}
+                    />
                   </div>
                 </div>
               </div>
 
-              <div className="teacher-edit-profile-form-button-container">
-                <IonButton
-                  expand="block"
-                  className="teacher-edit-profile-cancel-button"
-                  onClick={handleCancel}
-                >
-                  Cancelar
-                </IonButton>
-                <IonButton
-                  expand="block"
-                  className={`teacher-edit-profile-confirm-button ${!canSubmit ? 'teacher-edit-profile-confirm-button--disabled' : ''}`}
-                  onClick={handleSubmit}
-                >
-                  Guardar cambios
-                </IonButton>
+              <div className="teacher-edit-profile-form-right">
+                <div className="teacher-edit-profile-field-wrapper">
+                  <div className="teacher-edit-profile-field-label">Seleccione una foto</div>
+                  <div className="teacher-edit-profile-profile-image-container" onClick={openAvatarModal}>
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Perfil"
+                        className="teacher-edit-profile-selected-image"
+                      />
+                    ) : (
+                      <IonIcon icon={person} className="teacher-edit-profile-profile-placeholder" />
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* ➡️ Flecha Derecha: Ir a color SIN animación, pero con historial (push) */}
-          <div 
-            className="teacher-edit-profile-side-arrow right"
-            onClick={() => router.push('/teacheredit/color', 'none', 'push')}
-          >
-            <IonIcon icon={arrowForward} />
+            <div className="teacher-edit-profile-form-button-container">
+              <IonButton
+                expand="block"
+                className="teacher-edit-profile-cancel-button"
+                onClick={handleCancel}
+              >
+                Cancelar
+              </IonButton>
+              <IonButton
+                expand="block"
+                className={`teacher-edit-profile-confirm-button ${!canSubmit ? 'teacher-edit-profile-confirm-button--disabled' : ''}`}
+                onClick={handleSubmit}
+              >
+                Guardar cambios
+              </IonButton>
+            </div>
           </div>
-
         </div>
 
         <input
