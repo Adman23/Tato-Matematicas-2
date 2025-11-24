@@ -8,7 +8,6 @@ import {
   IonIcon,
   IonToast,
   IonImg,
-  useIonViewWillEnter,
   IonSpinner,
   useIonRouter,
 } from '@ionic/react';
@@ -57,14 +56,17 @@ export default function TeacherEditProfile() {
 
   const { user, logout } = useAuth();
 
-  useIonViewWillEnter(() => {
+  // ✅ 🔑 CARGA INICIAL DE DATOS DEL USUARIO — IGUAL QUE EN HeaderTeacherItem
+  useEffect(() => {
     if (user) {
+      // Sincroniza con los mismos valores que usa HeaderTeacherItem
       setUserName(user.username || '');
       setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
       setSelectedAvatar(user.photo_url ? 'custom' : '');
     }
-  });
+  }, [user]); // 👈 Solo depende de `user`, como el header
 
+  // Cargar avatares disponibles
   useEffect(() => {
     const loadAvatars = async () => {
       try {
@@ -87,6 +89,7 @@ export default function TeacherEditProfile() {
     loadAvatars();
   }, []);
 
+  // Validación asíncrona de disponibilidad de nombre
   useEffect(() => {
     const trimmed = userName.trim();
 
@@ -95,7 +98,8 @@ export default function TeacherEditProfile() {
       return;
     }
 
-    if (trimmed === user?.username) {
+    // Si es el mismo nombre actual → válido
+    if (user && trimmed === user.username) {
       setIsUsernameAvailable(true);
       return;
     }
@@ -127,9 +131,10 @@ export default function TeacherEditProfile() {
   const canSubmit =
     isUserNameLong &&
     isUserNameSpaceless &&
-    (userName === user?.username || isUsernameAvailable === true) &&
+    (userName === (user?.username || '') || isUsernameAvailable === true) &&
     (password === '' || (isPasswordLong && isPasswordValid && doPasswordsMatch));
 
+  // Handlers
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -152,36 +157,29 @@ export default function TeacherEditProfile() {
     closeAvatarModal();
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+  const triggerFileInput = () => fileInputRef.current?.click();
 
   const openAvatarModal = () => {
     setShowAvatarModal(true);
-    requestAnimationFrame(() => {
-      setIsAvatarModalVisible(true);
-    });
+    requestAnimationFrame(() => setIsAvatarModalVisible(true));
   };
 
   const closeAvatarModal = () => {
     setIsAvatarModalVisible(false);
-    setTimeout(() => {
-      setShowAvatarModal(false);
-    }, 200);
+    setTimeout(() => setShowAvatarModal(false), 200);
   };
 
   const updateAvatarModalPosition = () => {
     if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
       const cardRect = formCardRef.current.getBoundingClientRect();
       const modal = avatarPickerRef.current;
-      
       modal.style.position = 'fixed';
       modal.style.left = `${cardRect.left}px`;
       modal.style.top = `${cardRect.top}px`;
       modal.style.width = `${cardRect.width}px`;
       modal.style.height = `${cardRect.height}px`;
       modal.style.zIndex = '1002';
-      modal.style.margin = '0'; 
+      modal.style.margin = '0';
     }
   };
 
@@ -208,7 +206,7 @@ export default function TeacherEditProfile() {
     let errorMsg = '';
     if (!isUserNameLong) errorMsg += 'El nombre de usuario debe tener al menos 3 caracteres. ';
     if (!isUserNameSpaceless) errorMsg += 'El nombre de usuario no puede contener espacios. ';
-    if (userName !== user?.username && isUsernameAvailable === false) errorMsg += 'El nombre de usuario ya está en uso. ';
+    if (userName !== (user?.username || '') && isUsernameAvailable === false) errorMsg += 'El nombre de usuario ya está en uso. ';
     if (password !== '' && !isPasswordLong) errorMsg += 'La contraseña debe tener al menos 6 caracteres. ';
     if (password !== '' && !isPasswordValid) errorMsg += 'La contraseña debe contener al menos un número. ';
     if (password !== '' && !doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
@@ -244,7 +242,6 @@ export default function TeacherEditProfile() {
       setToastMessage('¡Perfil actualizado correctamente!');
       setToastColor('success');
       setShowToast(true);
-
     } catch (err: any) {
       console.error('Error al actualizar perfil:', err);
       setToastMessage('Error al actualizar perfil');
@@ -254,19 +251,23 @@ export default function TeacherEditProfile() {
   };
 
   const handleCancel = () => {
-    setUserName(user?.username || '');
+    if (user) {
+      setUserName(user.username || '');
+      setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
+    }
     setPassword('');
     setConfirmPassword('');
-    setAvatarPreview(user?.photo_url || DEFAULT_AVATAR);
     router.push('/teacher/profile', 'none', 'pop');
   };
 
+  // ✅ Muestra spinner SOLO si user aún no está disponible
   if (!user) {
     return (
       <IonPage>
         <IonContent className="ion-text-center">
           <div className="teacher-edit-profile-spinner">
             <IonSpinner name="crescent" />
+            <p>Cargando perfil...</p>
           </div>
         </IonContent>
       </IonPage>
@@ -275,14 +276,14 @@ export default function TeacherEditProfile() {
 
   return (
     <IonPage style={{ backgroundColor: '#f4f5f8' }}>
+      {/* ✅ Usa EXACTAMENTE los mismos props que HeaderTeacherItem */}
       <HeaderTeacherItem
-        teacherName={user.username}
-        teacherAvatar={user.photo_url || "/assets/pictograms/user_default.png"}
+        teacherName={user.username || 'Profesor'}
+        teacherAvatar={user.photo_url || DEFAULT_AVATAR}
         onLogoutClick={handleLogout}
       />
 
       <IonContent className="teacher-edit-profile-content">
-        {/* ✅ Contenido central directamente, sin wrapper de flechas */}
         <div className="teacher-edit-profile-main-container">
           <div className="teacher-edit-profile-form-card" ref={formCardRef}>
             <div className="teacher-edit-profile-form-container-header">
@@ -351,7 +352,7 @@ export default function TeacherEditProfile() {
                     {avatarPreview ? (
                       <img
                         src={avatarPreview}
-                        alt="Perfil"
+                        alt="Foto de perfil"
                         className="teacher-edit-profile-selected-image"
                       />
                     ) : (
@@ -399,7 +400,7 @@ export default function TeacherEditProfile() {
         />
       </IonContent>
 
-      {/* Modal de selección de avatar */}
+      {/* Modal de avatar */}
       {showAvatarModal &&
         createPortal(
           <div className="teacher-edit-profile-avatar-picker-overlay" onClick={closeAvatarModal}>
@@ -439,7 +440,7 @@ export default function TeacherEditProfile() {
               </div>
             </div>
           </div>,
-          document.getElementById('modal-root')!
+          document.getElementById('modal-root') || document.body
         )}
     </IonPage>
   );
