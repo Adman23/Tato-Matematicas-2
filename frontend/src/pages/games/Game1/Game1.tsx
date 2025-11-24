@@ -28,18 +28,16 @@ import imgAceptar from '/assets/juegosImg/aceptar.png';
 import imgSonido from '/assets/juegosImg/game1/sonido.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
-import imgSiguiente from '/assets/juegosImg/siguiente.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
-import imgRepetir from '/assets/juegosImg/volver.png';
+
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
 
 // Importar imagen de Tato
 import imgTato from '/assets/Tato/Tato.png';
-import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
-import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import BubblesZone from './BubblesZone';
+import audioManager from '../../../lib/AudioManager';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -47,33 +45,30 @@ const TOTAL_ROUNDS = 5;
 
 
 /**
- * Main component: Associate Sound with Number.
+ * Functional Summary.
  *
- * This educational game presents numbers that the user must associate
- * with the corresponding sound.
+ * Educative game that associates a sound with its corresponding number. The
+ * student listens to the pronunciation of a number and must select the correct
+ * option among several visual bubbles.
  *
- * Main features:
- * - Available for students and teachers with the same features
- * - 5 rounds with different random numbers
- * - Visual pictograms for the range 0-10
- * - Validation with immediate feedback (check/cross)
- * - Complete tracking in backend (time, attempts, results)
- *
- * Game flow:
- * 1. Load user-customized configuration
- * 2. Create game session in DB
+ * Execution flow.
+ * 1. Loads the user's custom configuration (`loadGameConfig`).
+ * 2. Creates a game session in the backend (`createGameSession`).
  * 3. For each round:
- *    - Generate a random number to listen to
- *    - Display several visual options
- *    - User selects an option
- *    - Provide immediate visual feedback
- *    - Validate and save result
- * 4. After 5 rounds, end session and redirect to the appropriate dashboard
+ *    - Generates the options and the target number (`generateRound`).
+ *    - The student can listen to the number (`speakNumber`), use a hint (`useHint`), and select an option.
+ *    - When checking the answer, feedback is shown and the result is saved (`checkAnswer`).
+ * 4. When all rounds are completed, the session is finished (`finishGame`) and redirected.
  *
- * @returns React component with complete game UI
+ * Minimum contract:
+ * - Inputs: game configuration from the backend and user actions (clicks).
+ * - Outputs: API calls to create session, save rounds, and finish session.
+ * - Error modes: network error handling and fallback to default configuration.
+ *
+ * @returns React component that renders the complete game UI.
  *
  * @example
- * // Used in app routing:
+ * // Routing
  * <Route path="/game/game1" component={Game1} />
  */
 const Game1: React.FC = () => {
@@ -112,7 +107,6 @@ const Game1: React.FC = () => {
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [listeningAudio, setListeningAudio] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Video modal state
     const [showVideoModal, setShowVideoModal] = useState(false);
@@ -164,6 +158,7 @@ const Game1: React.FC = () => {
         }
 
     }, [config, currentRound, sessionId]);
+
     // Effect to redirect when the game finishes
     useEffect(() => {
         if (gameFinished) {
@@ -179,20 +174,21 @@ const Game1: React.FC = () => {
 
 
     /**
-     * Load the custom game configuration from the backend.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Verify that an authenticated user exists (student or teacher)
-     * 2. Call the API to get the config for the 'touch_number' game
-     * 3. Validate that the received configuration is correct, or use default values
-     * 4. Update the state with the received configuration (range, quantity, order)
-     * 5. Disable the loading indicator
+     * Loads the user's custom game configuration from the backend and
+     * saves it in local state. If the request fails, applies a safe default configuration.
      *
-     * @returns Promise that resolves when the configuration is loaded
+     * Execution flow.
+     * 1. Checks that an authenticated user exists.
+     * 2. Calls the `gamesAPI.getGameConfig` API to get the configuration.
+     * 3. Validates and normalizes the received values.
+     * 4. Updates `config` and disables the `loading` indicator.
+     *
+     * @returns Promise<void> that resolves when the configuration has been loaded.
      *
      * @example
-     * // When the component mounts, it loads automatically:
-     * // config = { number_range: '0-10', settings: { quantity: 5 } }
+     * await loadGameConfig();
      */
     const loadGameConfig = async () => {
         try {
@@ -234,19 +230,19 @@ const Game1: React.FC = () => {
 
 
     /**
-     * Create a new game session in the backend for progress tracking.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Verify that an authenticated user exists (student or teacher)
-     * 2. Call the API to create a session linked to the user and game
-     * 3. Save the session_id in state to use it when saving rounds
-     * 4. The session_id allows linking all rounds to this game session
+     * Creates a game session in the backend to link all rounds and results
+     * to a single session.
      *
-     * @returns Promise that resolves when the session is created
+     * Execution flow.
+     * 1. Checks that an authenticated user exists.
+     * 2. Calls `gamesAPI.createGameSession` and saves the `session_id` in state.
+     *
+     * @returns Promise<void> that resolves when the session has been created.
      *
      * @example
-     * // When the component mounts:
-     * // sessionId = 'uuid-session-789' (saved in state)
+     * await createGameSession();
      */
     const createGameSession = async () => {
         try {
@@ -260,25 +256,22 @@ const Game1: React.FC = () => {
     };
 
     /**
-      * Generates the numbers and configuration for a new game round.
-      *
-      * Execution flow:
-      * 1. Calculates the number of options: numbers among which to choose the correct one
-      * 2. Generates the number to be heard (currentNumber)
-      * 3. If the number has already been used in another round, generates another one
-      * 4. Generates unique random numbers within the configured range
-      * 5. Adds the correct number to the list
-      * 6. Shuffles the available numbers so they are not in order
-      * 7. Resets the round timer
-      *
-      * @returns void - Updates multiple component states
-      *
-      * @example
-      * // If config.settings.options_count = 5:
-      * // - Generates 4 numbers
-      * // - currentNumber = 9 (number to be heard)
-      * // - availableNumbers = [2, 9, 5, 12, 7] (shuffled, without hints)
-      */
+     * Functional Summary.
+     *
+     * Generates the numeric options for a new round and selects the
+     * number that will be played (currentNumber).
+     *
+     * Execution flow.
+     * 1. Validates the configured number range.
+     * 2. Generates `totalNumbers` unique numbers within the range.
+     * 3. Selects a `roundNumber` not previously used and ensures it is within the options.
+     * 4. Shuffles the options and resets the round counters.
+     *
+     * @returns void - Updates states: currentNumber, availableNumbers, usedNumbers, etc.
+     *
+     * @example
+     * generateRound();
+     */
     const generateRound = () => {
         if (!config) return;
 
@@ -344,18 +337,22 @@ const Game1: React.FC = () => {
         setAttemptsCount(0);
         setHintsUsed([]);
         setHintsCount(0);
+        setSelectedNumber(null);
     };
 
 
     /**
-     * Provides a hint by removing an incorrect option from the available numbers.
+     * Functional Summary.
      *
-     * @remarks
-     * This function finds the first available number that is not the correct answer
-     * and has not already been used as a hint. It then marks that number as "hinted",
-     * which will disable it and reduce its opacity in the UI.
+     * Marks an incorrect option as a hint for the student.
+     *
+     * Execution flow.
+     * - If `showFeedback` is active or there is no current number, does nothing.
+     * - Searches for an available incorrect option that has not been marked and adds it to `hintsUsed`.
      *
      * @returns void
+     * @example
+     * useHint();
      */
     const useHint = () => {
         // No hints when feedback is shown
@@ -388,20 +385,20 @@ const Game1: React.FC = () => {
     };
 
     /**
-     * Validates the user's answer and saves the round result.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Calculates the elapsed time in the round
-     * 2. Compares the selected number with the correct one
-     * 3. Shows visual feedback screen with Tato happy/sad
-     * 4. Saves the result in the backend via API
+     * Validates the answer selected by the user, shows the feedback screen,
+     * and saves the result to the backend if applicable.
      *
-     * @returns Promise that resolves when validation is complete
+     * Execution flow.
+     * - Calculates the time elapsed since the start of the round.
+     * - Determines if the answer is correct and shows `FeedbackScreen`.
+     * - If the answer is correct, saves the result to the API (`saveRoundResultGame1`).
+     *
+     * @returns Promise<void> that resolves when validation and saving (if applicable) are complete.
      *
      * @example
-     * // User selects number 7 when the correct one is 7:
-     * // → is_correct = true, shows feedback screen with Tato happy
-     * // → Saves in DB
+     * await checkAnswer();
      */
     const checkAnswer = async () => {
         // Verify that a number is selected
@@ -438,6 +435,17 @@ const Game1: React.FC = () => {
         }
     };
 
+    /**
+     * Repeats the current exercise.
+     *
+     * Effects:
+     * - Increments the attempts counter.
+     * - Hides the feedback screens and resets selection and hints.
+     *
+     * @returns void
+     * @example
+     * repeatExercise();
+     */
     const repeatExercise = () => {
         setAttemptsCount(prev => prev + 1);
         setShowFeedback(false);
@@ -448,16 +456,18 @@ const Game1: React.FC = () => {
     }
 
     /**
-     * Advances to the next round or finishes the game when the user presses "next".
+     * Functional Summary.
      *
-     * Effects:
-     * - If the answer was incorrect, saves it in the database as final attempt
-     * - If the answer was correct, it was already saved in checkAnswer
-     * - Resets the number selection and hides the feedback
-     * - Increments `currentRound` up to `TOTAL_ROUNDS` or calls {@link finishGame} if the
-     *   total number of rounds has been completed
+     * Advances to the next round or finishes the game when "Next" is pressed.
      *
-     * @returns void
+     * Execution flow.
+     * - If the answer was incorrect, saves the final attempt to the API.
+     * - Hides the feedback screen and resets selection.
+     * - Increments `currentRound` up to `TOTAL_ROUNDS` or calls `finishGame`.
+     *
+     * @returns Promise<void>
+     * @example
+     * await advanceToNextRound();
      */
     const advanceToNextRound = async () => {
 
@@ -499,21 +509,18 @@ const Game1: React.FC = () => {
     };
 
     /**
-     * Ends the game session and records the total time in the backend.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Calculates the total time since the game started
-     * 2. Sends the time to the backend to close the session
-     * 3. Marks the game as finished in the state
-     * 4. The useEffect redirects to the dashboard after 2 seconds
+     * Ends the game session, calculates the total time, and sends it to the backend.
      *
-     * @returns Promise that resolves when the session is finished
+     * Execution flow.
+     * - Calculates the total time from `gameStartTime`.
+     * - Calls `gamesAPI.finishGameSession` with the total time if `sessionId` exists.
+     * - Sets `gameFinished = true` to trigger subsequent redirection.
      *
+     * @returns Promise<void> that resolves when the session closure has been processed.
      * @example
-     * // When completing round 5:
-     * // totalTimeSeconds = 150.2 (2 and a half minutes)
-     * // → Saves in DB and sets gameFinished = true
-     * // → Shows "Juego completado!" and redirects
+     * await finishGame();
      */
     const finishGame = async () => {
         const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
@@ -531,13 +538,15 @@ const Game1: React.FC = () => {
 
 
     /**
-     * Handles early exit from the game (home button).
+     * Functional Summary.
      *
-     * @remarks
-     * If there is an active session in the backend, it tries to finish it by saving
-     * the elapsed time. After that, it redirects to the dashboard according to the user's role.
+     * Handles the early exit from the game (Home button). If there is an ongoing session,
+     * it attempts to close it by saving the elapsed time and then redirects to the appropriate
+     * dashboard based on the user's role.
      *
      * @returns Promise<void>
+     * @example
+     * await handleEarlyExit();
      */
     const handleEarlyExit = async () => {
         // If there is an active session, save the current state
@@ -558,16 +567,22 @@ const Game1: React.FC = () => {
     };
 
     /**
-     * Plays the sound of the indicated number.
+     * Functional Summary.
      *
-     * @remarks
-     * Builds the sequence of audio files needed to pronounce the number
+     * Reproduces the pronunciation of a number by building the sequence of
+     * necessary audio files (hundreds, tens, units, 'and', etc.) and
+     * using `AudioManager` to play them sequentially.
      *
-     * This function protects against concurrent playbacks using the
-     * `listeningAudio` state and the `audioRef` reference.
+     * Execution flow.
+     * - If `num` is `null` or audio is already playing, it exits immediately.
+     * - Calculates the list of files to play according to numerical rules.
+     * - Calls `audioManager.playSequential` with the appropriate paths based on the voice.
      *
-     * @param num - Number to play. If `null`, the function returns without action.
+     * @param num - NNumber to pronounce. If `null`, the function does nothing.
      * @returns void
+     *
+     * @example
+     * speakNumber(42);
      */
     const speakNumber = (num: number | null) => {
         if (num === null) return;
@@ -627,58 +642,19 @@ const Game1: React.FC = () => {
             return files;
         };
 
-
-        let path = '';
-
-
-        // Play files sequentially
+        // Play files sequentially using AudioManager
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
             setListeningAudio(true);
 
-            for (const f of files) {
-
-                if (useWomanVoice) {
-                    path = `/assets/sounds/woman/${f}`;
-                } else {
-                    path = `/assets/sounds/man/${f}`;
-                }
-
-
-                // Stop previous audio if exists
-                if (audioRef.current) {
-                    try {
-                        audioRef.current.pause();
-                        audioRef.current.currentTime = 0;
-                    } catch (e) { /* ignore */ }
-                    audioRef.current = null;
-                }
-
-                // Play single file and wait until it ends (or errors)
-                await new Promise<void>((resolve) => {
-                    const audio = new Audio(path);
-                    audioRef.current = audio;
-
-                    const finish = () => {
-                        if (audioRef.current === audio) audioRef.current = null;
-                        resolve();
-                    };
-
-                    audio.addEventListener('ended', finish);
-                    audio.addEventListener('error', (err) => {
-                        console.error('Error reproduciendo audio', path, err);
-                        finish();
-                    });
-
-                    audio.play().catch((err) => {
-                        console.error('play() falló para', path, err);
-                        finish();
-                    });
-                });
+            try {
+                const base = useWomanVoice ? '/assets/sounds/woman/' : '/assets/sounds/man/';
+                const paths = files.map(f => `${base}${f}`);
+                await audioManager.playSequential(paths);
+            } finally {
+                setListeningAudio(false);
             }
-
-            setListeningAudio(false);
         };
 
         const files = filesForNumber(num);
@@ -694,24 +670,29 @@ const Game1: React.FC = () => {
     // Clean up audio when the component unmounts
     useEffect(() => {
         return () => {
-            if (audioRef.current) {
-                try {
-                    audioRef.current.pause();
-                    audioRef.current = null;
-                } catch (e) { /* ignore */ }
-            }
+            try {
+                audioManager.stop();
+            } catch (e) { /* ignore */ }
         };
     }, []);
 
     /**
-     * Opens the video modal for instructions.
+     * Opens the video modal with instructions.
+     *
+     * @returns void
+     * @example
+     * openVideoModal();
      */
     const openVideoModal = () => {
         setShowVideoModal(true);
     };
 
     /**
-     * Closes the video modal and stops video playback.
+     * Closes the video modal and stops playback if active.
+     *
+     * @returns void
+     * @example
+     * closeVideoModal();
      */
     const closeVideoModal = () => {
         if (videoRef.current) {
@@ -779,13 +760,9 @@ const Game1: React.FC = () => {
                 isCorrect={isCorrectAnswer}
                 currentRound={currentRound}
                 totalRounds={TOTAL_ROUNDS}
-                imgTatoFeliz={imgTatoFeliz}
-                imgTatoTriste={imgTatoTriste}
-                imgSiguiente={imgSiguiente}
                 imgSonido={imgSonido}
                 imgFlecha={imgFlecha}
                 imgJuego={imgJuego}
-                imgRepetir={imgRepetir}
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}
                 onRepeat={repeatExercise}
