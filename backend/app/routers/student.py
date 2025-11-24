@@ -187,6 +187,97 @@ async def get_student(student_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting the student"
-        )  
+        )
+
+@router.get("/{student_alias}/messages", summary="Gets all messages for a student using student alias")
+async def get_student_messages(student_alias: str):
+    """
+    Return all messages for a given student.
+
+    Args:
+        user_id (str): UUID of the student.
     
+    Returns:
+        list: A list of message objects (id, type, text_message, icon_url, sound_url)
+    """
+    try:
+        # --- 1) Resolve student_alias -> student_id using admin list_users ---
+        try:
+            all_auth_users = supabase_admin.auth.admin.list_users(page=1, per_page=1000)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"Error fetching auth users: {str(e)}")
+
+        student_id = None
+        if all_auth_users:
+            for u in all_auth_users:
+                # extract email safely
+                try:
+                    user_email = getattr(u, "email", None)
+                except Exception:
+                    user_email = None
+
+                if not user_email and isinstance(u, dict):
+                    user_email = u.get("email")
+
+                if not user_email:
+                    continue
+
+                try:
+                    uname = user_email.split("@")[0]
+                except Exception:
+                    continue
+
+                if uname and uname.lower() == student_alias.lower():
+                    # get id
+                    try:
+                        student_id = getattr(u, "id", None) or (u.get("id") if isinstance(u, dict) else None)
+                    except Exception:
+                        student_id = None
+                    break
+
+        if not student_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"Student with alias '{student_alias}' not found")
+
+        # Try nested select first (requires FK relationship configured in supabase)
+        try:
+            resp = supabase_admin.table("reinforcement_messages") \
+                        .select("id, user_id, message_id, messages(id, type, text_message, icon_url, sound_url)") \
+                        .eq("user_id", student_id) \
+                        .execute()
+
+            if resp.data:
+                out = []
+                for row in resp.data:
+                    msg = row.get("messages")
+                    if not msg:
+                        continue
+
+                    # Concatenate alias into the message text
+                    out.append({
+                        "id": msg.get("id"),
+                        "type": msg.get("type"),
+                        "text_message": "¡" + msg.get("text_message", "") + ", " + student_alias + "!",
+                        "icon_url": msg.get("icon_url"),
+                        "sound_url": msg.get("sound_url"),
+                    })
+
+                return out
+        except Exception as nested_exc:
+            # log and continue to next table name
+            print(f"Nested select on {join_table} failed:", str(nested_exc))
+
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("Error in get_student_messages_by_type:", str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting messages for the student: {str(e)[:300]}"
+        )
+
+
+
 

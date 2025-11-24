@@ -16,7 +16,8 @@ import {
 import { useHistory, Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
 import { gamesAPI } from '../../../lib/api';
-import type { GameConfig } from '../../../lib/api';
+import { fetchStudentMessagesByAlias } from '../../../lib/api';
+import type { GameConfig, StudentMessage } from '../../../lib/api';
 
 import GameHeader from '../GameHeader';
 import FeedbackScreen from './FeedbackScreen';
@@ -100,6 +101,9 @@ const Game1: React.FC = () => {
     // Attempts
     const [attemptsCount, setAttemptsCount] = useState(0);
 
+    //Messages
+    const [Messages, setMessages] = useState<StudentMessage[]>([]);
+
     // UI states
     const [showFeedback, setShowFeedback] = useState(false);
     const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
@@ -134,6 +138,7 @@ const Game1: React.FC = () => {
         setUsedNumbers([]);
 
         loadGameConfig();
+        loadPositiveMessages();
         setGameStartTime(Date.now());
 
         return () => {
@@ -228,6 +233,23 @@ const Game1: React.FC = () => {
         }
     };
 
+    const loadPositiveMessages = async () => {
+        try {
+            if (!currentUser?.id) return;
+            const data = await fetchStudentMessagesByAlias(currentUser.username);
+            setMessages(data);
+            setLoading(false);
+
+        } catch (error) {
+            console.error('Error loading positive messages:', error);
+            const defaultMessages: StudentMessage[] = [
+                { id: "0", type: 'positive', text_message: '¡Muy bien!' },
+                { id: "1", type: 'reinforcement', text_message: '¡Inténtalo de nuevo!' }
+            ];
+            setMessages(defaultMessages);
+            setLoading(false);
+        }
+    };
 
     /**
      * Functional Summary.
@@ -763,6 +785,7 @@ const Game1: React.FC = () => {
                 imgSonido={imgSonido}
                 imgFlecha={imgFlecha}
                 imgJuego={imgJuego}
+                messages={Messages}
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}
                 onRepeat={repeatExercise}

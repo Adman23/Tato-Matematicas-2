@@ -734,6 +734,31 @@ export const gamesAPI = {
   }
 };
 
+// === ENDPOINTS DE MENSAJES ===
+
+/**
+ * Mensaje personalizado para un estudiante.
+ */
+export interface StudentMessage {
+  id: string;
+  type: string;
+  text_message: string;
+  icon_url?: string | null;
+  sound_url?: string | null;
+}
+
+/**
+ * Obtener los mensajes personalizados de un alumno por su alias y tipo.
+ * @param alias - Alias del alumno (parte antes del @ en su email)
+ * @param messageType - Tipo de mensaje a filtrar (p.ej. "info")
+ * @returns Lista de mensajes con el alias concatenado en el texto
+ */
+export async function fetchStudentMessagesByAlias(alias: string): Promise<StudentMessage[]> {
+  const response = await api.get<StudentMessage[]>(`/student/${encodeURIComponent(alias)}/messages`);
+  return response.data;
+}
+
+
 // ==== EXPORTACIÓN PRINCIPAL ====
 
 /**

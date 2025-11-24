@@ -15,7 +15,7 @@
  * <FeedbackScreen isCorrect={true} currentRound={1} totalRounds={5} imgSonido="..." imgFlecha="..." imgJuego="..." onNext={() => {}} onHomeClick={() => {}} />
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     IonContent,
     IonPage,
@@ -31,6 +31,7 @@ import imgSiguiente from '/assets/juegosImg/siguiente.png';
 import imgRepetir from '/assets/juegosImg/volver.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+import type { StudentMessage } from '../../../lib/api';
 
 
 /**
@@ -45,6 +46,7 @@ import imgTatoTriste from '/assets/Tato/TatoTriste.png';
  * @param onNext - Callback called when the "Next" button is pressed.
  * @param onHomeClick - Callback called when the home button is pressed.
  * @param onRepeat - Optional callback to repeat the hint when the answer is incorrect.
+ * @param messages - Array of messages to display.
  *
  * @returns `FeedbackScreenProps` type used by the component.
  */
@@ -55,6 +57,7 @@ interface FeedbackScreenProps {
     imgSonido: string;
     imgFlecha: string;
     imgJuego: string;
+    messages: StudentMessage[];
     onNext: () => void;
     onHomeClick: () => void;
     onRepeat?: () => void;
@@ -76,6 +79,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     imgSonido,
     imgFlecha,
     imgJuego,
+    messages,
     onNext,
     onHomeClick,
     onRepeat
@@ -95,6 +99,34 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
         };
     }, [isCorrect]);
 
+
+    // Choose a single message to show depending on isCorrect and available messages
+    const selectedMessage = useMemo(() => {
+        try {
+            if (messages && messages.length > 0) {
+                // Filter messages by type
+                if (isCorrect) {
+                    const positive = messages
+                        .filter((m) => m.type === 'positive')
+                        .map((m) => m.text_message as string);
+
+                    return positive[Math.floor(Math.random() * positive.length)];
+                }
+                else {
+                    const reinforcement = messages
+                        .filter((m) => m.type === 'reinforcement' && !!m.text_message)
+                        .map((m) => m.text_message as string);
+
+                    return reinforcement[Math.floor(Math.random() * reinforcement.length)];
+                }
+            }
+        }
+        catch (e) {
+            // In case of unexpected data, return a safe default
+            return isCorrect ? "¡Muy bien!" : "¡Inténtalo de nuevo!";
+        }
+    }, [isCorrect, messages]);
+
     return (
         <IonPage>
             <IonContent className="game1-content">
@@ -111,6 +143,12 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
                 {/* Feedback screen */}
                 <div className="game1-feedback-screen">
+
+                    {/* Message */}
+                    <div className="game1-feedback-message">
+                        <p>{selectedMessage}</p>
+                    </div>
+
                     {/* Tato happy or sad */}
                     <div className="game1-feedback-tato">
                         <img
