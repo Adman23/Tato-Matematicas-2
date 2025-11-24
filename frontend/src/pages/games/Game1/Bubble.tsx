@@ -1,55 +1,62 @@
+/**
+ * Functional Summary.
+ *
+ * Visual component representing a selectable bubble with a number or pictogram.
+ *
+ * Execution flow.
+ * - Renders a button with an accessible role.
+ * - If `usePictogram` is active and the value is between 0 and 10, it shows an image.
+ * - Manages interaction via click and keyboard (Enter/Space) and responds to states
+ *   of `isSelected`, `disabled`, and `isHinted`.
+ *
+ * @example Usage example
+ * <Bubble value={3} usePictogram onClick={(v) => console.log(v)} />
+ */
+
 import React from 'react';
 import './Bubble.css';
-import { IonIcon } from '@ionic/react';
-import { checkmarkSharp, closeSharp } from 'ionicons/icons';
 
 /**
- * Props for the Bubble component.
+ * Props for the `Bubble` component.
  *
- * @remarks
- * A bubble represents a single selectable number option in Game1.
- * It can render either a pictogram (image) or the numeric value as text,
- * and shows optional feedback icons (check / cross) when evaluated.
+ * @param value - Numeric value displayed in the bubble.
+ * @param usePictogram - If true, and `value` is between 0 and 10, a pictogram will be shown.
+ * @param isSelected - Visually indicates if the bubble is selected.
+ * @param disabled - If true, the bubble is not interactive or focusable.
+ * @param isHinted - Indicates that the bubble is shown as a hint (disabled/dimmed).
+ * @param onClick - Callback invoked with the value when the user activates the bubble.
  *
- * @property value - Numeric value represented by the bubble.
- * @property usePictogram - When true and the value is in the supported pictogram range (0-10),
- *                           the component will render an image from `/assets/numbers/{value}.png`.
- * @property isSelected - Visual state for selection (aria-pressed will reflect this).
- * @property isCorrect - When true, shows the "correct" feedback icon and styles.
- * @property isIncorrect - When true, shows the "incorrect" feedback icon and styles.
- * @property disabled - When true, interaction is blocked and the bubble is not focusable.
- * @property onClick - Callback invoked when the bubble is activated by click or keyboard.
+ * @returns Props object used by the `Bubble` component.
+ *
+ * @example
+ * const props: Props = { value: 2, usePictogram: true, onClick: v => console.log(v) }
  */
 type Props = {
     value: number;
     usePictogram?: boolean;
     isSelected?: boolean;
-    isCorrect?: boolean;
-    isIncorrect?: boolean;
     disabled?: boolean;
     isHinted?: boolean;
     onClick?: (value: number) => void;
 };
 
 /**
- * Bubble component: renders a circular selectable number option.
+ * `Bubble` component.
  *
- * The component is accessible: it uses role="button", responds to Enter/Space
- * and exposes `aria-pressed` to indicate selection state. When `usePictogram` is
- * enabled and `value` is between 0 and 10, a pictogram image is used instead of
- * the numeric label.
+ * Renders a circular option that can display a number or a pictogram.
+ * Handles accessibility (role, aria-pressed, keyboard handling) and visual
+ * states (`selected`, `hinted`, `disabled`).
+ *
+ * @param props - Props of the {@link Props} component.
+ * @returns React element representing the bubble.
  *
  * @example
- * <Bubble value={3} usePictogram onClick={(v) => console.log(v)} />
- *
- * @param props - See {@link Props}
+ * <Bubble value={5} usePictogram onClick={(v) => alert(v)} />
  */
 const Bubble: React.FC<Props> = ({
     value,
     usePictogram = true,
     isSelected = false,
-    isCorrect = false,
-    isIncorrect = false,
     disabled = false,
     isHinted = false,
     onClick
@@ -60,8 +67,6 @@ const Bubble: React.FC<Props> = ({
     let classes = 'nm-number-circle';
     if (pictogramSrc) classes += ' nm-number-card-pictogram';
     if (isSelected) classes += ' selected';
-    if (isCorrect) classes += ' correct';
-    if (isIncorrect) classes += ' incorrect';
     if (isHinted) classes += ' hinted';
     if (disabled) classes += ' disabled';
 
@@ -94,9 +99,6 @@ const Bubble: React.FC<Props> = ({
                     <span className="nm-number-value">{value}</span>
                 )}
             </div>
-
-            {/* Feedback icon below the circle: tick for correct, cross for incorrect */}
-
         </div>
     );
 };

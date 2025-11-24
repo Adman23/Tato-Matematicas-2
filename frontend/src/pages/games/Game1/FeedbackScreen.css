@@ -16,6 +16,11 @@
     padding: 2rem;
 }
 
+
+/* ========================================
+    Tato
+   ======================================== */
+
 .game1-feedback-tato {
     flex: 1;
     display: flex;
@@ -32,6 +37,10 @@
     object-fit: contain;
 }
 
+
+/* ========================================
+    Buttons
+   ======================================== */
 .game1-feedback-button-container {
     display: flex;
     justify-content: center;
@@ -72,8 +81,9 @@
     object-fit: contain;
 }
 
+
 /* ========================================
-    Responsive Design
+    Responsive Adjustments
    ======================================== */
 @media (min-width: 768px) and (max-width: 1024px) {
     .game1-feedback-tato {
