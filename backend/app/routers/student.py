@@ -143,7 +143,7 @@ async def get_student(student_id: str):
                         user_profiles!user_id(
                             id,
                         ),
-                        reinforcement_messages!student_id(
+                        reinforcement_messages!user_id(
                             id,
                         ),
                         game_configurations!user_id(
