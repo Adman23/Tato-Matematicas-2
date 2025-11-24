@@ -23,6 +23,7 @@
  *   
  * 
  * -----------------------------------
+ * !! DEPRECATED FORM OF DATA
  * Context for every user, its heavy in data, because it has:
 {
     "user_profile":{
@@ -127,12 +128,6 @@
  * - Show the personalized messages in the games for the user
  */
 
-/* Reference for imports
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import { authAPI } from '../lib/api';
-import type { User, LoginData, RegisterData } from '../lib/api';
-*/
 
 import React, { createContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -320,4 +315,6 @@ export const UserDataWrapper: React.FC<{ children: ReactNode}> = ({children}) =>
             </UserDataProvider>
           )
   }
+
+  return <>{children}</>;
 }

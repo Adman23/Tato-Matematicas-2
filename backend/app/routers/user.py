@@ -134,7 +134,7 @@ async def get_user_data(user_id: str):
                             number_range,\
                             settings\
                         ),\
-                        reinforcement_messages!student_id(\
+                        reinforcement_messages!user_id(\
                             id,\
                             media_type,\
                             content\
