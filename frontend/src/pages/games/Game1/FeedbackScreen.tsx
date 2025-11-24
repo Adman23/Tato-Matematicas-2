@@ -1,8 +1,18 @@
 /**
- * FeedbackScreen Component
- * 
- * Displays a full-screen feedback after the user checks their answer.
- * Shows Tato happy/sad and a button to continue or retry.
+ * Functional Summary.
+ *
+ * Feedback screen used when validating an answer in the game.
+ * Shows Tato's expression (happy/sad), plays a correct/incorrect sound,
+ * and offers buttons to repeat or proceed to the next round.
+ *
+ * Execution flow.
+ * - On mount, plays the corresponding sound (correct/incorrect) through
+ *   the centralized `audioManager`.
+ * - Offers actions: repeat the hint when the answer was incorrect and
+ *   proceed to the next round.
+ *
+ * @example
+ * <FeedbackScreen isCorrect={true} currentRound={1} totalRounds={5} imgSonido="..." imgFlecha="..." imgJuego="..." onNext={() => {}} onHomeClick={() => {}} />
  */
 
 import React, { useEffect } from 'react';
@@ -11,57 +21,66 @@ import {
     IonPage,
     IonButton
 } from '@ionic/react';
-import GameHeader from '../GameHeader';
+
 import './FeedbackScreen.css';
+
+import GameHeader from '../GameHeader';
 import audioManager from '../../../lib/AudioManager';
 
+import imgSiguiente from '/assets/juegosImg/siguiente.png';
+import imgRepetir from '/assets/juegosImg/volver.png';
+import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
+import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+
+
+/**
+ * Props for `FeedbackScreen`.
+ *
+ * @param isCorrect - Indicates if the answer was correct.
+ * @param currentRound - Current round number.
+ * @param totalRounds - Total rounds in the game.
+ * @param imgSonido - Path to the sound pictogram image (header).
+ * @param imgFlecha - Path to the arrow image (header).
+ * @param imgJuego - Path to the game pictogram image (header).
+ * @param onNext - Callback called when the "Next" button is pressed.
+ * @param onHomeClick - Callback called when the home button is pressed.
+ * @param onRepeat - Optional callback to repeat the hint when the answer is incorrect.
+ *
+ * @returns `FeedbackScreenProps` type used by the component.
+ */
 interface FeedbackScreenProps {
     isCorrect: boolean;
     currentRound: number;
     totalRounds: number;
-    imgTatoFeliz: string;
-    imgTatoTriste: string;
-    imgSiguiente: string;
     imgSonido: string;
     imgFlecha: string;
     imgJuego: string;
-    imgRepetir?: string;
     onNext: () => void;
     onHomeClick: () => void;
     onRepeat?: () => void;
 }
 
 /**
- * FeedbackScreen component that shows the result of the answer.
- * 
- * @param isCorrect - Whether the answer was correct
- * @param currentRound - Current round number
- * @param totalRounds - Total number of rounds
- * @param imgTatoFeliz - Image path for happy Tato
- * @param imgTatoTriste - Image path for sad Tato
- * @param imgSiguiente - Image path for next button
- * @param imgSonido - Image path for sound pictogram
- * @param imgFlecha - Image path for arrow pictogram
- * @param imgJuego - Image path for game pictogram
- * @param onNext - Callback when next button is clicked
- * @param onHomeClick - Callback when home button is clicked
+ * `FeedbackScreen` component.
+ *
+ * Shows the result screen (happy/sad Tato), plays the result sound,
+ * and exposes buttons to repeat or proceed.
+ *
+ * @param props - Props of the {@link FeedbackScreenProps} component.
+ * @returns React element with the feedback interface.
  */
 const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     isCorrect,
     currentRound,
     totalRounds,
-    imgTatoFeliz,
-    imgTatoTriste,
-    imgSiguiente,
     imgSonido,
     imgFlecha,
     imgJuego,
-    imgRepetir,
     onNext,
-    onHomeClick
-    ,
+    onHomeClick,
     onRepeat
 }) => {
+
     // Play correct or incorrect sound when component mounts using central AudioManager
     useEffect(() => {
         const soundPath = isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3';
