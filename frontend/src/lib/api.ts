@@ -144,6 +144,7 @@ export interface User {
  * @use for responses when loading the structures for the user (mainly login and reload)
  */
 export interface UserData {
+  username: string;
   user_profile: any;
   game_configurations: any;
   reinforcement_messages: any;
@@ -780,10 +781,10 @@ export interface StudentMessage {
  *   console.log(msg.text_message);
  * });
  */
-export async function fetchStudentMessagesByAlias(alias: string): Promise<StudentMessage[]> {
-  const response = await api.get<StudentMessage[]>(`/student/${encodeURIComponent(alias)}/messages`);
-  return response.data;
-}
+// export async function fetchStudentMessagesByAlias(alias: string): Promise<StudentMessage[]> {
+//   const response = await api.get<StudentMessage[]>(`/student/${encodeURIComponent(alias)}/messages`);
+//   return response.data;
+// }
 
 
 // ==== EXPORTACIÓN PRINCIPAL ====

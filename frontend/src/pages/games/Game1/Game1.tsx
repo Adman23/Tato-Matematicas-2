@@ -15,8 +15,8 @@ import {
 } from '@ionic/react';
 import { useHistory, Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
+import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
-import { fetchStudentMessagesByAlias } from '../../../lib/api';
 import type { GameConfig, StudentMessage } from '../../../lib/api';
 
 import GameHeader from '../GameHeader';
@@ -78,6 +78,7 @@ const Game1: React.FC = () => {
     const { user, loadingAuth: authLoading } = useAuth();
 
     const currentUser = user;
+    const { getAllMessages, refreshUserData, userData, loadingUser } = useUserData();
 
     // Flag to prevent duplicate session creation (React 18 StrictMode)
     const sessionCreatedRef = useRef(false);
@@ -138,7 +139,6 @@ const Game1: React.FC = () => {
         setUsedNumbers([]);
 
         loadGameConfig();
-        loadPositiveMessages();
         setGameStartTime(Date.now());
 
         return () => {
@@ -146,6 +146,15 @@ const Game1: React.FC = () => {
         };
     },
         []);
+
+    // Load messages once the UserContext has finished loading user data
+    useEffect(() => {
+        // If the context is still loading, wait. When it's ready, fetch messages.
+        if (loadingUser) return;
+
+        // If userData is present, attempt to load messages from context
+        loadPositiveMessages();
+    }, [loadingUser, userData]);
 
     // Create session when configuration is loaded (only once)
     useEffect(() => {
@@ -236,7 +245,16 @@ const Game1: React.FC = () => {
     const loadPositiveMessages = async () => {
         try {
             if (!currentUser?.id) return;
-            const data = await fetchStudentMessagesByAlias(currentUser.username);
+            // Try to get messages from the UserContext (already normalized)
+            let data = getAllMessages?.() || [];
+            console.log('Loaded messages from context:', data);
+
+            // If there are no messages in the context yet, try refreshing user data once
+            if ((!data || data.length === 0) && refreshUserData) {
+                await refreshUserData();
+                data = getAllMessages?.() || [];
+            }
+
             setMessages(data);
             setLoading(false);
 
