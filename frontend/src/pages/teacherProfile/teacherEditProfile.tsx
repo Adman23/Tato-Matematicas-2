@@ -10,6 +10,10 @@ import {
   IonImg,
   IonSpinner,
   useIonRouter,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
 } from '@ionic/react';
 import {
   checkmarkOutline,
@@ -18,9 +22,10 @@ import {
   eyeOffOutline,
   person,
   addOutline,
+  checkmarkCircle, // ✅ Importado para la confirmación
 } from 'ionicons/icons';
-import { useState, useRef, useEffect } from 'react';
-import { authAPI, uploadImage, getImages } from '../../lib/api';
+import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
+import { authAPI, uploadImage, getImages, userAPI } from '../../lib/api';
 import HeaderTeacherItem from './components/HeaderTeacherItem';
 import { useAuth } from '../../contexts/AuthContext';
 import { createPortal } from 'react-dom';
@@ -33,20 +38,28 @@ export default function TeacherEditProfile() {
   const avatarPickerRef = useRef<HTMLDivElement>(null);
   const formCardRef = useRef<HTMLDivElement>(null);
 
+  // Estados del formulario
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Estados de Avatar
   const [selectedAvatar, setSelectedAvatar] = useState<string>('');
   const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR);
+  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
 
+  // Estados de UI
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
 
+  // ✅ NUEVO ESTADO: Para controlar si mostramos el formulario o la confirmación
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState(false);
+
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
+  const [toastColor, setToastColor] = useState<'success' | 'danger' | 'warning'>('danger');
 
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const usernameCheckIdRef = useRef(0);
@@ -56,17 +69,16 @@ export default function TeacherEditProfile() {
 
   const { user, logout } = useAuth();
 
-  // ✅ 🔑 CARGA INICIAL DE DATOS DEL USUARIO — IGUAL QUE EN HeaderTeacherItem
+  // 1. Carga inicial
   useEffect(() => {
     if (user) {
-      // Sincroniza con los mismos valores que usa HeaderTeacherItem
       setUserName(user.username || '');
       setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
-      setSelectedAvatar(user.photo_url ? 'custom' : '');
+      setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
     }
-  }, [user]); // 👈 Solo depende de `user`, como el header
+  }, [user]);
 
-  // Cargar avatares disponibles
+  // 2. Cargar avatares
   useEffect(() => {
     const loadAvatars = async () => {
       try {
@@ -89,7 +101,7 @@ export default function TeacherEditProfile() {
     loadAvatars();
   }, []);
 
-  // Validación asíncrona de disponibilidad de nombre
+  // 3. Validación username
   useEffect(() => {
     const trimmed = userName.trim();
 
@@ -98,7 +110,6 @@ export default function TeacherEditProfile() {
       return;
     }
 
-    // Si es el mismo nombre actual → válido
     if (user && trimmed === user.username) {
       setIsUsernameAvailable(true);
       return;
@@ -128,13 +139,15 @@ export default function TeacherEditProfile() {
   const isPasswordLong = password.length >= 6;
   const isPasswordValid = /\d/.test(password);
   const doPasswordsMatch = password === confirmPassword;
+  
   const canSubmit =
     isUserNameLong &&
     isUserNameSpaceless &&
     (userName === (user?.username || '') || isUsernameAvailable === true) &&
     (password === '' || (isPasswordLong && isPasswordValid && doPasswordsMatch));
 
-  // Handlers
+  // --- MANEJO DE IMÁGENES ---
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -152,8 +165,11 @@ export default function TeacherEditProfile() {
       URL.revokeObjectURL(avatarPreview);
     }
     const selected = avatarOptions.find(a => a.id === avatarId);
-    setSelectedAvatar(avatarId);
+    
+    setSelectedAvatar(avatarId); 
     setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
+    setSelectedAvatarUrl(selected?.id || DEFAULT_AVATAR);
+    
     closeAvatarModal();
   };
 
@@ -169,7 +185,7 @@ export default function TeacherEditProfile() {
     setTimeout(() => setShowAvatarModal(false), 200);
   };
 
-  const updateAvatarModalPosition = () => {
+  const updateAvatarModalPosition = useCallback(() => {
     if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
       const cardRect = formCardRef.current.getBoundingClientRect();
       const modal = avatarPickerRef.current;
@@ -179,11 +195,10 @@ export default function TeacherEditProfile() {
       modal.style.width = `${cardRect.width}px`;
       modal.style.height = `${cardRect.height}px`;
       modal.style.zIndex = '1002';
-      modal.style.margin = '0';
     }
-  };
+  }, [showAvatarModal]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (showAvatarModal) {
       const id = requestAnimationFrame(updateAvatarModalPosition);
       const handleResize = () => updateAvatarModalPosition();
@@ -193,12 +208,9 @@ export default function TeacherEditProfile() {
         window.removeEventListener('resize', handleResize);
       };
     }
-  }, [showAvatarModal]);
+  }, [showAvatarModal, updateAvatarModalPosition]);
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/', 'none', 'replace');
-  };
+  // --- SUBMIT ---
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,49 +230,72 @@ export default function TeacherEditProfile() {
       return;
     }
 
+    if (!user) return;
+
     try {
-      let photoUrl = user?.photo_url || DEFAULT_AVATAR;
+      let photoUrl = user.photo_url || DEFAULT_AVATAR;
 
       if (avatarOptions.some(a => a.id === selectedAvatar)) {
-        const selected = avatarOptions.find(a => a.id === selectedAvatar);
-        photoUrl = selected?.imageUrl || DEFAULT_AVATAR;
-      } else if (fileInputRef.current?.files?.[0]) {
+        photoUrl = selectedAvatarUrl;
+      } 
+      else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
         const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
         photoUrl = await uploadImage(file, uniqueFilename);
       }
 
-      if (user) {
-        const updatedUser = {
-          ...user,
-          username: userName,
-          photo_url: photoUrl,
-        };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+      const payload: any = {};
+      if (userName !== user.username) payload.username = userName;
+      if (password !== '') payload.password = password;
+      if (photoUrl !== user.photo_url) payload.photo_url = photoUrl;
+
+      if (Object.keys(payload).length === 0) {
+        setToastMessage('No se detectaron cambios.');
+        setToastColor('warning');
+        setShowToast(true);
+        return;
       }
 
-      setToastMessage('¡Perfil actualizado correctamente!');
-      setToastColor('success');
-      setShowToast(true);
+      const updatedUser = await userAPI.updateUser(user.id, payload);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+
+      // ✅ CAMBIO CLAVE: En lugar de Toast + Redirect, activamos la vista de éxito
+      setIsUpdateSuccess(true);
+      
+      // Limpiamos campos sensibles
+      setPassword('');
+      setConfirmPassword('');
+
     } catch (err: any) {
       console.error('Error al actualizar perfil:', err);
-      setToastMessage('Error al actualizar perfil');
+      const serverMsg = err.response?.data?.detail || err.message || 'Error al actualizar perfil';
+      setToastMessage(serverMsg);
       setToastColor('danger');
       setShowToast(true);
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/', 'none', 'replace');
   };
 
   const handleCancel = () => {
     if (user) {
       setUserName(user.username || '');
       setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
+      setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
     }
     setPassword('');
     setConfirmPassword('');
     router.push('/teacher/profile', 'none', 'pop');
   };
 
-  // ✅ Muestra spinner SOLO si user aún no está disponible
+  // ✅ Nueva función para el botón "Aceptar" de la confirmación
+  const handleSuccessAccept = () => {
+    router.push('/teacher/profile', 'none', 'replace');
+  };
+
   if (!user) {
     return (
       <IonPage>
@@ -276,7 +311,6 @@ export default function TeacherEditProfile() {
 
   return (
     <IonPage style={{ backgroundColor: '#f4f5f8' }}>
-      {/* ✅ Usa EXACTAMENTE los mismos props que HeaderTeacherItem */}
       <HeaderTeacherItem
         teacherName={user.username || 'Profesor'}
         teacherAvatar={user.photo_url || DEFAULT_AVATAR}
@@ -285,101 +319,134 @@ export default function TeacherEditProfile() {
 
       <IonContent className="teacher-edit-profile-content">
         <div className="teacher-edit-profile-main-container">
-          <div className="teacher-edit-profile-form-card" ref={formCardRef}>
-            <div className="teacher-edit-profile-form-container-header">
-              <h2>Edición</h2>
-              <p>Actualice sus datos, por favor</p>
-            </div>
-
-            <div className="teacher-edit-profile-grid-content">
-              <div className="teacher-edit-profile-form-left">
-                <div className="teacher-edit-profile-field-wrapper">
-                  <div className="teacher-edit-profile-field-label">Nombre completo*</div>
-                  <div className="teacher-edit-profile-input-with-icon">
-                    <IonInput
-                      placeholder={userName ? "" : "Escribir aquí..."}
-                      value={userName}
-                      onIonInput={(e) => setUserName(e.detail.value || '')}
-                      className="teacher-edit-profile-input-item"
-                    />
-                    <IonIcon icon={
-                      userName.trim().length === 0 ? closeOutline :
-                        (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
-                          isUsernameAvailable === true ? checkmarkOutline : closeOutline
-                    } />
-                  </div>
+          
+          {/* ✅ RENDERIZADO CONDICIONAL: Confirmación vs Formulario */}
+          {isUpdateSuccess ? (
+            <IonCard className="teacher-edit-profile-confirmation-card">
+              <IonCardHeader className="teacher-edit-profile-confirmation-header">
+                <div className="teacher-edit-profile-confirmation-icon-container">
+                  <IonIcon icon={checkmarkCircle} className="teacher-edit-profile-confirmation-icon" />
                 </div>
+                <IonCardTitle className="teacher-edit-profile-confirmation-title">
+                  Perfil actualizado
+                </IonCardTitle>
+              </IonCardHeader>
 
-                <div className="teacher-edit-profile-field-wrapper">
-                  <div className="teacher-edit-profile-field-label">Contraseña</div>
-                  <div className="teacher-edit-profile-input-with-icon">
-                    <IonInput
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onIonInput={(e) => setPassword(e.detail.value || '')}
-                      className="teacher-edit-profile-input-item"
-                    />
-                    <IonIcon
-                      icon={showPassword ? eyeOffOutline : eyeOutline}
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{ cursor: 'pointer' }}
-                    />
-                  </div>
-                </div>
+              <IonCardContent className="teacher-edit-profile-confirmation-message">
+                Sus datos se han guardado correctamente.
+              </IonCardContent>
 
-                <div className="teacher-edit-profile-field-wrapper">
-                  <div className="teacher-edit-profile-field-label">Repita la contraseña</div>
-                  <div className="teacher-edit-profile-input-with-icon">
-                    <IonInput
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onIonInput={(e) => setConfirmPassword(e.detail.value || '')}
-                      className="teacher-edit-profile-input-item"
-                    />
-                    <IonIcon
-                      icon={showConfirmPassword ? eyeOffOutline : eyeOutline}
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      style={{ cursor: 'pointer' }}
-                    />
-                  </div>
-                </div>
+              <div className="teacher-edit-profile-confirmation-button-container">
+                <IonButton
+                  expand="block"
+                  className="teacher-edit-profile-confirmation-button"
+                  onClick={handleSuccessAccept}
+                >
+                  Aceptar
+                </IonButton>
+              </div>
+            </IonCard>
+          ) : (
+            // FORMULARIO ORIGINAL
+            <div className="teacher-edit-profile-form-card" ref={formCardRef}>
+              <div className="teacher-edit-profile-form-container-header">
+                <h2>Edición</h2>
+                <p>Actualice sus datos, por favor</p>
               </div>
 
-              <div className="teacher-edit-profile-form-right">
-                <div className="teacher-edit-profile-field-wrapper">
-                  <div className="teacher-edit-profile-field-label">Seleccione una foto</div>
-                  <div className="teacher-edit-profile-profile-image-container" onClick={openAvatarModal}>
-                    {avatarPreview ? (
-                      <img
-                        src={avatarPreview}
-                        alt="Foto de perfil"
-                        className="teacher-edit-profile-selected-image"
+              <div className="teacher-edit-profile-grid-content">
+                <div className="teacher-edit-profile-form-left">
+                  {/* Nombre */}
+                  <div className="teacher-edit-profile-field-wrapper">
+                    <div className="teacher-edit-profile-field-label">Nombre completo*</div>
+                    <div className="teacher-edit-profile-input-with-icon">
+                      <IonInput
+                        placeholder={userName ? "" : "Escribir aquí..."}
+                        value={userName}
+                        onIonInput={(e) => setUserName(e.detail.value || '')}
+                        className="teacher-edit-profile-input-item"
                       />
-                    ) : (
-                      <IonIcon icon={person} className="teacher-edit-profile-profile-placeholder" />
-                    )}
+                      <IonIcon icon={
+                        userName.trim().length === 0 ? closeOutline :
+                          (!isUserNameLong || !isUserNameSpaceless) ? closeOutline :
+                            isUsernameAvailable === true ? checkmarkOutline : closeOutline
+                      } />
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div className="teacher-edit-profile-field-wrapper">
+                    <div className="teacher-edit-profile-field-label">Contraseña</div>
+                    <div className="teacher-edit-profile-input-with-icon">
+                      <IonInput
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onIonInput={(e) => setPassword(e.detail.value || '')}
+                        className="teacher-edit-profile-input-item"
+                      />
+                      <IonIcon
+                        icon={showPassword ? eyeOffOutline : eyeOutline}
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Confirmar Password */}
+                  <div className="teacher-edit-profile-field-wrapper">
+                    <div className="teacher-edit-profile-field-label">Repita la contraseña</div>
+                    <div className="teacher-edit-profile-input-with-icon">
+                      <IonInput
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onIonInput={(e) => setConfirmPassword(e.detail.value || '')}
+                        className="teacher-edit-profile-input-item"
+                      />
+                      <IonIcon
+                        icon={showConfirmPassword ? eyeOffOutline : eyeOutline}
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="teacher-edit-profile-form-right">
+                  <div className="teacher-edit-profile-field-wrapper">
+                    <div className="teacher-edit-profile-field-label">Seleccione una foto</div>
+                    <div className="teacher-edit-profile-profile-image-container" onClick={openAvatarModal}>
+                      {avatarPreview ? (
+                        <img
+                          src={avatarPreview}
+                          alt="Foto de perfil"
+                          className="teacher-edit-profile-selected-image"
+                        />
+                      ) : (
+                        <IonIcon icon={person} className="teacher-edit-profile-profile-placeholder" />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="teacher-edit-profile-form-button-container">
-              <IonButton
-                expand="block"
-                className="teacher-edit-profile-cancel-button"
-                onClick={handleCancel}
-              >
-                Cancelar
-              </IonButton>
-              <IonButton
-                expand="block"
-                className={`teacher-edit-profile-confirm-button ${!canSubmit ? 'teacher-edit-profile-confirm-button--disabled' : ''}`}
-                onClick={handleSubmit}
-              >
-                Guardar cambios
-              </IonButton>
+              <div className="teacher-edit-profile-form-button-container">
+                <IonButton
+                  expand="block"
+                  className="teacher-edit-profile-cancel-button"
+                  onClick={handleCancel}
+                >
+                  Cancelar
+                </IonButton>
+                <IonButton
+                  expand="block"
+                  className={`teacher-edit-profile-confirm-button ${!canSubmit ? 'teacher-edit-profile-confirm-button--disabled' : ''}`}
+                  onClick={handleSubmit}
+                >
+                  Guardar cambios
+                </IonButton>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <input
@@ -401,7 +468,7 @@ export default function TeacherEditProfile() {
       </IonContent>
 
       {/* Modal de avatar */}
-      {showAvatarModal &&
+      {showAvatarModal && !isUpdateSuccess && 
         createPortal(
           <div className="teacher-edit-profile-avatar-picker-overlay" onClick={closeAvatarModal}>
             <div
