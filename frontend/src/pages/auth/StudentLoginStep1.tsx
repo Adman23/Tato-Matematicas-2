@@ -4,12 +4,13 @@ import {
   IonButton,
   IonText,
   IonSpinner,
+  IonIcon, // ✅ Importamos IonIcon
   useIonViewWillEnter,
 } from '@ionic/react';
+import { arrowBack, arrowForward } from 'ionicons/icons'; // ✅ Importamos las flechas
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
-// import { useAuth } from '../../contexts/AuthContext'
 import type { Group } from '../../lib/api';
 import './StudentLoginSelection.css';
 
@@ -20,47 +21,15 @@ export default function StudentLoginStep1() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0); // ✅ currentPage (no currentIndex)
+  const [currentPage, setCurrentPage] = useState(0);
   const [visibleCount, setVisibleCount] = useState(4);
   const history = useHistory();
-
-  // const {user, loadingAuth} = useAuth();
-
-  /*
-  !! DEPRECATED
-    -> Now redirection happens in /routes/RouteController.tsx
-    
-  // Show loading icon
-  if (loadingAuth) {
-    return (
-      <IonPage>
-        <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <IonSpinner name="crescent" />
-        </IonContent>
-      </IonPage>
-    );
-  }
-  
-  // Redirigir si hay estudiante autenticado
-  if (user) {
-    console.log("Redirect to login because there is a user");
-    if (user.role === "student")
-      return <Redirect to="/student/dashboard" />;
-    else
-    if (user.role === "admin")
-      return <Redirect to="/admin-dashboard" />;
-    else
-    if (user.role === "teacher")
-      return <Redirect to="/teacher/dashboard" />;
-  }
-  */
 
   const calculateVisibleCount = () => {
     const isMobile = window.innerWidth <= 860;
     return isMobile ? 2 : 4;
   };
 
-  // ✅ Reset currentPage si cambia visibleCount (evita página inválida)
   useEffect(() => {
     if (groups.length > 0) {
       const maxPage = Math.max(0, Math.ceil(groups.length / visibleCount) - 1);
@@ -91,7 +60,7 @@ export default function StudentLoginStep1() {
     setConfirmPendingId(null);
     setError('');
     setHasLoaded(false);
-    setCurrentPage(0); // ✅ reset currentPage
+    setCurrentPage(0);
   });
 
   const loadGroups = async () => {
@@ -129,7 +98,6 @@ export default function StudentLoginStep1() {
     history.push(`/student/login/step2/${selectedGroup.id}`);
   };
 
-  // ✅ Paginación SIN solapamiento
   const startIndex = currentPage * visibleCount;
   const visibleGroups = groups.slice(startIndex, startIndex + visibleCount);
 
@@ -205,7 +173,8 @@ export default function StudentLoginStep1() {
                 disabled={!canGoPrev}
                 aria-label="Clases anteriores"
               >
-                <img src="/assets/pictograms/flecha.png" alt="Anterior" />
+                {/* ✅ Icono Flecha Izquierda */}
+                <IonIcon icon={arrowBack} style={{ fontSize: '3rem' }} />
               </button>
             )}
 
@@ -275,12 +244,12 @@ export default function StudentLoginStep1() {
                 disabled={!canGoNext}
                 aria-label="Más clases"
               >
-                <img src="/assets/pictograms/flecha.png" alt="Siguiente" />
+                {/* ✅ Icono Flecha Derecha */}
+                <IonIcon icon={arrowForward} style={{ fontSize: '3rem' }} />
               </button>
             )}
           </div>
 
-          {/* ✅ Indicadores de página */}
           {showArrows && groups.length > 0 && (
             <ul className="sel-page-indicators" role="tablist" aria-label="Navegación por páginas">
               {Array.from({ length: Math.ceil(groups.length / visibleCount) }, (_, i) => (
