@@ -57,7 +57,7 @@ interface FeedbackScreenProps {
     imgSonido: string;
     imgFlecha: string;
     imgJuego: string;
-    messages: StudentMessage[];
+    messages?: StudentMessage[];
     onNext: () => void;
     onHomeClick: () => void;
     onRepeat?: () => void;
@@ -85,47 +85,78 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     onRepeat
 }) => {
 
-    // Play correct or incorrect sound when component mounts using central AudioManager
+
+    // Choose a single StudentMessage-like object to show depending on isCorrect and available messages
+    const selectedMessage: StudentMessage = useMemo(() => {
+        try {
+            if (messages && messages.length > 0) {
+                // Filter messages by type and keep only those with text
+                const positive = messages.filter((m) => m.type === 'positive');
+                const reinforcement = messages.filter((m) => m.type === 'reinforcement');
+
+                if (isCorrect) {
+                    if (positive.length > 0) {
+                        return positive[Math.floor(Math.random() * positive.length)];
+                    }
+                    // fallback to default positive text
+                    return {
+                        id: 'default-positive',
+                        type: 'positive',
+                        text_message: "¡Muy bien!",
+                        icon_url: null,
+                        sound_url: null
+                    };
+                } else {
+                    if (reinforcement.length > 0) {
+                        return reinforcement[Math.floor(Math.random() * reinforcement.length)];
+                    }
+                    // fallback to default reinforcement text
+                    return {
+                        id: 'default-reinforcement',
+                        type: 'reinforcement',
+                        text_message: "Prueba otra vez",
+                        icon_url: null,
+                        sound_url: null
+                    };
+                }
+            }
+
+            // No messages provided -> return a default message object
+            return {
+                id: 'default-none',
+                type: isCorrect ? 'positive' : 'reinforcement',
+                text_message: isCorrect
+                    ? "¡Muy bien!"
+                    : "Prueba otra vez",
+                icon_url: null,
+                sound_url: null
+            };
+        } catch (e) {
+            // Safe fallback
+            return {
+                id: 'default-error',
+                type: isCorrect ? 'positive' : 'reinforcement',
+                text_message: isCorrect ? '¡Muy bien!' : 'Prueba otra vez',
+                icon_url: null,
+                sound_url: null
+            };
+        }
+    }, [isCorrect, messages]);
+
+    // Play selected message sound (if present) or fallback to default correct/incorrect sound
     useEffect(() => {
-        const soundPath = isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3';
+        const soundPath = selectedMessage && selectedMessage.sound_url
+            ? "/assets/sounds/" + selectedMessage.sound_url
+            : (isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3');
 
         void audioManager.play(soundPath);
 
-        // Cleanup: stop playback when the component unmounts
         return () => {
             try {
                 audioManager.stop();
             } catch (e) { /* ignore */ }
         };
-    }, [isCorrect]);
-
-
-    // Choose a single message to show depending on isCorrect and available messages
-    const selectedMessage = useMemo(() => {
-        try {
-            if (messages && messages.length > 0) {
-                // Filter messages by type
-                if (isCorrect) {
-                    const positive = messages
-                        .filter((m) => m.type === 'positive')
-                        .map((m) => m.text_message as string);
-
-                    return positive[Math.floor(Math.random() * positive.length)];
-                }
-                else {
-                    const reinforcement = messages
-                        .filter((m) => m.type === 'reinforcement' && !!m.text_message)
-                        .map((m) => m.text_message as string);
-
-                    return reinforcement[Math.floor(Math.random() * reinforcement.length)];
-                }
-            }
-        }
-        catch (e) {
-            // In case of unexpected data, return a safe default
-            return isCorrect ? "¡Muy bien!" : "¡Inténtalo de nuevo!";
-        }
-    }, [isCorrect, messages]);
+    }, [selectedMessage?.sound_url, isCorrect]);
 
     return (
         <IonPage>
@@ -146,14 +177,14 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
                     {/* Message */}
                     <div className="game1-feedback-message">
-                        <p>{selectedMessage}</p>
+                        <p>{selectedMessage.text_message}</p>
                     </div>
 
-                    {/* Tato happy or sad */}
+                    {/* Tato happy or sad (or message icon if provided) */}
                     <div className="game1-feedback-tato">
                         <img
-                            src={isCorrect ? imgTatoFeliz : imgTatoTriste}
-                            alt={isCorrect ? "Tato feliz" : "Tato triste"}
+                            src={selectedMessage?.icon_url ? "/assets/pictograms/" + selectedMessage.icon_url : (isCorrect ? imgTatoFeliz : imgTatoTriste)}
+                            alt={selectedMessage?.icon_url ? 'Message icon' : (isCorrect ? 'Tato feliz' : 'Tato triste')}
                             className="game1-feedback-tato-image"
                         />
                     </div>

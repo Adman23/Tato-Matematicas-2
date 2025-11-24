@@ -192,13 +192,39 @@ async def get_student(student_id: str):
 @router.get("/{student_alias}/messages", summary="Gets all messages for a student using student alias")
 async def get_student_messages(student_alias: str):
     """
-    Return all messages for a given student.
+    Retrieve all personalized messages for a student identified by alias.
+
+    This endpoint resolves the provided student alias (the portion before the
+    '@' in the student's email) into the internal Supabase user ID, then
+    queries the `reinforcement_messages` -> `messages` relation to build a
+    personalization-aware list of messages. Each returned message will have
+    the student's alias interpolated into its `text_message` for friendly
+    presentation.
 
     Args:
-        user_id (str): UUID of the student.
-    
+        student_alias (str): The student's alias (email prefix) used to resolve
+            the Supabase user record.
+
+    Raises:
+        HTTPException: 404 NOT FOUND if the alias cannot be resolved to a
+            student ID.
+        HTTPException: 500 INTERNAL SERVER ERROR on unexpected failures when
+            listing auth users or fetching messages from Supabase.
+
     Returns:
-        list: A list of message objects (id, type, text_message, icon_url, sound_url)
+        list[dict]: A list of message objects. Each object contains:
+            - id: message identifier (str or int)
+            - type: message type (e.g. 'positive', 'reinforcement')
+            - text_message: localized text with alias interpolated
+            - icon_url: optional icon URL
+            - sound_url: optional sound URL
+
+    Notes:
+        - Uses the Supabase admin client to bypass row-level security (RLS).
+        - The implementation first attempts a nested select which requires
+          the foreign key relations to be configured in Supabase.
+        - If nested select fails, the function will try alternative queries
+          (handled further down in the implementation).
     """
     try:
         # --- 1) Resolve student_alias -> student_id using admin list_users ---

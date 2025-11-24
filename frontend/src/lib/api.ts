@@ -737,7 +737,14 @@ export const gamesAPI = {
 // === ENDPOINTS DE MENSAJES ===
 
 /**
- * Mensaje personalizado para un estudiante.
+ * Represents a personalized message available to a student.
+ *
+ * Fields:
+ * - id: unique identifier for the message in the backend
+ * - type: message classification (e.g. 'positive', 'reinforcement', 'info')
+ * - text_message: the textual content to be shown to the student
+ * - icon_url: optional URL to an icon or pictogram related to the message
+ * - sound_url: optional URL to a sound that can be played with the message
  */
 export interface StudentMessage {
   id: string;
@@ -747,11 +754,31 @@ export interface StudentMessage {
   sound_url?: string | null;
 }
 
+
 /**
- * Obtener los mensajes personalizados de un alumno por su alias y tipo.
- * @param alias - Alias del alumno (parte antes del @ en su email)
- * @param messageType - Tipo de mensaje a filtrar (p.ej. "info")
- * @returns Lista de mensajes con el alias concatenado en el texto
+ * Fetch personalized messages for a student identified by alias.
+ *
+ * This function calls the backend endpoint that resolves a student alias
+ * (the part before the '@' in the student's email) to the internal user id
+ * and returns the list of messages associated with that student. Note that
+ * some message text values returned by the backend may already include the
+ * student's alias interpolated for friendliness.
+ *
+ * @param alias - The student's alias (email prefix) used to look up
+ *   the corresponding user in the authentication service.
+ *
+ * @returns Promise<StudentMessage[]>: Resolves with an array of StudentMessage
+ * objects. Each message may include `icon_url` and/or `sound_url`.
+ *
+ * Errors:
+ *   - The promise will reject if the network request fails or the backend
+ *     responds with an error status.
+ * 
+ * @example
+ * const messages = await fetchStudentMessagesByAlias('student123');
+ * messages.forEach(msg => {
+ *   console.log(msg.text_message);
+ * });
  */
 export async function fetchStudentMessagesByAlias(alias: string): Promise<StudentMessage[]> {
   const response = await api.get<StudentMessage[]>(`/student/${encodeURIComponent(alias)}/messages`);
