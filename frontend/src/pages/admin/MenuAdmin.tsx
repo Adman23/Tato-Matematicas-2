@@ -57,14 +57,16 @@ export default function AdminDashboard() {
         );
     }
 
+    /*
     // Redirect if there is no authenticated user
     if (!user) {
         return <Redirect to="/login" />;
     }
+    */
 
     return (
         <IonPage>
-            <SimpleHeaderAdmin adminName={user.username} />
+            <SimpleHeaderAdmin adminName={user?.username || "username"} />
             <IonContent className="ion-padding">
                 <div className="admin-dashboard-outer-container">
                     <IonCard className="admin-dashboard-card">

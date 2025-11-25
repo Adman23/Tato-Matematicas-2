@@ -18,7 +18,7 @@
 }
 
 /* ========================================
-   BOTONES DE NAVEGACIÓN (compartidos)
+   BOTONES DE NAVEGACIÓN (Header Row)
    ======================================== */
 
 .sel-button-row {
@@ -62,7 +62,7 @@
 }
 
 /* ========================================
-   HEADER
+   HEADER TEXT
    ======================================== */
 
 .sel-login-header {
@@ -78,58 +78,64 @@
 }
 
 /* ========================================
-   FLECHAS DE NAVEGACIÓN (común)
+   FLECHAS DE NAVEGACIÓN (Actualizado)
    ======================================== */
 
 .sel-group-grid-arrow {
-  background: transparent;
+  /* Estilo circular con color primario */
+  background-color: var(--ion-color-primary);
+  color: white; /* Hace que el icono sea blanco */
+  border-radius: 50%;
+  
+  /* Sombras y bordes */
+  box-shadow: none;
   border: none;
   cursor: pointer;
-  padding: clamp(0.8rem, 1.8vw, 2rem);
+  padding: 0;
+  
+  /* Posicionamiento */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  min-width: clamp(120px, 12vw, 100px);
-  min-height: clamp(120px, 12vw, 100px);
-}
-
-.sel-group-grid-arrow img {
-  width: clamp(90px, 10vw, 80px);
-  height: clamp(90px, 10vw, 80px);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  
+  /* Dimensiones cuadradas para asegurar círculo perfecto */
+  width: clamp(60px, 10vw, 90px);
+  height: clamp(60px, 10vw, 90px);
+  min-width: clamp(60px, 10vw, 90px); /* Evita aplastamiento */
+  flex-shrink: 0;
 }
 
 .sel-group-grid-arrow:disabled {
-  opacity: 0.3;
+  background-color: #ccc;
+  opacity: 0.6;
   cursor: default;
   pointer-events: none;
+  box-shadow: none;
 }
 
 .sel-group-grid-arrow:not(:disabled):hover,
 .sel-group-grid-arrow:not(:disabled):focus-visible {
-  transform: scale(1.12);
-}
-
-/* Rotación solo para flecha derecha */
-.sel-group-grid-arrow.right img,
-.sel-group-grid-arrow.right-outside img {
-  transform: rotate(180deg);
+  transform: scale(1.1);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================
-   GRID DE GRUPOS - Responsive con flechas
+   GRID DE GRUPOS / ESTUDIANTES
    ======================================== */
 
 .sel-group-grid-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.3rem, 0.6vw, 0.6rem);
+  gap: clamp(0.5rem, 2vw, 1.5rem); /* Espacio entre flechas y tarjeta central */
   width: 100%;
   padding: 0 clamp(0.25rem, 0.5vw, 0.5rem);
   overflow: visible;
 }
 
+/* Contenedor interno del Grid */
 .sel-group-grid {
   display: grid;
   gap: clamp(0.8rem, 1.2vw, 1.2rem);
@@ -143,11 +149,12 @@
 @media (max-width: 860px) {
   .sel-group-grid {
     grid-template-columns: 1fr;
+    /* Ajuste para móviles si quieres 2 por fila o 1 por fila */
   }
 }
 
 /* ========================================
-   TILES DE GRUPO / USUARIO
+   TILES (TARJETAS INDIVIDUALES)
    ======================================== */
 
 .sel-group-tile {
@@ -189,12 +196,22 @@
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
-/* Evita que el overlay interfiera con clics */
+.sel-group-tile:focus-visible {
+  outline: 3px solid var(--ion-color-primary);
+  outline-offset: 4px;
+  z-index: 2;
+}
+
+.sel-group-tile.selected:focus-visible {
+  outline-color: var(--ion-color-success);
+}
+
 .sel-group-tile > * {
   position: relative;
   z-index: 1;
 }
 
+/* Contenido dentro del Tile */
 .sel-group-icon {
   width: 100%;
   height: 100%;
@@ -248,11 +265,15 @@
 }
 
 /* ========================================
-   CARD CONTENEDOR DE CLASES — fondo #50BFE6 (tu preferencia)
+   CARD CONTENEDOR DE CLASES
    ======================================== */
 
 .sel-classes-card {
+<<<<<<< HEAD
   background-color: var(--ion-color-primary); /* ✅ Tu color preferido */
+=======
+  background-color: var(--ion-color-primary);
+>>>>>>> main
   border-radius: clamp(20px, 4vw, 32px);
   padding: clamp(1.2rem, 3vh, 2.5rem);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
@@ -267,49 +288,30 @@
 }
 
 /* ========================================
-   DOUBLE-CLICK FEEDBACK OVERLAY (accesible)
+   CONFIRM OVERLAY
    ======================================== */
 
-.sel-double-click-overlay {
+.sel-confirm-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  pointer-events: none; /* ✅ No bloquea clics ni teclado */
-  z-index: 10;
-  animation: fade-in-out 0.6s ease forwards;
+  pointer-events: none; 
+  z-index: 5;
 }
 
-.sel-dblclick-icon {
-  width: 48%;
-  height: 48%;
-  opacity: 0.9;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
-}
-
-@keyframes fade-in-out {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.2);
-  }
+.sel-confirm-icon {
+  width: 45%;
+  height: 45%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
 }
 
 /* ========================================
-   MENSAJES DE ERROR Y CARGA
+   LOADING & ERROR
    ======================================== */
 
 .sel-error-message {
@@ -343,50 +345,7 @@
 }
 
 /* ========================================
-   ACCESIBILIDAD EXTRA (mejora de contraste y foco)
-   ======================================== */
-
-.sel-group-tile:focus-visible {
-  outline: 3px solid var(--ion-color-primary);
-  outline-offset: 4px;
-}
-
-.sel-group-tile.selected:focus-visible {
-  outline-color: var(--ion-color-success);
-}
-
-/* Asegura que el overlay no cause "salto visual" al aparecer */
-.sel-group-tile {
-  contain: layout style;
-}
-
-/* ========================================
-   CONFIRM OVERLAY — modo "listo para confirmar"
-   ======================================== */
-
-.sel-confirm-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none; 
-  z-index: 5;
-}
-
-.sel-confirm-icon {
-  width: 45%;
-  height: 45%;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
-  /* Alternativa: centrar más pequeño */
-  /* width: 64px; height: 64px; */
-}
-
-/* ========================================
-   PAGE INDICATORS (bullets: ● ○)
+   PAGE INDICATORS (Puntos abajo)
    ======================================== */
 
 .sel-page-indicators {
@@ -402,7 +361,7 @@
   width: clamp(10px, 2vw, 14px);
   height: clamp(10px, 2vw, 14px);
   border-radius: 50%;
-  background-color: #ccc; /* gris suave */
+  background-color: #ccc;
   border: none;
   padding: 0;
   cursor: pointer;
@@ -410,7 +369,11 @@
 }
 
 .sel-page-indicator[aria-selected="true"] {
+<<<<<<< HEAD
   background-color: var(--ion-color-primary); /* ✅ tu color preferido */
+=======
+  background-color: #50BFE6;
+>>>>>>> main
   transform: scale(1.2);
 }
 
@@ -420,7 +383,6 @@
   outline: none;
 }
 
-/* Asegurar contraste en foco (WCAG) */
 .sel-page-indicator:focus-visible {
   box-shadow: 0 0 0 2px white, 0 0 0 4px var(--ion-color-primary);
 }

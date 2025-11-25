@@ -144,6 +144,7 @@ export interface User {
  * @use for responses when loading the structures for the user (mainly login and reload)
  */
 export interface UserData {
+  username: string;
   user_profile: any;
   game_configurations: any;
   reinforcement_messages: any;
@@ -205,6 +206,13 @@ export interface RegisterGroup {
  */
 export interface GameSessionResponse {
   session_id: string;
+}
+
+// 1. Actualiza la interfaz (o crea una nueva si no existe)
+export interface UserUpdatePayload {
+  username?: string;
+  password?: string;
+  photo_url?: string;
 }
 
 
@@ -317,7 +325,7 @@ export const authAPI = {
     const response = await api.get<User>('/user/basic_info');
     return response.data;
   },
-  
+
 
   /**
    * Comprueba si un username existe en la base de datos (tabla public.users).
@@ -370,12 +378,12 @@ export const authAPI = {
     return response.data;
   },
 
-    /**
-   * !! DEPRECATED
-   * Iniciar sesión de estudiante mediante secuencia de pictogramas.
-   * @param data - Datos de pictogramas del estudiante.
-   * @returns Token y perfil del estudiante autenticado.
-   */
+  /**
+ * !! DEPRECATED
+ * Iniciar sesión de estudiante mediante secuencia de pictogramas.
+ * @param data - Datos de pictogramas del estudiante.
+ * @returns Token y perfil del estudiante autenticado.
+ */
   /*
   loginStudent: async (data: StudentLoginData): Promise<StudentAuthResponse> => {
     const response = await api.post<StudentAuthResponse>('/auth/student/login', data);
@@ -399,8 +407,16 @@ export const userAPI = {
    * @param id -> id of the user in question
    * @returns the structure UserData with all the data of the user identified by id
    */
-  fetchUserData: async(id: string): Promise<UserData> => {
+  fetchUserData: async (id: string): Promise<UserData> => {
     const response = await api.get<UserData>(`/user/${encodeURIComponent(id)}/user_data`);
+    return response.data;
+  },
+  /**
+   * Actualiza el perfil del usuario
+   */
+  updateUser: async (id: string, updates: UserUpdatePayload): Promise<UserData> => {
+    // Usamos PATCH y enviamos solo los datos que han cambiado
+    const response = await api.patch<UserData>(`/user/${id}`, updates);
     return response.data;
   }
 };
@@ -739,6 +755,56 @@ export const gamesAPI = {
   }
 };
 
+// === ENDPOINTS DE MENSAJES ===
+
+/**
+ * Represents a personalized message available to a student.
+ *
+ * Fields:
+ * - id: unique identifier for the message in the backend
+ * - type: message classification (e.g. 'positive', 'reinforcement', 'info')
+ * - text_message: the textual content to be shown to the student
+ * - icon_url: optional URL to an icon or pictogram related to the message
+ * - sound_url: optional URL to a sound that can be played with the message
+ */
+export interface StudentMessage {
+  id: string;
+  type: string;
+  text_message: string;
+  icon_url?: string | null;
+  sound_url?: string | null;
+}
+
+
+/**
+ * Fetch personalized messages for a student identified by alias.
+ *
+ * This function calls the backend endpoint that resolves a student alias
+ * (the part before the '@' in the student's email) to the internal user id
+ * and returns the list of messages associated with that student. Note that
+ * some message text values returned by the backend may already include the
+ * student's alias interpolated for friendliness.
+ *
+ * @param alias - The student's alias (email prefix) used to look up
+ *   the corresponding user in the authentication service.
+ *
+ * @returns Promise<StudentMessage[]>: Resolves with an array of StudentMessage
+ * objects. Each message may include `icon_url` and/or `sound_url`.
+ *
+ * Errors:
+ *   - The promise will reject if the network request fails or the backend
+ *     responds with an error status.
+ * 
+ * @example
+ * const messages = await fetchStudentMessagesByAlias('student123');
+ * messages.forEach(msg => {
+ *   console.log(msg.text_message);
+ * });
+ */
+// export async function fetchStudentMessagesByAlias(alias: string): Promise<StudentMessage[]> {
+//   const response = await api.get<StudentMessage[]>(`/student/${encodeURIComponent(alias)}/messages`);
+//   return response.data;
+// }
 
 
 // ==== EXPORTACIÓN PRINCIPAL ====

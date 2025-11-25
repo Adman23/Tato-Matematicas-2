@@ -1,3 +1,10 @@
+/**
+ * !! NEW 
+ *  -> Route file defining the two main types of routes
+ *  -> If any other route is defined (like UserDataRoute)
+ *  -> it should extend from one of these to maintain security and reuse code.
+ */
+
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import type { RouteProps } from 'react-router-dom';
@@ -68,8 +75,6 @@ export const PrivateRoute: React.FC<CustomRouteProps> = ({ component: Component,
             if (loadingAuth) return null;
 
             const currentPath = props.location.pathname;
-
-            console.log("Ejecutamos privateRoute");
             
             if (!user) {
                 // Evade loop

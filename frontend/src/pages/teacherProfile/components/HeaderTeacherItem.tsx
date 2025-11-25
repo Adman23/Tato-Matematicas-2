@@ -26,7 +26,7 @@ const HeaderItem: React.FC<Props> = ({
   const history = useHistory(); // ✅ hook de navegación
 
   const handleEditClick = () => {
-    history.push('/teacher-edit-profile'); // ✅ redirige
+    history.push('/teacheredit/profile'); // ✅ redirige
   };
 
   const handleHomeClick = () => {

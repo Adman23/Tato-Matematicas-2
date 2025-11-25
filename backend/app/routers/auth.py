@@ -396,7 +396,7 @@ async def group_exists(groupId: str):
 
 
 @router.post("/logout", response_model=MessageResponse)
-async def logout(current_user: dict = Depends(is_auth_current_user)):
+async def logout(current_user: tuple = Depends(is_auth_current_user)):
     """
     Cierra la sesión del usuario autenticado.
 
@@ -405,7 +405,7 @@ async def logout(current_user: dict = Depends(is_auth_current_user)):
     del token) se gestiona desde el cliente (frontend).
 
     Args:
-        current_user (dict): Información del usuario autenticado, obtenida mediante
+        current_user (tuple): Información del usuario autenticado, obtenida mediante
             la dependencia `get_current_user`.
 
     Returns:

@@ -143,7 +143,7 @@ async def get_student(student_id: str):
                         user_profiles!user_id(
                             id,
                         ),
-                        reinforcement_messages!student_id(
+                        reinforcement_messages!user_id(
                             id,
                         ),
                         game_configurations!user_id(
@@ -187,6 +187,4 @@ async def get_student(student_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting the student"
-        )  
-    
-
+        )
