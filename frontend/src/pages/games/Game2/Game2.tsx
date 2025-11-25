@@ -463,10 +463,19 @@ const Game2: React.FC = () => {
       saveRoundResults(currentHints);
       setIsRoundCompleted(true);
 
-      // Solo mostrar feedback si NO es una pista
+      // Si NO es una pista, mostrar feedback
       if (!isHint) {
         setFeedbackType('correct');
         setShowFeedbackScreen(true);
+      } else {
+        // Si es una pista y es el último número, avanzar automáticamente con un pequeño delay
+        setTimeout(() => {
+          if (currentRound < TOTAL_ROUNDS) {
+            setCurrentRound(prev => prev + 1);
+          } else {
+            finishGame();
+          }
+        }, 800); // Pequeño delay para que el usuario vea que se colocó el número
       }
     } else {
       // Aún quedan números: solo mostrar feedback si NO es una pista
