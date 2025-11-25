@@ -1,13 +1,6 @@
 import type { AccessibilityReport } from "../types/report";
 import AccessibilityIndicator from "./AccesibilityIndicator";
 
-
-interface AccessibilityReportCardProps {
-  label: string;
-  status: "aaa" | "aa" | "fail";
-}
-
-
 export interface AccessibilityDashboardProps {
   report: AccessibilityReport; // ahora acepta "checking"
 }
