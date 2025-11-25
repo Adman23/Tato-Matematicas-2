@@ -8,6 +8,7 @@
     min-height: 70%;
     gap: 20px;
     flex-wrap: wrap;
+    background-color: var(--ion-color-primary-contrast);
 }
 
 
@@ -72,3 +73,8 @@
 .text-preview.normal { font-size: 1em; }
 .text-preview.grande { font-size: 1.2em; }
 .text-preview.enorme { font-size: 1.4em; }
+
+.StudentProfile-IonContent{
+
+    background-color: var(--ion-color-primary-contrast);
+}

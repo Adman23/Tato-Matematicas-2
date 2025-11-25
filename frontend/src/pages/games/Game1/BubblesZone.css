@@ -10,7 +10,7 @@
     width: fit-content;
     height: auto;
     margin: 0;
-    background: white;
+    background: var(--ion-color-primary-contrast);
     flex: 0 1 auto;
     min-height: 0;
     max-height: 100%;

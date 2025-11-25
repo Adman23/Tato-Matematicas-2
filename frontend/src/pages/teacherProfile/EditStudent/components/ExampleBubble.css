@@ -1,0 +1,109 @@
+/* =============================================================================
+   CSS Styles for ExampleBubble component
+   ========================================================================== */
+/* =============================================================================
+   fallback
+   ========================================================================== */
+:root {
+    /* Valores por defecto (fallback) */
+    --bubble-demo-bg: #A9DAF3;
+    --bubble-demo-selected-bg: #FFB7FA;
+    --bubble-demo-correct-bg: #34D399;
+    --bubble-demo-incorrect-bg: #F87171;
+    --bubble-demo-feedback-correct: #059669;
+    --bubble-demo-feedback-incorrect: #b91c1c;
+}
+
+/* ========================================
+    Number circle
+   ======================================== */
+.nmExample-number-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(60px, 18vw, 150px);
+    height: clamp(60px, 18vw, 150px);
+    border-radius: 50%;
+    background: var(--bubble-demo-bg);
+    border: 3px solid transparent;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    color: black;
+    font-size: clamp(1.5rem, 5vw, 3em);
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* ========================================
+    Feedback icons
+   ======================================== */
+.nmExample-feedback-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    line-height: 0;
+}
+
+.nmExample-feedback-icon.correct {
+    color: var(--bubble-demo-feedback-correct);
+}
+
+.nmExample-feedback-icon.incorrect {
+    color: var(--bubble-demo-feedback-incorrect);
+}
+
+.nmExample-feedback-icon .nmExample-ion-icon,
+.nmExample-feedback-icon ion-icon {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+}
+
+
+/* ========================================
+    Number card value
+   ======================================== */
+.nmExample-number-circle .nmExample-number-value {
+    font-size: clamp(0.45rem, 2vw, 2.2rem);
+    font-weight: 400;
+    color: #222;
+}
+
+
+/* ========================================
+    Number circle states
+   ======================================== */
+.nmExample-number-circle.selected {
+    background-color: var(--bubble-demo-selected-bg);
+    color: black;
+    transform: scale(1.20);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+    border: 4px solid black;
+    outline: none;
+}
+
+.nmExample-number-circle.correct {
+    background-color: var(--bubble-demo-correct-bg);
+    color: white;
+    transform: scale(1.20);
+    box-shadow: 0px 6px 12px rgba(16, 185, 129, 0.3);
+    border: 4px solid var(--bubble-demo-feedback-correct);
+}
+
+.nmExample-number-circle.incorrect {
+    background-color: var(--bubble-demo-incorrect-bg);
+    color: white;
+    transform: scale(1.20);
+    box-shadow: 0px 6px 12px rgba(248, 113, 113, 0.3);
+    border: 4px solid var(--bubble-demo-feedback-incorrect);
+}
+
+.nmExample-number-circle.bubble-demo{
+    width: 35px;
+    height: 35px;
+    font-size: 0.8rem; /* ajusta el tamaño del número */
+}
+
+

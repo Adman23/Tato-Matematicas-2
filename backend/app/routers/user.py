@@ -10,7 +10,7 @@
 General user management router
 Endpoints: /user/*
 """
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Body, HTTPException, status, Depends
 from ..schemas.auth import (
 	User,
 	UserData,
@@ -129,7 +129,8 @@ async def get_user_data(user_id: str):
 							id,\
 							visual_preferences,\
 							audio_preferences,\
-							accessibility_settings\
+							accessibility_settings,\
+            				color_preferences\
 						),\
 						game_configurations!user_id(\
 							id,\
@@ -302,3 +303,45 @@ async def update_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error interno: {str(e)}"
         )
+
+@router.post("/{user_id}/update_color_preferences")
+async def update_color_preferences(user_id: str, color_preferences: dict):
+    """
+    Actualiza la paleta de colores de un usuario.
+    """
+    try:
+        update = supabase_admin.table("user_profiles")\
+            .update({"color_preferences": color_preferences})\
+            .eq("user_id", user_id)\
+            .execute()
+
+        print("Datos guardados:", update.data)  # debería mostrar la fila actualizada
+        return {"message": "Color preferences updated", "saved": color_preferences}
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating color preferences: {str(e)}"
+        )
+    
+
+@router.get("/{user_id}/color_preferences")
+async def get_color_preferences(user_id: str):
+    """
+    Obtiene la paleta de colores empleada por un usuario.
+    """
+    try:
+        resp = supabase_admin.table("user_profiles")\
+            .select("color_preferences")\
+            .eq("user_id", user_id)\
+            .single()\
+            .execute()
+
+        if not resp.data:
+            raise HTTPException(404, "User not found")
+
+        return resp.data["color_preferences"]
+
+    except Exception as e:
+        raise HTTPException(500, f"Error fetching color preferences: {e}")

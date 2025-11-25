@@ -80,6 +80,13 @@
   --tatomaths-secondary: #FFC107;
   --tatomaths-background: #FFFFFF;
   --tatomaths-text: #000000;
+  --tatomaths-text-primary: #FFFFFF;
+  --bubble-bg: #A9DAF3;
+  --bubble-selected-bg: #FFB7FA;
+  --bubble-correct-bg: #34D399;
+  --bubble-incorrect-bg: #F87171;
+  --bubble-feedback-correct: #059669;
+  --bubble-feedback-incorrect: #b91c1c;
 
   /* Colores de roles (Home) */
   --color-tutor-primary: #667eea;

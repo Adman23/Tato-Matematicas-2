@@ -1,0 +1,110 @@
+/* =============================================================================
+   CSS Styles for SimpleHeaderAdmin component
+   ========================================================================== */
+ion-header.editStudentProfile{
+
+    display: flex;
+    align-items: bottom;
+    height: 150px;
+}
+
+/* ========================================
+    Toolbar
+   ======================================== */
+ion-toolbar.toolbar-header-editStudentProfile {
+  --background: var(--ion-color-primary);
+  height: 150px;
+  display: flex;
+  align-items: center;
+  padding: 0px 30px;
+}
+
+
+/* ========================================
+   Buttons
+   ======================================== */
+ion-buttons[slot="start"],
+ion-buttons[slot="end"] {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+ion-buttons[slot="start"] {
+  justify-content: flex-start;
+}
+
+ion-buttons[slot="end"] {
+  justify-content: flex-end;
+}
+
+
+/* ========================================
+   Home button
+   ======================================== */
+ion-button.homeButton-header-editStudentProfile {
+  align-self: center;
+}
+
+ion-button.homeButton-header-editStudentProfile::part(native) {
+  background: white;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  --background-hover: white;
+}
+
+ion-button.homeButton-header-editStudentProfile ion-icon {
+  color: var(--ion-color-primary);
+  background-color: white;
+  width: 50px;
+  height: 50px;
+}
+
+/* ========================================
+    Title
+   ======================================== */
+ion-title.title-header-editStudentProfile {
+  font-family: var(--ion-font-family);
+  font-weight: var(--ion-weight-regular);
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+
+  text-align: center;
+  flex-grow: 1;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  overflow: visible;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+/* ========================================
+    Label
+   ======================================== */
+
+.label-header-editStudentProfile{
+
+    font-family: var(--ion-font-family);
+    font-weight: var(--ion-weight-regular);
+    color: white;
+    font-size: 2rem;
+    
+    text-align: center;
+
+}
+
+.container-info-editStudentProfile{
+
+    display: flex;
+    flex-direction: column;
+    align-content: space-around;
+    height: 150px;
+}

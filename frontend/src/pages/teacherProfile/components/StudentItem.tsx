@@ -16,7 +16,9 @@ const StudentItem: React.FC<Props> = ({
   studentAvatar,
   studentName,
   studentClass,
-  onStatisticsClick
+  onStatisticsClick,
+  onEditClick,
+  onInfoClick
 }) => {
   return (
 
@@ -42,11 +44,11 @@ const StudentItem: React.FC<Props> = ({
                         <IonIcon slot="icon-only" md={trendingUpSharp}></IonIcon>
                     </IonButton>
 
-                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onStatisticsClick}>
+                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onInfoClick}>
                         <IonIcon slot="icon-only" md={informationCircle}></IonIcon>
                     </IonButton>
 
-                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onStatisticsClick}>
+                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onEditClick}>
                         <IonIcon slot="icon-only" md={create}></IonIcon>
                     </IonButton>
 
