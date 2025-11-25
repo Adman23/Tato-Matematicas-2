@@ -18,7 +18,7 @@
     Layout general
    ======================================== */
 .game1-content {
-    --background: #ffffff;
+    --background: var(--ion-color-primary-contrast);
     --footer-height: 220px;
     --header-height: 15vh;
 
@@ -94,7 +94,7 @@
     align-items: center;
     padding: clamp(0.2rem, 0.5vw, 0.6rem);
     gap: clamp(0.3rem, 1vw, 1rem);
-    background-color: var(--background, #ffffff);
+    background-color: var(--background, --ion-color-primary-contrast);
     width: 100%;
     max-width: 100%;
     margin: 0;

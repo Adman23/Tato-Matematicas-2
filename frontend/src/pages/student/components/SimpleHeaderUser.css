@@ -17,12 +17,16 @@ ion-toolbar.toolbar-header-user {
   --padding-end: clamp(8px, 2vw, 16px);
   height: 100%;
   min-height: clamp(80px, 20vh, 200px);
+    display: flex;
+  align-items: center;
+  align-content: center;
 }
 
 /* Slot izquierdo - toma menos espacio */
 ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
   display: flex;
   align-items: center;
+  align-content: center;
   height: 100%;
   flex: 0 1 auto;
 }
@@ -31,6 +35,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
 ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
   display: flex;
   align-items: center;
+  align-content: center;
   height: 100%;
   flex: 1 1 auto;
   justify-content: flex-end;
@@ -55,6 +60,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
   display: flex;
   flex-direction: row;
   align-items: center;
+  align-content: center;
   height: 100%;
   background-color: green;
   border-radius: 20%;
@@ -81,7 +87,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="start"] .user-dashborad-img {
 
 /* Texto del header */
 .header-text {
-  color: white;
+  color: var(--tatomaths-text-primary);
   font-weight: 700;
   font-size: clamp(1.2rem, 4vmin, 2.5rem);
   white-space: nowrap;

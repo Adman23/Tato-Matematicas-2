@@ -1,0 +1,21 @@
+.accessibility-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.accessibility-card {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: #f9f9f9;
+}
+
+.accessibility-card-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}

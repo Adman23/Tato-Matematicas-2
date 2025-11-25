@@ -288,6 +288,9 @@ async def update_user(
 
 @router.post("/{user_id}/update_color_preferences")
 async def update_color_preferences(user_id: str, color_preferences: dict):
+    """
+    Actualiza la paleta de colores de un usuario.
+    """
     try:
         update = supabase_admin.table("user_profiles")\
             .update({"color_preferences": color_preferences})\
@@ -303,3 +306,24 @@ async def update_color_preferences(user_id: str, color_preferences: dict):
             status_code=500,
             detail=f"Error updating color preferences: {str(e)}"
         )
+    
+
+@router.get("/{user_id}/color_preferences")
+async def get_color_preferences(user_id: str):
+    """
+    Obtiene la paleta de colores empleada por un usuario.
+    """
+    try:
+        resp = supabase_admin.table("user_profiles")\
+            .select("color_preferences")\
+            .eq("user_id", user_id)\
+            .single()\
+            .execute()
+
+        if not resp.data:
+            raise HTTPException(404, "User not found")
+
+        return resp.data["color_preferences"]
+
+    except Exception as e:
+        raise HTTPException(500, f"Error fetching color preferences: {e}")

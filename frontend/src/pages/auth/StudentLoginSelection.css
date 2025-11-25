@@ -269,11 +269,7 @@
    ======================================== */
 
 .sel-classes-card {
-<<<<<<< HEAD
   background-color: var(--ion-color-primary); /* ✅ Tu color preferido */
-=======
-  background-color: var(--ion-color-primary);
->>>>>>> main
   border-radius: clamp(20px, 4vw, 32px);
   padding: clamp(1.2rem, 3vh, 2.5rem);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
@@ -369,11 +365,7 @@
 }
 
 .sel-page-indicator[aria-selected="true"] {
-<<<<<<< HEAD
   background-color: var(--ion-color-primary); /* ✅ tu color preferido */
-=======
-  background-color: #50BFE6;
->>>>>>> main
   transform: scale(1.2);
 }
 

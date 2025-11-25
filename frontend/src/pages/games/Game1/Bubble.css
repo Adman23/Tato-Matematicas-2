@@ -16,7 +16,7 @@
     max-height: 10vw;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: #A9DAF3;
+    background: var(--bubble-bg);
     border: 3px solid transparent;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
@@ -69,7 +69,7 @@
     Number circle states
    ======================================== */
 .nm-number-circle.selected {
-    background-color: #FFB7FA;
+    background-color: var(--bubble-selected-bg);
     color: black;
     transform: scale(1.18);
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);

@@ -259,6 +259,11 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
 
         // Aplica cada color según tus variables CSS
         root.style.setProperty('--ion-color-primary', colorPrefs.primary);
+        root.style.setProperty('--ion-color-primary-contrast', colorPrefs.background);
+        root.style.setProperty('--bubble-bg', colorPrefs.bubble);
+        root.style.setProperty('--bubble-selected-bg', colorPrefs.bubble_selected);
+        root.style.setProperty('--tatomaths-text', colorPrefs.text_on_bg);
+        root.style.setProperty('--tatomaths-text-primary', colorPrefs.text_on_primary);
 
         console.log("Styles applied");
     }

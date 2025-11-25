@@ -560,8 +560,14 @@ export async function getImages(): Promise<Record<string, string>> {
 
 export async function saveColorPalette (user_id: string, palette: any): Promise<void>  {
 
-    await api.post(`/user/${user_id}/update_color_preferences`, palette);
-  }
+  await api.post(`/user/${user_id}/update_color_preferences`, palette);
+}
+
+export async function getColorPreferences(userId: string) {
+
+  const res = await api.get(`/user/${userId}/color_preferences`);
+  return res.data;
+}
 
 // === ENDPOINTS DE JUEGOS ===
 

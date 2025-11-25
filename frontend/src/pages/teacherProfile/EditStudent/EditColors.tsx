@@ -15,12 +15,17 @@ import {
     IonRow,
     IonCol,
     IonLabel,
-    IonButton
+    IonButton,
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonIcon
 
 } from '@ionic/react';
-
+import { close } from 'ionicons/icons';
 import './EditColors.css';
-import { useHistory, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import SimpleHeaderEdit from './components/SimpleHeaderEdit';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useParams } from "react-router-dom";
@@ -31,7 +36,11 @@ import ColorPaletteCard from './components/ColorPaletteCard';
 import type { Palette } from './types/palette';
 import AccessibilityIndicator from './components/AccesibilityIndicator';
 import { analyzePalette } from './utils/analyzePalette';
-import { saveColorPalette } from '../../../lib/api';
+import { getColorPreferences, saveColorPalette } from '../../../lib/api';
+import { AccessibilityDashboard } from './components/AccesibilityDashboard';
+import { evaluateContrast } from './utils/contrast';
+import type { AccessibilityReport } from './types/report';
+
 
 /**
  * Functional Summary.
@@ -55,7 +64,6 @@ import { saveColorPalette } from '../../../lib/api';
 export default function EditColor() {
 
     const { user } = useAuth();
-    const history = useHistory();
     //const { id, name } = useParams();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
@@ -80,16 +88,16 @@ export default function EditColor() {
 
     ];
     
-      const [colorPrincipal] = useState("var(--ion-color-primary)");
-      const [colorTextoPrincipal] = useState("var(--ion-color-primary-contrast)");
-      const [colorFondo] = useState("var(--ion-color-primary-contrast)");
-      const [colorTextoFondo] = useState("var(--tatomaths-text)");
-      const [colorBubble] = useState("var(--bubble-bg)");
-      const [colorBubbleSelected] = useState("var(--bubble-selected-bg)");
-      const [colorBubbleCorrect] = useState("var(--bubble-correct-bg)");
-      const [colorBubbleIncorrect] = useState("var(--bubble-incorrect-bg)");
-      const [colorCorrectFed] = useState("var(--bubble-feedback-correct)");
-      const [colorIncorrectFed] = useState("var(--bubble-feedback-incorrect)");
+      const [colorPrincipal] = useState("#FFFFFF");
+      const [colorTextoPrincipal] = useState("#FFFFFF");
+      const [colorFondo] = useState("#FFFFFF");
+      const [colorTextoFondo] = useState("#FFFFFF");
+      const [colorBubble] = useState("#FFFFFF");
+      const [colorBubbleSelected] = useState("#FFFFFF");
+      const [colorBubbleCorrect] = useState("#FFFFFF");
+      const [colorBubbleIncorrect] = useState("#FFFFFF");
+      const [colorCorrectFed] = useState("#FFFFFF");
+      const [colorIncorrectFed] = useState("#FFFFFF");
     
     const [selectedPaletteIdx, setSelectedPaletteIdx] = useState<number | null>(0); // 0..N para predefinidas, null para personalizada
     const [customPalette, setCustomPalette] = useState({
@@ -104,6 +112,20 @@ export default function EditColor() {
         feedback_correct: colorCorrectFed,
         feedback_incorrect: colorIncorrectFed,
     });
+
+    const [originalPalette, setOriginalPalette] = useState(customPalette);
+
+    const [accessibilityReport, setAccessibilityReport] = useState<AccessibilityReport>({
+    textOnPrimary: "checking",
+    textOnBackground: "checking",
+    primaryOnBackground: "checking",
+    bubbleOnBackground: "checking",
+    selectedBubbleOnBackground: "checking",
+    feedbackOnBackground: "checking",
+    feedbackIncOnBackground: "checking"
+    });
+
+    const [showModal, setShowModal] = useState(false);
 
     const applyPalette = (palette: Palette) => {
     setSelectedPaletteIdx(palette.id); // marca la paleta seleccionada
@@ -121,6 +143,45 @@ export default function EditColor() {
     });
     };
 
+    useEffect(() => {
+    const loadColors = async () => {
+        try {
+            const prefs = await getColorPreferences(id);
+
+            setCustomPalette({
+                primary: prefs.primary,
+                text_on_primary: prefs.text_on_primary,
+                background: prefs.background,
+                text_on_bg: prefs.text_on_bg,
+                bubble: prefs.bubble,
+                bubble_selected: prefs.bubble_selected,
+                bubble_correct: prefs.bubble_correct,
+                bubble_incorrect: prefs.bubble_incorrect,
+                feedback_correct: prefs.feedback_correct,
+                feedback_incorrect: prefs.feedback_incorrect,
+            });
+            
+             setOriginalPalette({
+                primary: prefs.primary,
+                text_on_primary: prefs.text_on_primary,
+                background: prefs.background,
+                text_on_bg: prefs.text_on_bg,
+                bubble: prefs.bubble,
+                bubble_selected: prefs.bubble_selected,
+                bubble_correct: prefs.bubble_correct,
+                bubble_incorrect: prefs.bubble_incorrect,
+                feedback_correct: prefs.feedback_correct,
+                feedback_incorrect: prefs.feedback_incorrect,
+            });
+
+        } catch (err) {
+            console.error("Error cargando color_preferences", err);
+        }
+    };
+
+    loadColors();
+}, [id]);
+
     const [accessibilityStatus, setAccessibilityStatus] = useState<"aaa" | "aa" | "fail" | "checking">("checking");
 
     useEffect(() => {
@@ -131,12 +192,33 @@ export default function EditColor() {
             text_on_bg: customPalette.text_on_bg,
         });
         setAccessibilityStatus(status);
+
+        setAccessibilityReport({
+            textOnPrimary: evaluateContrast(customPalette.text_on_primary, customPalette.primary),
+            textOnBackground: evaluateContrast(customPalette.text_on_bg, customPalette.background),
+            primaryOnBackground: evaluateContrast(customPalette.primary, customPalette.background),
+            bubbleOnBackground: evaluateContrast(customPalette.bubble, customPalette.background),
+            selectedBubbleOnBackground: evaluateContrast(customPalette.bubble_selected, customPalette.background),
+            feedbackOnBackground: evaluateContrast(customPalette.feedback_correct, customPalette.background), 
+            feedbackIncOnBackground: evaluateContrast(customPalette.feedback_incorrect, customPalette.background),
+        });
     }, [customPalette]);
 
     const savePalette = async () => {
         try {
-            console.log(user?.username);
             await saveColorPalette(id, customPalette);
+            setOriginalPalette({
+                primary: customPalette.primary,
+                text_on_primary: customPalette.text_on_primary,
+                background: customPalette.background,
+                text_on_bg: customPalette.text_on_bg,
+                bubble: customPalette.bubble,
+                bubble_selected: customPalette.bubble_selected,
+                bubble_correct: customPalette.bubble_correct,
+                bubble_incorrect: customPalette.bubble_incorrect,
+                feedback_correct: customPalette.feedback_correct,
+                feedback_incorrect: customPalette.feedback_incorrect,
+            });
             console.log("Paleta guardada correctamente!", customPalette);
         } catch (err) {
             console.error("Error al guardar la paleta", err);
@@ -256,13 +338,33 @@ export default function EditColor() {
                         <IonButton
                             type="submit"
                             className='LinkProfiles-button'
-                            onClick={()=> console.log("Cancela")}
+                            onClick={()=> setCustomPalette(originalPalette)}
                         >
                             Cancelar
                         </IonButton>
+                        <IonButton type="button" className='LinkProfiles-button' onClick={() => setShowModal(true)}>
+                            Informe accesibilidad
+                        </IonButton>
+
                     </div>
 
                 </div>
+
+                <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
+                <IonHeader>
+                    <IonToolbar>
+                        <IonTitle>Informe de accesibilidad</IonTitle>
+                        <IonButtons slot="end">
+                        <IonButton onClick={() => setShowModal(false)}>
+                            <IonIcon icon={close} />
+                        </IonButton>
+                        </IonButtons>
+                    </IonToolbar>
+                    </IonHeader>
+                    <IonContent className="ion-padding">
+                    <AccessibilityDashboard report={accessibilityReport} />
+                    </IonContent>
+                </IonModal>
             </IonContent>
         </IonPage>
     );

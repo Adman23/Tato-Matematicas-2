@@ -23,3 +23,25 @@ export function analyzePalette(palette: {
   // Si todos son AAA → AAA
   return "aaa";
 }
+
+export function analyzePaletteDetailed(palette: {
+  primary: string;
+  text_on_primary: string;
+  background: string;
+  text_on_bg: string;
+  bubble: string;
+  bubble_selected: string;
+  feedback_correct: string;
+  feedback_incorrect: string;
+}) {
+  return {
+    textOnPrimary: evaluateContrast(palette.text_on_primary, palette.primary),
+    textOnBackground: evaluateContrast(palette.text_on_bg, palette.background),
+    primaryOnBackground: evaluateContrast(palette.primary, palette.background),
+    bubbleOnBackground: evaluateContrast(palette.bubble, palette.background),
+    bubbleSelectedOnBackground: evaluateContrast(palette.bubble_selected, palette.background),
+    feedbackCorrectOnBackground: evaluateContrast(palette.feedback_correct, palette.background),
+    feedbackIncorrectOnBackground: evaluateContrast(palette.feedback_incorrect, palette.background),
+  };
+}
+
