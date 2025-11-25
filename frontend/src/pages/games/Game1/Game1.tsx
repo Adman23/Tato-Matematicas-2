@@ -19,8 +19,8 @@ import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig, StudentMessage } from '../../../lib/api';
 
-import GameHeader from '../GameHeader';
-import FeedbackScreen from './FeedbackScreen';
+import GameHeader from '../components/GameHeader';
+import FeedbackScreen from '../components/FeedbackScreen';
 import './Game1.css';
 
 
@@ -800,9 +800,10 @@ const Game1: React.FC = () => {
                 isCorrect={isCorrectAnswer}
                 currentRound={currentRound}
                 totalRounds={TOTAL_ROUNDS}
-                imgSonido={imgSonido}
-                imgFlecha={imgFlecha}
-                imgJuego={imgJuego}
+                headerTitle="Asociar Nº"
+                headerPictogram1={imgSonido}
+                headerPictogramArrow={imgFlecha}
+                headerPictogram2={imgJuego}
                 messages={Messages}
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}

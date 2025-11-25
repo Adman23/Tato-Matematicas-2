@@ -1,18 +1,43 @@
 /**
  * Functional Summary.
  *
- * Feedback screen used when validating an answer in the game.
- * Shows Tato's expression (happy/sad), plays a correct/incorrect sound,
- * and offers buttons to repeat or proceed to the next round.
+ * Unified feedback screen used when validating an answer in games.
+ * Shows Tato's expression (happy/sad), displays personalized messages,
+ * plays correct/incorrect sounds, and offers buttons to repeat or proceed
+ * to the next round.
  *
- * Execution flow.
- * - On mount, plays the corresponding sound (correct/incorrect) through
- *   the centralized `audioManager`.
- * - Offers actions: repeat the hint when the answer was incorrect and
- *   proceed to the next round.
+ * This component is shared across all games to maintain consistency
+ * and avoid code duplication.
+ *
  *
  * @example
- * <FeedbackScreen isCorrect={true} currentRound={1} totalRounds={5} imgSonido="..." imgFlecha="..." imgJuego="..." onNext={() => {}} onHomeClick={() => {}} />
+ * // Game1 usage
+ * <FeedbackScreen
+ *   isCorrect={true}
+ *   currentRound={1}
+ *   totalRounds={5}
+ *   headerTitle="Asociar Nº"
+ *   headerPictogram1={imgSonido}
+ *   headerPictogramArrow={imgFlecha}
+ *   headerPictogram2={imgJuego}
+ *   messages={messages}
+ *   onNext={() => {}}
+ *   onHomeClick={() => {}}
+ *   onRepeat={() => {}}
+ * />
+ *
+ * // Game2 usage (without messages)
+ * <FeedbackScreen
+ *   isCorrect={true}
+ *   currentRound={1}
+ *   totalRounds={5}
+ *   headerTitle="Ordenar Nº"
+ *   headerPictogram1={imgOrdenar}
+ *   headerPictogramArrow={imgFlecha}
+ *   headerPictogram2={imgJuego}
+ *   onNext={() => {}}
+ *   onHomeClick={() => {}}
+ * />
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -24,13 +49,13 @@ import {
 
 import './FeedbackScreen.css';
 
-import GameHeader from '../GameHeader';
+import GameHeader from './GameHeader';
 import audioManager from '../../../lib/AudioManager';
 
-import imgSiguiente from '/assets/juegosImg/siguiente.png';
-import imgRepetir from '/assets/juegosImg/volver.png';
-import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
-import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+import imgSiguienteDefault from '/assets/juegosImg/siguiente.png';
+import imgRepetirDefault from '/assets/juegosImg/volver.png';
+import imgTatoFelizDefault from '/assets/Tato/TatoFeliz.png';
+import imgTatoTristeDefault from '/assets/Tato/TatoTriste.png';
 import type { StudentMessage } from '../../../lib/api';
 
 
@@ -40,13 +65,18 @@ import type { StudentMessage } from '../../../lib/api';
  * @param isCorrect - Indicates if the answer was correct.
  * @param currentRound - Current round number.
  * @param totalRounds - Total rounds in the game.
- * @param imgSonido - Path to the sound pictogram image (header).
- * @param imgFlecha - Path to the arrow image (header).
- * @param imgJuego - Path to the game pictogram image (header).
+ * @param headerTitle - Title to display in the header (e.g., "Asociar Nº", "Ordenar Nº").
+ * @param headerPictogram1 - Path to the first pictogram image for the header.
+ * @param headerPictogramArrow - Path to the arrow image for the header.
+ * @param headerPictogram2 - Path to the second pictogram image for the header.
+ * @param imgTatoFeliz - Optional path to the happy Tato image (defaults to standard happy Tato).
+ * @param imgTatoTriste - Optional path to the sad Tato image (defaults to standard sad Tato).
+ * @param imgSiguiente - Optional path to the "next" button image (defaults to standard siguiente).
+ * @param imgRepetir - Optional path to the "repeat" button image (defaults to standard volver).
+ * @param messages - Optional array of personalized messages to display.
  * @param onNext - Callback called when the "Next" button is pressed.
  * @param onHomeClick - Callback called when the home button is pressed.
  * @param onRepeat - Optional callback to repeat the hint when the answer is incorrect.
- * @param messages - Array of messages to display.
  *
  * @returns `FeedbackScreenProps` type used by the component.
  */
@@ -54,9 +84,14 @@ interface FeedbackScreenProps {
     isCorrect: boolean;
     currentRound: number;
     totalRounds: number;
-    imgSonido: string;
-    imgFlecha: string;
-    imgJuego: string;
+    headerTitle: string;
+    headerPictogram1: string;
+    headerPictogramArrow: string;
+    headerPictogram2: string;
+    imgTatoFeliz?: string;
+    imgTatoTriste?: string;
+    imgSiguiente?: string;
+    imgRepetir?: string;
     messages?: StudentMessage[];
     onNext: () => void;
     onHomeClick: () => void;
@@ -66,8 +101,8 @@ interface FeedbackScreenProps {
 /**
  * `FeedbackScreen` component.
  *
- * Shows the result screen (happy/sad Tato), plays the result sound,
- * and exposes buttons to repeat or proceed.
+ * Shows the result screen (happy/sad Tato), displays personalized messages,
+ * plays the result sound, and exposes buttons to repeat or proceed.
  *
  * @param props - Props of the {@link FeedbackScreenProps} component.
  * @returns React element with the feedback interface.
@@ -76,9 +111,14 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     isCorrect,
     currentRound,
     totalRounds,
-    imgSonido,
-    imgFlecha,
-    imgJuego,
+    headerTitle,
+    headerPictogram1,
+    headerPictogramArrow,
+    headerPictogram2,
+    imgTatoFeliz = imgTatoFelizDefault,
+    imgTatoTriste = imgTatoTristeDefault,
+    imgSiguiente = imgSiguienteDefault,
+    imgRepetir = imgRepetirDefault,
     messages,
     onNext,
     onHomeClick,
@@ -228,48 +268,48 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
     return (
         <IonPage>
-            <IonContent className="game1-content">
+            <IonContent className="feedback-content">
                 {/* Header */}
                 <GameHeader
-                    title="Asociar Nº"
-                    pictogram1={imgSonido}
-                    pictogramArrow={imgFlecha}
-                    pictogram2={imgJuego}
+                    title={headerTitle}
+                    pictogram1={headerPictogram1}
+                    pictogramArrow={headerPictogramArrow}
+                    pictogram2={headerPictogram2}
                     currentRound={currentRound}
                     totalRounds={totalRounds}
                     onHomeClick={onHomeClick}
                 />
 
                 {/* Feedback screen */}
-                <div className="game1-feedback-screen">
+                <div className="feedback-screen">
 
                     {/* Message */}
-                    <div className="game1-feedback-message">
+                    <div className="feedback-message">
                         <p>{selectedMessage.text_message}</p>
                     </div>
 
                     {/* Tato happy or sad (or message icon if provided) */}
-                    <div className="game1-feedback-tato">
+                    <div className="feedback-tato">
                         <img
                             src={selectedMessage?.icon_url ? "/assets/pictograms/" + selectedMessage.icon_url : (isCorrect ? imgTatoFeliz : imgTatoTriste)}
                             alt={selectedMessage?.icon_url ? 'Message icon' : (isCorrect ? 'Tato feliz' : 'Tato triste')}
-                            className="game1-feedback-tato-image"
+                            className="feedback-tato-image"
                         />
                     </div>
 
                     {/* Buttons */}
-                    <div className="game1-feedback-button-container">
-                        {!isCorrect && (
+                    <div className="feedback-button-container">
+                        {!isCorrect && onRepeat && (
                             <IonButton
                                 fill="clear"
-                                className="game1-check-button-feedback"
+                                className="feedback-check-button"
                                 onClick={onRepeat}
                             >
                                 {imgRepetir ? (
                                     <img
                                         src={imgRepetir}
                                         alt="Repetir"
-                                        className="game1-check-button-feedback-image"
+                                        className="feedback-check-button-image"
                                     />
                                 ) : (
                                     <>Repetir</>
@@ -279,13 +319,13 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
                         <IonButton
                             fill="clear"
-                            className="game1-check-button-feedback"
+                            className="feedback-check-button"
                             onClick={() => { incrementMessageIndex(); onNext(); }}
                         >
                             <img
                                 src={imgSiguiente}
                                 alt="Siguiente"
-                                className="game1-check-button-feedback-image"
+                                className="feedback-check-button-image"
                             />
                         </IonButton>
                     </div>

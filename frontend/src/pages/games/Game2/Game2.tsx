@@ -16,11 +16,12 @@ import {
 import { useHistory, Redirect, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../../../contexts/AuthContext';
+import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
-import type { GameConfig } from '../../../lib/api';
+import type { GameConfig, StudentMessage } from '../../../lib/api';
 import DropZone from './DropZone';
-import GameHeader from '../GameHeader';
-import FeedbackScreen from './FeedbackScreen';
+import GameHeader from '../components/GameHeader';
+import FeedbackScreen from '../components/FeedbackScreen';
 import './Game2.css';
 
 // Importar imágenes para el header
@@ -93,6 +94,7 @@ const Game2: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const { user, loadingAuth: authLoading } = useAuth();
+  const { getAllMessages, refreshUserData, userData, loadingUser } = useUserData();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = user;
@@ -132,6 +134,9 @@ const Game2: React.FC = () => {
   // Estados de contadores por ronda
   const [hintsCount, setHintsCount] = useState(0); // Contador de pistas usadas
   const [errorsCount, setErrorsCount] = useState(0); // Contador de errores (colocaciones incorrectas)
+
+  // Estados de mensajes personalizados
+  const [Messages, setMessages] = useState<StudentMessage[]>([]);
 
   // Determinar si usar pictogramas (solo para rango 0-10)
   const usePictograms = config?.number_range === '0-10';
@@ -205,6 +210,11 @@ const Game2: React.FC = () => {
 
   }, [config, currentRound]);
 
+  // Cargar mensajes personalizados cuando el UserContext termine de cargar
+  useEffect(() => {
+    if (loadingUser) return;
+    loadPositiveMessages();
+  }, [loadingUser, userData]);
 
   // Efecto para redirigir cuando el juego termine
   useEffect(() => {
@@ -300,6 +310,44 @@ const Game2: React.FC = () => {
   };
 
   /**
+   * Carga los mensajes personalizados desde el UserContext.
+   *
+   * Flujo de ejecución:
+   * 1. Espera a que el UserContext termine de cargar
+   * 2. Obtiene los mensajes normalizados desde getAllMessages()
+   * 3. Si no hay mensajes, refresca los datos del usuario
+   * 4. Actualiza el estado con los mensajes personalizados
+   * 5. Si falla, usa mensajes por defecto
+   *
+   * @returns Promesa que resuelve cuando se cargan los mensajes
+   */
+  const loadPositiveMessages = async () => {
+    try {
+      if (!currentUser?.id) return;
+
+      // Intenta obtener mensajes del contexto (ya normalizados)
+      let data = getAllMessages?.() || [];
+      console.log('Loaded messages from context:', data);
+
+      // Si no hay mensajes en el contexto, recarga los datos del usuario
+      if ((!data || data.length === 0) && refreshUserData) {
+        await refreshUserData();
+        data = getAllMessages?.() || [];
+      }
+
+      setMessages(data);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      // Fallback a mensajes por defecto
+      const defaultMessages: StudentMessage[] = [
+        { id: "0", type: 'positive', text_message: '¡Muy bien!' },
+        { id: "1", type: 'reinforcement', text_message: '¡Inténtalo de nuevo!' }
+      ];
+      setMessages(defaultMessages);
+    }
+  };
+
+  /**
    * Genera los números y configuración para una nueva ronda del juego.
    * Nueva lógica: Arriba todos los números mezclados, abajo una casilla vacía a la vez.
    */
@@ -378,8 +426,9 @@ const Game2: React.FC = () => {
    * Intenta colocar un número arrastrado en el slot especificado.
    * Valida inmediatamente si es correcto o no.
    * @param currentHints - Valor actual de hints para evitar problemas de estado asíncrono
+   * @param isHint - Si true, no muestra feedback (es una pista automática)
    */
-  const tryPlaceNumber = (draggedNumber: number, targetIndex: number, currentHints?: number) => {
+  const tryPlaceNumber = (draggedNumber: number, targetIndex: number, currentHints?: number, isHint: boolean = false) => {
     if (showFeedback) return;
 
     // Buscar el primer slot vacío
@@ -410,15 +459,21 @@ const Game2: React.FC = () => {
 
     // Verificar si todos los números fueron colocados (todos son undefined)
     if (newAvailable.every(n => n === undefined)) {
-      // Todos los números colocados: guardar y mostrar pantalla de feedback de éxito
+      // Todos los números colocados: guardar resultados
       saveRoundResults(currentHints);
       setIsRoundCompleted(true);
-      setFeedbackType('correct');
-      setShowFeedbackScreen(true);
+
+      // Solo mostrar feedback si NO es una pista
+      if (!isHint) {
+        setFeedbackType('correct');
+        setShowFeedbackScreen(true);
+      }
     } else {
-      // Aún quedan números: mostrar feedback temporal de éxito
-      setFeedbackType('correct');
-      setShowFeedbackScreen(true);
+      // Aún quedan números: solo mostrar feedback si NO es una pista
+      if (!isHint) {
+        setFeedbackType('correct');
+        setShowFeedbackScreen(true);
+      }
     }
   };
 
@@ -480,6 +535,7 @@ const Game2: React.FC = () => {
 
   /**
    * Proporciona una pista colocando automáticamente el número correcto.
+   * No muestra feedback para no recompensar el uso de pistas.
    */
   const useHint = () => {
     // No permitir usar pista durante feedback o si no hay números disponibles
@@ -501,8 +557,8 @@ const Game2: React.FC = () => {
     // Obtener el número correcto para esa posición
     const correctNumber = correctOrder[firstEmptyIndex];
 
-    // Colocar el número correcto automáticamente, pasando el valor actualizado de hints
-    tryPlaceNumber(correctNumber, firstEmptyIndex, newHintsCount);
+    // Colocar el número correcto automáticamente, pasando isHint=true para evitar feedback
+    tryPlaceNumber(correctNumber, firstEmptyIndex, newHintsCount, true);
   };
 
   /**
@@ -726,13 +782,15 @@ const Game2: React.FC = () => {
             isCorrect={feedbackType === 'correct'}
             currentRound={currentRound}
             totalRounds={TOTAL_ROUNDS}
+            headerTitle="Ordenar Nº"
+            headerPictogram1={imgOrdenar}
+            headerPictogramArrow={imgFlecha}
+            headerPictogram2={imgJuego}
             imgTatoFeliz={imgTatoFeliz}
             imgTatoTriste={imgTatoTriste}
             imgSiguiente={imgSiguiente}
-            imgOrdenar={imgOrdenar}
-            imgFlecha={imgFlecha}
-            imgJuego={imgJuego}
-            onContinue={closeFeedbackScreen}
+            messages={Messages}
+            onNext={closeFeedbackScreen}
             onHomeClick={handleEarlyExit}
           />
         ) : (
