@@ -15,7 +15,7 @@
  * <FeedbackScreen isCorrect={true} currentRound={1} totalRounds={5} imgSonido="..." imgFlecha="..." imgJuego="..." onNext={() => {}} onHomeClick={() => {}} />
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     IonContent,
     IonPage,
@@ -31,6 +31,7 @@ import imgSiguiente from '/assets/juegosImg/siguiente.png';
 import imgRepetir from '/assets/juegosImg/volver.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+import type { StudentMessage } from '../../../lib/api';
 
 
 /**
@@ -45,6 +46,7 @@ import imgTatoTriste from '/assets/Tato/TatoTriste.png';
  * @param onNext - Callback called when the "Next" button is pressed.
  * @param onHomeClick - Callback called when the home button is pressed.
  * @param onRepeat - Optional callback to repeat the hint when the answer is incorrect.
+ * @param messages - Array of messages to display.
  *
  * @returns `FeedbackScreenProps` type used by the component.
  */
@@ -55,6 +57,7 @@ interface FeedbackScreenProps {
     imgSonido: string;
     imgFlecha: string;
     imgJuego: string;
+    messages?: StudentMessage[];
     onNext: () => void;
     onHomeClick: () => void;
     onRepeat?: () => void;
@@ -76,24 +79,152 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     imgSonido,
     imgFlecha,
     imgJuego,
+    messages,
     onNext,
     onHomeClick,
     onRepeat
 }) => {
 
-    // Play correct or incorrect sound when component mounts using central AudioManager
+
+    /**
+    * Resumen Funcional.
+    *
+    * Devuelve el objeto `StudentMessage` que se debe mostrar en la pantalla
+    * de feedback para la respuesta actual. La selección es secuencial por
+    * tipo de mensaje: positivo o refuerzo.
+    *
+    * Flujo de ejecución.
+    * - Lee el arreglo `messages` pasado por props (puede ser undefined).
+    * - Filtra los mensajes por tipo (`positive` o `reinforcement`) según
+    *   el booleano `isCorrect`.
+    * - Lee el índice almacenado en `localStorage` bajo la clave
+    *   `tato_feedback_idx_positive` o `tato_feedback_idx_reinforcement`.
+    * - Calcula un índice seguro con módulo (`storedIndex % pool.length`) y
+    *   devuelve el mensaje correspondiente. Si no hay mensajes del tipo
+    *   solicitado, devuelve un mensaje por defecto apropiado.
+    *
+    * @param messages - Arreglo (opcional) de `StudentMessage` recibidos desde el contexto
+    * @param isCorrect - Si true selecciona del pool de mensajes positivos, si false del de refuerzo
+    * @returns `StudentMessage` listo para renderizar (incluye text_message, icon_url y sound_url)
+    *
+    * @example Ejemplo de uso
+    * // Dentro del componente: const msg = selectedMessage; render <p>{msg.text_message}</p>
+    */
+    const selectedMessage: StudentMessage = useMemo(() => {
+        try {
+            if (messages && messages.length > 0) {
+                // Filter messages by type and keep only those with text
+                const positive = messages.filter((m) => m.type === 'positive');
+                const reinforcement = messages.filter((m) => m.type === 'reinforcement');
+
+                const pool = isCorrect ? positive : reinforcement;
+
+                if (pool.length > 0) {
+                    const key = isCorrect ? 'tato_feedback_idx_positive' : 'tato_feedback_idx_reinforcement';
+                    const raw = localStorage.getItem(key);
+                    const idx = raw ? Number(raw) : 0;
+                    const safeIdx = Number.isFinite(idx) ? idx : 0;
+                    return pool[safeIdx % pool.length];
+                }
+
+                // Fallbacks if no messages of the required type
+                if (isCorrect) {
+                    return {
+                        id: 'default-positive',
+                        type: 'positive',
+                        text_message: "¡Muy bien!",
+                        icon_url: null,
+                        sound_url: null
+                    };
+                }
+                return {
+                    id: 'default-reinforcement',
+                    type: 'reinforcement',
+                    text_message: "Prueba otra vez",
+                    icon_url: null,
+                    sound_url: null
+                };
+            }
+
+            // No messages provided -> return a default message object
+            return {
+                id: 'default-none',
+                type: isCorrect ? 'positive' : 'reinforcement',
+                text_message: isCorrect
+                    ? "¡Muy bien!"
+                    : "Prueba otra vez",
+                icon_url: null,
+                sound_url: null
+            };
+        } catch (e) {
+            // Safe fallback
+            return {
+                id: 'default-error',
+                type: isCorrect ? 'positive' : 'reinforcement',
+                text_message: isCorrect ? '¡Muy bien!' : 'Prueba otra vez',
+                icon_url: null,
+                sound_url: null
+            };
+        }
+    }, [isCorrect, messages]);
+
+    /**
+    * Resumen Funcional.
+    *
+    * Avanza el índice secuencial almacenado en `localStorage` para el pool
+    * de mensajes actualmente mostrado (positivo o refuerzo). Este índice
+    * determina qué mensaje se mostrará la próxima vez que se solicite
+    * feedback. La función realiza la escritura en `localStorage` y no
+    * devuelve valor.
+    *
+    * Flujo de ejecución.
+    * - Filtra `messages` por tipo según `isCorrect` para obtener el pool.
+    * - Lee el valor actual de la clave correspondiente en `localStorage`.
+    * - Calcula `(current + 1) % pool.length` para obtener el siguiente
+    *   índice y lo guarda de nuevo en `localStorage`.
+    * - Silencia cualquier error de `localStorage` (por ejemplo en modo
+    *   privado) para no romper la experiencia.
+    *
+    * @returns void
+    *
+    * @example Ejemplo de uso
+    * // Llamar desde el handler del botón Siguiente:
+    * // onClick={() => { incrementMessageIndex(); onNext(); }}
+    */
+    const incrementMessageIndex = () => {
+        try {
+            if (messages && messages.length > 0) {
+                const positive = messages.filter((m) => m.type === 'positive');
+                const reinforcement = messages.filter((m) => m.type === 'reinforcement');
+                const pool = isCorrect ? positive : reinforcement;
+                if (pool.length > 0) {
+                    const key = isCorrect ? 'tato_feedback_idx_positive' : 'tato_feedback_idx_reinforcement';
+                    const raw = localStorage.getItem(key);
+                    const idx = raw ? Number(raw) : 0;
+                    const safeIdx = Number.isFinite(idx) ? idx : 0;
+                    const next = (safeIdx + 1) % pool.length;
+                    localStorage.setItem(key, String(next));
+                }
+            }
+        } catch (e) {
+            // ignore localStorage errors (e.g., in private modes)
+        }
+    };
+
+    // Play selected message sound (if present) or fallback to default correct/incorrect sound
     useEffect(() => {
-        const soundPath = isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3';
+        const soundPath = selectedMessage && selectedMessage.sound_url
+            ? "/assets/sounds/" + selectedMessage.sound_url
+            : (isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3');
 
         void audioManager.play(soundPath);
 
-        // Cleanup: stop playback when the component unmounts
         return () => {
             try {
                 audioManager.stop();
             } catch (e) { /* ignore */ }
         };
-    }, [isCorrect]);
+    }, [selectedMessage?.sound_url, isCorrect]);
 
     return (
         <IonPage>
@@ -111,11 +242,17 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
                 {/* Feedback screen */}
                 <div className="game1-feedback-screen">
-                    {/* Tato happy or sad */}
+
+                    {/* Message */}
+                    <div className="game1-feedback-message">
+                        <p>{selectedMessage.text_message}</p>
+                    </div>
+
+                    {/* Tato happy or sad (or message icon if provided) */}
                     <div className="game1-feedback-tato">
                         <img
-                            src={isCorrect ? imgTatoFeliz : imgTatoTriste}
-                            alt={isCorrect ? "Tato feliz" : "Tato triste"}
+                            src={selectedMessage?.icon_url ? "/assets/pictograms/" + selectedMessage.icon_url : (isCorrect ? imgTatoFeliz : imgTatoTriste)}
+                            alt={selectedMessage?.icon_url ? 'Message icon' : (isCorrect ? 'Tato feliz' : 'Tato triste')}
                             className="game1-feedback-tato-image"
                         />
                     </div>
@@ -143,7 +280,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                         <IonButton
                             fill="clear"
                             className="game1-check-button-feedback"
-                            onClick={onNext}
+                            onClick={() => { incrementMessageIndex(); onNext(); }}
                         >
                             <img
                                 src={imgSiguiente}

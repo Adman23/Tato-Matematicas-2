@@ -31,6 +31,7 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>;
   login: (data: LoginData) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (data: User) => void;
 }
 
 /**
@@ -106,6 +107,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await authAPI.register(data);
   };
 
+  const updateUser = (data: User) => {
+    // Actualizamos localStorage
+    localStorage.setItem('user', JSON.stringify(data));
+    // Y lo más importante: Actualizamos el estado de React
+    setUser(data);
+  };
+
   /**
    * !! EDITED
    *  -> Modified the return values to align with the AuthContextType
@@ -137,6 +145,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         register,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

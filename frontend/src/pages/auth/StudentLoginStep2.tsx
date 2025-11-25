@@ -4,8 +4,10 @@ import {
   IonButton,
   IonText,
   IonSpinner,
+  IonIcon, // ✅ Importamos IonIcon
   useIonViewWillEnter,
 } from '@ionic/react';
+import { arrowBack, arrowForward } from 'ionicons/icons'; // ✅ Importamos las flechas
 import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
@@ -24,10 +26,9 @@ export default function StudentLoginStep2() {
   const [error, setError] = useState('');
   const [hasLoaded, setHasLoaded] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(0); // ✅ currentPage
+  const [currentPage, setCurrentPage] = useState(0);
   const [visibleCount, setVisibleCount] = useState(4);
 
-  // ✅ Paginación SIN solapamiento
   const startIndex = currentPage * visibleCount;
   const visibleStudents = students.slice(startIndex, startIndex + visibleCount);
 
@@ -48,7 +49,6 @@ export default function StudentLoginStep2() {
     return isMobile ? 2 : 4;
   };
 
-  // ✅ Reset currentPage si cambia visibleCount
   useEffect(() => {
     if (students.length > 0) {
       const maxPage = Math.max(0, Math.ceil(students.length / visibleCount) - 1);
@@ -79,7 +79,7 @@ export default function StudentLoginStep2() {
     setConfirmPendingId(null);
     setError('');
     setHasLoaded(false);
-    setCurrentPage(0); // ✅ reset currentPage
+    setCurrentPage(0);
   });
 
   const loadStudents = async () => {
@@ -183,7 +183,8 @@ export default function StudentLoginStep2() {
                   disabled={!canGoPrev}
                   aria-label="Estudiantes anteriores"
                 >
-                  <img src="/assets/pictograms/flecha.png" alt="Anterior" />
+                  {/* ✅ Icono Flecha Izquierda */}
+                  <IonIcon icon={arrowBack} style={{ fontSize: '3rem' }} />
                 </button>
               )}
 
@@ -251,13 +252,13 @@ export default function StudentLoginStep2() {
                   disabled={!canGoNext}
                   aria-label="Más estudiantes"
                 >
-                  <img src="/assets/pictograms/flecha.png" alt="Siguiente" />
+                  {/* ✅ Icono Flecha Derecha */}
+                  <IonIcon icon={arrowForward} style={{ fontSize: '3rem' }} />
                 </button>
               )}
             </div>
           )}
 
-          {/* ✅ Indicadores de página */}
           {showArrows && students.length > 0 && (
             <ul className="sel-page-indicators" role="tablist" aria-label="Navegación por páginas">
               {Array.from({ length: Math.ceil(students.length / visibleCount) }, (_, i) => (
