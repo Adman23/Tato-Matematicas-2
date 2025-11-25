@@ -94,7 +94,7 @@ const Game2: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const { user, loadingAuth: authLoading } = useAuth();
-  const { getAllMessages, refreshUserData, userData, loadingUser } = useUserData();
+  const { getAllMessages, refreshUserData, loadingUser } = useUserData();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = user;
@@ -214,7 +214,7 @@ const Game2: React.FC = () => {
   useEffect(() => {
     if (loadingUser) return;
     loadPositiveMessages();
-  }, [loadingUser, userData]);
+  }, [loadingUser]); // Solo depende de loadingUser para evitar loops
 
   // Efecto para redirigir cuando el juego termine
   useEffect(() => {

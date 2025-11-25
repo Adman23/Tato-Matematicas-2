@@ -78,7 +78,7 @@ const Game1: React.FC = () => {
     const { user, loadingAuth: authLoading } = useAuth();
 
     const currentUser = user;
-    const { getAllMessages, refreshUserData, userData, loadingUser } = useUserData();
+    const { getAllMessages, refreshUserData, loadingUser } = useUserData();
 
     // Flag to prevent duplicate session creation (React 18 StrictMode)
     const sessionCreatedRef = useRef(false);
@@ -154,7 +154,7 @@ const Game1: React.FC = () => {
 
         // If userData is present, attempt to load messages from context
         loadPositiveMessages();
-    }, [loadingUser, userData]);
+    }, [loadingUser]); // Solo depende de loadingUser para evitar loops
 
     // Create session when configuration is loaded (only once)
     useEffect(() => {
