@@ -64,10 +64,10 @@ import type { AccessibilityReport } from './types/report';
 export default function EditColor() {
 
     const { user } = useAuth();
-    //const { id, name } = useParams();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
 
+    //Predefined color palettes
     const examplePalette = [
         {
             id: 1,
@@ -88,6 +88,7 @@ export default function EditColor() {
 
     ];
     
+    //Colors of each palette
       const [colorPrincipal] = useState("#FFFFFF");
       const [colorTextoPrincipal] = useState("#FFFFFF");
       const [colorFondo] = useState("#FFFFFF");
@@ -99,7 +100,9 @@ export default function EditColor() {
       const [colorCorrectFed] = useState("#FFFFFF");
       const [colorIncorrectFed] = useState("#FFFFFF");
     
+    //Palette index
     const [selectedPaletteIdx, setSelectedPaletteIdx] = useState<number | null>(0); // 0..N para predefinidas, null para personalizada
+    //Custom palette- the final palette that is going to be in the data base
     const [customPalette, setCustomPalette] = useState({
         primary: colorPrincipal,
         text_on_primary: colorTextoPrincipal,
@@ -113,8 +116,10 @@ export default function EditColor() {
         feedback_incorrect: colorIncorrectFed,
     });
 
+    //The palette that initially loads on the page
     const [originalPalette, setOriginalPalette] = useState(customPalette);
 
+    //Accesibility report for analyzing the accesibility of the customPalette in detail
     const [accessibilityReport, setAccessibilityReport] = useState<AccessibilityReport>({
     textOnPrimary: "checking",
     textOnBackground: "checking",
@@ -125,8 +130,10 @@ export default function EditColor() {
     feedbackIncOnBackground: "checking"
     });
 
+    //State for the modal
     const [showModal, setShowModal] = useState(false);
 
+    //Function that updates the preview of the final palette
     const applyPalette = (palette: Palette) => {
     setSelectedPaletteIdx(palette.id); // marca la paleta seleccionada
     setCustomPalette({
@@ -143,11 +150,13 @@ export default function EditColor() {
     });
     };
 
+    //Function that initialize the custom palette with the palette used by the student that is being edit
     useEffect(() => {
     const loadColors = async () => {
         try {
             const prefs = await getColorPreferences(id);
 
+            //Updates the preview of the customPalette
             setCustomPalette({
                 primary: prefs.primary,
                 text_on_primary: prefs.text_on_primary,
@@ -161,6 +170,7 @@ export default function EditColor() {
                 feedback_incorrect: prefs.feedback_incorrect,
             });
             
+            //Updates the original palette 
              setOriginalPalette({
                 primary: prefs.primary,
                 text_on_primary: prefs.text_on_primary,
@@ -182,6 +192,7 @@ export default function EditColor() {
     loadColors();
 }, [id]);
 
+    //variable for checking the accesibility of the customPalette.
     const [accessibilityStatus, setAccessibilityStatus] = useState<"aaa" | "aa" | "fail" | "checking">("checking");
 
     useEffect(() => {
@@ -204,9 +215,11 @@ export default function EditColor() {
         });
     }, [customPalette]);
 
+    //Function for saving the palette in the data base
     const savePalette = async () => {
         try {
             await saveColorPalette(id, customPalette);
+            //Updates the original palette
             setOriginalPalette({
                 primary: customPalette.primary,
                 text_on_primary: customPalette.text_on_primary,
