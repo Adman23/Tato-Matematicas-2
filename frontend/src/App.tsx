@@ -15,13 +15,13 @@ import { IonReactRouter } from '@ionic/react-router';
 import { Redirect } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { UserDataWrapper } from './contexts/UserContext';
+import { ManagerDataWrapper } from './contexts/ManagerContext';
 
 
 // === Páginas principales ===
 import Home from './pages/Home';
 
 // === Routes ===
-import { UserDataRoute } from './routes/UserDataRoute';
 import { PrivateRoute, PublicRoute} from './routes/AppRoutes';
 
 // === Páginas de autenticación ===
@@ -83,6 +83,7 @@ export default function App() {
     <IonApp>
       <AuthProvider>
         <UserDataWrapper>
+        <ManagerDataWrapper>
           <IonReactRouter>
 
             <IonRouterOutlet>
@@ -134,6 +135,7 @@ export default function App() {
               <Redirect to="/student/login" />
             </IonRouterOutlet>
           </IonReactRouter>
+        </ManagerDataWrapper>
         </UserDataWrapper>
       </AuthProvider>
     </IonApp>

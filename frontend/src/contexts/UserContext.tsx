@@ -1,11 +1,4 @@
 /**
- * !! NEW FILE !!
- * 
- *  -> Improve data retrieval and management for user information
- *  -> Will be used by teachers and students, admins wont even touch it
- *  -> Should be loaded one time at the start and then recharged only when needed
- *  -> Will have all the data of the user, needs only the id to compare with the logged user (and verify)
- *  
  * User context
  * 
  * Usage in App.tsx:
@@ -190,14 +183,12 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
   }
 
   /**
-   * !! EDITED
-   *  -> Now it restars when user_id is edited
-   * 
    * @brief Its important to understand that when data is stored on the local storage its 
    *        stored as a string, so we need to stringify when savind and parse when retrieving
    */
   useEffect(() => {
     const fetchData = async () => {
+      console.log("REFRESH USER_DATA")
       const savedUserData = localStorage.getItem('user_data');
       if (savedUserData) {
         // The page is trying to access user data and its already in local storage
@@ -216,23 +207,21 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
 
 
   /**
-   * !! NEW 
-   *  -> Used to set the app variables
+   * @brief Second useEffect that applies the styles. It works when userData is modified, this
+   *        happens at the start (when the first useEffect activates), when something is modified
+   *        for the current user or when data is refreshed.     
    */
   useEffect(() => {
-    if (userData) {
+    if (userData ) {
       const root = document.documentElement;
-      const userVisual = userData.user_profile.visual_preferences;
-
-      // console.log(userData.user_profile);
-      // Apply the color palette
-      if (userVisual.color_palettes) {
+      if (userData.user_profile) {
+        const userVisual = userData.user_profile.visual_preferences;
         const color_palette = userVisual.color_palettes[userVisual.active_palette_idx];
         if (color_palette) {
           root.style.setProperty('--ion-color-primary', color_palette.primary);
         }
       }
-      console.log("Styles applied");
+      console.log("STYLES APPLIED");
     }
   }, [userData]);
 
@@ -251,10 +240,10 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
     setLoading(false);
   }
 
-  /*
-  * !! NEW
-  *  -> Normalizes the raw messages from the user data into StudentMessage[]
-  */
+  /** 
+   * !! NEW
+   *  -> Normalizes the raw messages from the user data into StudentMessage[]
+   */
   const _normalizeMessages = (raw: any[]): StudentMessage[] => {
     if (!raw || !Array.isArray(raw)) return [];
 
@@ -284,21 +273,16 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
     return mapped;
   }
 
-  /*
-  * !! NEW
-  *  -> Returns all the reinforcement messages for the user
-  */
+  /** 
+   * !! NEW
+   *  -> Returns all the reinforcement messages for the user
+   */
 
   const getAllMessages = (): StudentMessage[] => {
     const raw = userData?.reinforcement_messages || [];
     return _normalizeMessages(raw);
   }
   // --------------------------------------------------------------
-
-
-  // TODO: Functions to update specific parts of the user data can be added here
-
-  //-------------------------------------------------------------------------------------------
 
 
   // Return of the context provider

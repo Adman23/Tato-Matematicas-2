@@ -1,14 +1,67 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi import APIRouter, HTTPException, status, Depends
-from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
 from ..dependencies import is_admin_current_user
-from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
-from ..schemas.admin import AssignStudentsPayload, AssignTeachersPayload, UnassignStudentsPayload, UnassignTeachersPayload
+from ..schemas.admin import AssignStudentsPayload, AssignTeachersPayload, \
+                            UnassignStudentsPayload, UnassignTeachersPayload, \
+                            User
 router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
+
+
+
+@router.get("/all_users", summary="Retrieve all the users except admins")
+async def get_all_users(data: tuple=Depends(is_admin_current_user)):
+    """
+    !! NEW
+        -> its way faster than other endpoints
+        
+    Retrieves from the db all the users, with all the basic info (schema admin)
+    
+    Args:
+        None -> Uses the logged in admin
+    
+    Raises:
+        Nothing
+        
+    Returns:
+        list of all the users
+    
+    """
+    
+    try:
+        # Retrieve all the users that doesnt have role="admin" and are 
+        # To get that, we have to get all the users from auth that exist in public with that role
+        
+        resp = supabase_admin.table("user_accounts") \
+                            .select("id, username, role, photo_url, group_id, role") \
+                            .in_("role", ["teacher", "student"]) \
+                            .execute()
+        
+        if not resp.data:
+            return []
+        
+        users = [
+            {
+                **user, # Copy all the data
+                
+                # Get the url for the photo 
+                "photo_url": supabase_admin.storage
+                    .from_("user_photo")
+                    .get_public_url(user["photo_url"]) 
+                    if user["photo_url"] else DEFAULT_AVATAR 
+            }
+            for user in resp.data]
+        
+        return users
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting the users: {str(e)}"
+        )
 
 @router.get("/teachers", summary="Obtener todos los profesores")
 async def list_teachers():
@@ -26,8 +79,9 @@ async def list_teachers():
         if not resp.data:
             return []
 
-        teachers = []
 
+        teachers = []
+        
         # Para cada usuario, buscar su perfil en user_profiles
         for user in resp.data:
 

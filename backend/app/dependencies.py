@@ -58,7 +58,7 @@ async def is_auth_current_user(
                 detail="Invalid token"
             )
             
-        print(user_id)
+            
         
         response = supabase_admin.auth.admin.get_user_by_id(user_id) 
         if not response.user:
@@ -90,7 +90,6 @@ async def is_auth_current_user(
         """
         
         email = response.user.email or None
-        print(email)
         return (user_id,email)
         
     except jwt.InvalidTokenError:

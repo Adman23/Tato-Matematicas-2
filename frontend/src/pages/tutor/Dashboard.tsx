@@ -5,19 +5,23 @@ import {
   IonButton,
   IonSpinner
 } from '@ionic/react';
-import { Redirect, useHistory } from 'react-router-dom';
+import {  useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useUserData } from '../../contexts/UserContext';
+import { useManager } from '../../contexts/ManagerContext';
 import SimpleHeaderUser from '../student/components/SimpleHeaderUser';
 import '../student/Dashboard.css';
 
 
 
 export default function TutorDashboard() {
-  const { user, loadingAuth } = useAuth();
+  const { user } = useAuth();
+  const { loadingUser } = useUserData();
+  const { loadingUsers } = useManager();
   const history = useHistory();
 
   // Mostrar spinner mientras carga
-  if (loadingAuth) {
+  if (loadingUser || loadingUsers) {
     return (
       <IonPage>
         <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
