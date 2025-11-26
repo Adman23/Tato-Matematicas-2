@@ -47,7 +47,7 @@ export default function StudentProfile() {
      *           }  
      */ 
     const { user } = useAuth();
-    const { userData, loadingUser } = useUserData();
+    const { loadingUser } = useUserData();
 
     // Variables and functions---------------------------------
     const [color, setColor] = useState('original');

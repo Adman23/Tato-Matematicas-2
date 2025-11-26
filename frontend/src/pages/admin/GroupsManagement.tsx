@@ -25,7 +25,6 @@ setupIonicReact();
  */
 
 import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, IonSearchbar } from '@ionic/react';
-import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { fetchGroups, deleteGroup } from '../../lib/api';

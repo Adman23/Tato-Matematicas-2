@@ -9,7 +9,6 @@
 import {
     IonPage,
     IonContent,
-    IonSpinner,
     IonCard,
     IonCardContent,
     IonButton
