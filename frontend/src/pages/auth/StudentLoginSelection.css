@@ -1,380 +1,331 @@
 /* ========================================
-   STUDENT LOGIN SELECTION — Step1 & Step2
+   STUDENT LOGIN SELECTION — CSS FINAL
    ======================================== */
 
 .student-login-content {
   --background: white;
-  overflow: hidden;
+  --overflow: hidden; 
 }
 
 .sel-login-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  height: 100vh;
-  padding: clamp(0.5rem, 1.5vh, 1.5rem);
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.5rem, 1.2vh, 1rem);
+  justify-content: space-between;
+  padding: 1vh 2vw;
+  box-sizing: border-box;
 }
 
-/* ========================================
-   BOTONES DE NAVEGACIÓN (Header Row)
-   ======================================== */
-
+/* HEADER ROW */
 .sel-button-row {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-shrink: 0;
-  padding: 0;
-  margin: 0;
-  gap: clamp(0.5rem, 1vw, 1rem);
+  height: 10vh;
+  min-height: 50px;
+  max-height: 80px;
 }
 
 .sel-action-button {
-  --padding-start: 0;
-  --padding-end: 0;
-  flex-shrink: 0;
-  margin: clamp(0.5rem, 2vh, 1.5rem);
-  width: clamp(60px, 10vw, 100px);
-  height: clamp(60px, 10vw, 100px);
+  height: 100%;
+  aspect-ratio: 1/1;
+  margin: 0;
+  transition: transform 0.2s ease;
 }
 
-.sel-action-button::part(native) {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(4px, 0.8vw, 8px);
-  border-radius: clamp(10px, 2vw, 20px);
-  padding: clamp(0.4rem, 1vw, 0.8rem);
-}
-
-.sel-action-button::part(native):hover,
-.sel-action-button::part(native):focus-visible {
-  background-color: var(--ion-color-primary);
+.sel-action-button::part(native):hover {
+    transform: scale(1.1);
+    background-color: rgba(var(--ion-color-primary-rgb), 0.1);
 }
 
 .sel-boton-imagen {
-  width: 85%;
-  height: 85%;
+  height: 80%;
+  width: 80%;
   object-fit: contain;
 }
 
-/* ========================================
-   HEADER TEXT
-   ======================================== */
-
+/* TITLE */
 .sel-login-header {
+  flex: 0 0 auto;
   text-align: center;
-  flex-shrink: 0;
+  padding: 0.5vh 0;
 }
 
 .sel-login-title {
-  font-size: clamp(1.2rem, 3.2vw, 2rem);
+  font-size: clamp(1.2rem, 4vh, 2.5rem);
   font-weight: 800;
   color: #000;
-  margin: clamp(0.25rem, 0.8vh, 0.5rem) 0;
+  margin: 0;
+  line-height: 1.1;
 }
 
-/* ========================================
-   FLECHAS DE NAVEGACIÓN (Actualizado)
-   ======================================== */
-
-.sel-group-grid-arrow {
-  /* Estilo circular con color primario */
-  background-color: var(--ion-color-primary);
-  color: white; /* Hace que el icono sea blanco */
-  border-radius: 50%;
-  
-  /* Sombras y bordes */
-  box-shadow: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  
-  /* Posicionamiento */
+/* MAIN AREA */
+.sel-group-grid-wrapper {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  
-  /* Dimensiones cuadradas para asegurar círculo perfecto */
-  width: clamp(60px, 10vw, 90px);
-  height: clamp(60px, 10vw, 90px);
-  min-width: clamp(60px, 10vw, 90px); /* Evita aplastamiento */
-  flex-shrink: 0;
+  gap: clamp(10px, 2vw, 25px); 
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+/* FLECHAS */
+.sel-group-grid-arrow {
+  background-color: var(--ion-color-primary);
+  color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(40px, 8vmin, 70px); 
+  height: clamp(40px, 8vmin, 70px);
+  flex-shrink: 0; 
+  transition: transform 0.2s ease;
+  box-shadow: none;
+  z-index: 10;
+  position: relative; 
 }
 
 .sel-group-grid-arrow:disabled {
   background-color: #ccc;
-  opacity: 0.6;
   cursor: default;
-  pointer-events: none;
   box-shadow: none;
-}
-
-.sel-group-grid-arrow:not(:disabled):hover,
-.sel-group-grid-arrow:not(:disabled):focus-visible {
-  transform: scale(1.1);
-  filter: brightness(1.1);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-}
-
-/* ========================================
-   GRID DE GRUPOS / ESTUDIANTES
-   ======================================== */
-
-.sel-group-grid-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.5rem, 2vw, 1.5rem); /* Espacio entre flechas y tarjeta central */
-  width: 100%;
-  padding: 0 clamp(0.25rem, 0.5vw, 0.5rem);
-  overflow: visible;
-}
-
-/* Contenedor interno del Grid */
-.sel-group-grid {
-  display: grid;
-  gap: clamp(0.8rem, 1.2vw, 1.2rem);
-  width: 100%;
-  max-width: min(95vw, 620px);
-  margin: 0 auto;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, minmax(clamp(120px, 22vw, 180px), 1fr));
-}
-
-@media (max-width: 860px) {
-  .sel-group-grid {
-    grid-template-columns: 1fr;
-    /* Ajuste para móviles si quieres 2 por fila o 1 por fila */
-  }
-}
-
-/* ========================================
-   TILES (TARJETAS INDIVIDUALES)
-   ======================================== */
-
-.sel-group-tile {
-  position: relative;
-  width: 280px;
-  height: 280px;
-  background: white;
-  border: 3px solid #000;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  padding: 0;
-  overflow: hidden;
-}
-
-.sel-group-tile:empty {
-  background-color: #e0f3fa;
-  border: 3px dashed #888;
   opacity: 0.7;
 }
 
-.sel-group-tile:empty::before {
-  content: '';
-  display: block;
+.sel-group-grid-arrow:not(:disabled):hover {
+  transform: scale(1.15);
+  box-shadow: none;
+}
+
+/* ========================================
+   TARJETA AZUL (DESKTOP DEFAULT)
+   ======================================== */
+.sel-classes-card {
+  background-color: var(--ion-color-primary);
+  border-radius: 3vh;
+  padding: 1.5vmin;
+  box-shadow: none;
+  
+  /* Desktop: Cuadrado */
+  max-height: 75vh;
+  max-width: 650px;
+  width: min(75vh, 650px, calc(100vw - 160px));
+  height: auto; 
+  aspect-ratio: 1 / 1;
+  
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0; 
+}
+
+/* GRID INTERNO */
+.sel-group-grid {
+  display: grid;
+  gap: 2%; 
   width: 100%;
   height: 100%;
-  background: url('/assets/pictograms/placeholder.png') center/contain no-repeat;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
 }
 
-.sel-group-tile.selected {
-  border-width: 8px;
-  border-color: var(--ion-color-success);
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.9);
-}
-
-.sel-group-tile:hover,
-.sel-group-tile:focus-visible {
-  transform: scale(1.04);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-}
-
-.sel-group-tile:focus-visible {
-  outline: 3px solid var(--ion-color-primary);
-  outline-offset: 4px;
-  z-index: 2;
-}
-
-.sel-group-tile.selected:focus-visible {
-  outline-color: var(--ion-color-success);
-}
-
-.sel-group-tile > * {
+/* ========================================
+   TILES (Celdas normales)
+   ======================================== */
+.sel-group-tile {
   position: relative;
+  background: white;
+  border: 0.5vmin solid #000;
+  box-sizing: border-box;
+  border-radius: 2vh;
+  cursor: pointer;
+  padding: 0;
+  overflow: visible;
+  width: 100%;
+  height: 100%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 1;
 }
 
-/* Contenido dentro del Tile */
+.sel-group-tile:not(:disabled):hover,
+.sel-group-tile:not(:disabled):focus-visible {
+    transform: scale(1.04); 
+    box-shadow: none;
+    z-index: 5;
+    outline: none;
+}
+
+.sel-group-tile.selected {
+  border-color: var(--ion-color-success);
+  box-shadow: none;
+}
+
+/* CONTENIDOS */
 .sel-group-icon {
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   object-fit: contain;
-  object-position: center;
-  display: block;
 }
 
 .sel-group-letter {
   position: absolute;
-  top: 4%;
-  left: 35%;
-  transform: translateX(-50%);
-  font-size: 8rem;
+  top: 32%;
+  left: 38%;
+  transform: translate(-50%, -50%);
+  font-size: 13vmin;
   font-weight: 900;
   color: #000;
   line-height: 1;
-  text-align: center;
   pointer-events: none;
+  z-index: 2;
 }
 
-.sel-user-content {
+.sel-student-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  position: relative;
-  padding: 0;
+  gap: 1vh;
 }
 
-.sel-group-label {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: clamp(0.9rem, 2.4vw, 1.3rem);
+.sel-student-photo {
+  height: 60%;
+  width: 60%;
+  object-fit: contain;
+}
+
+.sel-student-name {
+  font-size: clamp(0.7rem, 3vmin, 1.8rem);
   font-weight: 700;
   color: #000;
   text-align: center;
-  line-height: 1.3;
-  min-width: 90%;
+  line-height: 1.1;
+  width: 90%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: clamp(6px, 1.2vh, 12px) clamp(12px, 3vw, 24px);
-  background: white;
-  border-radius: 6px;
-  pointer-events: none;
 }
 
 /* ========================================
-   CARD CONTENEDOR DE CLASES
+   GHOSTS (CELDAS VACÍAS)
    ======================================== */
-
-.sel-classes-card {
-  background-color: var(--ion-color-primary); /* ✅ Tu color preferido */
-  border-radius: clamp(20px, 4vw, 32px);
-  padding: clamp(1.2rem, 3vh, 2.5rem);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  max-width: calc(100% - 2rem);
-  height: fit-content;
-  margin: 0;
+.sel-group-ghost {
+    width: 100%;
+    height: 100%;
+    
+    /* CAMBIO: Ahora son visibles */
+    visibility: visible;
+    
+    /* Estilo de "Hueco vacío" */
+    background-color: rgba(255, 255, 255, 0.4); /* Fondo blanco semitransparente */
+    border: 0.4vmin dashed rgba(0, 0, 0, 0.3); /* Borde discontinuo gris oscuro */
+    border-radius: 2vh;
+    box-sizing: border-box;
+    
+    pointer-events: none; /* No se puede hacer clic */
 }
 
-/* ========================================
-   CONFIRM OVERLAY
-   ======================================== */
-
+/* CHECK CONFIRMACIÓN */
 .sel-confirm-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  background: rgba(255,255,255,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none; 
-  z-index: 5;
+  z-index: 6;
+  border-radius: calc(2vh - 2px);
+  animation: fadeIn 0.2s ease;
 }
 
 .sel-confirm-icon {
-  width: 45%;
-  height: 45%;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  width: 50%;
+  height: 50%;
+  object-fit: contain;
+  filter: none;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ========================================
-   LOADING & ERROR
-   ======================================== */
-
-.sel-error-message {
-  background: rgba(241, 131, 131, 0.95);
-  border-radius: clamp(10px, 2vw, 16px);
-  padding: clamp(0.6rem, 2vw, 1.2rem);
-  text-align: center;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(0.4rem, 1.2vw, 0.8rem);
-}
-
-.sel-loading,
-.sel-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.8rem, 2vw, 1.5rem);
-  padding: clamp(1.5rem, 4vw, 3rem);
-  text-align: center;
-}
-
-.sel-loading p,
-.sel-error p {
-  font-size: clamp(1rem, 2.2vw, 1.5rem);
-  font-weight: 600;
-  color: #000;
-}
-
-/* ========================================
-   PAGE INDICATORS (Puntos abajo)
-   ======================================== */
-
+/* FOOTER */
 .sel-page-indicators {
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
-  gap: clamp(6px, 1.2vw, 10px);
-  margin-top: clamp(0.5rem, 1.2vh, 1rem);
+  gap: 1.5vw;
+  margin: 1vh 0 1.5vh 0;
   padding: 0;
   list-style: none;
+  height: 1.5vh; 
+  min-height: 15px;
 }
 
 .sel-page-indicator {
-  width: clamp(10px, 2vw, 14px);
-  height: clamp(10px, 2vw, 14px);
+  width: 1.5vh;
+  height: 1.5vh;
   border-radius: 50%;
   background-color: #ccc;
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .sel-page-indicator[aria-selected="true"] {
-  background-color: var(--ion-color-primary); /* ✅ tu color preferido */
-  transform: scale(1.2);
+  background-color: var(--ion-color-primary);
+  transform: scale(1.4);
 }
 
-.sel-page-indicator:hover,
-.sel-page-indicator:focus-visible {
-  transform: scale(1.3);
-  outline: none;
+.sel-error-message {
+  position: absolute;
+  bottom: 8vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(220, 53, 69, 0.95);
+  color: white;
+  padding: 1.5vh 3vw;
+  border-radius: 50px;
+  z-index: 100;
+  white-space: nowrap;
+  font-weight: bold;
 }
 
-.sel-page-indicator:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--ion-color-primary);
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ========================================
+   MEDIA QUERY: MÓVILES (Pantallas estrechas)
+   ======================================== */
+@media (max-width: 650px) {
+  
+  .sel-classes-card {
+    height: 75vh; 
+    width: auto;
+    max-width: none;
+    aspect-ratio: 1 / 2.1; 
+  }
+
+  .sel-group-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1.5vh;
+  }
+  
+  .sel-group-letter {
+    font-size: 18vmin;
+  }
 }

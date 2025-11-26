@@ -4,10 +4,10 @@ import {
   IonButton,
   IonText,
   IonSpinner,
-  IonIcon, // ✅ Importamos IonIcon
+  IonIcon,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { arrowBack, arrowForward } from 'ionicons/icons'; // ✅ Importamos las flechas
+import { arrowBack, arrowForward } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
@@ -22,31 +22,31 @@ export default function StudentLoginStep1() {
   const [error, setError] = useState('');
   const [hasLoaded, setHasLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(4);
+  
   const history = useHistory();
 
-  const calculateVisibleCount = () => {
-    const isMobile = window.innerWidth <= 860;
-    return isMobile ? 2 : 4;
-  };
+  // Función para determinar cuántos items mostrar según ancho de pantalla
+  const getGridSize = () => (window.innerWidth <= 650 ? 2 : 4);
+
+  // Inicializamos con el tamaño actual
+  const [visibleCount, setVisibleCount] = useState(getGridSize());
+
+  // Listener para detectar cambios de tamaño (Móvil vs Desktop)
+  useEffect(() => {
+    const handleResize = () => {
+      setVisibleCount(getGridSize());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (groups.length > 0) {
       const maxPage = Math.max(0, Math.ceil(groups.length / visibleCount) - 1);
-      if (currentPage > maxPage) {
-        setCurrentPage(maxPage);
-      }
+      if (currentPage > maxPage) setCurrentPage(maxPage);
     }
-  }, [visibleCount, groups.length, currentPage]);
-
-  useEffect(() => {
-    const updateCount = () => {
-      setVisibleCount(calculateVisibleCount());
-    };
-    updateCount();
-    window.addEventListener('resize', updateCount);
-    return () => window.removeEventListener('resize', updateCount);
-  }, []);
+  }, [groups.length, currentPage, visibleCount]);
 
   useEffect(() => {
     if (!hasLoaded) {
@@ -84,7 +84,6 @@ export default function StudentLoginStep1() {
       handleAdvance();
       return;
     }
-
     setSelectedGroup(group);
     setConfirmPendingId(String(group.id));
     setError('');
@@ -101,17 +100,15 @@ export default function StudentLoginStep1() {
   const startIndex = currentPage * visibleCount;
   const visibleGroups = groups.slice(startIndex, startIndex + visibleCount);
 
+  // Calculamos huecos vacíos para mantener estructura (2 o 4 según pantalla)
+  const emptySlots = visibleCount - visibleGroups.length;
+
   const showArrows = groups.length > visibleCount;
   const canGoPrev = currentPage > 0;
   const canGoNext = (currentPage + 1) * visibleCount < groups.length;
 
-  const goToPrevPage = () => {
-    if (canGoPrev) setCurrentPage(prev => prev - 1);
-  };
-
-  const goToNextPage = () => {
-    if (canGoNext) setCurrentPage(prev => prev + 1);
-  };
+  const goToPrevPage = () => canGoPrev && setCurrentPage(prev => prev - 1);
+  const goToNextPage = () => canGoNext && setCurrentPage(prev => prev + 1);
 
   const getLetterFromAlias = (alias: string) => {
     const parts = alias.split(' ');
@@ -120,44 +117,18 @@ export default function StudentLoginStep1() {
 
   return (
     <IonPage>
-      <IonContent className="student-login-content">
+      <IonContent className="student-login-content" scrollY={false}>
         <div className="sel-login-container">
+          
           <div className="sel-button-row">
-            <IonButton
-              fill="clear"
-              className="sel-action-button"
-              onClick={() => history.push('/home')}
-            >
-              <img
-                src="/assets/pictograms/boton_volver.png"
-                alt="Volver"
-                className="sel-boton-imagen"
-              />
+            <IonButton fill="clear" className="sel-action-button" onClick={() => history.push('/home')}>
+              <img src="/assets/pictograms/boton_volver.png" alt="Volver" className="sel-boton-imagen" />
             </IonButton>
-
-            <IonButton
-              fill="clear"
-              className="sel-action-button"
-              onClick={() => history.push('/')}
-            >
-              <img
-                src="/assets/pictograms/home.png"
-                alt="Inicio"
-                className="sel-boton-imagen"
-              />
+            <IonButton fill="clear" className="sel-action-button" onClick={() => history.push('/')}>
+              <img src="/assets/pictograms/home.png" alt="Inicio" className="sel-boton-imagen" />
             </IonButton>
-
-            <IonButton
-              fill="clear"
-              className="sel-action-button"
-              onClick={handleAdvance}
-              disabled={loading || !selectedGroup}
-            >
-              <img
-                src="/assets/pictograms/si.png"
-                alt="Avanzar"
-                className="sel-boton-imagen"
-              />
+            <IonButton fill="clear" className="sel-action-button" onClick={handleAdvance} disabled={loading || !selectedGroup}>
+              <img src="/assets/pictograms/si.png" alt="Avanzar" className="sel-boton-imagen" />
             </IonButton>
           </div>
 
@@ -167,112 +138,77 @@ export default function StudentLoginStep1() {
 
           <div className="sel-group-grid-wrapper">
             {showArrows && (
-              <button
-                className="sel-group-grid-arrow left-outside"
-                onClick={goToPrevPage}
+              <button 
+                className="sel-group-grid-arrow" 
+                onClick={goToPrevPage} 
                 disabled={!canGoPrev}
-                aria-label="Clases anteriores"
               >
-                {/* ✅ Icono Flecha Izquierda */}
-                <IonIcon icon={arrowBack} style={{ fontSize: '3rem' }} />
+                <IonIcon icon={arrowBack} style={{ fontSize: '5vmin' }} />
               </button>
             )}
 
             <div className="sel-classes-card">
               {loading ? (
-                <div className="sel-loading">
-                  <IonSpinner name="crescent" />
-                </div>
+                <IonSpinner name="crescent" color="light" style={{ transform: 'scale(2)' }} />
               ) : groups.length === 0 ? (
-                <div className="sel-error">
-                  <p>No hay clases disponibles</p>
-                </div>
+                <IonText color="light"><h2>No hay clases</h2></IonText>
               ) : (
                 <div className="sel-group-grid">
                   {visibleGroups.map((group) => (
                     <button
                       key={group.id}
                       onClick={() => handleTileClick(group)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleTileClick(group);
-                        }
-                      }}
-                      disabled={loading}
-                      className={`sel-group-tile ${
-                        selectedGroup?.id === group.id ? 'selected' : ''
-                      }`}
-                      aria-label={`${group.alias} — ${
-                        selectedGroup?.id === group.id
-                          ? confirmPendingId === String(group.id)
-                            ? 'listo para confirmar: presiona Enter o haz clic para continuar'
-                            : 'seleccionado'
-                          : 'no seleccionado'
-                      }`}
-                      aria-pressed={selectedGroup?.id === group.id ? 'true' : 'false'}
-                      tabIndex={0}
+                      className={`sel-group-tile ${selectedGroup?.id === group.id ? 'selected' : ''}`}
                     >
-                      <img
-                        src="/assets/pictograms/clase.png"
-                        alt={group.alias}
-                        className="sel-group-icon"
-                      />
-                      <span className="sel-group-letter">
-                        {getLetterFromAlias(group.alias)}
-                      </span>
-
+                      <img src="/assets/pictograms/clase.png" alt={group.alias} className="sel-group-icon" />
+                      <span className="sel-group-letter">{getLetterFromAlias(group.alias)}</span>
+                      
                       {confirmPendingId === String(group.id) && (
                         <div className="sel-confirm-overlay">
-                          <img
-                            src="/assets/pictograms/si.png"
-                            alt=""
-                            className="sel-confirm-icon"
-                          />
+                          <img src="/assets/pictograms/si.png" alt="Confirmar" className="sel-confirm-icon" />
                         </div>
                       )}
                     </button>
+                  ))}
+                  
+                  {Array.from({ length: emptySlots }).map((_, i) => (
+                    <div key={`empty-${i}`} className="sel-group-ghost"></div>
                   ))}
                 </div>
               )}
             </div>
 
             {showArrows && (
-              <button
-                className="sel-group-grid-arrow right-outside"
-                onClick={goToNextPage}
+              <button 
+                className="sel-group-grid-arrow" 
+                onClick={goToNextPage} 
                 disabled={!canGoNext}
-                aria-label="Más clases"
               >
-                {/* ✅ Icono Flecha Derecha */}
-                <IonIcon icon={arrowForward} style={{ fontSize: '3rem' }} />
+                <IonIcon icon={arrowForward} style={{ fontSize: '5vmin' }} />
               </button>
             )}
           </div>
 
-          {showArrows && groups.length > 0 && (
-            <ul className="sel-page-indicators" role="tablist" aria-label="Navegación por páginas">
-              {Array.from({ length: Math.ceil(groups.length / visibleCount) }, (_, i) => (
-                <li key={i}>
-                  <button
-                    className="sel-page-indicator"
-                    onClick={() => setCurrentPage(i)}
-                    aria-label={`Ir a la página ${i + 1}`}
-                    aria-selected={currentPage === i}
-                    role="tab"
-                    tabIndex={currentPage === i ? 0 : -1}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
+          <ul 
+            className="sel-page-indicators" 
+            style={{ visibility: (showArrows && groups.length > 0) ? 'visible' : 'hidden' }}
+          >
+            {Array.from({ length: Math.ceil(groups.length / visibleCount) }, (_, i) => (
+              <li key={i}>
+                <button
+                  className="sel-page-indicator"
+                  onClick={() => setCurrentPage(i)}
+                  aria-selected={currentPage === i}
+                  tabIndex={(showArrows && groups.length > 0) ? 0 : -1}
+                />
+              </li>
+            ))}
+          </ul>
 
           {error && (
-            <IonText color="danger">
-              <div className="sel-error-message">
-                <p>{error}</p>
-              </div>
-            </IonText>
+            <div className="sel-error-message">
+              {error}
+            </div>
           )}
         </div>
       </IonContent>
