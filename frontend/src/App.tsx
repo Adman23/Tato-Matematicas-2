@@ -118,13 +118,13 @@ export default function App() {
                 exact component={TeacherProfilePage} />
               <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]} 
                 exact component={TeacherEditProfile} />
-              <PrivateRoute path="/teacher/register" allowedRoles={["teacher"]} 
+              <PrivateRoute path="/teacher/register" allowedRoles={["admin"]} 
                 exact component={TeacherRegister} />
               <PrivateRoute path="/admin/group/register" allowedRoles={["admin"]} 
                 exact component={GroupRegister} />
               <PrivateRoute path="/admin/dashboard" allowedRoles={["admin"]}
                 exact component={AdminDashboard} />
-              <PrivateRoute path="/student/register" allowedRoles={["student"]}
+              <PrivateRoute path="/student/register" allowedRoles={["admin"]}
                 exact component={StudentRegister} />
               <PrivateRoute path="/admin/dashboard/:tipo" allowedRoles={["admin"]}
                 exact component={userManagement} />
