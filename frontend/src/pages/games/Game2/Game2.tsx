@@ -11,7 +11,8 @@ import {
   IonPage,
   IonButton,
   IonText,
-  IonSpinner
+  IonSpinner,
+  useIonRouter
 } from '@ionic/react';
 import { useHistory, Redirect, useLocation } from 'react-router-dom';
 
@@ -93,6 +94,7 @@ const TOTAL_ROUNDS = 5;
 const Game2: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
+  const router = useIonRouter();
   const { user, loadingAuth: authLoading } = useAuth();
   const { getAllMessages, refreshUserData, loadingUser } = useUserData();
 
@@ -222,7 +224,7 @@ const Game2: React.FC = () => {
       const timer = setTimeout(() => {
         // Redirigir al dashboard correspondiente según el tipo de usuario
         const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
-        history.push(dashboardRoute);
+        router.push(dashboardRoute, 'root', 'replace')
       }, 2000);
 
       return () => clearTimeout(timer);
@@ -765,6 +767,7 @@ const Game2: React.FC = () => {
     );
   }
 
+  /*
   // Si el juego terminó, mostrar mensaje
   if (gameFinished) {
     return (
@@ -781,6 +784,7 @@ const Game2: React.FC = () => {
       </IonPage>
     );
   }
+  */
 
   return (
     <IonPage>

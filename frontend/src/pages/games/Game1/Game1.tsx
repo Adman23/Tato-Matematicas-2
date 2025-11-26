@@ -11,7 +11,8 @@ import {
     IonPage,
     IonSpinner,
     IonText,
-    IonButton
+    IonButton,
+    useIonRouter
 } from '@ionic/react';
 import { useHistory, Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
@@ -76,6 +77,7 @@ const Game1: React.FC = () => {
 
     const history = useHistory();
     const { user, loadingAuth: authLoading } = useAuth();
+    const router = useIonRouter();
 
     const currentUser = user;
     const { getAllMessages, refreshUserData, loadingUser } = useUserData();
@@ -179,7 +181,7 @@ const Game1: React.FC = () => {
             const timer = setTimeout(() => {
                 // Redirect to the appropriate dashboard based on user type
                 const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
-                history.push(dashboardRoute);
+                router.push(dashboardRoute, 'root', 'replace')
             }, 2000);
 
             return () => clearTimeout(timer);
@@ -775,6 +777,7 @@ const Game1: React.FC = () => {
         );
     }
 
+    /*
     // If the game is finished, show message
     if (gameFinished) {
         return (
@@ -791,7 +794,8 @@ const Game1: React.FC = () => {
             </IonPage>
         );
     }
-
+    */
+    
 
     // Show feedback screen after checking answer
     if (showFeedbackScreen) {

@@ -16,7 +16,7 @@ import { useIonRouter } from '@ionic/react';
 const ROLE_DASHBOARDS = {
     student: '/student/dashboard',
     teacher: '/teacher/dashboard',
-    admin: '/admin/dashboard'
+    admin:   '/admin/dashboard'
 };
 
 interface CustomRouteProps extends RouteProps {
