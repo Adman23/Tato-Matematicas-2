@@ -143,6 +143,36 @@ const Game2: React.FC = () => {
   // Determinar si usar pictogramas (solo para rango 0-10)
   const usePictograms = config?.number_range === '0-10';
 
+  // Pre-carga de imágenes para evitar que los slots aparezcan vacíos mientras se descargan
+  useEffect(() => {
+    const pictogramUrls = Object.values(PICTOGRAM_IMAGES);
+    const uiAssets = [
+      imgOrdenar,
+      imgJuego,
+      imgTato,
+      imgTatoFeliz,
+      imgTatoTriste,
+      imgSiguiente,
+      imgInstrucciones,
+      imgFlecha
+    ];
+
+    const preloaded: HTMLImageElement[] = [];
+
+    [...pictogramUrls, ...uiAssets].forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      preloaded.push(img);
+    });
+
+    return () => {
+      preloaded.forEach((img) => {
+        img.onload = null;
+        img.onerror = null;
+      });
+    };
+  }, []);
+
   // Cargar configuración al montar (solo una vez)
   // Se ejecuta cada vez que cambia la ubicación para forzar reseteo completo
   useEffect(() => {
@@ -660,13 +690,13 @@ const Game2: React.FC = () => {
     const dragElement = e.currentTarget as HTMLElement;
     const clone = dragElement.cloneNode(true) as HTMLElement;
 
-    // Aplicar estilos: siempre rosa con borde negro (estilo .number-card-selected)
+    // Mantener colores actuales del tema usando las mismas clases
+    clone.classList.add('number-card-selected', 'drag-preview');
     clone.style.position = 'absolute';
     clone.style.top = '-9999px';
-    clone.style.transform = 'scale(1.3)';
-    clone.style.boxShadow = 'none';
-    clone.style.background = '#FFB7FA';
-    clone.style.borderColor = '#000000';
+    const { width, height } = window.getComputedStyle(dragElement);
+    clone.style.width = width;
+    clone.style.height = height;
 
     document.body.appendChild(clone);
     e.dataTransfer.setDragImage(clone, 55, 55);
@@ -788,7 +818,7 @@ const Game2: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent className="game2-content">
+      <IonContent className="game2-content" scrollY={false}>
         {/* Mostrar pantalla de feedback después de colocar un número */}
         {showFeedbackScreen ? (
           <FeedbackScreen
@@ -843,8 +873,9 @@ const Game2: React.FC = () => {
 
               // Determinar las clases CSS
               let classes = 'number-card-v2';
-              // Si está siendo arrastrado O está seleccionado: estilo rosa
-              if (isBeingDragged || isSelected) {
+              if (isBeingDragged) {
+                classes += ' number-card-dragging';
+              } else if (isSelected) {
                 classes += ' number-card-selected';
               }
 
@@ -863,6 +894,8 @@ const Game2: React.FC = () => {
                       src={pictogramImg}
                       alt={`Pictograma número ${num}`}
                       className="pictogram-image"
+                      loading="eager"
+                      decoding="sync"
                     />
                   ) : (
                     <span className="number-value">{num}</span>

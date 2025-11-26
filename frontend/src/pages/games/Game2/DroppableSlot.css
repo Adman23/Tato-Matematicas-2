@@ -10,8 +10,12 @@
    ============================================================================ */
 
 .droppable-slot {
-  width: 170px;
-  height: 170px;
+  width: var(--size-card);
+  height: var(--size-card);
+  min-width: var(--size-card);
+  min-height: var(--size-card);
+  flex: 0 0 var(--size-card);
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,8 +31,8 @@
    ============================================================================ */
 
 .empty-slot {
-  width: 170px;
-  height: 170px;
+  width: var(--size-card);
+  height: var(--size-card);
   border-radius: 50%;
   background: transparent;
   border: 3px dashed transparent;
@@ -38,8 +42,8 @@
 
 /* Solo la casilla objetivo (primera vacía) se ve */
 .droppable-slot-target .empty-slot {
-  background: #d1d5db;
-  border: 3px dashed #9ca3af;
+  background: var(--bubble-bg, #d1d5db);
+  border: 3px dashed var(--bubble-selected-bg, #9ca3af);
   cursor: pointer;
 }
 

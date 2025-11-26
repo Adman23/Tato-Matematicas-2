@@ -167,6 +167,8 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
               src={pictogramImg}
               alt={`Pictograma número ${number}`}
               className="pictogram-image"
+              loading="eager"
+              decoding="sync"
             />
           ) : (
             <span className="number-value">{number}</span>
