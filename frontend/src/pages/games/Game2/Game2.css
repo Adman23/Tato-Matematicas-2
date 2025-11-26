@@ -10,15 +10,34 @@
 
 .game2-content {
   --background: var(--ion-color-primary-contrast);
+  --viewport-unit: min(100vw, 100vh);
+  --size-card: clamp(80px, calc(var(--viewport-unit) * 0.18), 170px);
+  --gap-card: clamp(0.7rem, calc(var(--viewport-unit) * 0.02), 2rem);
+  --pad-zone: clamp(0.75rem, calc(var(--viewport-unit) * 0.03), 2rem);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.game2-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 2rem);
+  box-sizing: border-box;
+}
+
+.game2-content::part(scroll) {
+  overflow: hidden;
 }
 
 .game2-container {
-  padding: 2rem 1rem;
+  padding: var(--pad-zone) clamp(0.75rem, 2vw, 1.25rem);
   max-width: 2000px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  flex: 1 1 auto;
 }
 
 /* ============================================================================
@@ -28,13 +47,14 @@
 .available-numbers-top {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: var(--gap-card);
   justify-content: center;
-  padding: 2rem;
+  align-items: center;
+  padding: var(--pad-zone);
   background: var(--ion-color-primary-contrast);
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-height: 140px;
+  min-height: calc(var(--size-card) + var(--gap-card));
 }
 
 /* ============================================================================
@@ -43,8 +63,13 @@
 
 /* Base: Tarjeta de número */
 .number-card-v2 {
-  width: 170px;
-  height: 170px;
+  width: var(--size-card);
+  height: var(--size-card);
+  min-width: var(--size-card);
+  min-height: var(--size-card);
+  flex: 0 0 var(--size-card);
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,10 +116,11 @@
 
 /* Dragging: Espacio vacío con borde punteado */
 .number-card-dragging {
-  background: #e5e7eb !important;
-  border: 3px dashed #000000 !important;
+  background: var(--bubble-bg, #e5e7eb) !important;
+  border: 3px dashed var(--bubble-selected-bg, #000000) !important;
   box-shadow: none !important;
   cursor: default !important;
+  transform: none !important;
 }
 
 .number-card-dragging .number-value,
@@ -104,10 +130,18 @@
 
 /* Hueco vacío permanente (cuando se quita un número) */
 .number-card-empty {
-  background: #e5e7eb !important;
-  border: 3px dashed #000000 !important;
+  background: var(--bubble-bg, #e5e7eb) !important;
+  border: 3px dashed var(--bubble-selected-bg, #000000) !important;
   box-shadow: none !important;
   cursor: default !important;
+}
+
+/* Drag preview clone so it respects theme colors */
+.drag-preview {
+  transform: scale(1.3);
+  box-shadow: none !important;
+  cursor: grabbing;
+  pointer-events: none;
 }
 
 /* ============================================================================
@@ -115,8 +149,8 @@
    ============================================================================ */
 
 .pictogram-image {
-  width: 85px;
-  height: 85px;
+  width: clamp(48px, 55%, 90px);
+  height: clamp(48px, 55%, 90px);
   object-fit: contain;
   pointer-events: none;
 }
@@ -129,7 +163,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  padding: 0 clamp(1rem, 3vw, 2rem);
   max-width: 900px;
   margin: -1rem auto 2rem auto;
   gap: 1rem;
@@ -186,8 +220,8 @@
 
 /* Animación del slot objetivo (abajo) */
 .droppable-slot-target .empty-slot {
-  border: 3px dashed #6a98e7;
-  background-color: rgba(106, 152, 231, 0.1);
+  border: 3px dashed var(--bubble-selected-bg, #6a98e7);
+  background-color: var(--bubble-bg, rgba(106, 152, 231, 0.1));
   animation: pulse-target 1.5s ease-in-out infinite;
 }
 
