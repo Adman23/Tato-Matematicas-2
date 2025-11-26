@@ -602,6 +602,7 @@ const Game1: React.FC = () => {
         }
 
         // Redirect to the dashboard
+        setSelectedNumber(null);
         const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
         history.push(dashboardRoute);
     };
