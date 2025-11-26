@@ -5,11 +5,12 @@
  *  -> it should extend from one of these to maintain security and reuse code.
  */
 
-import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route } from 'react-router-dom';
 import type { RouteProps } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { Role } from '../lib/api.ts';
+import { useIonRouter } from '@ionic/react';
 
 // Dashboard for each role
 const ROLE_DASHBOARDS = {
@@ -22,6 +23,23 @@ interface CustomRouteProps extends RouteProps {
   component: React.ComponentType<any>; // A React component
   allowedRoles?: Role[];               // Optional: Defines the allowed roles for private routes
 }
+
+
+
+/**
+ * @brief Simple component to substitute Redirect from react and resolve problems
+ */
+const IonicRedirect: React.FC<{ to: string }> = ({ to }) => {
+    const router = useIonRouter();
+
+    useEffect(() => {
+        // More effective and less errors than a simple redirect
+        router.push(to, 'root', 'replace');
+    }, [to, router]);
+
+    return null; // Doesnt render anything
+};
+
 
 /**
  * @brief Used for the basic routes, like home and login
@@ -44,7 +62,7 @@ export const PublicRoute: React.FC<CustomRouteProps> = ({ component: Component, 
             if (user) {
                 // C1: Logged in
                 const userRole = user.role as Role;
-                return <Redirect to={ROLE_DASHBOARDS[userRole]} />;
+                return <IonicRedirect to={ROLE_DASHBOARDS[userRole]} />;
             }
 
             // C2: Not logged in
@@ -53,6 +71,8 @@ export const PublicRoute: React.FC<CustomRouteProps> = ({ component: Component, 
     />
     );
 };
+
+
 
 /**
  * @brief Used for all the other routes
@@ -80,7 +100,7 @@ export const PrivateRoute: React.FC<CustomRouteProps> = ({ component: Component,
                 // Evade loop
                 if (currentPath === '/student/login') return <Component {...props} />;
                 // C3: There is no session
-                return <Redirect to="/student/login" />;
+                return <IonicRedirect to="/student/login" />;
             }
             const userRole = user.role as Role;
             
@@ -97,7 +117,7 @@ export const PrivateRoute: React.FC<CustomRouteProps> = ({ component: Component,
                 );
                 */
                 // C2: User is logged, but now allowed
-                return <Redirect to={ROLE_DASHBOARDS[userRole]} />;
+                return <IonicRedirect to={ROLE_DASHBOARDS[userRole]} />;
             }
 
             // C1: User is logged and allowed

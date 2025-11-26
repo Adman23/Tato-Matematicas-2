@@ -178,7 +178,7 @@ const Game1: React.FC = () => {
         if (gameFinished) {
             const timer = setTimeout(() => {
                 // Redirect to the appropriate dashboard based on user type
-                const dashboardRoute = user?.role === "student" ? '/student-dashboard' : '/tutor-dashboard';
+                const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
                 history.push(dashboardRoute);
             }, 2000);
 
@@ -602,8 +602,7 @@ const Game1: React.FC = () => {
         }
 
         // Redirect to the dashboard
-        setSelectedNumber(null);
-        const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
+        const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/tutor/dashboard';
         history.push(dashboardRoute);
     };
 

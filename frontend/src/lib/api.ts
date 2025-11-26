@@ -120,15 +120,11 @@ api.interceptors.response.use(
 // ==== DATA INTERFACES ====
 
 /**
- * !! NEW
- *  -> Created to unify the role
  * @brief Represents the role of a User
  */
 export type Role = 'admin' | 'teacher' | 'student';
 
 /**
- * !!EDITED
- *  -> Removed full_name and email fields. -> Not needed.
  * @brief Represents a user.
  */
 export interface User {
@@ -136,15 +132,35 @@ export interface User {
   username: string;
   role: Role;
   photo_url?: string;
+  group_id?: string;
+  group_alias?: string;
 }
 
 /**
- * !!NEW
  * @brief Represents the user data, only for students and teachers.
  * @use for responses when loading the structures for the user (mainly login and reload)
  */
 export interface UserData {
   username: string;
+  user_profile: any;
+  game_configurations: any;
+  reinforcement_messages: any;
+}
+
+
+/**
+ * !! NEW
+ * @brief Its a complete user, User and UserData in the same interface
+ * @use Retrieve all the data of a user in a single structure, the divide the
+ *      info in two
+ */
+export interface UserComplete {
+  id: string;
+  username: string;
+  role: Role;
+  photo_url?: string;
+  group_id?: string;
+  group_alias?: string;
   user_profile: any;
   game_configurations: any;
   reinforcement_messages: any;
@@ -394,25 +410,24 @@ export const authAPI = {
 
 
 
-// TODO: userAPI, it should handle user data fetching and updating
 // === USER API ===
 /**
- * !! NEW
  * User endpoints.
  * Manages user data fetching and updating.
  */
 export const userAPI = {
   /**
-   * !! NEW 
    * @param id -> id of the user in question
    * @returns the structure UserData with all the data of the user identified by id
    */
-  fetchUserData: async (id: string): Promise<UserData> => {
-    const response = await api.get<UserData>(`/user/${encodeURIComponent(id)}/user_data`);
+  fetchUserData: async (id: string): Promise<UserComplete> => {
+    const response = await api.get<UserComplete>(`/user/${encodeURIComponent(id)}/user_data`);
     return response.data;
   },
   /**
-   * Actualiza el perfil del usuario
+   * @brief updates the user
+   * @param id The id of the user to update
+   * @param updates user payload, includes the things to change, not everything
    */
   updateUser: async (id: string, updates: UserUpdatePayload): Promise<UserData> => {
     // Usamos PATCH y enviamos solo los datos que han cambiado
@@ -422,9 +437,64 @@ export const userAPI = {
 };
 
 
+// === TEACHER API ===
+/**
+ * !! NEW
+ * Teacher endpoints
+ * In charge of doing management of data only for teachers
+ */
+export const teacherAPI = {
+  /**
+   * !! EDITED
+   *  -> Removed try catch block, axios manages the errors
+   *  -> Re
+   * @brief Get the students of a teacher
+   * @returns List of students
+   */
+  fetchStudentsByTeacher: async(): Promise<User[]> => {
+    const response = await api.get<User[]>("/teacher/students");
+    return response.data;
+  }
+}
+
+
+
+
 
 
 // === OTHER ENDPOINTS ===
+/**
+ * !! NEW
+ *  -> Created for admins
+ *  
+ * @brief Fetchs all the users that arent admin (teachers and students)
+ *        User has to be an admin (else an error will be thrown)
+ *
+ * @return A list of User structure 
+ * @example
+ *  [
+      {
+        "id": "6bbae265-c111-474a-8f31-e419bf2d6f50",
+        "username": "manuel",
+        "role": "student",
+        "photo_url": "https://ifnmmbkdpjrdvusbeqxa.supabase.co/storage/v1/object/public/user_photo/superman.png?",
+        "group_id": 2
+      },
+      {
+        "id": "816cbe08-c632-4c3c-947a-5e8e731cf24c",
+        "username": "maria",
+        "role": "teacher",
+        "photo_url": "https://ifnmmbkdpjrdvusbeqxa.supabase.co/storage/v1/object/public/user_photo/aventurero.png?",
+        "group_id": null
+      }
+    ]
+ */
+export async function fetchAllNonAdmin(){
+  const response = await api.get("/admin/all_users");
+  return response.data
+}
+
+
 /**
  * Obtener todos los profesores
  * @returns  Lista de profesores
@@ -444,23 +514,13 @@ export async function fetchStudents() {
 }
 
 /**
+ * !! DEPRECATED
+ *  -> Same as fetchStudentsByTeacher
+ * 
  * Obtener los alumnos de un profesor
  * @returns Lista de alumnos
  */
-export async function fetchStudentsByTeacher() {
-  try {
-    const response = await api.get("/teacher/students");
-    return response.data;
-  } catch (err) {
-    console.error("Error obteniendo estudiantes:", err);
-    throw err; // opcional, para que el caller maneje el error
-  }
-}
-
-/**
- * Obtener los alumnos de un profesor
- * @returns Lista de alumnos
- */
+/*
 export async function fetchStudentsByTeacherProfile() {
   try {
     const response = await api.get("/teacher/students");
@@ -470,6 +530,7 @@ export async function fetchStudentsByTeacherProfile() {
     throw err; // opcional, para que el caller maneje el error
   }
 }
+*/
 
 export async function fetchTeachersWithGroups() {
   const response = await api.get("/teacher/all");

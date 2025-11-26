@@ -30,8 +30,7 @@ DEFAULT_AVATAR = "https://ionicframework.com/do	cs/img/demos/avatar.svg"
 # !! NEW 1.2.0
 #	-> Replaces "me" endpoint, uses is_auth_current_user to check for the user launching this
 #
-
-async def fetch_basic_info(user_id: str, email:str):
+async def fetch_basic_info(user_id: str):
 	"""
 	Return the basic info of a user.
 
@@ -50,11 +49,11 @@ async def fetch_basic_info(user_id: str, email:str):
 		User(with the data)
 	"""
 	try:
-		response = supabase_admin.table("users") \
-						.select("role, photo_url")\
-			.eq("id", user_id) \
-			.single() \
-			.execute()
+		response = supabase_admin.table("user_accounts") \
+						.select("username, role, photo_url")\
+						.eq("id", user_id) \
+						.single() \
+						.execute()
 
 		if not response.data:
 			raise HTTPException(
@@ -62,7 +61,7 @@ async def fetch_basic_info(user_id: str, email:str):
 				detail=f"Error fetching the user basic_info: {response.error}"
 			)
 
-		username 	= email.split("@")[0] if email else None
+		username 	= response.data.get("username")
 		role 		= response.data.get("role")
 		photo_url 	= supabase_admin.storage.from_("user_photo").get_public_url(response.data.get("photo_url")) or DEFAULT_AVATAR
 
@@ -82,7 +81,7 @@ async def get_basic_info(data: tuple = Depends(is_auth_current_user)):
 	to reuse that function.
 	"""
 	user_id, email = data
-	return await (fetch_basic_info(user_id, email))	
+	return await (fetch_basic_info(user_id))	
 
 # !! NEW 1.2.0
 #	-> Retrieves all the possible info of a user from the
@@ -111,9 +110,8 @@ async def get_user_data(user_id: str):
 		User(with the data)
 	"""
 	try:
-		# Fetch the basic info of the user
-		response = supabase_admin.auth.admin.get_user_by_id(user_id) 
-		user = await fetch_basic_info(user_id, response.user.email)
+		# Fetch the basic info of the user 
+		user = await fetch_basic_info(user_id)
 
 		if not user:
 			raise HTTPException(
@@ -145,6 +143,7 @@ async def get_user_data(user_id: str):
 				.eq("id", user_id) \
 				.single() \
 				.execute()
+
                 
 		if not resp.data or len(resp.data) == 0:
 			raise HTTPException(
