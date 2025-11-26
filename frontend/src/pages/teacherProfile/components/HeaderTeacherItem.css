@@ -132,34 +132,43 @@ ion-button.logoutButton-teacherProfile {
 @media (max-width: 480px) {
 
   .container-teacherProfile {
-    height: 140px;
-    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding: 20px 0;
+    text-align: center;
   }
 
   .profileAvatar-teacherProfile {
-    width: 90px;
-    height: 90px;
-    margin-left: 10px;
-    border-width: 4px;
+    width: 110px;
+    height: 110px;
+    margin: 0;
   }
 
   .profileName-teacherProfile {
-    font-size: 22px;
-    margin-left: 12px;
+    font-size: 26px;
+    margin-top: 10px;
+    margin-left: 0;
   }
 
   ion-buttons.actionButtons-teacherProfile {
-    gap: 4px;
-    margin-right: 8px;
+    margin-top: 12px;
+    margin-right: 0;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   ion-button.editButton-teacherProfile::part(native),
   ion-button.logoutButton-teacherProfile::part(native) {
-    width: 70px;
-    height: 36px;
-    font-size: 14px;
+    width: auto;
+    padding: 6px 14px;
+    height: 38px;
+    font-size: 15px;
   }
 }
+
 
 /*===========================================
   Tablet
