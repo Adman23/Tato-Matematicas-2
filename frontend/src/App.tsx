@@ -58,6 +58,11 @@ import TeacherRegister from './pages/auth/TeacherRegister';
 import RegisterConfirmation from './pages/auth/RegisterConfirmation';
 import StudentProfile from './pages/student/StudentProfile';
 
+// === Personalización alumno ===
+import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
+import EditColor from './pages/teacherProfile/EditStudent/EditColors';
+import Prueba from './pages/teacherProfile/EditStudent/prueba';
+
 
 /**
  * Componente raíz de la aplicación.
@@ -113,8 +118,6 @@ export default function App() {
                 exact component={TeacherProfilePage} />
               <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]} 
                 exact component={TeacherEditProfile} />
-
-
               <PrivateRoute path="/teacher/register" allowedRoles={["teacher"]} 
                 exact component={TeacherRegister} />
               <PrivateRoute path="/admin/group/register" allowedRoles={["admin"]} 
@@ -130,7 +133,13 @@ export default function App() {
               <PrivateRoute path="/admin/dashboard/groups-management" allowedRoles={["admin"]}
                 exact component={GroupsManagement} />
               <PrivateRoute path="/admin/register-confirmation/:tipo" allowedRoles={["admin"]}
-                component={RegisterConfirmation} exact />
+                component={RegisterConfirmation} exact />       
+              <PrivateRoute path="/student-edit-menu/:id/:name" allowedRoles={["teacher"]}
+                exact component={EditMenu} />
+              <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]} 
+                exact component={EditColor} />
+              <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
+              
               {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
               <Redirect to="/student/login" />
             </IonRouterOutlet>

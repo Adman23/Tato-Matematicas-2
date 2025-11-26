@@ -10,7 +10,7 @@
 General user management router
 Endpoints: /user/*
 """
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Body, HTTPException, status, Depends
 from ..schemas.auth import (
 	User,
 	UserData,
@@ -127,7 +127,8 @@ async def get_user_data(user_id: str):
 							id,\
 							visual_preferences,\
 							audio_preferences,\
-							accessibility_settings\
+							accessibility_settings,\
+            				color_preferences\
 						),\
 						game_configurations!user_id(\
 							id,\
@@ -185,23 +186,34 @@ async def get_user_data(user_id: str):
 		)
 
 
+# En backend/app/routers/users.py
+
 @router.patch("/{target_user_id}", response_model=UserData)
 async def update_user(
     target_user_id: str, 
     payload: UserUpdate, 
     current_user: tuple = Depends(is_auth_current_user)
 ):
-    """
-    Actualiza parcialmente los datos de un usuario.
-    """
     requester_id, requester_email = current_user
     
-    # 1. VERIFICAR PERMISOS
+    # 1. VERIFICAR PERMISOS (MODIFICADO)
+    # Si el usuario intenta editar a otro, verificamos si tiene rango superior
     if requester_id != target_user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="No tienes permiso para editar este usuario."
-        )
+        # Consultamos el rol de quien hace la petición
+        requester_data = supabase_admin.table("users")\
+            .select("role")\
+            .eq("id", requester_id)\
+            .single()\
+            .execute()
+            
+        requester_role = requester_data.data.get("role") if requester_data.data else "student"
+        
+        # Solo permitimos si es Profesor o Admin
+        if requester_role not in ["admin", "teacher"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes permiso para editar a este usuario."
+            )
 
     try:
         # 2. ACTUALIZAR AUTH (Email/Username y Password)
@@ -209,9 +221,11 @@ async def update_user(
         
         if payload.username:
             new_email = f"{payload.username}@tatomaths.local"
-            # Solo actualizamos si es diferente
-            if requester_email != new_email:
-                auth_attributes["email"] = new_email
+            # Solo actualizamos si el email cambia
+            # Nota: Para editar a OTROS, no podemos comparar con requester_email.
+            # Deberíamos comparar con el email del target, pero Supabase Auth maneja
+            # la redundancia internamente si el email es el mismo, así que lo enviamos.
+            auth_attributes["email"] = new_email
 
         if payload.password:
             auth_attributes["password"] = payload.password
@@ -225,7 +239,7 @@ async def update_user(
                     raise HTTPException(status_code=400, detail="El nombre de usuario ya está en uso.")
                 raise e
 
-        # 3. ACTUALIZAR DB PÚBLICA (Foto)
+        # 3. ACTUALIZAR DB PÚBLICA (Solo Foto, sin group_id)
         public_updates = {}
         if payload.photo_url:
             public_updates["photo_url"] = payload.photo_url
@@ -236,8 +250,7 @@ async def update_user(
                 .eq("id", target_user_id)\
                 .execute()
 
-        # 4. CONSTRUIR RESPUESTA MANUALMENTE (Evitando get_user_data)
-        # Hacemos una consulta segura que NO incluye reinforcement_messages para evitar el crash
+        # 4. CONSTRUIR RESPUESTA
         resp = supabase_admin.table("users") \
                 .select("id, role, photo_url, group_id, \
                         user_profiles!user_id(*), \
@@ -251,19 +264,25 @@ async def update_user(
 
         user_data_db = resp.data
         
-        # Obtenemos el username actualizado (o el actual) desde Auth para ser precisos
-        # Si acabamos de actualizar el email, usamos el nuevo, si no, recuperamos el de auth
-        final_username = payload.username if payload.username else requester_email.split("@")[0]
+        # Calculamos el username final
+        final_username = payload.username if payload.username else None
+        
+        # Si no cambiamos el nombre, intentamos recuperarlo de Auth (o usamos un placeholder seguro)
+        if not final_username:
+             try:
+                target_auth = supabase_admin.auth.admin.get_user_by_id(target_user_id)
+                if target_auth and target_auth.user and target_auth.user.email:
+                    final_username = target_auth.user.email.split("@")[0]
+             except:
+                final_username = "usuario" # Fallback raro
 
-        # Manejo seguro de relaciones que pueden venir como lista o null
+        # Manejo seguro de listas
         u_profile = user_data_db.get("user_profiles")
         if isinstance(u_profile, list) and len(u_profile) > 0:
             u_profile = u_profile[0]
-        elif isinstance(u_profile, list) and len(u_profile) == 0:
+        elif isinstance(u_profile, list):
              u_profile = None
              
-        # Construimos el objeto UserData manualmente
-        # IMPORTANTE: Devolvemos reinforcement_messages=[] vacío para que no rompa
         return UserData(
             id=user_data_db["id"],
             username=final_username,
@@ -283,3 +302,45 @@ async def update_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error interno: {str(e)}"
         )
+
+@router.post("/{user_id}/update_color_preferences")
+async def update_color_preferences(user_id: str, color_preferences: dict):
+    """
+    Actualiza la paleta de colores de un usuario.
+    """
+    try:
+        update = supabase_admin.table("user_profiles")\
+            .update({"color_preferences": color_preferences})\
+            .eq("user_id", user_id)\
+            .execute()
+
+        print("Datos guardados:", update.data)  # debería mostrar la fila actualizada
+        return {"message": "Color preferences updated", "saved": color_preferences}
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating color preferences: {str(e)}"
+        )
+    
+
+@router.get("/{user_id}/color_preferences")
+async def get_color_preferences(user_id: str):
+    """
+    Obtiene la paleta de colores empleada por un usuario.
+    """
+    try:
+        resp = supabase_admin.table("user_profiles")\
+            .select("color_preferences")\
+            .eq("user_id", user_id)\
+            .single()\
+            .execute()
+
+        if not resp.data:
+            raise HTTPException(404, "User not found")
+
+        return resp.data["color_preferences"]
+
+    except Exception as e:
+        raise HTTPException(500, f"Error fetching color preferences: {e}")

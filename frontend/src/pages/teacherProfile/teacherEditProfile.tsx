@@ -4,8 +4,8 @@ import {
   IonPage, IonContent, IonInput, IonButton, IonIcon,
   IonToast, IonImg, IonSpinner, useIonRouter,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-  useIonViewWillEnter, // ✅ Detecta cuando entras
-  useIonViewDidLeave,  // ✅ Detecta cuando sales
+  useIonViewWillEnter, // Detecta cuando entras
+  useIonViewDidLeave,  // Detecta cuando sales
 } from '@ionic/react';
 import {
   checkmarkOutline, closeOutline, eyeOutline, eyeOffOutline,
@@ -71,7 +71,7 @@ export default function TeacherEditProfile() {
 
   // 2. AL SALIR: Resetear el estado de "Éxito" para que la próxima vez salga el formulario
   useIonViewDidLeave(() => {
-    setIsUpdateSuccess(false); // 👈 ESTO ARREGLA TU PROBLEMA
+    setIsUpdateSuccess(false); 
     setPassword('');
     setConfirmPassword('');
     setShowAvatarModal(false);

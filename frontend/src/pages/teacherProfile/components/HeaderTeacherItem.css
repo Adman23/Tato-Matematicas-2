@@ -58,7 +58,7 @@ ion-button.homeButton-teacherProfile::part(native) {
 }
 
 ion-button.homeButton-teacherProfile ion-icon {
-  color: #50BFE6;
+  color: var(--ion-color-primary);
   background-color: white;
   width: 30px;
   height: 30px;

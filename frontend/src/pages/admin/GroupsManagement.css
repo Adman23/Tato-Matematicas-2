@@ -30,7 +30,7 @@
 
 .groupManagement-Text {
 
-    color: #50BFE6;
+    color: var(--ion-color-primary);
     font-size: 30px;
 }
 
@@ -46,7 +46,7 @@ ion-button.groupManagement-AddButton::part(native) {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #50BFE6;
+    background-color: var(--ion-color-primary);
     color: white;
     border: none;
     box-shadow: none;
@@ -68,7 +68,7 @@ ion-button.groupManagement-AddButton::part(native) {
    ======================================== */
 .groupManagement-Table {
 
-    border: 3px solid #50BFE6;
+    border: 3px solid var(--ion-color-primary);
     overflow-y: auto;
     border-radius: 20px;
     flex-grow: 1;

@@ -83,7 +83,7 @@ export default function StudentProfile() {
                     photoUrl={user?.photo_url} url="/student/dashboard" />
 
             {/* Main Content */}
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding StudentProfile-IonContent">
                     
                 <div className='main-container'>
                     {/* COLOR */}
@@ -155,7 +155,7 @@ export default function StudentProfile() {
                     Texto de ejemplo para previsualizar los cambios.
                 </div>
 
-                </IonContent>
+            </IonContent>
         </IonPage> 
     ); 
     // End of component--------------------------------------------

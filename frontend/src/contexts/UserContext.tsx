@@ -68,6 +68,18 @@
         },
         "accesibility_settings":{
 
+        },
+        "color_preferences":{
+          "primary": "#50BFE6",
+          "text_on_primary": "#FFFFFF",
+          "background": "#F4F4F4",
+          "text_on_bg": "#212121",
+          "bubble": "#A9DAF3",
+          "bubble_selected": "#FFB7FA",
+          "bubble_correct": "#34D399",
+          "bubble_incorrect": "#F87171",
+          "feedback_correct": "#059669",
+          "feedback_incorrect": "#b91c1c"
         }
     },
     "game_configurations": [
@@ -211,19 +223,39 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
    *        happens at the start (when the first useEffect activates), when something is modified
    *        for the current user or when data is refreshed.     
    */
-  useEffect(() => {
-    if (userData ) {
-      const root = document.documentElement;
-      if (userData.user_profile) {
-        const userVisual = userData.user_profile.visual_preferences;
-        const color_palette = userVisual.color_palettes[userVisual.active_palette_idx];
-        if (color_palette) {
-          root.style.setProperty('--ion-color-primary', color_palette.primary);
-        }
+  /*useEffect(() => {
+      if (userData){
+          const root = document.documentElement;
+          const userVisual = userData.user_profile.visual_preferences;
+
+          // console.log(userData.user_profile);
+          // Apply the color palette
+          if (userVisual.color_palettes){
+            const color_palette = userVisual.color_palettes[userVisual.active_palette_idx];
+            if (color_palette){
+              root.style.setProperty('--ion-color-primary', color_palette.primary);
+            }
+          }
+          console.log("Styles applied");
       }
-      console.log("STYLES APPLIED");
+  }, [userData]);*/
+  useEffect(() => {
+    if (userData?.user_profile?.color_preferences) {
+        const root = document.documentElement;
+        const colorPrefs = userData.user_profile.color_preferences;
+
+        // Aplica cada color según tus variables CSS
+        root.style.setProperty('--ion-color-primary', colorPrefs.primary);
+        root.style.setProperty('--ion-color-primary-contrast', colorPrefs.background);
+        root.style.setProperty('--bubble-bg', colorPrefs.bubble);
+        root.style.setProperty('--bubble-selected-bg', colorPrefs.bubble_selected);
+        root.style.setProperty('--tatomaths-text', colorPrefs.text_on_bg);
+        root.style.setProperty('--tatomaths-text-primary', colorPrefs.text_on_primary);
+
+        console.log("Styles applied");
     }
-  }, [userData]);
+}, [userData]);
+
 
 
   //-Functions related to user data managemente would go here----------------------------------

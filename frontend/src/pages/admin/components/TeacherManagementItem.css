@@ -1,8 +1,19 @@
+/* =============================================================================
+   CSS Styles for TeacherManagementItem component
+   ========================================================================== */
+
+/* =============================================================================
+Item
+========================================================================== */
 .teacherManagementItem-item{
 
     --padding-start: 12px;
     --inner-padding-end: 12px;
 }
+
+/* =============================================================================
+   Principal container
+   ========================================================================== */
 
 .teacherManagementItem-mainContainer{
 
@@ -14,6 +25,10 @@
     justify-content: space-between;
     align-items: center;
 }
+
+/* =============================================================================
+   Avatar
+   ========================================================================== */
 
 .teacherManagementItem-avatar{
 
@@ -34,6 +49,10 @@
     margin: 0;
 }
 
+/* =============================================================================
+   Text
+   ========================================================================== */
+
 .teacherManagementItem-name{
 
     font-size: 16px;
@@ -43,20 +62,24 @@
     overflow: hidden;
 }
 
+/* =============================================================================
+   Buttons
+   ========================================================================== */
+
 ion-button.teacherManagementItme-EditButton::part(native){
 
     background-color: white;
     --width: 20px;
     --height: 20px;
     border-radius: 10px;
-    border: 2px solid #50BFE6;
+    border: 2px solid var(--ion-color-primary);
     box-shadow: none;
     padding: 3px 3px;
 }
 
 ion-button.teacherManagementItme-EditButton ion-icon{
 
-    color: #50BFE6;
+    color: var(--ion-color-primary);
     background-color: white;
     width: 30px;
     height: 30px;

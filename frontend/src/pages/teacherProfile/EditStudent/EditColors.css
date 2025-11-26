@@ -1,0 +1,62 @@
+/*======================================
+  Container for each section
+========================================*/
+
+.studentEditProfile-editcolors-outer-container{
+
+    width: 100vw;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    margin-bottom: 40px;
+}
+
+.studentEditColor-ionTitle{
+
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+/*======================================
+  Grid
+========================================*/
+.EditColor-IonCol{
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 250px;
+  
+}
+
+.EditColor-label{
+
+  font-size: 20px;
+}
+
+.studenEditColors-personalizacionAvanzada{
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+}
+
+/*==============================================
+  Palette preview
+================================================*/
+
+.EditColor-PalettePreview{
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
