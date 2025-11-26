@@ -17,7 +17,7 @@ import {
 } from '@ionic/react';
 
 import './MenuAdmin.css';
-import { useHistory, Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 

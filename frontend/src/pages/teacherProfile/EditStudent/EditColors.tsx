@@ -9,7 +9,6 @@
 import {
     IonPage,
     IonContent,
-    IonSpinner,
     IonTitle,
     IonGrid,
     IonRow,
@@ -101,7 +100,7 @@ export default function EditColor() {
       const [colorIncorrectFed] = useState("#FFFFFF");
     
     //Palette index
-    const [selectedPaletteIdx, setSelectedPaletteIdx] = useState<number | null>(0); // 0..N para predefinidas, null para personalizada
+    //const [selectedPaletteIdx, setSelectedPaletteIdx] = useState<number | null>(0); // 0..N para predefinidas, null para personalizada
     //Custom palette- the final palette that is going to be in the data base
     const [customPalette, setCustomPalette] = useState({
         primary: colorPrincipal,
@@ -135,7 +134,7 @@ export default function EditColor() {
 
     //Function that updates the preview of the final palette
     const applyPalette = (palette: Palette) => {
-    setSelectedPaletteIdx(palette.id); // marca la paleta seleccionada
+    //setSelectedPaletteIdx(palette.id); // marca la paleta seleccionada
     setCustomPalette({
         primary: palette.colors[0],
         text_on_primary: palette.colors[1],

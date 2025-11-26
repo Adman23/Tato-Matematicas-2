@@ -104,7 +104,7 @@ export default function LinkProfiles() {
     const [selectedTeacherIds, setSelectedTeacherIds] = useState<string[]>([]);
     // Loading flags per resource to prevent an independent fetch from turning off
     // the global spinner before all resources have finished.
-    const [loadingGroups, setLoadingGroups] = useState<boolean>(true);
+    //const [loadingGroups, setLoadingGroups] = useState<boolean>(true);
     const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
     /**
@@ -133,13 +133,13 @@ export default function LinkProfiles() {
         if (loading) return;
         // Only load groups if the user is an authenticated admin
         if (!user || user.role !== 'admin') {
-            setLoadingGroups(false);
+            //setLoadingGroups(false);
             return;
         }
 
         const loadGroups = async () => {
             try {
-                setLoadingGroups(true);
+                //setLoadingGroups(true);
                 const groupsData = await authAPI.getGroups();
                 setGroups(groupsData);
                 setError('');
@@ -147,7 +147,7 @@ export default function LinkProfiles() {
                 setError('Error al cargar los grupos');
                 console.error(err);
             } finally {
-                setLoadingGroups(false);
+                //setLoadingGroups(false);
             }
         };
         loadGroups();

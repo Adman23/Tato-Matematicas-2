@@ -45,7 +45,7 @@ export default function TeacherEditProfile() {
   // Imágenes
   const [selectedAvatar, setSelectedAvatar] = useState<string>(''); 
   const [avatarPreview, setAvatarPreview] = useState<string>(DEFAULT_AVATAR); 
-  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
+  //const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
 
   // Feedback
   const [showToast, setShowToast] = useState(false);
@@ -65,7 +65,7 @@ export default function TeacherEditProfile() {
     if (user) {
       setUserName(user.username || '');
       setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
-      setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
+      //setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
     }
   });
 
@@ -84,7 +84,7 @@ export default function TeacherEditProfile() {
     if (user) {
       setUserName(user.username || '');
       setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
-      setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
+      //setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
     }
   }, [user]);
 
@@ -151,7 +151,7 @@ export default function TeacherEditProfile() {
       setSelectedAvatar(file.name);
       const objectUrl = URL.createObjectURL(file);
       setAvatarPreview(objectUrl);
-      setSelectedAvatarUrl(objectUrl);
+      //setSelectedAvatarUrl(objectUrl);
       closeAvatarModal();
     }
   };
@@ -164,7 +164,7 @@ export default function TeacherEditProfile() {
     
     setSelectedAvatar(avatarId);
     setAvatarPreview(url);
-    setSelectedAvatarUrl(url);
+    //setSelectedAvatarUrl(url);
     closeAvatarModal();
   };
 
@@ -186,11 +186,11 @@ export default function TeacherEditProfile() {
 
     try {
       let filenameToSend = null;
-      let fullUrlForContext = user.photo_url || DEFAULT_AVATAR;
+      //let fullUrlForContext = user.photo_url || DEFAULT_AVATAR;
 
       if (selectedAvatar && avatarOptions.some(a => a.id === selectedAvatar)) {
         filenameToSend = selectedAvatar; 
-        fullUrlForContext = selectedAvatarUrl; 
+        //fullUrlForContext = selectedAvatarUrl; 
       } 
       else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
@@ -198,7 +198,7 @@ export default function TeacherEditProfile() {
         const uniqueFilename = `${sanitize(userName.trim())}_${Date.now()}_${sanitize(file.name)}`;
         
         filenameToSend = await uploadImage(file, uniqueFilename);
-        fullUrlForContext = avatarPreview; 
+        //fullUrlForContext = avatarPreview; 
       }
 
       const payload: any = {};
