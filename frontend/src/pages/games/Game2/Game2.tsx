@@ -394,7 +394,7 @@ const Game2: React.FC = () => {
       return;
     }
 
-    const quantity = 12;
+    const quantity = 10;
 
     // Validar que quantity sea un número válido
     if (isNaN(quantity) || quantity <= 0) {
