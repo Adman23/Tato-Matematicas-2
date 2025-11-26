@@ -796,6 +796,7 @@ const Game1: React.FC = () => {
     }
     */
     
+    
 
     // Show feedback screen after checking answer
     if (showFeedbackScreen) {
