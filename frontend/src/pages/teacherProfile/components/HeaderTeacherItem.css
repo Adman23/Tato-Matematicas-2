@@ -68,7 +68,7 @@ ion-button.homeButton-teacherProfile ion-icon {
 
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     flex-grow: 2;
     justify-content: space-between;
     align-items: center;
@@ -106,7 +106,7 @@ ion-button.logoutButton-teacherProfile::part(native) {
 }
 
 
-ion-button.editButton-teacherProfile::part(native) {
+ion-button.editButton-teacherProfile {
   --width: 70px;
   --height: 48px;
   background-color: white;
@@ -116,7 +116,7 @@ ion-button.editButton-teacherProfile::part(native) {
   margin-bottom: 20px;
 }
 
-ion-button.logoutButton-teacherProfile::part(native) {
+ion-button.logoutButton-teacherProfile {
   --width: 50;
   --height: 48px;
   background-color: white;
@@ -126,3 +126,71 @@ ion-button.logoutButton-teacherProfile::part(native) {
   margin-bottom: 20px;
 }
 
+/*===========================================
+  Móvil
+=============================================*/
+@media (max-width: 480px) {
+
+  .container-teacherProfile {
+    height: 140px;
+    padding: 0 12px;
+  }
+
+  .profileAvatar-teacherProfile {
+    width: 90px;
+    height: 90px;
+    margin-left: 10px;
+    border-width: 4px;
+  }
+
+  .profileName-teacherProfile {
+    font-size: 22px;
+    margin-left: 12px;
+  }
+
+  ion-buttons.actionButtons-teacherProfile {
+    gap: 4px;
+    margin-right: 8px;
+  }
+
+  ion-button.editButton-teacherProfile::part(native),
+  ion-button.logoutButton-teacherProfile::part(native) {
+    width: 70px;
+    height: 36px;
+    font-size: 14px;
+  }
+}
+
+/*===========================================
+  Tablet
+=============================================*/
+@media (min-width: 481px) and (max-width: 1024px) {
+
+  .container-teacherProfile {
+    height: 180px;
+    padding: 0 24px;
+  }
+
+  .profileAvatar-teacherProfile {
+    width: 130px;
+    height: 130px;
+    margin-left: 20px;
+  }
+
+  .profileName-teacherProfile {
+    font-size: 32px;
+    margin-left: 18px;
+  }
+
+  ion-buttons.actionButtons-teacherProfile {
+    gap: 12px;
+    margin-right: 20px;
+  }
+
+  ion-button.editButton-teacherProfile::part(native),
+  ion-button.logoutButton-teacherProfile::part(native) {
+    width: 100px;
+    height: 44px;
+    font-size: 16px;
+  }
+}
