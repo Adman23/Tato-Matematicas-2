@@ -5,11 +5,10 @@ import {
   IonButtons,
   IonButton,
   IonIcon,
-  IonTitle,
   IonAvatar
 } from '@ionic/react';
 import { homeOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom'; // ✅ nuevo
+import { useHistory } from 'react-router-dom';
 import './HeaderTeacherItem.css';
 
 interface Props {
@@ -23,20 +22,23 @@ const HeaderItem: React.FC<Props> = ({
   teacherAvatar,
   onLogoutClick,
 }) => {
-  const history = useHistory(); // ✅ hook de navegación
+  const history = useHistory();
 
   const handleEditClick = () => {
-    history.push('/teacheredit/profile'); // ✅ redirige
+    history.push('/teacheredit/profile');
   };
 
   const handleHomeClick = () => {
-    history.push('/home'); // ✅ también activamos el botón home
+    history.push('/home');
   };
 
   return (
     <IonHeader className="headerBackground-teacherProfile">
       <IonToolbar className="toolbarTransparent-teacherProfile">
+        
+        {/* Contenedor principal flex */}
         <div className="container-teacherProfile">
+          
           <IonButton className="homeButton-teacherProfile" onClick={handleHomeClick}>
             <IonIcon slot="icon-only" md={homeOutline} />
           </IonButton>
@@ -45,8 +47,13 @@ const HeaderItem: React.FC<Props> = ({
             <img src={teacherAvatar} alt="Avatar del profesor" />
           </IonAvatar>
 
+          {/* Contenedor de Info (Nombre + Botones) */}
           <div className="infoButtons-teacherProfile">
-            <IonTitle className="profileName-teacherProfile">{teacherName}</IonTitle>
+            {/* CORREGIDO: Usamos div en lugar de IonTitle para evitar conflictos de layout */}
+            <div className="profileName-teacherProfile">
+              {teacherName}
+            </div>
+
             <IonButtons slot="end" className="actionButtons-teacherProfile">
               <IonButton className="editButton-teacherProfile" onClick={handleEditClick}>
                 Editar
@@ -56,6 +63,7 @@ const HeaderItem: React.FC<Props> = ({
               </IonButton>
             </IonButtons>
           </div>
+          
         </div>
       </IonToolbar>
     </IonHeader>
