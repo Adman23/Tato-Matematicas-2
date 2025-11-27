@@ -578,6 +578,7 @@ const Game1: React.FC = () => {
     };
 
 
+    
     /**
      * Functional Summary.
      *
