@@ -125,6 +125,10 @@ const Game2: React.FC = () => {
   const [draggingNumber, setDraggingNumber] = useState<number | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
 
+  // Estados para touch events (mobile/tablet)
+  const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [draggedElement, setDraggedElement] = useState<HTMLElement | null>(null);
+
   // Video modal state
   const [showVideoModal, setShowVideoModal] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -221,6 +225,14 @@ const Game2: React.FC = () => {
       setShowVideoModal(false);
       setHintsCount(0);
       setErrorsCount(0);
+      setTouchStartPos(null);
+
+      // Limpiar elemento drag si existe
+      const dragClone = document.getElementById('touch-drag-clone');
+      if (dragClone && dragClone.parentNode) {
+        dragClone.parentNode.removeChild(dragClone);
+      }
+      setDraggedElement(null);
     };
   },
     [location.pathname]); // Se ejecuta cuando cambia la ruta
@@ -724,6 +736,86 @@ const Game2: React.FC = () => {
   };
 
   /**
+   * Maneja el inicio del touch en un número (dispositivos móviles/tablets).
+   */
+  const handleTouchStart = (e: React.TouchEvent, number: number) => {
+    if (showFeedback) return;
+
+    const touch = e.touches[0];
+    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+    setDraggingNumber(number);
+    setSelectedNumber(null); // Deseleccionar al empezar drag
+
+    // Crear elemento visual para el drag
+    const target = e.currentTarget as HTMLElement;
+    const clone = target.cloneNode(true) as HTMLElement;
+    clone.classList.add('number-card-dragging-touch');
+    clone.style.position = 'fixed';
+    clone.style.pointerEvents = 'none';
+    clone.style.zIndex = '9999';
+    clone.style.left = `${touch.clientX - 55}px`;
+    clone.style.top = `${touch.clientY - 55}px`;
+    clone.id = 'touch-drag-clone';
+
+    document.body.appendChild(clone);
+    setDraggedElement(clone);
+  };
+
+  /**
+   * Maneja el movimiento del touch mientras arrastra un número.
+   */
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!draggingNumber || !draggedElement) return;
+
+    e.preventDefault(); // Prevenir scroll mientras arrastra
+
+    const touch = e.touches[0];
+    draggedElement.style.left = `${touch.clientX - 55}px`;
+    draggedElement.style.top = `${touch.clientY - 55}px`;
+  };
+
+  /**
+   * Maneja el fin del touch cuando suelta el número.
+   */
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!draggingNumber) return;
+
+    const touch = e.changedTouches[0];
+
+    // Limpiar elemento visual
+    if (draggedElement && draggedElement.parentNode) {
+      draggedElement.parentNode.removeChild(draggedElement);
+    }
+    setDraggedElement(null);
+
+    // Encontrar el slot donde se soltó el número
+    const dropZone = document.getElementById('drop-zone-container');
+    if (dropZone) {
+      const slots = dropZone.querySelectorAll('.droppable-slot');
+      let targetIndex = -1;
+
+      slots.forEach((slot, index) => {
+        const rect = slot.getBoundingClientRect();
+        if (
+          touch.clientX >= rect.left &&
+          touch.clientX <= rect.right &&
+          touch.clientY >= rect.top &&
+          touch.clientY <= rect.bottom
+        ) {
+          targetIndex = index;
+        }
+      });
+
+      if (targetIndex !== -1) {
+        tryPlaceNumber(draggingNumber, targetIndex);
+      }
+    }
+
+    setDraggingNumber(null);
+    setTouchStartPos(null);
+  };
+
+  /**
    * Opens the video modal for instructions.
    */
   const openVideoModal = () => {
@@ -900,6 +992,9 @@ const Game2: React.FC = () => {
                   draggable={!showFeedback}
                   onDragStart={(e) => handleDragStart(e, num)}
                   onDragEnd={handleDragEnd}
+                  onTouchStart={(e) => handleTouchStart(e, num)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
                   onClick={() => handleNumberClick(num)}
                   style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
                 >
@@ -920,17 +1015,19 @@ const Game2: React.FC = () => {
           </div>
 
           {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
-          <DropZone
-            numbers={orderedNumbers}
-            correctOrder={correctOrder}
-            showFeedback={showFeedback}
-            totalSlots={orderedNumbers.length}
-            usePictogram={usePictograms}
-            lockedIndices={new Set()}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            feedbackType={feedbackType}
-          />
+          <div id="drop-zone-container">
+            <DropZone
+              numbers={orderedNumbers}
+              correctOrder={correctOrder}
+              showFeedback={showFeedback}
+              totalSlots={orderedNumbers.length}
+              usePictogram={usePictograms}
+              lockedIndices={new Set()}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              feedbackType={feedbackType}
+            />
+          </div>
         </div>
 
         {/* Botones de control */}
