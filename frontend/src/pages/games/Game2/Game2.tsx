@@ -225,7 +225,7 @@ const Game2: React.FC = () => {
       setShowVideoModal(false);
       setHintsCount(0);
       setErrorsCount(0);
-      setTouchStartPos(null);
+      //setTouchStartPos(null);
 
       // Limpiar elemento drag si existe
       const dragClone = document.getElementById('touch-drag-clone');
@@ -742,7 +742,7 @@ const Game2: React.FC = () => {
     if (showFeedback) return;
 
     const touch = e.touches[0];
-    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+    //setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setDraggingNumber(number);
     setSelectedNumber(null); // Deseleccionar al empezar drag
 
@@ -812,7 +812,7 @@ const Game2: React.FC = () => {
     }
 
     setDraggingNumber(null);
-    setTouchStartPos(null);
+    //setTouchStartPos(null);
   };
 
   /**
