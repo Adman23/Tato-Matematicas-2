@@ -795,8 +795,8 @@ const Game1: React.FC = () => {
         );
     }
     */
-    
-    
+        
+
 
     // Show feedback screen after checking answer
     if (showFeedbackScreen) {
@@ -820,6 +820,19 @@ const Game1: React.FC = () => {
     return (
         <IonPage>
             <IonContent className="game1-content">
+                {gameFinished ? (
+                    // --- VISTA DE ÉXITO ---
+                    <div className="ion-padding ion-text-center" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                        <IonText color="success">
+                            <h1>¡Juego completado!</h1>
+                            {/* Puedes usar tus mensajes positivos aquí */}
+                            <p>{Messages.find(m => m.type === 'positive')?.text_message || "¡Lo has hecho genial!"}</p>
+                            <p>Volviendo al inicio...</p>
+                        </IonText>
+                        <IonSpinner name="dots" style={{ marginTop: '20px' }}/>
+                    </div>
+                ) : (
+                <>
                 {/* Header */}
                 <GameHeader
                     title="Asociar Nº"
@@ -911,7 +924,8 @@ const Game1: React.FC = () => {
                     </div>
                 </div>
                 {/* End grid container */}
-
+                    </>
+                )}    
                 {/* Video Modal */}
                 {showVideoModal && (
                     <div className="game1-video-modal-overlay" onClick={closeVideoModal}>
@@ -931,6 +945,7 @@ const Game1: React.FC = () => {
                         </div>
                     </div>
                 )}
+            
             </IonContent>
         </IonPage>
     );

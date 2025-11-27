@@ -43,17 +43,6 @@ export default function StudentDashboard() {
   const history = useHistory();
 
 
-  // Mostrar spinner mientras carga
-  if (loadingUser) {
-    return (
-      <IonPage>
-        <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <IonSpinner name="crescent" />
-        </IonContent>
-      </IonPage>
-    );
-  }
-
   /*
   // Redirigir si no hay estudiante autenticado
   if (!user) {
@@ -64,9 +53,25 @@ export default function StudentDashboard() {
 
   return (
     <IonPage>
+
+      
       <SimpleHeaderUser userName={user?.username || "username"} photoUrl={user?.photo_url} />
 
       <IonContent className="student-dashboard-content">
+        {loadingUser ? (
+          // --- ESTADO DE CARGA ---
+          // Usamos un div contenedor para centrar, no el IonContent directamente
+          <div 
+            style={{ 
+              height: '100%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}
+          >
+            <IonSpinner name="crescent" />
+          </div>
+        ) : (
         <div className="games-container">
           <div className="game-button-wrapper">
             <IonButton
@@ -116,6 +121,7 @@ export default function StudentDashboard() {
             </IonButton>
           </div>
         </div>
+        )}
 
       </IonContent>
     </IonPage>

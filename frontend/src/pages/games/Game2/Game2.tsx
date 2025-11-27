@@ -393,7 +393,7 @@ const Game2: React.FC = () => {
       console.error('Invalid number range:', config.number_range);
       return;
     }
-    
+
     const quantity = config.settings.quantity || 5;
 
     // Validar que quantity sea un número válido
@@ -797,7 +797,7 @@ const Game2: React.FC = () => {
     );
   }
 
-  /*
+  
   // Si el juego terminó, mostrar mensaje
   if (gameFinished) {
     return (
@@ -814,7 +814,7 @@ const Game2: React.FC = () => {
       </IonPage>
     );
   }
-  */
+  
 
   return (
     <IonPage>

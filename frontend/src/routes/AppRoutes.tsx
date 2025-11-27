@@ -10,7 +10,7 @@ import { Route } from 'react-router-dom';
 import type { RouteProps } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { Role } from '../lib/api.ts';
-import { useIonRouter } from '@ionic/react';
+import { IonContent, IonPage, IonSpinner, useIonRouter } from '@ionic/react';
 
 // Dashboard for each role
 const ROLE_DASHBOARDS = {
@@ -41,6 +41,16 @@ const IonicRedirect: React.FC<{ to: string }> = ({ to }) => {
 };
 
 
+const LoadingPage = () => (
+    <IonPage>
+        <IonContent>
+        <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <IonSpinner name="crescent" />
+        </div>
+        </IonContent>
+    </IonPage>
+);
+
 /**
  * @brief Used for the basic routes, like home and login
  *        C1: If a user is logged in  -> Redirects to dashboard
@@ -57,7 +67,7 @@ export const PublicRoute: React.FC<CustomRouteProps> = ({ component: Component, 
         <Route
         {...rest}
         render={(props) => {
-            if (loadingAuth) return null;
+            if (loadingAuth) return <LoadingPage/>;
 
             if (user) {
                 // C1: Logged in
@@ -92,7 +102,7 @@ export const PrivateRoute: React.FC<CustomRouteProps> = ({ component: Component,
         <Route
         {...rest}
         render={(props) => {
-            if (loadingAuth) return null;
+            if (loadingAuth) return <LoadingPage/>;
 
             const currentPath = props.location.pathname;
             
