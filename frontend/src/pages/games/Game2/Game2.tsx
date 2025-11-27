@@ -126,7 +126,7 @@ const Game2: React.FC = () => {
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
 
   // Estados para touch events (mobile/tablet)
-  const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
+  //const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [draggedElement, setDraggedElement] = useState<HTMLElement | null>(null);
 
   // Video modal state
