@@ -129,14 +129,21 @@
   margin: 0; 
 }
 
-/* GRID INTERNO */
+/* ========================================
+   GRID INTERNO
+   ======================================== */
 .sel-group-grid {
   display: grid;
   gap: 2%; 
   width: 100%;
   height: 100%;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  
+  /* USO DE MINMAX:
+     Esto es crucial. 'minmax(0, 1fr)' obliga a que todas las celdas
+     midan exactamente lo mismo, ignorando si el contenido es grande o pequeño.
+     Esto evita que la fila de arriba sea distinta a la de abajo. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 /* ========================================
@@ -151,8 +158,13 @@
   cursor: pointer;
   padding: 0;
   overflow: visible;
+  
+  /* Aseguramos que ocupe todo su espacio asignado */
   width: 100%;
   height: 100%; 
+  min-height: 0; /* Previene desbordamiento en flex/grid */
+  min-width: 0;
+  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -180,11 +192,14 @@
   object-fit: contain;
 }
 
+/* Ajuste de la letra para Step 1 */
 .sel-group-letter {
   position: absolute;
-  top: 32%;
-  left: 38%;
+  /* Centrado perfecto */
+  top: 31%;
+  left: 38%; /* Ligeramente a la izquierda para dejar sitio al icono */
   transform: translate(-50%, -50%);
+  
   font-size: 13vmin;
   font-weight: 900;
   color: #000;
@@ -193,6 +208,7 @@
   z-index: 2;
 }
 
+/* Contenedor de Step 2 (Usuario) */
 .sel-student-content {
   display: flex;
   flex-direction: column;
@@ -227,17 +243,12 @@
 .sel-group-ghost {
     width: 100%;
     height: 100%;
-    
-    /* CAMBIO: Ahora son visibles */
     visibility: visible;
-    
-    /* Estilo de "Hueco vacío" */
-    background-color: rgba(255, 255, 255, 0.4); /* Fondo blanco semitransparente */
-    border: 0.4vmin dashed rgba(0, 0, 0, 0.3); /* Borde discontinuo gris oscuro */
+    background-color: rgba(255, 255, 255, 0.4); 
+    border: 0.4vmin dashed rgba(0, 0, 0, 0.3);
     border-radius: 2vh;
     box-sizing: border-box;
-    
-    pointer-events: none; /* No se puede hacer clic */
+    pointer-events: none;
 }
 
 /* CHECK CONFIRMACIÓN */
@@ -313,19 +324,19 @@
 @media (max-width: 650px) {
   
   .sel-classes-card {
+    /* En móvil, definimos la altura y el ancho es automático para mantener la proporción */
     height: 75vh; 
     width: auto;
     max-width: none;
-    aspect-ratio: 1 / 2.1; 
+    
+    /* AJUSTE FINO: 1 / 2.05 da espacio para 2 cuadrados perfectos + el gap */
+    aspect-ratio: 1 / 2.05; 
   }
 
   .sel-group-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
+    /* 1 Columna, 2 Filas IGUALES */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
     gap: 1.5vh;
-  }
-  
-  .sel-group-letter {
-    font-size: 18vmin;
   }
 }
