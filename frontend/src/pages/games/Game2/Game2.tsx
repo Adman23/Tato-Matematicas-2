@@ -14,7 +14,7 @@ import {
   IonSpinner,
   useIonRouter
 } from '@ionic/react';
-import { useHistory, Redirect, useLocation } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../../../contexts/AuthContext';
 import { useUserData } from '../../../contexts/UserContext';
@@ -92,7 +92,7 @@ const TOTAL_ROUNDS = 5;
  * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
-  const history = useHistory();
+  
   const location = useLocation();
   const router = useIonRouter();
   const { user, loadingAuth: authLoading } = useAuth();
@@ -253,13 +253,13 @@ const Game2: React.FC = () => {
     if (gameFinished) {
       const timer = setTimeout(() => {
         // Redirigir al dashboard correspondiente según el tipo de usuario
-        const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
-        router.push(dashboardRoute, 'root', 'replace')
+        const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/teacher/dashboard';
+        router.push(dashboardRoute, "back", "pop");
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [gameFinished, history, user]);
+  }, [gameFinished, user]);
 
   /**
    * Carga la configuración personalizada del juego desde el backend.
@@ -671,8 +671,8 @@ const Game2: React.FC = () => {
     }
 
     // Redirect to dashboard
-    const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/tutor/dashboard';
-    history.push(dashboardRoute);
+    const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/teacher/dashboard';
+    router.push(dashboardRoute, "back", "pop");
   };
 
   /**
@@ -797,7 +797,7 @@ const Game2: React.FC = () => {
     );
   }
 
-  
+  /*
   // Si el juego terminó, mostrar mensaje
   if (gameFinished) {
     return (
@@ -814,11 +814,25 @@ const Game2: React.FC = () => {
       </IonPage>
     );
   }
+  */
   
 
   return (
     <IonPage>
       <IonContent className="game2-content" scrollY={false}>
+          {gameFinished ? (
+              // --- VISTA DE ÉXITO ---
+              <div className="ion-padding ion-text-center" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <IonText color="success">
+                      <h1>¡Juego completado!</h1>
+                      {/* Puedes usar tus mensajes positivos aquí */}
+                      <p>{Messages.find(m => m.type === 'positive')?.text_message || "¡Lo has hecho genial!"}</p>
+                      <p>Volviendo al inicio...</p>
+                  </IonText>
+                  <IonSpinner name="dots" style={{ marginTop: '20px' }}/>
+              </div>
+          ) : (
+          <>
         {/* Mostrar pantalla de feedback después de colocar un número */}
         {showFeedbackScreen ? (
           <FeedbackScreen
@@ -948,7 +962,8 @@ const Game2: React.FC = () => {
             />
           </IonButton>
         </div>
-
+        </>
+        )}
         {/* Video Modal */}
         {showVideoModal && (
           <div className="game2-video-modal-overlay" onClick={closeVideoModal}>

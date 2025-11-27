@@ -14,7 +14,7 @@ import {
     IonButton,
     useIonRouter
 } from '@ionic/react';
-import { useHistory, Redirect } from 'react-router-dom'
+import {  Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
 import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
@@ -75,7 +75,6 @@ const TOTAL_ROUNDS = 5;
  */
 const Game1: React.FC = () => {
 
-    const history = useHistory();
     const { user, loadingAuth: authLoading } = useAuth();
     const router = useIonRouter();
 
@@ -181,12 +180,12 @@ const Game1: React.FC = () => {
             const timer = setTimeout(() => {
                 // Redirect to the appropriate dashboard based on user type
                 const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
-                router.push(dashboardRoute, 'root', 'replace')
+                router.push(dashboardRoute, 'back', 'pop')
             }, 2000);
 
             return () => clearTimeout(timer);
         }
-    }, [gameFinished, history, user]);
+    }, [gameFinished, user]);
 
 
     /**
@@ -604,8 +603,8 @@ const Game1: React.FC = () => {
         }
 
         // Redirect to the dashboard
-        const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/tutor/dashboard';
-        history.push(dashboardRoute);
+        const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/teacher/dashboard';
+        router.push(dashboardRoute, "back", "pop");
     };
 
     /**
