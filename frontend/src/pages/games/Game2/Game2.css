@@ -373,3 +373,17 @@
     right: 5px;
   }
 }
+
+/* ============================================================================
+   9. TOUCH DRAG AND DROP (Mobile/Tablet)
+   ============================================================================ */
+
+/* Elemento que se arrastra en dispositivos táctiles */
+.number-card-dragging-touch {
+  opacity: 0.8;
+  transform: scale(1.3);
+  box-shadow: 0 8px 20px rgba(132, 172, 241, 0.5);
+  pointer-events: none;
+  z-index: 9999;
+  transition: none;
+}
