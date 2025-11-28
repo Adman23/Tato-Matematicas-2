@@ -18,6 +18,7 @@ interface Props {
   url?: string;
 }
 
+
 const SimpleHeaderUser: React.FC<Props> = ({
   userName,
   photoUrl,
