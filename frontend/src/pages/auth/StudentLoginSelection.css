@@ -1,10 +1,29 @@
 /* ========================================
-   TATO MATEMÁTICAS — CSS FINAL (Square Cells & Flat Design)
+   TATO MATEMÁTICAS — CSS FINAL
    ======================================== */
 
 .student-login-content {
-  --background: white;
+  --background: #e3f5ff; 
   --overflow: hidden; 
+  position: relative; 
+}
+
+/* FONDO DINÁMICO */
+.student-login-content::before {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%; 
+  width: 200%; height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='%23b2dcff' fill-opacity='1' font-family='sans-serif' font-weight='bold'%3E%3Ctext x='40' y='120' font-size='140' transform='rotate(-10 40 120)'%3E+%3C/text%3E%3Ctext x='240' y='150' font-size='160' transform='rotate(10 240 150)'%3E-%3C/text%3E%3Ctext x='60' y='350' font-size='150' transform='rotate(5 60 350)'%3Ex%3C/text%3E%3Ctext x='260' y='340' font-size='140' transform='rotate(-15 260 340)'%3E%C3%B7%3C/text%3E%3Ctext x='180' y='80' font-size='100' transform='rotate(20 180 80)'%3E1%3C/text%3E%3Ctext x='20' y='240' font-size='110' transform='rotate(-25 20 240)'%3E2%3C/text%3E%3Ctext x='200' y='250' font-size='90' transform='rotate(15 200 250)'%3E3%3C/text%3E%3C/g%3E%3C/svg%3E");
+  background-size: 400px 400px; 
+  animation: mathScroll 100s linear infinite; 
+  z-index: 1; 
+  pointer-events: none;
+}
+
+@keyframes mathScroll {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(400px, 400px); }
 }
 
 .sel-login-container {
@@ -17,6 +36,7 @@
   padding: 1vh 2vw;
   box-sizing: border-box;
   position: relative;
+  z-index: 2; 
 }
 
 /* ========================================
@@ -24,93 +44,104 @@
    ======================================== */
 
 .sel-header-row {
-  flex: 0 0 auto;
-  width: 100%;
-  display: grid;
+  display: grid; 
   grid-template-columns: 80px 1fr 80px; 
   align-items: center;
-  height: 12vh;
-  min-height: 60px;
-  max-height: 100px;
+  width: 100%;
+  height: 22vh;      
+  min-height: 90px;
+  max-height: 250px;
   z-index: 10;
-  /* Sin transiciones */
+  margin: 0;
+  padding: 0;
 }
 
 .sel-header-button {
-  height: 80%;
+  height: 70%;
   aspect-ratio: 1/1;
-  margin: 0 auto;
+  margin: 0 auto; 
   --padding-start: 0;
   --padding-end: 0;
-  transition: none; /* Eliminado */
-}
-
-.sel-header-button::part(native):hover {
-  transform: scale(1.1);
-  background-color: rgba(var(--ion-color-primary-rgb), 0.1);
-}
-
-.sel-boton-imagen {
-  height: 90%;
-  width: 90%;
-  object-fit: contain;
-  filter: none; /* Sin sombras */
-}
-
-.sel-login-title {
-  font-size: clamp(1.5rem, 5vh, 3rem);
-  font-weight: 900;
-  color: #000;
-  text-align: center;
-  margin: 0;
-  line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  /* Texto plano sin sombras difusas, solo borde duro opcional si se quiere */
-  text-shadow: none; 
-}
-
-/* ========================================
-   2. MAIN AREA
-   ======================================== */
-
-.sel-main-wrapper {
-  flex: 1;
+  background: transparent; 
+  box-shadow: none; 
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.sel-header-button:not([disabled]):hover {
+  transform: scale(1.1);
+}
+
+.sel-icon-circle {
   width: 100%;
-  overflow: hidden;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem; 
+  color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-blue { background-color: var(--ion-color-primary); }
+.btn-green { background-color: var(--ion-color-success); }
+
+.sel-logo-title {
+  display: block; 
+  margin: 0 auto; 
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  max-height: 180px; 
+  object-fit: contain; 
+  animation: floating 3.5s ease-in-out infinite;
+  filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.8));
+}
+
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ========================================
+   2. MAIN AREA (WRAPPER)
+   ======================================== */
+
+.sel-main-wrapper {
+  flex: 0 0 auto;        
+  width: fit-content;    
+  height: fit-content;   
+  margin: auto;          
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   z-index: 5;
+  max-width: 100%; 
 }
 
 /* TARJETA AZUL */
 .sel-classes-card {
   --grid-gap: 15px; 
-
   background-color: var(--ion-color-primary);
   border-radius: 3vh;
   padding: var(--grid-gap);
-  
-  /* FLAT DESIGN: Sin sombras */
-  box-shadow: none;
-  
-  /* --- ESCRITORIO (2x2) --- */
-  /* Altura máxima */
-  max-height: 70vh; 
-  /* Ancho calculado para ser cuadrado */
-  width: min(70vh, 650px, 90vw);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  max-height: 60vh;
+  width: min(60vh, 650px, 90vw);
   height: auto; 
   aspect-ratio: 1 / 1;
-  
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   margin: 0; 
-  transition: none; /* Eliminado */
 }
 
 /* GRID INTERNO */
@@ -124,45 +155,111 @@
 }
 
 /* ========================================
-   3. TILES (Celdas Blancas)
+   3. TILES (BOTONES 3D)
    ======================================== */
+
+/* Contenedor del botón (estructura base) */
 .sel-group-tile {
   position: relative;
-  background: white;
-  border: 3px solid #000; 
-  box-sizing: border-box;
-  border-radius: 2vh;
+  background: transparent; /* Transparente para ver el efecto 3D */
+  padding: 0;
+  border: none;
+  outline-offset: 4px;
   cursor: pointer;
-  padding: 10px;
-  overflow: visible;
   
-  /* --- REGLA DE ORO: SIEMPRE CUADRADO --- */
-  aspect-ratio: 1 / 1;
   width: 100%;
-  height: auto; /* La altura sigue al ancho gracias al aspect-ratio */
+  height: 100%; 
+  aspect-ratio: 1 / 1;
+  
+  /* Reset de estilos de botón */
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  z-index: 1;
+}
+
+/* Capa 1: Sombra */
+.sel-tile-shadow {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 2vh;
+  background: rgba(0, 0, 0, 0.25);
+  transform: translateY(4px); /* Sombra desplazada */
+  filter: blur(2px);
+  transition: transform 0.25s cubic-bezier(.3, .7, .4, 1);
+}
+
+/* Capa 2: Borde 3D (Grosor) */
+.sel-tile-edge {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 2vh;
+  /* Color del borde 3D: Gris oscuro por defecto */
+  background: linear-gradient(to left, hsl(0, 0%, 40%) 0%, hsl(0, 0%, 60%) 8%, hsl(0, 0%, 60%) 92%, hsl(0, 0%, 40%) 100%);
+  transition: background 0.25s;
+}
+
+/* Capa 3: Frente (Cara blanca) */
+.sel-tile-front {
+  display: block;
+  position: relative;
+  width: 100%; height: 100%;
+  border-radius: 2vh;
+  background: white;
+  
+  /* Borde fino negro para mantener estética comic */
+  border: 2px solid #333; 
+  box-sizing: border-box;
+  
+  padding: 10px;
+  
+  transform: translateY(-6px); /* Elevado inicialmente */
+  transition: transform 0.25s cubic-bezier(.3, .7, .4, 1), border-color 0.2s, background-color 0.2s;
   
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: none; /* Eliminado */
-  z-index: 1;
-  box-shadow: none; /* Sin sombras */
+  overflow: hidden;
 }
 
-.sel-group-tile:not(:disabled):hover,
-.sel-group-tile:not(:disabled):focus-visible {
-  transform: scale(1.03); 
-  z-index: 10;
-  outline: none;
-  box-shadow: none;
+/* --- ESTADOS INTERACTIVOS --- */
+
+/* Hover */
+.sel-group-tile:hover .sel-tile-front {
+  transform: translateY(-8px); /* Sube un poco más */
+}
+.sel-group-tile:hover .sel-tile-shadow {
+  transform: translateY(6px);
+  filter: blur(4px);
 }
 
-.sel-group-tile.selected {
+/* Active (Click) */
+.sel-group-tile:active .sel-tile-front {
+  transform: translateY(-2px); /* Se hunde */
+}
+.sel-group-tile:active .sel-tile-shadow {
+  transform: translateY(2px);
+  filter: blur(1px);
+}
+
+/* SELECTED (Estado pulsado/seleccionado) */
+.sel-group-tile.selected .sel-tile-edge {
+  /* El borde 3D se vuelve verde oscuro */
+  background: linear-gradient(to left, var(--ion-color-success-shade) 0%, var(--ion-color-success) 8%, var(--ion-color-success) 92%, var(--ion-color-success-shade) 100%);
+}
+
+.sel-group-tile.selected .sel-tile-front {
+  /* El frente tiene borde verde y fondo sutilmente verde */
   border-color: var(--ion-color-success);
-  /* Sombra interna para indicar selección (plana) */
-  box-shadow: inset 0 0 0 4px var(--ion-color-success);
+  background-color: #f0fff4;
+  box-shadow: inset 0 0 0 2px var(--ion-color-success);
+  /* Se queda un poco hundido para indicar selección */
+  transform: translateY(-4px); 
 }
 
+/* CONTENIDOS INTERNOS */
 .sel-group-icon {
   width: 100%; height: 100%; object-fit: contain;
 }
@@ -176,59 +273,31 @@
   color: #000;
   pointer-events: none;
   z-index: 2;
-  /* Borde de texto limpio */
   text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
-}
-
-.sel-student-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  gap: 10px;
-}
-
-.sel-student-photo {
-  height: 60%; width: 60%; object-fit: contain;
-}
-
-.sel-student-name {
-  font-size: clamp(1rem, 4vmin, 1.8rem);
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-  line-height: 1.1;
-  width: 90%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* GHOSTS */
 .sel-group-ghost {
-    /* Mantener proporción cuadrada también en los fantasmas */
     aspect-ratio: 1 / 1;
     width: 100%;
     height: auto;
-    
     visibility: visible;
     background-color: rgba(255, 255, 255, 0.4);
     border: 3px dashed rgba(0, 0, 0, 0.3);
     border-radius: 2vh;
     box-sizing: border-box;
     pointer-events: none;
+    
+    /* Ajuste para que tengan la misma altura visual que los botones */
+    transform: translateY(-3px); 
 }
 
-/* CHECK CONFIRMACIÓN */
 .sel-confirm-overlay {
   position: absolute; inset: 0;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.7);
   display: flex; align-items: center; justify-content: center;
   border-radius: 1.5vh;
   z-index: 20;
-  margin: 2px; 
 }
 .sel-confirm-icon {
   width: 50%; height: 50%; object-fit: contain;
@@ -245,38 +314,17 @@
   align-items: center;
   justify-content: center;
   gap: 2rem;
-  height: 10vh;
+  height: 12vh;
   min-height: 60px;
   width: 100%;
   z-index: 10;
-  background: rgba(255,255,255,0.8);
-  border-radius: 20px;
-  margin-bottom: 1vh;
-  transition: none;
+  background: transparent !important; 
+  box-shadow: none !important;
+  margin-bottom: 0;
+  padding-bottom: 10px; /* Espacio para las sombras 3D */
 }
 
-.sel-nav-arrow {
-  background-color: var(--ion-color-primary);
-  color: white;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  width: 60px; 
-  height: 60px;
-  box-shadow: none; /* Sin sombras */
-  transition: none;
-}
-
-.sel-nav-arrow:disabled {
-  background-color: #e0e0e0;
-  box-shadow: none;
-  cursor: default;
-}
-
-.sel-nav-arrow:not(:disabled):hover {
-  transform: scale(1.1);
-}
+/* Eliminar estilos viejos de botones (.sel-nav-arrow) ya que usamos componente */
 
 .sel-page-indicators {
   display: flex; gap: 15px;
@@ -287,9 +335,8 @@
 .sel-page-indicator {
   width: 15px; height: 15px;
   border-radius: 50%;
-  background-color: #ddd;
+  background-color: #ccc; 
   border: none; cursor: pointer;
-  transition: none;
 }
 
 .sel-page-indicator[aria-selected="true"] {
@@ -298,69 +345,52 @@
 }
 
 .sel-error-message {
-  position: absolute; bottom: 12vh; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: 14vh; left: 50%; transform: translateX(-50%);
   background: rgba(220, 53, 69, 0.95); color: white;
   padding: 1.5vh 3vw; border-radius: 50px; z-index: 100;
   white-space: nowrap; font-weight: bold;
 }
 
-/* ANIMACIONES */
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
 /* ========================================
-   MEDIA QUERY: PANTALLAS BAJITAS (LANDSCAPE MÓVIL)
+   MEDIA QUERIES
    ======================================== */
+
 @media (max-height: 600px) {
-  .sel-header-row { height: 15vh; min-height: 40px; }
-  .sel-footer-controls { height: 15vh; min-height: 40px; margin-bottom: 0; }
-  .sel-login-title { font-size: 1.4rem; }
-  .sel-nav-arrow { width: 45px; height: 45px; }
+  .sel-header-row { 
+    height: 20vh; 
+    max-height: 80px; 
+    grid-template-columns: 50px 1fr 50px; 
+  } 
+  
+  .sel-icon-circle { font-size: 1.8rem; } 
+  
+  .sel-footer-controls { height: 15vh; min-height: 50px; }
 
   .sel-classes-card {
-    /* Aquí forzamos 1:1, asegurando que sea cuadrado */
-    max-height: 60vh;
-    width: 60vh; 
-    height: auto;
-    aspect-ratio: 1 / 1;
-    max-width: 90vw; 
+    max-height: 55vh;
+    width: 55vh; 
     padding: 10px;
   }
   
   .sel-group-letter { font-size: 8vh; }
 }
 
-/* ========================================
-   MEDIA QUERY: MÓVILES (Pantallas estrechas)
-   Grid Vertical (1 columna, 2 filas)
-   ======================================== */
 @media (max-width: 650px) {
-  .sel-header-row { grid-template-columns: 60px 1fr 60px; }
-  .sel-login-title { font-size: 1.8rem; }
-
-  /* --- CÁLCULO CLAVE PARA NO DEFORMAR --- */
+  .sel-header-row { 
+    max-height: 140px; 
+    grid-template-columns: 70px 1fr 70px;
+  }
   .sel-classes-card {
-    /* En móvil queremos 2 cuadrados uno encima del otro.
-       La altura total necesaria será: Ancho * 2 + Gap + Padding.
-       Inverso: Si tenemos una altura máxima disponible, el Ancho debe ser aprox 1/2 de la Altura.
-       
-       Altura disponible: aprox 70vh.
-       Ancho máximo permitido para que 2 cuadrados quepan en 70vh: 32vh.
-       (32vh * 2 = 64vh + huecos = 70vh).
-    */
-    width: min(80vw, 32vh); 
-    
-    height: auto; /* Deja que la altura crezca según el contenido */
-    max-height: none; /* Quitamos límite de altura rígido */
-    
-    /* El contenedor será rectangular (torre), pero las celdas dentro serán cuadradas */
+    width: min(85vw, 35vh); 
+    height: auto; 
+    max-height: none; 
     aspect-ratio: auto; 
   }
-
   .sel-group-grid {
     grid-template-columns: minmax(0, 1fr);
-    /* 2 Filas, el tamaño lo dicta el aspect-ratio de la celda */
     grid-template-rows: auto auto; 
+  }
+  .sel-footer-controls {
+      gap: 1rem;
   }
 }
