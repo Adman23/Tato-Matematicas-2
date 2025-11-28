@@ -44,62 +44,89 @@
    ======================================== */
 
 .sel-header-row {
-  display: grid; 
-  grid-template-columns: 80px 1fr 80px; 
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
+  text-align: center;
+  
   width: 100%;
   height: 22vh;      
   min-height: 90px;
   max-height: 250px;
+  
   z-index: 10;
   margin: 0;
   padding: 0;
+  position: relative; /* Para posicionar botones absolutamente */
 }
 
-.sel-header-button {
-  height: 70%;
-  aspect-ratio: 1/1;
-  margin: 0 auto; 
-  --padding-start: 0;
-  --padding-end: 0;
-  background: transparent; 
-  box-shadow: none; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.sel-header-button:not([disabled]):hover {
-  transform: scale(1.1);
-}
-
-.sel-icon-circle {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem; 
-  color: white;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.btn-blue { background-color: var(--ion-color-primary); }
-.btn-green { background-color: var(--ion-color-success); }
-
+/* TÍTULO (Centrado absoluto) */
 .sel-logo-title {
   display: block; 
   margin: 0 auto; 
   width: auto;
-  max-width: 100%;
+  max-width: 60%; /* Dejar espacio a los botones */
   height: 100%;
-  max-height: 180px; 
   object-fit: contain; 
+  object-position: center; 
   animation: floating 3.5s ease-in-out infinite;
   filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.8));
+}
+
+/* --- BOTONES DEL HEADER (MEJORADOS) --- */
+.sel-header-button {
+  position: absolute; /* Los sacamos del flujo para no mover el título */
+  top: 50%;
+  transform: translateY(-50%);
+  
+  height: 60px; /* Tamaño fijo cómodo */
+  width: 60px;
+  
+  /* Ajustes de Ionic */
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  
+  /* Círculo base */
+  border-radius: 50%;
+  background-color: white; /* Fondo blanco detrás de la imagen */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra suave */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  z-index: 20;
+}
+
+/* Posición Izquierda (Admin) */
+.sel-header-button:first-child {
+  left: 2vw; 
+}
+
+/* Posición Derecha (Confirmar) */
+.sel-header-button:last-child {
+  right: 2vw;
+}
+
+/* Hover Effect */
+.sel-header-button:not([disabled]):hover {
+  transform: translateY(-50%) scale(1.1); /* Mantener centrado vertical */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.sel-header-button:not([disabled]):active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Imagen dentro del botón */
+.sel-boton-imagen {
+  height: 70%; /* Tamaño óptimo dentro del círculo */
+  width: 70%;
+  object-fit: contain;
+  display: block;
 }
 
 @keyframes floating {
@@ -117,9 +144,11 @@
   width: fit-content;    
   height: fit-content;   
   margin: auto;          
+  
   display: flex;
   align-items: center;
   justify-content: center;
+  
   position: relative;
   z-index: 5;
   max-width: 100%; 
@@ -131,11 +160,14 @@
   background-color: var(--ion-color-primary);
   border-radius: 3vh;
   padding: var(--grid-gap);
+  
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  
   max-height: 60vh;
   width: min(60vh, 650px, 90vw);
   height: auto; 
   aspect-ratio: 1 / 1;
+  
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -155,111 +187,40 @@
 }
 
 /* ========================================
-   3. TILES (BOTONES 3D)
+   3. TILES
    ======================================== */
-
-/* Contenedor del botón (estructura base) */
 .sel-group-tile {
   position: relative;
-  background: transparent; /* Transparente para ver el efecto 3D */
-  padding: 0;
-  border: none;
-  outline-offset: 4px;
-  cursor: pointer;
-  
-  width: 100%;
-  height: 100%; 
-  aspect-ratio: 1 / 1;
-  
-  /* Reset de estilos de botón */
-  appearance: none;
-  -webkit-tap-highlight-color: transparent;
-  
-  z-index: 1;
-}
-
-/* Capa 1: Sombra */
-.sel-tile-shadow {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border-radius: 2vh;
-  background: rgba(0, 0, 0, 0.25);
-  transform: translateY(4px); /* Sombra desplazada */
-  filter: blur(2px);
-  transition: transform 0.25s cubic-bezier(.3, .7, .4, 1);
-}
-
-/* Capa 2: Borde 3D (Grosor) */
-.sel-tile-edge {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border-radius: 2vh;
-  /* Color del borde 3D: Gris oscuro por defecto */
-  background: linear-gradient(to left, hsl(0, 0%, 40%) 0%, hsl(0, 0%, 60%) 8%, hsl(0, 0%, 60%) 92%, hsl(0, 0%, 40%) 100%);
-  transition: background 0.25s;
-}
-
-/* Capa 3: Frente (Cara blanca) */
-.sel-tile-front {
-  display: block;
-  position: relative;
-  width: 100%; height: 100%;
-  border-radius: 2vh;
   background: white;
-  
-  /* Borde fino negro para mantener estética comic */
-  border: 2px solid #333; 
+  border: 3px solid #000; 
   box-sizing: border-box;
-  
+  border-radius: 2vh;
+  cursor: pointer;
   padding: 10px;
-  
-  transform: translateY(-6px); /* Elevado inicialmente */
-  transition: transform 0.25s cubic-bezier(.3, .7, .4, 1), border-color 0.2s, background-color 0.2s;
+  overflow: visible;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: auto;
   
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  z-index: 1;
+  box-shadow: none;
+  transition: transform 0.1s;
 }
 
-/* --- ESTADOS INTERACTIVOS --- */
-
-/* Hover */
-.sel-group-tile:hover .sel-tile-front {
-  transform: translateY(-8px); /* Sube un poco más */
-}
-.sel-group-tile:hover .sel-tile-shadow {
-  transform: translateY(6px);
-  filter: blur(4px);
+.sel-group-tile:not(:disabled):active {
+  transform: scale(0.95);
 }
 
-/* Active (Click) */
-.sel-group-tile:active .sel-tile-front {
-  transform: translateY(-2px); /* Se hunde */
-}
-.sel-group-tile:active .sel-tile-shadow {
-  transform: translateY(2px);
-  filter: blur(1px);
-}
-
-/* SELECTED (Estado pulsado/seleccionado) */
-.sel-group-tile.selected .sel-tile-edge {
-  /* El borde 3D se vuelve verde oscuro */
-  background: linear-gradient(to left, var(--ion-color-success-shade) 0%, var(--ion-color-success) 8%, var(--ion-color-success) 92%, var(--ion-color-success-shade) 100%);
-}
-
-.sel-group-tile.selected .sel-tile-front {
-  /* El frente tiene borde verde y fondo sutilmente verde */
+.sel-group-tile.selected {
   border-color: var(--ion-color-success);
-  background-color: #f0fff4;
-  box-shadow: inset 0 0 0 2px var(--ion-color-success);
-  /* Se queda un poco hundido para indicar selección */
-  transform: translateY(-4px); 
+  box-shadow: inset 0 0 0 4px var(--ion-color-success);
+  transform: scale(1.02);
+  z-index: 5;
 }
 
-/* CONTENIDOS INTERNOS */
 .sel-group-icon {
   width: 100%; height: 100%; object-fit: contain;
 }
@@ -276,7 +237,6 @@
   text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
 }
 
-/* GHOSTS */
 .sel-group-ghost {
     aspect-ratio: 1 / 1;
     width: 100%;
@@ -287,9 +247,6 @@
     border-radius: 2vh;
     box-sizing: border-box;
     pointer-events: none;
-    
-    /* Ajuste para que tengan la misma altura visual que los botones */
-    transform: translateY(-3px); 
 }
 
 .sel-confirm-overlay {
@@ -321,10 +278,29 @@
   background: transparent !important; 
   box-shadow: none !important;
   margin-bottom: 0;
-  padding-bottom: 10px; /* Espacio para las sombras 3D */
 }
 
-/* Eliminar estilos viejos de botones (.sel-nav-arrow) ya que usamos componente */
+.sel-nav-arrow {
+  background-color: var(--ion-color-primary);
+  color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  width: 60px; 
+  height: 60px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.sel-nav-arrow:disabled {
+  background-color: #e0e0e0;
+  cursor: default;
+  box-shadow: none;
+}
+
+.sel-nav-arrow:not(:disabled):hover {
+  transform: scale(1.1);
+}
 
 .sel-page-indicators {
   display: flex; gap: 15px;
@@ -359,12 +335,16 @@
   .sel-header-row { 
     height: 20vh; 
     max-height: 80px; 
-    grid-template-columns: 50px 1fr 50px; 
-  } 
+  }
   
-  .sel-icon-circle { font-size: 1.8rem; } 
+  /* Ajuste de botones en landscape */
+  .sel-header-button {
+    height: 45px; 
+    width: 45px;
+  }
   
   .sel-footer-controls { height: 15vh; min-height: 50px; }
+  .sel-nav-arrow { width: 45px; height: 45px; }
 
   .sel-classes-card {
     max-height: 55vh;
@@ -378,8 +358,14 @@
 @media (max-width: 650px) {
   .sel-header-row { 
     max-height: 140px; 
-    grid-template-columns: 70px 1fr 70px;
   }
+  
+  /* Ajuste de botones en móvil portrait */
+  .sel-header-button {
+    height: 50px; 
+    width: 50px;
+  }
+
   .sel-classes-card {
     width: min(85vw, 35vh); 
     height: auto; 
