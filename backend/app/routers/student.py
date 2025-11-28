@@ -63,7 +63,7 @@ async def list_students(admin=Depends(is_admin_current_user)):
                 username = None
 
             # Get photo_url or default avatar
-            photo = s.get("photo_url") or DEFAULT_AVATAR
+            photo =  supabase_admin.storage.from_("user_photo").get_public_url(s.get("photo_url"))  or DEFAULT_AVATAR
 
             # Resolve single group for the student (group_id may be None)
             group = None
