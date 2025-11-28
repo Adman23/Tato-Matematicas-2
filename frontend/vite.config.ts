@@ -6,5 +6,8 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     exclude: ['react-colorful']
+  },
+  server: {
+    host: '0.0.0.0'
   }
 })
