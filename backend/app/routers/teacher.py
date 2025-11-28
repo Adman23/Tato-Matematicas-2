@@ -65,7 +65,7 @@ async def list_students(data:tuple=Depends(is_auth_current_user)):
             students.append({
                 "id": sid,
                 "username": au.user.email.split("@")[0],
-                "photo_url": s.get("photo_url") or DEFAULT_AVATAR,
+                "photo_url":  supabase_admin.storage.from_("user_photo").get_public_url(s.get("photo_url"))  or DEFAULT_AVATAR,
                 "group_id": s.get("group_id"),
                 "group_alias": group_alias.get(s.get("group_id"))
             })

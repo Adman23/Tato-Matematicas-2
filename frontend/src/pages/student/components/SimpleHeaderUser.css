@@ -1,10 +1,11 @@
 /* ========================================
-   Header adaptativo
+   Header adaptativo (Original + Ajuste de altura)
    ======================================== */
-/* Header adaptativo */
 ion-header {
   height: clamp(80px, 20vh, 200px);
   background: var(--ion-color-primary);
+  /* Aseguramos que los elementos 3D no se corten */
+  z-index: 10;
 }
 
 /* Toolbar */
@@ -16,79 +17,137 @@ ion-toolbar.toolbar-header-user {
   --padding-start: clamp(8px, 2vw, 16px);
   --padding-end: clamp(8px, 2vw, 16px);
   height: 100%;
-  min-height: clamp(80px, 20vh, 200px);
-    display: flex;
+  display: flex;
   align-items: center;
-  align-content: center;
 }
 
-/* Slot izquierdo - toma menos espacio */
+/* Slot izquierdo */
 ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
   display: flex;
   align-items: center;
-  align-content: center;
   height: 100%;
   flex: 0 1 auto;
 }
 
-/* Slot derecho - ocupa más espacio para "MI PERFIL" + imagen */
+/* Slot derecho */
 ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
   display: flex;
   align-items: center;
-  align-content: center;
   height: 100%;
   flex: 1 1 auto;
   justify-content: flex-end;
-  min-width: 0;
 }
+
 /* ========================================
-   BOTONES
+   ELEMENTOS VISUALES ORIGINALES (Restaurados)
    ======================================== */
-   
-/* Botón de perfil */
-.header-profile-button {
-  --padding-start: 0;
-  --padding-end: 0;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  height: 100%;
-  margin: 0;
-}
 
-/* Contenedor del botón */
-.profile-button-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  align-content: center;
-  height: 100%;
-  background-color: green;
-  border-radius: 20%;
-}
-
-/* Imágenes de avatar */
+/* Imágenes de avatar (Estilo Original) */
 .user-dashborad-img {
   height: clamp(50px, 14vh, 120px);
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
-}
-
-/* Separación: imagen → texto (izquierda) */
-ion-toolbar.toolbar-header-user ion-buttons[slot="start"] .user-dashborad-img {
   margin-right: clamp(20px, 4vw, 60px);
 }
 
-/* Separación: texto → imagen (derecha) */
-.profile-button-content .header-text {
-  margin-right: clamp(27px, 4vw, 60px);
-  font-size: clamp(0.9rem, 3vmin, 1.5rem);
-}
-
-/* Texto del header */
+/* Texto del header (Estilo Original) */
 .header-text {
-  color: var(--tatomaths-text-primary);
+  color: var(--tatomaths-text-primary); /* Tu variable de color original */
   font-weight: 700;
   font-size: clamp(1.2rem, 4vmin, 2.5rem);
   white-space: nowrap;
 }
+
+
+
+/* ========================================
+    NUEVO BOTÓN 3D "PUSHABLE"
+   ======================================== */
+
+  /*
+.pushable-button {
+  position: relative;
+  background: transparent;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  margin-left: clamp(10px, 2vw, 20px);
+  flex-shrink: 0; 
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  transform: translateY(6px);
+  filter: blur(4px);
+}
+
+
+.edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(
+    to left,
+    hsl(130, 40%, 20%) 0%,
+    hsl(130, 40%, 32%) 8%,
+    hsl(130, 40%, 32%) 92%,
+    hsl(130, 40%, 20%) 100%
+  );
+}
+
+.front {
+  display: block;
+  position: relative;
+  border-radius: 12px;
+  background: #4CAF50;
+  padding: clamp(8px, 1.5vh, 16px) clamp(16px, 3vw, 42px);
+  color: white;
+  font-weight: 700;
+  transform: translateY(-6px);
+  transition: transform 100ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 20px);
+}
+
+.btn-text {
+  font-size: clamp(0.9rem, 3vmin, 1.8rem);
+  white-space: nowrap;
+}
+
+.btn-icon {
+  height: clamp(30px, 8vh, 70px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.2));
+}
+.pushable-button:hover .front {
+  background: #56be5b;
+  transform: translateY(-8px);
+}
+
+.pushable-button:active .front {
+  transform: translateY(-2px); 
+}
+
+.pushable-button:active .shadow {
+  transform: translateY(2px);
+  filter: blur(2px);
+}
+*/

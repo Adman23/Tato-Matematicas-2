@@ -370,9 +370,9 @@ export const authAPI = {
    */
   logout: async (): Promise<void> => {
     await api.post('/auth/logout');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
+    localStorage.clear;
   },
+
 
 
   /**

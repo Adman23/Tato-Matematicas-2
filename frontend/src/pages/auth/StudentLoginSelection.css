@@ -1,5 +1,5 @@
 /* ========================================
-   STUDENT LOGIN SELECTION — CSS FINAL
+   TATO MATEMÁTICAS — CSS FINAL (Square Cells & Flat Design)
    ======================================== */
 
 .student-login-content {
@@ -13,111 +13,94 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   padding: 1vh 2vw;
   box-sizing: border-box;
+  position: relative;
 }
 
-/* HEADER ROW */
-.sel-button-row {
+/* ========================================
+   1. HEADER
+   ======================================== */
+
+.sel-header-row {
   flex: 0 0 auto;
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 80px 1fr 80px; 
   align-items: center;
-  height: 10vh;
-  min-height: 50px;
-  max-height: 80px;
+  height: 12vh;
+  min-height: 60px;
+  max-height: 100px;
+  z-index: 10;
+  /* Sin transiciones */
 }
 
-.sel-action-button {
-  height: 100%;
+.sel-header-button {
+  height: 80%;
   aspect-ratio: 1/1;
-  margin: 0;
-  transition: transform 0.2s ease;
+  margin: 0 auto;
+  --padding-start: 0;
+  --padding-end: 0;
+  transition: none; /* Eliminado */
 }
 
-.sel-action-button::part(native):hover {
-    transform: scale(1.1);
-    background-color: rgba(var(--ion-color-primary-rgb), 0.1);
+.sel-header-button::part(native):hover {
+  transform: scale(1.1);
+  background-color: rgba(var(--ion-color-primary-rgb), 0.1);
 }
 
 .sel-boton-imagen {
-  height: 80%;
-  width: 80%;
+  height: 90%;
+  width: 90%;
   object-fit: contain;
-}
-
-/* TITLE */
-.sel-login-header {
-  flex: 0 0 auto;
-  text-align: center;
-  padding: 0.5vh 0;
+  filter: none; /* Sin sombras */
 }
 
 .sel-login-title {
-  font-size: clamp(1.2rem, 4vh, 2.5rem);
-  font-weight: 800;
+  font-size: clamp(1.5rem, 5vh, 3rem);
+  font-weight: 900;
   color: #000;
+  text-align: center;
   margin: 0;
   line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* Texto plano sin sombras difusas, solo borde duro opcional si se quiere */
+  text-shadow: none; 
 }
 
-/* MAIN AREA */
-.sel-group-grid-wrapper {
+/* ========================================
+   2. MAIN AREA
+   ======================================== */
+
+.sel-main-wrapper {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(10px, 2vw, 25px); 
   width: 100%;
   overflow: hidden;
-  padding: 0;
   position: relative;
+  z-index: 5;
 }
 
-/* FLECHAS */
-.sel-group-grid-arrow {
-  background-color: var(--ion-color-primary);
-  color: white;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(40px, 8vmin, 70px); 
-  height: clamp(40px, 8vmin, 70px);
-  flex-shrink: 0; 
-  transition: transform 0.2s ease;
-  box-shadow: none;
-  z-index: 10;
-  position: relative; 
-}
-
-.sel-group-grid-arrow:disabled {
-  background-color: #ccc;
-  cursor: default;
-  box-shadow: none;
-  opacity: 0.7;
-}
-
-.sel-group-grid-arrow:not(:disabled):hover {
-  transform: scale(1.15);
-  box-shadow: none;
-}
-
-/* ========================================
-   TARJETA AZUL (DESKTOP DEFAULT)
-   ======================================== */
+/* TARJETA AZUL */
 .sel-classes-card {
+  --grid-gap: 15px; 
+
   background-color: var(--ion-color-primary);
   border-radius: 3vh;
-  padding: 1.5vmin;
+  padding: var(--grid-gap);
+  
+  /* FLAT DESIGN: Sin sombras */
   box-shadow: none;
   
-  /* Desktop: Cuadrado */
-  max-height: 75vh;
-  max-width: 650px;
-  width: min(75vh, 650px, calc(100vw - 160px));
+  /* --- ESCRITORIO (2x2) --- */
+  /* Altura máxima */
+  max-height: 70vh; 
+  /* Ancho calculado para ser cuadrado */
+  width: min(70vh, 650px, 90vw);
   height: auto; 
   aspect-ratio: 1 / 1;
   
@@ -127,88 +110,76 @@
   justify-content: center;
   align-items: center;
   margin: 0; 
+  transition: none; /* Eliminado */
 }
 
-/* ========================================
-   GRID INTERNO
-   ======================================== */
+/* GRID INTERNO */
 .sel-group-grid {
   display: grid;
-  gap: 2%; 
+  gap: var(--grid-gap); 
   width: 100%;
   height: 100%;
-  
-  /* USO DE MINMAX:
-     Esto es crucial. 'minmax(0, 1fr)' obliga a que todas las celdas
-     midan exactamente lo mismo, ignorando si el contenido es grande o pequeño.
-     Esto evita que la fila de arriba sea distinta a la de abajo. */
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 /* ========================================
-   TILES (Celdas normales)
+   3. TILES (Celdas Blancas)
    ======================================== */
 .sel-group-tile {
   position: relative;
   background: white;
-  border: 0.5vmin solid #000;
+  border: 3px solid #000; 
   box-sizing: border-box;
   border-radius: 2vh;
   cursor: pointer;
-  padding: 0;
+  padding: 10px;
   overflow: visible;
   
-  /* Aseguramos que ocupe todo su espacio asignado */
+  /* --- REGLA DE ORO: SIEMPRE CUADRADO --- */
+  aspect-ratio: 1 / 1;
   width: 100%;
-  height: 100%; 
-  min-height: 0; /* Previene desbordamiento en flex/grid */
-  min-width: 0;
+  height: auto; /* La altura sigue al ancho gracias al aspect-ratio */
   
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: none; /* Eliminado */
   z-index: 1;
+  box-shadow: none; /* Sin sombras */
 }
 
 .sel-group-tile:not(:disabled):hover,
 .sel-group-tile:not(:disabled):focus-visible {
-    transform: scale(1.04); 
-    box-shadow: none;
-    z-index: 5;
-    outline: none;
+  transform: scale(1.03); 
+  z-index: 10;
+  outline: none;
+  box-shadow: none;
 }
 
 .sel-group-tile.selected {
   border-color: var(--ion-color-success);
-  box-shadow: none;
+  /* Sombra interna para indicar selección (plana) */
+  box-shadow: inset 0 0 0 4px var(--ion-color-success);
 }
 
-/* CONTENIDOS */
 .sel-group-icon {
-  width: 80%;
-  height: 80%;
-  object-fit: contain;
+  width: 100%; height: 100%; object-fit: contain;
 }
 
-/* Ajuste de la letra para Step 1 */
 .sel-group-letter {
   position: absolute;
-  /* Centrado perfecto */
-  top: 31%;
-  left: 38%; /* Ligeramente a la izquierda para dejar sitio al icono */
+  top: 28%; left: 35%;
   transform: translate(-50%, -50%);
-  
-  font-size: 13vmin;
+  font-size: clamp(2rem, 14vh, 8rem);
   font-weight: 900;
   color: #000;
-  line-height: 1;
   pointer-events: none;
   z-index: 2;
+  /* Borde de texto limpio */
+  text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
 }
 
-/* Contenedor de Step 2 (Usuario) */
 .sel-student-content {
   display: flex;
   flex-direction: column;
@@ -216,17 +187,15 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  gap: 1vh;
+  gap: 10px;
 }
 
 .sel-student-photo {
-  height: 60%;
-  width: 60%;
-  object-fit: contain;
+  height: 60%; width: 60%; object-fit: contain;
 }
 
 .sel-student-name {
-  font-size: clamp(0.7rem, 3vmin, 1.8rem);
+  font-size: clamp(1rem, 4vmin, 1.8rem);
   font-weight: 700;
   color: #000;
   text-align: center;
@@ -237,15 +206,16 @@
   white-space: nowrap;
 }
 
-/* ========================================
-   GHOSTS (CELDAS VACÍAS)
-   ======================================== */
+/* GHOSTS */
 .sel-group-ghost {
+    /* Mantener proporción cuadrada también en los fantasmas */
+    aspect-ratio: 1 / 1;
     width: 100%;
-    height: 100%;
+    height: auto;
+    
     visibility: visible;
-    background-color: rgba(255, 255, 255, 0.4); 
-    border: 0.4vmin dashed rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 3px dashed rgba(0, 0, 0, 0.3);
     border-radius: 2vh;
     box-sizing: border-box;
     pointer-events: none;
@@ -253,90 +223,144 @@
 
 /* CHECK CONFIRMACIÓN */
 .sel-confirm-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.5);
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.6);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 1.5vh;
+  z-index: 20;
+  margin: 2px; 
+}
+.sel-confirm-icon {
+  width: 50%; height: 50%; object-fit: contain;
+  animation: popIn 0.3s ease, pulse 1.5s infinite 0.3s;
+}
+
+/* ========================================
+   4. FOOTER CONTROLS
+   ======================================== */
+
+.sel-footer-controls {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 6;
-  border-radius: calc(2vh - 2px);
-  animation: fadeIn 0.2s ease;
+  gap: 2rem;
+  height: 10vh;
+  min-height: 60px;
+  width: 100%;
+  z-index: 10;
+  background: rgba(255,255,255,0.8);
+  border-radius: 20px;
+  margin-bottom: 1vh;
+  transition: none;
 }
 
-.sel-confirm-icon {
-  width: 50%;
-  height: 50%;
-  object-fit: contain;
-  filter: none;
-  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.sel-nav-arrow {
+  background-color: var(--ion-color-primary);
+  color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  width: 60px; 
+  height: 60px;
+  box-shadow: none; /* Sin sombras */
+  transition: none;
 }
 
-/* FOOTER */
+.sel-nav-arrow:disabled {
+  background-color: #e0e0e0;
+  box-shadow: none;
+  cursor: default;
+}
+
+.sel-nav-arrow:not(:disabled):hover {
+  transform: scale(1.1);
+}
+
 .sel-page-indicators {
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-  gap: 1.5vw;
-  margin: 1vh 0 1.5vh 0;
-  padding: 0;
+  display: flex; gap: 15px;
+  padding: 0; margin: 0;
   list-style: none;
-  height: 1.5vh; 
-  min-height: 15px;
 }
 
 .sel-page-indicator {
-  width: 1.5vh;
-  height: 1.5vh;
+  width: 15px; height: 15px;
   border-radius: 50%;
-  background-color: #ccc;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background-color: #ddd;
+  border: none; cursor: pointer;
+  transition: none;
 }
 
 .sel-page-indicator[aria-selected="true"] {
   background-color: var(--ion-color-primary);
-  transform: scale(1.4);
+  transform: scale(1.3);
 }
 
 .sel-error-message {
-  position: absolute;
-  bottom: 8vh;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(220, 53, 69, 0.95);
-  color: white;
-  padding: 1.5vh 3vw;
-  border-radius: 50px;
-  z-index: 100;
-  white-space: nowrap;
-  font-weight: bold;
+  position: absolute; bottom: 12vh; left: 50%; transform: translateX(-50%);
+  background: rgba(220, 53, 69, 0.95); color: white;
+  padding: 1.5vh 3vw; border-radius: 50px; z-index: 100;
+  white-space: nowrap; font-weight: bold;
 }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+/* ANIMACIONES */
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ========================================
+   MEDIA QUERY: PANTALLAS BAJITAS (LANDSCAPE MÓVIL)
+   ======================================== */
+@media (max-height: 600px) {
+  .sel-header-row { height: 15vh; min-height: 40px; }
+  .sel-footer-controls { height: 15vh; min-height: 40px; margin-bottom: 0; }
+  .sel-login-title { font-size: 1.4rem; }
+  .sel-nav-arrow { width: 45px; height: 45px; }
+
+  .sel-classes-card {
+    /* Aquí forzamos 1:1, asegurando que sea cuadrado */
+    max-height: 60vh;
+    width: 60vh; 
+    height: auto;
+    aspect-ratio: 1 / 1;
+    max-width: 90vw; 
+    padding: 10px;
+  }
+  
+  .sel-group-letter { font-size: 8vh; }
+}
 
 /* ========================================
    MEDIA QUERY: MÓVILES (Pantallas estrechas)
+   Grid Vertical (1 columna, 2 filas)
    ======================================== */
 @media (max-width: 650px) {
-  
+  .sel-header-row { grid-template-columns: 60px 1fr 60px; }
+  .sel-login-title { font-size: 1.8rem; }
+
+  /* --- CÁLCULO CLAVE PARA NO DEFORMAR --- */
   .sel-classes-card {
-    /* En móvil, definimos la altura y el ancho es automático para mantener la proporción */
-    height: 75vh; 
-    width: auto;
-    max-width: none;
+    /* En móvil queremos 2 cuadrados uno encima del otro.
+       La altura total necesaria será: Ancho * 2 + Gap + Padding.
+       Inverso: Si tenemos una altura máxima disponible, el Ancho debe ser aprox 1/2 de la Altura.
+       
+       Altura disponible: aprox 70vh.
+       Ancho máximo permitido para que 2 cuadrados quepan en 70vh: 32vh.
+       (32vh * 2 = 64vh + huecos = 70vh).
+    */
+    width: min(80vw, 32vh); 
     
-    /* AJUSTE FINO: 1 / 2.05 da espacio para 2 cuadrados perfectos + el gap */
-    aspect-ratio: 1 / 2.05; 
+    height: auto; /* Deja que la altura crezca según el contenido */
+    max-height: none; /* Quitamos límite de altura rígido */
+    
+    /* El contenedor será rectangular (torre), pero las celdas dentro serán cuadradas */
+    aspect-ratio: auto; 
   }
 
   .sel-group-grid {
-    /* 1 Columna, 2 Filas IGUALES */
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-    gap: 1.5vh;
+    /* 2 Filas, el tamaño lo dicta el aspect-ratio de la celda */
+    grid-template-rows: auto auto; 
   }
 }
