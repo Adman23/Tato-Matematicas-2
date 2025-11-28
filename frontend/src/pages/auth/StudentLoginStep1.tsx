@@ -7,7 +7,7 @@ import {
   IonIcon,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { arrowBack, arrowForward } from 'ionicons/icons';
+import { arrowBack, arrowForward, personCircle } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
@@ -25,18 +25,12 @@ export default function StudentLoginStep1() {
   
   const history = useHistory();
 
-  // Función para determinar cuántos items mostrar según ancho de pantalla
+  // Grid Size: 2 para móvil, 4 para desktop
   const getGridSize = () => (window.innerWidth <= 650 ? 2 : 4);
-
-  // Inicializamos con el tamaño actual
   const [visibleCount, setVisibleCount] = useState(getGridSize());
 
-  // Listener para detectar cambios de tamaño (Móvil vs Desktop)
   useEffect(() => {
-    const handleResize = () => {
-      setVisibleCount(getGridSize());
-    };
-
+    const handleResize = () => setVisibleCount(getGridSize());
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -79,7 +73,6 @@ export default function StudentLoginStep1() {
 
   const handleTileClick = (group: Group) => {
     if (loading) return;
-
     if (selectedGroup?.id === group.id && confirmPendingId === String(group.id)) {
       handleAdvance();
       return;
@@ -97,10 +90,12 @@ export default function StudentLoginStep1() {
     history.push(`/student/login/step2/${selectedGroup.id}`);
   };
 
+  const handleAdminLogin = () => {
+    history.push('/login'); 
+  };
+
   const startIndex = currentPage * visibleCount;
   const visibleGroups = groups.slice(startIndex, startIndex + visibleCount);
-
-  // Calculamos huecos vacíos para mantener estructura (2 o 4 según pantalla)
   const emptySlots = visibleCount - visibleGroups.length;
 
   const showArrows = groups.length > visibleCount;
@@ -120,33 +115,31 @@ export default function StudentLoginStep1() {
       <IonContent className="student-login-content" scrollY={false}>
         <div className="sel-login-container">
           
-          <div className="sel-button-row">
-            <IonButton fill="clear" className="sel-action-button" onClick={() => history.push('/home')}>
-              <img src="/assets/pictograms/boton_volver.png" alt="Volver" className="sel-boton-imagen" />
+          {/* 1. HEADER REORGANIZADO */}
+          <div className="sel-header-row">
+            {/* Botón Izquierdo: Admin / Profesor */}
+            <IonButton fill="clear" className="sel-header-button" onClick={handleAdminLogin}>
+               <IonIcon icon={personCircle} style={{ fontSize: '100%', color: 'var(--ion-color-primary)' }} />
             </IonButton>
-            <IonButton fill="clear" className="sel-action-button" onClick={() => history.push('/')}>
-              <img src="/assets/pictograms/home.png" alt="Inicio" className="sel-boton-imagen" />
-            </IonButton>
-            <IonButton fill="clear" className="sel-action-button" onClick={handleAdvance} disabled={loading || !selectedGroup}>
-              <img src="/assets/pictograms/si.png" alt="Avanzar" className="sel-boton-imagen" />
+
+            {/* Título Central */}
+            <h1 className="sel-login-title">Tato Matemáticas</h1>
+
+            {/* Botón Derecho: Confirmar (Check) */}
+            <IonButton 
+              fill="clear" 
+              className="sel-header-button" 
+              onClick={handleAdvance} 
+              disabled={loading || !selectedGroup}
+            >
+              <img src="/assets/pictograms/si.png" alt="Continuar" className="sel-boton-imagen" />
             </IonButton>
           </div>
 
-          <div className="sel-login-header">
-            <h1 className="sel-login-title">Selecciona tu clase</h1>
-          </div>
-
-          <div className="sel-group-grid-wrapper">
-            {showArrows && (
-              <button 
-                className="sel-group-grid-arrow" 
-                onClick={goToPrevPage} 
-                disabled={!canGoPrev}
-              >
-                <IonIcon icon={arrowBack} style={{ fontSize: '5vmin' }} />
-              </button>
-            )}
-
+          {/* 2. MAIN CONTENT (Tarjeta + Tato) */}
+          <div className="sel-main-wrapper">
+            
+            {/* TARJETA */}
             <div className="sel-classes-card">
               {loading ? (
                 <IonSpinner name="crescent" color="light" style={{ transform: 'scale(2)' }} />
@@ -171,39 +164,54 @@ export default function StudentLoginStep1() {
                     </button>
                   ))}
                   
+                  {/* Huecos vacíos visibles */}
                   {Array.from({ length: emptySlots }).map((_, i) => (
                     <div key={`empty-${i}`} className="sel-group-ghost"></div>
                   ))}
                 </div>
               )}
             </div>
-
-            {showArrows && (
-              <button 
-                className="sel-group-grid-arrow" 
-                onClick={goToNextPage} 
-                disabled={!canGoNext}
-              >
-                <IonIcon icon={arrowForward} style={{ fontSize: '5vmin' }} />
-              </button>
-            )}
           </div>
 
-          <ul 
-            className="sel-page-indicators" 
-            style={{ visibility: (showArrows && groups.length > 0) ? 'visible' : 'hidden' }}
-          >
-            {Array.from({ length: Math.ceil(groups.length / visibleCount) }, (_, i) => (
-              <li key={i}>
-                <button
-                  className="sel-page-indicator"
-                  onClick={() => setCurrentPage(i)}
-                  aria-selected={currentPage === i}
-                  tabIndex={(showArrows && groups.length > 0) ? 0 : -1}
-                />
-              </li>
-            ))}
-          </ul>
+          {/* 3. FOOTER UNIFICADO (Flechas y Puntos) */}
+          <div className="sel-footer-controls">
+            
+            {/* Flecha Izquierda */}
+            <button 
+              className="sel-nav-arrow" 
+              onClick={goToPrevPage} 
+              disabled={!canGoPrev || !showArrows}
+              style={{ visibility: showArrows ? 'visible' : 'hidden' }}
+            >
+              <IonIcon icon={arrowBack} style={{ fontSize: '2rem' }} />
+            </button>
+
+            {/* Puntos de Paginación */}
+            <ul 
+              className="sel-page-indicators" 
+              style={{ visibility: (showArrows && groups.length > 0) ? 'visible' : 'hidden' }}
+            >
+              {Array.from({ length: Math.ceil(groups.length / visibleCount) }, (_, i) => (
+                <li key={i}>
+                  <button
+                    className="sel-page-indicator"
+                    onClick={() => setCurrentPage(i)}
+                    aria-selected={currentPage === i}
+                  />
+                </li>
+              ))}
+            </ul>
+
+            {/* Flecha Derecha */}
+            <button 
+              className="sel-nav-arrow" 
+              onClick={goToNextPage} 
+              disabled={!canGoNext || !showArrows}
+              style={{ visibility: showArrows ? 'visible' : 'hidden' }}
+            >
+              <IonIcon icon={arrowForward} style={{ fontSize: '2rem' }} />
+            </button>
+          </div>
 
           {error && (
             <div className="sel-error-message">
