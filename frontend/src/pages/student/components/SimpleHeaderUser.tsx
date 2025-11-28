@@ -7,6 +7,9 @@ import './SimpleHeaderUser.css';
 import { useHistory } from 'react-router-dom';
 import { setupIonicReact } from '@ionic/react';
 import { useAuth } from '../../../contexts/AuthContext';
+
+import { Button3Dtext } from '../../global_components/PushableButtons';
+
 setupIonicReact();
 
 interface Props {
@@ -47,35 +50,28 @@ const SimpleHeaderUser: React.FC<Props> = ({
           <div className="header-text">{userName}</div>
         </IonButtons>
 
-        {/* DERECHA: Nuevo Botón 3D físico */}
         <IonButtons slot="end">
-          <button className="pushable-button" onClick={handleProfile}>
-            <span className="shadow"></span>
-            <span className="edge"></span>
-            <span className="front">
-              <div className="button-content">
-                {url != null ? (
-                  <>
-                    <span className="btn-text">JUEGOS</span>
-                    <img
-                      src="/assets/pictograms/juegos.png"
-                      alt="Ir al dashboard"
-                      className="btn-icon"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <span className="btn-text">MI PERFIL</span>
-                    <img
-                      src="/assets/pictograms/yo.png"
-                      alt="Ir a mi perfil"
-                      className="btn-icon"
-                    />
-                  </>
-                )}
-              </div>
-            </span>
-          </button>
+          <Button3Dtext onClick={handleProfile}>  
+            {url != null ? (
+              <>
+                <span className="btn-text">JUEGOS</span>
+                <img
+                  src="/assets/pictograms/juegos.png"
+                  alt="Ir al dashboard"
+                  className="btn-icon"
+                />
+              </>
+            ) : (
+              <>
+                <span className="btn-text">MI PERFIL</span>
+                <img
+                  src="/assets/pictograms/yo.png"
+                  alt="Ir a mi perfil"
+                  className="btn-icon"
+                />
+              </>
+            )}
+          </Button3Dtext>
         </IonButtons>
 
       </IonToolbar>
