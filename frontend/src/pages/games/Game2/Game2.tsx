@@ -23,12 +23,13 @@ import type { GameConfig, StudentMessage } from '../../../lib/api';
 import DropZone from './DropZone';
 import GameHeader from '../components/GameHeader';
 import FeedbackScreen from '../components/FeedbackScreen';
+import ResultsScreen from '../components/ResultsScreen';
 import './Game2.css';
 
 // Importar imágenes para el header
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgTato from '/assets/Tato/Tato.png';
+import imgTato from '/assets/Tato/TatoPista.jpeg';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
@@ -140,6 +141,12 @@ const Game2: React.FC = () => {
   // Estados de contadores por ronda
   const [hintsCount, setHintsCount] = useState(0); // Contador de pistas usadas
   const [errorsCount, setErrorsCount] = useState(0); // Contador de errores (colocaciones incorrectas)
+  const [totalHintsUsed, setTotalHintsUsed] = useState(0); // Acumulado de pistas usadas en la partida
+  const [totalErrorsMade, setTotalErrorsMade] = useState(0); // Acumulado de errores en la partida
+  const [roundTimes, setRoundTimes] = useState<number[]>([]); // Tiempos por ronda
+  const [totalNumbersCorrect, setTotalNumbersCorrect] = useState(0); // Aciertos totales (números bien colocados)
+  const [totalNumbersRequired, setTotalNumbersRequired] = useState(0); // Números totales jugados
+  const [exiting, setExiting] = useState(false); // Evita recrear sesión al salir
 
   // Estados de mensajes personalizados
   const [Messages, setMessages] = useState<StudentMessage[]>([]);
@@ -183,6 +190,7 @@ const Game2: React.FC = () => {
     // Resetear el ref de sesión al montar el componente
     sessionCreatedRef.current = false;
 
+    setExiting(false);
     // Resetear TODOS los estados al entrar al juego
     setGameFinished(false);
     setCurrentRound(1);
@@ -202,6 +210,11 @@ const Game2: React.FC = () => {
     // Resetear contadores
     setHintsCount(0);
     setErrorsCount(0);
+    setTotalHintsUsed(0);
+    setTotalErrorsMade(0);
+    setRoundTimes([]);
+    setTotalNumbersCorrect(0);
+    setTotalNumbersRequired(0);
 
     loadGameConfig();
     setGameStartTime(Date.now());
@@ -225,6 +238,11 @@ const Game2: React.FC = () => {
       setShowVideoModal(false);
       setHintsCount(0);
       setErrorsCount(0);
+      setTotalHintsUsed(0);
+      setTotalErrorsMade(0);
+      setRoundTimes([]);
+      setTotalNumbersCorrect(0);
+      setTotalNumbersRequired(0);
       //setTouchStartPos(null);
 
       // Limpiar elemento drag si existe
@@ -248,30 +266,18 @@ const Game2: React.FC = () => {
 
   // Generar nueva ronda cuando cambia currentRound
   useEffect(() => {
+    if (exiting) return;
     if (config && currentRound <= TOTAL_ROUNDS) {
       generateRound();
     }
 
-  }, [config, currentRound]);
+  }, [config, currentRound, exiting]);
 
   // Cargar mensajes personalizados cuando el UserContext termine de cargar
   useEffect(() => {
     if (loadingUser) return;
     loadPositiveMessages();
   }, [loadingUser]); // Solo depende de loadingUser para evitar loops
-
-  // Efecto para redirigir cuando el juego termine
-  useEffect(() => {
-    if (gameFinished) {
-      const timer = setTimeout(() => {
-        // Redirigir al dashboard correspondiente según el tipo de usuario
-        const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/teacher/dashboard';
-        router.push(dashboardRoute, "back", "pop");
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [gameFinished, user]);
 
   /**
    * Carga la configuración personalizada del juego desde el backend.
@@ -290,6 +296,7 @@ const Game2: React.FC = () => {
    * // config = { number_range: '0-10', settings: { quantity: 5, order: 'ascending' } }
    */
   const loadGameConfig = async () => {
+    if (exiting) return;
     try {
       if (!currentUser?.id) return;
 
@@ -343,6 +350,7 @@ const Game2: React.FC = () => {
    * // sessionId = 'uuid-session-789' (se guarda en estado)
    */
   const createGameSession = async () => {
+    if (exiting) return;
     try {
       if (!currentUser?.id) return;
 
@@ -537,6 +545,14 @@ const Game2: React.FC = () => {
   const saveRoundResults = async (currentHints?: number) => {
     const timeSeconds = (Date.now() - roundStartTime) / 1000;
     const finalHintsCount = currentHints !== undefined ? currentHints : hintsCount;
+    const numbersInRound = correctOrder.length;
+
+    // Acumular métricas de la partida actual
+    setTotalHintsUsed(prev => prev + finalHintsCount);
+    setTotalErrorsMade(prev => prev + errorsCount);
+    setRoundTimes(prev => [...prev, timeSeconds]);
+    setTotalNumbersCorrect(prev => prev + numbersInRound);
+    setTotalNumbersRequired(prev => prev + numbersInRound);
 
     if (sessionId) {
       try {
@@ -632,11 +648,11 @@ const Game2: React.FC = () => {
    * // → Muestra "¡Juego completado!" y redirige
    */
   const finishGame = async () => {
-    const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
+    const totalTime = (Date.now() - gameStartTime) / 1000;
 
     if (sessionId) {
       try {
-        await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+        await gamesAPI.finishGameSession(sessionId, totalTime);
       } catch (error) {
         console.error('Error finishing game:', error);
       }
@@ -646,9 +662,19 @@ const Game2: React.FC = () => {
   };
 
   /**
+   * Salir al dashboard desde cualquier estado sin recrear sesión.
+   */
+  const exitToDashboard = () => {
+    setExiting(true);
+    const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/teacher/dashboard';
+    router.push(dashboardRoute, "root", "push");
+  };
+
+  /**
    * Maneja la salida anticipada del juego (botón home).
    */
   const handleEarlyExit = async () => {
+    setExiting(true);
     // Primero cerrar cualquier pantalla de feedback
     setShowFeedbackScreen(false);
     setFeedbackType(null);
@@ -662,7 +688,11 @@ const Game2: React.FC = () => {
 
           // Contar cuántos números NO fueron colocados (quedaron sin colocar)
           const omissionsCount = availableNumbers.filter(n => n !== undefined).length;
+          const placedCount = orderedNumbers.filter(n => n !== undefined).length;
+          const requiredCount = correctOrder.length;
 
+          setTotalNumbersCorrect(prev => prev + placedCount);
+          setTotalNumbersRequired(prev => prev + requiredCount);
           await gamesAPI.saveRoundResultGame2(sessionId, {
             round: currentRound,
             numbers: initialNumbers, // Números desordenados que se presentaron
@@ -675,16 +705,17 @@ const Game2: React.FC = () => {
           });
         }
 
-        const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
-        await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+        if (!gameFinished) {
+          const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
+          await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+        }
       } catch (error) {
         console.error('Error saving early exit:', error);
       }
     }
 
     // Redirect to dashboard
-    const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/teacher/dashboard';
-    router.push(dashboardRoute, "back", "pop");
+    exitToDashboard();
   };
 
   /**
@@ -748,13 +779,17 @@ const Game2: React.FC = () => {
 
     // Crear elemento visual para el drag
     const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
     const clone = target.cloneNode(true) as HTMLElement;
     clone.classList.add('number-card-dragging-touch');
     clone.style.position = 'fixed';
     clone.style.pointerEvents = 'none';
     clone.style.zIndex = '9999';
-    clone.style.left = `${touch.clientX - 55}px`;
-    clone.style.top = `${touch.clientY - 55}px`;
+    clone.style.width = `${rect.width}px`;
+    clone.style.height = `${rect.height}px`;
+    clone.style.transform = 'none';
+    clone.style.left = `${touch.clientX - rect.width / 2}px`;
+    clone.style.top = `${touch.clientY - rect.height / 2}px`;
     clone.id = 'touch-drag-clone';
 
     document.body.appendChild(clone);
@@ -770,8 +805,9 @@ const Game2: React.FC = () => {
     e.preventDefault(); // Prevenir scroll mientras arrastra
 
     const touch = e.touches[0];
-    draggedElement.style.left = `${touch.clientX - 55}px`;
-    draggedElement.style.top = `${touch.clientY - 55}px`;
+    const rect = draggedElement.getBoundingClientRect();
+    draggedElement.style.left = `${touch.clientX - rect.width / 2}px`;
+    draggedElement.style.top = `${touch.clientY - rect.height / 2}px`;
   };
 
   /**
@@ -913,16 +949,19 @@ const Game2: React.FC = () => {
     <IonPage>
       <IonContent className="game2-content" scrollY={false}>
           {gameFinished ? (
-              // --- VISTA DE ÉXITO ---
-              <div className="ion-padding ion-text-center" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                  <IonText color="success">
-                      <h1>¡Juego completado!</h1>
-                      {/* Puedes usar tus mensajes positivos aquí */}
-                      <p>{Messages.find(m => m.type === 'positive')?.text_message || "¡Lo has hecho genial!"}</p>
-                      <p>Volviendo al inicio...</p>
-                  </IonText>
-                  <IonSpinner name="dots" style={{ marginTop: '20px' }}/>
-              </div>
+            <ResultsScreen
+              totalRounds={TOTAL_ROUNDS}
+              completedRounds={roundTimes.length}
+              totalHints={totalHintsUsed}
+              totalErrors={totalErrorsMade}
+              totalNumbersCorrect={totalNumbersCorrect}
+              totalNumbersRequired={totalNumbersRequired}
+              onHomeClick={exitToDashboard}
+              headerTitle="Ordenar Nº"
+              headerPictogram1={imgOrdenar}
+              headerPictogramArrow={imgFlecha}
+              headerPictogram2={imgJuego}
+            />
           ) : (
           <>
         {/* Mostrar pantalla de feedback después de colocar un número */}

@@ -10,9 +10,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - var(--header-height, 15vh));
+    height: calc(100dvh - var(--header-height, 15vh));
     width: 100%;
-    padding: 2rem;
+    padding: clamp(1rem, 4vw, 2rem);
+    box-sizing: border-box;
+    gap: clamp(0.75rem, 3vw, 1.5rem);
+    overflow: hidden;
 }
 
 
@@ -57,17 +60,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
+    padding: clamp(0.75rem, 3vw, 1.25rem);
     flex-shrink: 0;
-    gap: clamp(1rem, 2vw, 2rem);
+    gap: clamp(0.75rem, 3vw, 1.5rem);
     flex-wrap: wrap;
 }
 
 .feedback-check-button {
     --padding-start: 0;
     --padding-end: 0;
-    width: clamp(70px, 10vw, 200px);
-    height: clamp(70px, 10vw, 200px);
+    width: clamp(64px, 14vw, 180px);
+    height: clamp(64px, 14vw, 180px);
     margin: 0;
     flex-shrink: 0;
 }
@@ -107,8 +110,8 @@
     }
 
     .feedback-check-button {
-        width: clamp(70px, 15vw, 200px);
-        height: clamp(70px, 15vw, 200px);
+        width: clamp(64px, 16vw, 180px);
+        height: clamp(64px, 16vw, 180px);
     }
 
     .feedback-message {
@@ -125,13 +128,9 @@
         max-height: 45vh;
     }
 
-    .feedback-screen {
-        padding: 3rem;
-    }
-
     .feedback-check-button {
-        width: clamp(70px, 18vw, 200px);
-        height: clamp(70px, 18vw, 200px);
+        width: clamp(60px, 20vw, 160px);
+        height: clamp(60px, 20vw, 160px);
     }
 
     .feedback-message {
@@ -141,23 +140,19 @@
 
 @media (max-width: 480px) {
     .feedback-tato {
-        max-width: 300px;
+        max-width: 260px;
     }
 
     .feedback-tato-image {
-        max-height: 40vh;
-    }
-
-    .feedback-screen {
-        padding: 3rem;
+        max-height: 36vh;
     }
 
     .feedback-check-button {
-        width: clamp(50px, 30vw, 300px);
-        height: clamp(50px, 30vw, 300px);
+        width: clamp(54px, 28vw, 140px);
+        height: clamp(54px, 28vw, 140px);
     }
 
     .feedback-message {
-        font-size: clamp(1.2rem, 8vw, 3rem);
+        font-size: clamp(1.2rem, 7vw, 2.4rem);
     }
 }
