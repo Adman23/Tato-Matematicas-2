@@ -25,11 +25,12 @@ ion-toolbar.toolbar-header-editStudentProfile {
    ======================================== */
 ion-buttons[slot="start"],
 ion-buttons[slot="end"] {
-  width: 160px;
+  width: auto;
   flex-shrink: 0;
   display: flex;
   align-items: center;
 }
+
 
 ion-buttons[slot="start"] {
   justify-content: flex-start;
@@ -95,15 +96,22 @@ ion-title.title-header-editStudentProfile {
     font-weight: var(--ion-weight-regular);
     color: white;
     font-size: 2rem;
-    
+    padding-bottom: 20px;
     text-align: center;
 
 }
 
-.container-info-editStudentProfile{
+.container-info-editStudentProfile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: 150px;
+}
 
-    display: flex;
-    flex-direction: column;
-    align-content: space-around;
-    height: 150px;
+.spacer-end {
+  width: 50px;
+  height: 100%;
+  display: block;
 }

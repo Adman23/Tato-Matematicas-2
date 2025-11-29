@@ -76,10 +76,10 @@ export default function AdminDashboard() {
                             <div className='studentEditProfile-dashboard-main-container'>
 
                                 <IonButton
+                                    className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     type="submit"
-                                    className='studentEditProfile-dashboard-button'
-                                    onClick={() => history.push('/admin-dashboard/profesores')}
+                                    onClick={() => history.push(`/student-edit-profile/${id}/${name}`)}
                                 >
                                     Datos del alumno
                                 </IonButton>

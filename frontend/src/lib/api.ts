@@ -386,8 +386,22 @@ export const authAPI = {
   },
 };
 
+/**
+ * Obtiene todos los datos completos de un estudiante a partir de su ID.
+ * @param studentId - ID del estudiante.
+ * @returns Los datos completos del estudiante.
+ */
+export const getStudentById = async (studentId: string) => {
+  const response = await api.get('/api/admin/students', {
+    params: { student_id: studentId }
+  });
+  const data = response.data;
+  return Array.isArray(data) ? data[0] : data;
+};
+
 
 // === OTHER ENDPOINTS ===
+
 /**
  * Obtener todos los profesores
  * @returns  Lista de profesores

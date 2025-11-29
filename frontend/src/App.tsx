@@ -53,6 +53,7 @@ import RegisterConfirmation from './pages/auth/RegisterConfirmation';
 import StudentProfile from './pages/student/StudentProfile';
 
 import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
+import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
 
 
 /**
@@ -108,6 +109,8 @@ export default function App() {
             <Route path="/teacher-edit-profile" exact component={TeacherEditProfile} />
             <Route path="/register/confirmation/:tipo" component={RegisterConfirmation} exact />
             <Route path="/student-edit-menu/:id/:name" exact component={EditMenu} />
+
+            <Route path="/student-edit-profile/:id/:name" exact component={StudentEditProfile} />
 
 
             {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
