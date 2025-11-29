@@ -140,8 +140,8 @@ export default function App() {
               <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]} 
                 exact component={EditColor} />
               <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
-                          <Route path="/student-edit-profile/:id/:name" exact component={StudentEditProfile} />
-
+              <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]} 
+                exact component={StudentEditProfile} />
 
               {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
               <Redirect to="/student/login" />
