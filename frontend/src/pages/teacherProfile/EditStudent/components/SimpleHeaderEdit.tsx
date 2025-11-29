@@ -78,17 +78,21 @@ const SimpleHeaderEdit: React.FC<Props> = ({
     return (
         <IonHeader className='header-editStudentProfile'>
             <IonToolbar className="toolbar-header-editStudentProfile">
+
                 <IonButtons slot='start'>
                     <IonButton className='homeButton-header-editStudentProfile' onClick={handleHome} >
                         <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
                     </IonButton>
                 </IonButtons>
-                <div className='container-info-editStudentProfile'>
 
+                <div className='container-info-editStudentProfile'>
                     <IonTitle className='title-header-editStudentProfile'>{studentName}</IonTitle>
                     <IonLabel className='label-header-editStudentProfile'>{Editing}</IonLabel>
-
                 </div>
+
+                <IonButtons slot="end">
+                    <div className="spacer-end"></div>
+                </IonButtons>
                 
             </IonToolbar>
         </IonHeader>
