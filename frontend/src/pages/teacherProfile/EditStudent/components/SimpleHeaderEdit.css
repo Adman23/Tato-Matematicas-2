@@ -2,11 +2,11 @@
    CSS Styles for SimpleHeaderAdmin component
    ========================================================================== */
 ion-header.editStudentProfile{
-
-    display: flex;
-    align-items: bottom;
-    height: 150px;
+  display: flex;
+  align-items: bottom;
+  height: 150px;
 }
+
 
 /* ========================================
     Toolbar
