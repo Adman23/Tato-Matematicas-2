@@ -5,19 +5,23 @@ import {
   IonButton,
   IonSpinner
 } from '@ionic/react';
-import { Redirect, useHistory } from 'react-router-dom';
+import {  useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useUserData } from '../../contexts/UserContext';
+import { useManager } from '../../contexts/ManagerContext';
 import SimpleHeaderUser from '../student/components/SimpleHeaderUser';
 import '../student/Dashboard.css';
 
 
 
 export default function TutorDashboard() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
+  const { loadingUser } = useUserData();
+  const { loadingUsers } = useManager();
   const history = useHistory();
 
   // Mostrar spinner mientras carga
-  if (loading) {
+  if (loadingUser || loadingUsers) {
     return (
       <IonPage>
         <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -27,22 +31,24 @@ export default function TutorDashboard() {
     );
   }
 
+  /*
   // Redirigir si no hay usuario autenticado o no es tutor
   if (!user || user.role !== 'teacher') {
     return <Redirect to="/login" />;
   }
+  */
 
 
   return (
     <IonPage>
-      <SimpleHeaderUser userName={user.username} photoUrl={user.photo_url} />
+      <SimpleHeaderUser userName={user?.username || "username"} photoUrl={user?.photo_url} />
 
       <IonContent className="student-dashboard-content">
         <div className="games-container">
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game1')}
+              onClick={() => history.push('/game/game1')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juego2.png" alt="Juego 1" className="game-image" />
@@ -54,7 +60,7 @@ export default function TutorDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game2')}
+              onClick={() => history.push('/game/game2')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juegoX.png" alt="Juego 2" className="game-image" />

@@ -11,27 +11,32 @@ import {
   IonPage,
   IonButton,
   IonText,
-  IonSpinner
+  IonSpinner,
+  useIonRouter
 } from '@ionic/react';
-import { useHistory, Redirect } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../../../contexts/AuthContext';
+import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
-import type { GameConfig } from '../../../lib/api';
+import type { GameConfig, StudentMessage } from '../../../lib/api';
 import DropZone from './DropZone';
-import GameHeader from '../GameHeader';
+import GameHeader from '../components/GameHeader';
+import FeedbackScreen from '../components/FeedbackScreen';
+import ResultsScreen from '../components/ResultsScreen';
 import './Game2.css';
 
 // Importar imágenes para el header
-import imgAceptar from '/assets/juegosImg/aceptar.png';
-import imgVolver from '/assets/juegosImg/volver.png';
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgTato from '/assets/Tato/Tato.png';
+import imgTato from '/assets/Tato/TatoPista.jpeg';
+import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
+import imgTatoTriste from '/assets/Tato/TatoTriste.png';
+import imgSiguiente from '/assets/juegosImg/siguiente.png';
+import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
-const imgFlecha2 = '/assets/juegosImg/nextButton.png';
 
 // Mapeo de números a imágenes desde assets
 const PICTOGRAM_IMAGES: { [key: number]: string } = {
@@ -85,11 +90,14 @@ const TOTAL_ROUNDS = 5;
  *
  * @example
  * // Usado en el routing de la app:
- * <Route path="/game2" component={Game2} />
+ * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
-  const history = useHistory();
-  const { user, loading: authLoading } = useAuth();
+  
+  const location = useLocation();
+  const router = useIonRouter();
+  const { user, loadingAuth: authLoading } = useAuth();
+  const { getAllMessages, refreshUserData, loadingUser } = useUserData();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = user;
@@ -104,57 +112,148 @@ const Game2: React.FC = () => {
 
   // Estados del juego
   const [currentRound, setCurrentRound] = useState(1);
-  const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]);
+  const [availableNumbers, setAvailableNumbers] = useState<(number | undefined)[]>([]); // Grid fijo con números o undefined
   const [orderedNumbers, setOrderedNumbers] = useState<(number | undefined)[]>([]);
   const [correctOrder, setCorrectOrder] = useState<number[]>([]);
+  const [initialNumbers, setInitialNumbers] = useState<number[]>([]); // Números iniciales desordenados de la ronda
 
   // Estados de UI
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
   const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
   const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
-  const [hasErrors, setHasErrors] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<'correct' | 'incorrect' | null>(null);
+  const [draggingNumber, setDraggingNumber] = useState<number | null>(null);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+
+  // Estados para touch events (mobile/tablet)
+  //const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [draggedElement, setDraggedElement] = useState<HTMLElement | null>(null);
+
+  // Video modal state
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Estados de resultados
   const [gameFinished, setGameFinished] = useState(false);
+  const [isRoundCompleted, setIsRoundCompleted] = useState(false); // Si la ronda se completó
 
   // Estados de contadores por ronda
-  const [attemptsCount, setAttemptsCount] = useState(0); // Contador de intentos (Repetir)
   const [hintsCount, setHintsCount] = useState(0); // Contador de pistas usadas
+  const [errorsCount, setErrorsCount] = useState(0); // Contador de errores (colocaciones incorrectas)
+  const [totalHintsUsed, setTotalHintsUsed] = useState(0); // Acumulado de pistas usadas en la partida
+  const [totalErrorsMade, setTotalErrorsMade] = useState(0); // Acumulado de errores en la partida
+  const [roundTimes, setRoundTimes] = useState<number[]>([]); // Tiempos por ronda
+  const [totalNumbersCorrect, setTotalNumbersCorrect] = useState(0); // Aciertos totales (números bien colocados)
+  const [totalNumbersRequired, setTotalNumbersRequired] = useState(0); // Números totales jugados
+  const [exiting, setExiting] = useState(false); // Evita recrear sesión al salir
 
-  // Mapeo de números a su posición original en availableNumbers
-  const [originalPositions, setOriginalPositions] = useState<Map<number, number>>(new Map());
-
-  // Estado para el elemento seleccionado (click mode)
-  const [selectedNumber, setSelectedNumber] = useState<{
-    value: number;
-    source: 'available' | 'ordered';
-    index: number;
-  } | null>(null);
+  // Estados de mensajes personalizados
+  const [Messages, setMessages] = useState<StudentMessage[]>([]);
 
   // Determinar si usar pictogramas (solo para rango 0-10)
   const usePictograms = config?.number_range === '0-10';
 
+  // Pre-carga de imágenes para evitar que los slots aparezcan vacíos mientras se descargan
+  useEffect(() => {
+    const pictogramUrls = Object.values(PICTOGRAM_IMAGES);
+    const uiAssets = [
+      imgOrdenar,
+      imgJuego,
+      imgTato,
+      imgTatoFeliz,
+      imgTatoTriste,
+      imgSiguiente,
+      imgInstrucciones,
+      imgFlecha
+    ];
+
+    const preloaded: HTMLImageElement[] = [];
+
+    [...pictogramUrls, ...uiAssets].forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      preloaded.push(img);
+    });
+
+    return () => {
+      preloaded.forEach((img) => {
+        img.onload = null;
+        img.onerror = null;
+      });
+    };
+  }, []);
+
   // Cargar configuración al montar (solo una vez)
+  // Se ejecuta cada vez que cambia la ubicación para forzar reseteo completo
   useEffect(() => {
     // Resetear el ref de sesión al montar el componente
     sessionCreatedRef.current = false;
 
-    // Resetear estados al entrar al juego
+    setExiting(false);
+    // Resetear TODOS los estados al entrar al juego
     setGameFinished(false);
     setCurrentRound(1);
     setShowFeedback(false);
-    setHasErrors(false);
+    setShowFeedbackScreen(false);
+    setFeedbackType(null);
     setSessionId(null);
+    setAvailableNumbers([]);
+    setOrderedNumbers([]);
+    setCorrectOrder([]);
+    setInitialNumbers([]);
+    setDraggingNumber(null);
+    setSelectedNumber(null);
+    setIsRoundCompleted(false);
+    setShowVideoModal(false);
+
+    // Resetear contadores
+    setHintsCount(0);
+    setErrorsCount(0);
+    setTotalHintsUsed(0);
+    setTotalErrorsMade(0);
+    setRoundTimes([]);
+    setTotalNumbersCorrect(0);
+    setTotalNumbersRequired(0);
 
     loadGameConfig();
     setGameStartTime(Date.now());
 
-    // Cleanup al desmontar: resetear ref para la próxima vez
+    // Cleanup al desmontar: resetear TODOS los estados
     return () => {
       sessionCreatedRef.current = false;
+      setGameFinished(false);
+      setCurrentRound(1);
+      setShowFeedback(false);
+      setShowFeedbackScreen(false);
+      setFeedbackType(null);
+      setSessionId(null);
+      setAvailableNumbers([]);
+      setOrderedNumbers([]);
+      setCorrectOrder([]);
+      setInitialNumbers([]);
+      setDraggingNumber(null);
+      setSelectedNumber(null);
+      setIsRoundCompleted(false);
+      setShowVideoModal(false);
+      setHintsCount(0);
+      setErrorsCount(0);
+      setTotalHintsUsed(0);
+      setTotalErrorsMade(0);
+      setRoundTimes([]);
+      setTotalNumbersCorrect(0);
+      setTotalNumbersRequired(0);
+      //setTouchStartPos(null);
+
+      // Limpiar elemento drag si existe
+      const dragClone = document.getElementById('touch-drag-clone');
+      if (dragClone && dragClone.parentNode) {
+        dragClone.parentNode.removeChild(dragClone);
+      }
+      setDraggedElement(null);
     };
   },
-    []);
+    [location.pathname]); // Se ejecuta cuando cambia la ruta
 
   // Crear sesión cuando la configuración esté cargada (solo una vez)
   useEffect(() => {
@@ -167,25 +266,18 @@ const Game2: React.FC = () => {
 
   // Generar nueva ronda cuando cambia currentRound
   useEffect(() => {
+    if (exiting) return;
     if (config && currentRound <= TOTAL_ROUNDS) {
       generateRound();
     }
 
-  }, [config, currentRound]);
+  }, [config, currentRound, exiting]);
 
-
-  // Efecto para redirigir cuando el juego termine
+  // Cargar mensajes personalizados cuando el UserContext termine de cargar
   useEffect(() => {
-    if (gameFinished) {
-      const timer = setTimeout(() => {
-        // Redirigir al dashboard correspondiente según el tipo de usuario
-        const dashboardRoute = user?.role === "student" ? '/student-dashboard' : '/tutor-dashboard';
-        history.push(dashboardRoute);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [gameFinished, history, user]);
+    if (loadingUser) return;
+    loadPositiveMessages();
+  }, [loadingUser]); // Solo depende de loadingUser para evitar loops
 
   /**
    * Carga la configuración personalizada del juego desde el backend.
@@ -204,6 +296,7 @@ const Game2: React.FC = () => {
    * // config = { number_range: '0-10', settings: { quantity: 5, order: 'ascending' } }
    */
   const loadGameConfig = async () => {
+    if (exiting) return;
     try {
       if (!currentUser?.id) return;
 
@@ -257,6 +350,7 @@ const Game2: React.FC = () => {
    * // sessionId = 'uuid-session-789' (se guarda en estado)
    */
   const createGameSession = async () => {
+    if (exiting) return;
     try {
       if (!currentUser?.id) return;
 
@@ -268,23 +362,46 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Genera los números y configuración para una nueva ronda del juego.
+   * Carga los mensajes personalizados desde el UserContext.
    *
    * Flujo de ejecución:
-   * 1. Genera números únicos aleatorios dentro del rango configurado
-   * 2. Los ordena según configuración (ascendente/descendente)
-   * 3. Mezcla los números disponibles para que no estén en orden
-   * 4. Inicializa la zona de ordenamiento vacía
-   * 5. Reinicia el timer de la ronda
+   * 1. Espera a que el UserContext termine de cargar
+   * 2. Obtiene los mensajes normalizados desde getAllMessages()
+   * 3. Si no hay mensajes, refresca los datos del usuario
+   * 4. Actualiza el estado con los mensajes personalizados
+   * 5. Si falla, usa mensajes por defecto
    *
-   * @returns void - Actualiza múltiples estados del componente
-   *
-   * @example
-   * // Si config.settings.quantity = 5 y order = 'ascending':
-   * // - Genera 5 números aleatorios
-   * // - correctOrder = [1, 3, 5, 7, 9] (ordenados)
-   * // - availableNumbers = [7, 1, 9, 3, 5] (mezclados)
-   * // - orderedNumbers = [undefined, undefined, undefined, undefined, undefined]
+   * @returns Promesa que resuelve cuando se cargan los mensajes
+   */
+  const loadPositiveMessages = async () => {
+    try {
+      if (!currentUser?.id) return;
+
+      // Intenta obtener mensajes del contexto (ya normalizados)
+      let data = getAllMessages?.() || [];
+      console.log('Loaded messages from context:', data);
+
+      // Si no hay mensajes en el contexto, recarga los datos del usuario
+      if ((!data || data.length === 0) && refreshUserData) {
+        await refreshUserData();
+        data = getAllMessages?.() || [];
+      }
+
+      setMessages(data);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      // Fallback a mensajes por defecto
+      const defaultMessages: StudentMessage[] = [
+        { id: "0", type: 'positive', text_message: '¡Muy bien!' },
+        { id: "1", type: 'reinforcement', text_message: '¡Inténtalo de nuevo!' }
+      ];
+      setMessages(defaultMessages);
+    }
+  };
+
+  /**
+   * Genera los números y configuración para una nueva ronda del juego.
+   * Nueva lógica: Arriba todos los números mezclados, abajo una casilla vacía a la vez.
    */
   const generateRound = () => {
     if (!config) return;
@@ -334,263 +451,183 @@ const Game2: React.FC = () => {
     // Crear array de orden correcto
     setCorrectOrder(sorted);
 
-    // Mezclar aleatoriamente los números disponibles (para que no estén en orden)
-    const shuffledAvailable = [...numbersArray].sort(() => Math.random() - 0.5);
+    // Mezclar números para mostrar arriba en orden aleatorio
+    const shuffled = [...numbersArray].sort(() => Math.random() - 0.5);
+    setAvailableNumbers(shuffled);
 
-    // Guardar las posiciones originales de cada número
-    const positions = new Map<number, number>();
-    shuffledAvailable.forEach((num, index) => {
-      positions.set(num, index);
-    });
+    // Guardar números iniciales desordenados para enviar a BD
+    setInitialNumbers(shuffled);
 
-    // Crear array inicial vacío para la zona de ordenamiento
+    // Crear array inicial vacío para la zona de ordenamiento (abajo)
     const initialOrdered = new Array(quantity).fill(undefined);
-
-    setAvailableNumbers(shuffledAvailable);
     setOrderedNumbers(initialOrdered);
-    setOriginalPositions(positions);
+
     setShowFeedback(false);
+    setFeedbackType(null);
     setRoundStartTime(Date.now());
+    setIsRoundCompleted(false);
+    setSelectedNumber(null); // Resetear número seleccionado
 
     // Reiniciar contadores de ronda
-    setAttemptsCount(0);
     setHintsCount(0);
+    setErrorsCount(0);
   };
 
 
   /**
-   * Valida la respuesta del usuario y muestra feedback visual.
-   *
-   * Flujo de ejecución:
-   * 1. Calcula el tiempo transcurrido en la ronda
-   * 2. Identifica errores y omisiones
-   * 3. Muestra feedback visual (iconos check/cruz, colores)
-   * 4. Si está correcto: guarda en BD y avanza automáticamente
-   * 5. Si hay errores: solo muestra feedback, NO guarda (espera decisión del usuario)
-   *
-   * @returns Promesa que resuelve cuando se completa la validación
-   *
-   * @example
-   * // Usuario coloca: [1, 3, 5, 7, 9] (correcto)
-   * // → Guarda en BD con is_final_attempt: true y avanza automáticamente
-   *
-   * @example
-   * // Usuario coloca: [1, 5, 3, 7, 9] (incorrecto)
-   * // → Muestra feedback pero NO guarda, espera que usuario elija Repetir o Avanzar
+   * Intenta colocar un número arrastrado en el slot especificado.
+   * Valida inmediatamente si es correcto o no.
+   * @param currentHints - Valor actual de hints para evitar problemas de estado asíncrono
+   * @param isHint - Si true, no muestra feedback (es una pista automática)
    */
-  const checkAnswer = async () => {
-    const timeSeconds = (Date.now() - roundStartTime) / 1000;
+  const tryPlaceNumber = (draggedNumber: number, targetIndex: number, currentHints?: number, isHint: boolean = false) => {
+    if (showFeedback) return;
 
-    // Calcular omisiones (números que no colocó)
-    const omissions = availableNumbers.filter(n => n !== undefined).length;
+    // Buscar el primer slot vacío
+    const firstEmptyIndex = orderedNumbers.findIndex(n => n === undefined);
 
-    // Identificar qué posiciones están incorrectas
-    const wrongIndices = new Set<number>();
-    orderedNumbers.forEach((num, index) => {
-      if (correctOrder[index] !== undefined && num !== correctOrder[index]) {
-        wrongIndices.add(index);
+    // Solo se puede colocar en el primer slot vacío
+    if (targetIndex !== firstEmptyIndex) return;
+
+    // Verificar si el número es correcto para esta posición
+    const isCorrect = draggedNumber === correctOrder[firstEmptyIndex];
+
+    if (!isCorrect) {
+      // Mostrar pantalla de feedback con error
+      setFeedbackType('incorrect');
+      setShowFeedbackScreen(true);
+      setErrorsCount(prev => prev + 1); // Incrementar contador de errores
+      return;
+    }
+
+    // Es correcto: colocar el número y quitarlo de availableNumbers
+    const newOrdered = [...orderedNumbers];
+    newOrdered[firstEmptyIndex] = draggedNumber;
+    setOrderedNumbers(newOrdered);
+
+    // Reemplazar el número con undefined en availableNumbers (mantener posición fija)
+    const newAvailable = availableNumbers.map(n => n === draggedNumber ? undefined : n);
+    setAvailableNumbers(newAvailable);
+
+    // Verificar si todos los números fueron colocados (todos son undefined)
+    if (newAvailable.every(n => n === undefined)) {
+      // Todos los números colocados: guardar resultados
+      saveRoundResults(currentHints);
+      setIsRoundCompleted(true);
+
+      // Si NO es una pista, mostrar feedback
+      if (!isHint) {
+        setFeedbackType('correct');
+        setShowFeedbackScreen(true);
+      } else {
+        // Si es una pista y es el último número, avanzar automáticamente con un pequeño delay
+        setTimeout(() => {
+          if (currentRound < TOTAL_ROUNDS) {
+            setCurrentRound(prev => prev + 1);
+          } else {
+            finishGame();
+          }
+        }, 800); // Pequeño delay para que el usuario vea que se colocó el número
       }
-    });
+    } else {
+      // Aún quedan números: solo mostrar feedback si NO es una pista
+      if (!isHint) {
+        setFeedbackType('correct');
+        setShowFeedbackScreen(true);
+      }
+    }
+  };
 
-    // Solo es correcto si no hay errores NI omisiones
-    const correct = wrongIndices.size === 0 && omissions === 0;
-    const hasProblems = wrongIndices.size > 0 || omissions > 0;
+  /**
+   * Guarda los resultados de la ronda actual.
+   * @param currentHints - Valor actual de hints (opcional, usa hintsCount del estado si no se proporciona)
+   */
+  const saveRoundResults = async (currentHints?: number) => {
+    const timeSeconds = (Date.now() - roundStartTime) / 1000;
+    const finalHintsCount = currentHints !== undefined ? currentHints : hintsCount;
+    const numbersInRound = correctOrder.length;
 
-    setShowFeedback(true);
-    setHasErrors(hasProblems);
+    // Acumular métricas de la partida actual
+    setTotalHintsUsed(prev => prev + finalHintsCount);
+    setTotalErrorsMade(prev => prev + errorsCount);
+    setRoundTimes(prev => [...prev, timeSeconds]);
+    setTotalNumbersCorrect(prev => prev + numbersInRound);
+    setTotalNumbersRequired(prev => prev + numbersInRound);
 
-    // Solo guardar si está CORRECTO (avance automático)
-    // Si hay errores, NO guardamos aquí, esperamos que el usuario decida (Repetir o Avanzar)
-    if (correct && sessionId) {
+    if (sessionId) {
       try {
-        // Convertir undefined a -1 para que el backend pueda procesarlo
-        const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
-
+        // Guardar resultado de ronda completada
         await gamesAPI.saveRoundResultGame2(sessionId, {
           round: currentRound,
-          numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
-          user_order: userOrderWithNulls,
-          correct_order: correctOrder,
-          is_correct: true,
+          numbers: initialNumbers, // Números desordenados que se presentaron al inicio
+          correct_order: correctOrder, // Orden correcto esperado
+          is_correct: true, // Ronda completada correctamente
           time_seconds: timeSeconds,
-          omissions: 0,
-          is_final_attempt: true, // Es correcto, por lo tanto es intento final
-          attempts: attemptsCount,
-          hints: hintsCount
+          hints: finalHintsCount,
+          total_incorrect: errorsCount,
+          omissions: 0 // No hay omisiones porque completó todos
         });
       } catch (error) {
         console.error('Error saving round:', error);
       }
     }
-
-    // Solo avanzar automáticamente si NO hay errores ni omisiones
-    if (correct) {
-      setTimeout(() => {
-        if (currentRound < TOTAL_ROUNDS) {
-          setCurrentRound(prev => prev + 1);
-        } else {
-          finishGame();
-        }
-      }, 2000);
-    }
   };
 
   /**
-   * Repite el ejercicio actual, manteniendo los números correctos en su posición
-   * y devolviendo solo los incorrectos a la zona disponible en sus posiciones originales.
+   * Cierra la pantalla de feedback y continúa según corresponda.
    */
-  const repeatExercise = () => {
-    // Incrementar contador de intentos
-    setAttemptsCount(prev => prev + 1);
+  const closeFeedbackScreen = () => {
+    const wasCompleted = isRoundCompleted;
+    const wasCorrect = feedbackType === 'correct';
 
-    const newOrdered = [...orderedNumbers];
-    const newAvailable = [...availableNumbers];
+    setShowFeedbackScreen(false);
+    setFeedbackType(null);
 
-    // Procesar cada número colocado
-    orderedNumbers.forEach((num, index) => {
-      if (num !== undefined) {
-        // Verificar si el número está en la posición correcta
-        const isCorrect = num === correctOrder[index];
-
-        if (!isCorrect) {
-          // Número incorrecto: devolverlo a su posición original en availableNumbers
-          newOrdered[index] = undefined;
-
-          // Obtener la posición original del número
-          const originalIndex = originalPositions.get(num);
-
-          if (originalIndex !== undefined && originalIndex < newAvailable.length) {
-            // Si la posición original está disponible, colocar ahí
-            if (newAvailable[originalIndex] === undefined) {
-              newAvailable[originalIndex] = num;
-            } else {
-              // Si está ocupada, buscar la posición más cercana disponible
-              let leftIndex = originalIndex - 1;
-              let rightIndex = originalIndex + 1;
-              let placed = false;
-
-              while (!placed && (leftIndex >= 0 || rightIndex < newAvailable.length)) {
-                if (leftIndex >= 0 && newAvailable[leftIndex] === undefined) {
-                  newAvailable[leftIndex] = num;
-                  placed = true;
-                } else if (rightIndex < newAvailable.length && newAvailable[rightIndex] === undefined) {
-                  newAvailable[rightIndex] = num;
-                  placed = true;
-                }
-                leftIndex--;
-                rightIndex++;
-              }
-
-              // Si no se encontró ninguna posición, buscar el primer vacío
-              if (!placed) {
-                const emptyIndex = newAvailable.findIndex(n => n === undefined);
-                if (emptyIndex !== -1) {
-                  newAvailable[emptyIndex] = num;
-                }
-              }
-            }
-          } else {
-            // Si no hay posición original, buscar el primer slot vacío
-            const emptyIndex = newAvailable.findIndex(n => n === undefined);
-            if (emptyIndex !== -1) {
-              newAvailable[emptyIndex] = num;
-            }
-          }
-        }
-        // Si es correcto, se mantiene en newOrdered (ya está copiado)
-      }
-    });
-
-    setAvailableNumbers(newAvailable);
-    setOrderedNumbers(newOrdered);
-    setShowFeedback(false);
-    setHasErrors(false);
-    setRoundStartTime(Date.now());
+    // Si fue correcto y la ronda está completa, avanzar a la siguiente ronda
+    if (wasCorrect && wasCompleted) {
+      advanceToNextRound();
+    }
+    // Si no está completa, simplemente continúa jugando la ronda actual
   };
 
   /**
-   * Proporciona una pista colocando automáticamente un número correcto.
-   * Busca el primer slot vacío y coloca el número que debería ir ahí.
+   * Avanza a la siguiente ronda o finaliza el juego.
+   * Se llama cuando el usuario pulsa el botón de continuar.
    */
-  const useHint = () => {
-    // No permitir pistas cuando se muestra feedback
-    if (showFeedback) return;
-
-    // Buscar el primer slot vacío en orderedNumbers
-    const emptyIndex = orderedNumbers.findIndex(num => num === undefined);
-
-    if (emptyIndex === -1) {
-      // No hay slots vacíos
-      return;
-    }
-
-    // Obtener el número correcto para esa posición
-    const correctNumber = correctOrder[emptyIndex];
-
-    // Buscar el número en availableNumbers
-    const availableIndex = availableNumbers.findIndex(num => num === correctNumber);
-
-    if (availableIndex === -1) {
-      // El número no está disponible (ya está colocado en otro lugar)
-      return;
-    }
-
-    // Incrementar contador de pistas
-    setHintsCount(prev => prev + 1);
-
-    // Mover el número de available a ordered
-    const newAvailable = [...availableNumbers];
-    newAvailable[availableIndex] = undefined;
-    setAvailableNumbers(newAvailable);
-
-    const newOrdered = [...orderedNumbers];
-    newOrdered[emptyIndex] = correctNumber;
-    setOrderedNumbers(newOrdered);
-
-    // Deseleccionar cualquier número seleccionado
-    setSelectedNumber(null);
-  };
-
-  /**
-   * Avanza manualmente a la siguiente ronda o finaliza el juego.
-   * Guarda el intento con errores como final antes de avanzar.
-   *
-   * Esta función se llama cuando el usuario hace clic en "Avanzar" después de ver
-   * que su respuesta tiene errores. Es la PRIMERA y ÚNICA vez que se guarda este intento.
-   */
-  const advanceToNextRound = async () => {
-    // Guardar el intento con errores como final (es la primera vez que se guarda)
-    if (sessionId && hasErrors) {
-      try {
-        const timeSeconds = (Date.now() - roundStartTime) / 1000;
-        const omissions = availableNumbers.filter(n => n !== undefined).length;
-
-        // Convertir undefined a -1 para que el backend pueda procesarlo
-        const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
-
-        await gamesAPI.saveRoundResultGame2(sessionId, {
-          round: currentRound,
-          numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
-          user_order: userOrderWithNulls,
-          correct_order: correctOrder,
-          is_correct: false, // Tiene errores o omisiones
-          time_seconds: timeSeconds,
-          omissions: omissions,
-          is_final_attempt: true, // Usuario decidió avanzar, es intento final
-          attempts: attemptsCount,
-          hints: hintsCount
-        });
-      } catch (error) {
-        console.error('Error saving final attempt:', error);
-      }
-    }
-
-    // Avanzar a la siguiente ronda
+  const advanceToNextRound = () => {
     if (currentRound < TOTAL_ROUNDS) {
       setCurrentRound(prev => prev + 1);
     } else {
       finishGame();
     }
+  };
+
+  /**
+   * Proporciona una pista colocando automáticamente el número correcto.
+   * No muestra feedback para no recompensar el uso de pistas.
+   */
+  const useHint = () => {
+    // No permitir usar pista durante feedback o si no hay números disponibles
+    if (showFeedback) return;
+
+    const hasAvailableNumbers = availableNumbers.some(n => n !== undefined);
+    if (!hasAvailableNumbers) return;
+
+    // Calcular el nuevo valor de hints
+    const newHintsCount = hintsCount + 1;
+
+    // Incrementar contador de pistas
+    setHintsCount(newHintsCount);
+
+    // Encontrar el primer slot vacío
+    const firstEmptyIndex = orderedNumbers.findIndex(n => n === undefined);
+    if (firstEmptyIndex === -1) return;
+
+    // Obtener el número correcto para esa posición
+    const correctNumber = correctOrder[firstEmptyIndex];
+
+    // Colocar el número correcto automáticamente, pasando isHint=true para evitar feedback
+    tryPlaceNumber(correctNumber, firstEmptyIndex, newHintsCount, true);
   };
 
   /**
@@ -611,11 +648,11 @@ const Game2: React.FC = () => {
    * // → Muestra "¡Juego completado!" y redirige
    */
   const finishGame = async () => {
-    const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
+    const totalTime = (Date.now() - gameStartTime) / 1000;
 
     if (sessionId) {
       try {
-        await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+        await gamesAPI.finishGameSession(sessionId, totalTime);
       } catch (error) {
         console.error('Error finishing game:', error);
       }
@@ -625,145 +662,231 @@ const Game2: React.FC = () => {
   };
 
   /**
+   * Salir al dashboard desde cualquier estado sin recrear sesión.
+   */
+  const exitToDashboard = () => {
+    setExiting(true);
+    const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/teacher/dashboard';
+    router.push(dashboardRoute, "root", "push");
+  };
+
+  /**
    * Maneja la salida anticipada del juego (botón home).
-   * Guarda el estado actual como intento final y redirige al dashboard.
    */
   const handleEarlyExit = async () => {
-    // Si hay una sesión activa, guardar el estado actual
+    setExiting(true);
+    // Primero cerrar cualquier pantalla de feedback
+    setShowFeedbackScreen(false);
+    setFeedbackType(null);
+
     if (sessionId) {
       try {
-        // Si hay números colocados en la ronda actual, guardar como intento incompleto
         const hasPlacedNumbers = orderedNumbers.some(num => num !== undefined);
 
         if (hasPlacedNumbers) {
           const timeSeconds = (Date.now() - roundStartTime) / 1000;
-          const omissions = availableNumbers.filter(n => n !== undefined).length;
-          const userOrderWithNulls = orderedNumbers.map(n => n ?? -1);
 
+          // Contar cuántos números NO fueron colocados (quedaron sin colocar)
+          const omissionsCount = availableNumbers.filter(n => n !== undefined).length;
+          const placedCount = orderedNumbers.filter(n => n !== undefined).length;
+          const requiredCount = correctOrder.length;
+
+          setTotalNumbersCorrect(prev => prev + placedCount);
+          setTotalNumbersRequired(prev => prev + requiredCount);
           await gamesAPI.saveRoundResultGame2(sessionId, {
             round: currentRound,
-            numbers: availableNumbers.filter((n): n is number => n !== undefined).concat(orderedNumbers.filter((n): n is number => n !== undefined)),
-            user_order: userOrderWithNulls,
-            correct_order: correctOrder,
-            is_correct: false,
+            numbers: initialNumbers, // Números desordenados que se presentaron
+            correct_order: correctOrder, // Orden correcto esperado
+            is_correct: false, // No completó la ronda
             time_seconds: timeSeconds,
-            omissions: omissions,
-            is_final_attempt: true,
-            attempts: attemptsCount,
-            hints: hintsCount
+            hints: hintsCount,
+            total_incorrect: errorsCount,
+            omissions: omissionsCount // Números que dejó sin colocar
           });
         }
 
-        // Finalizar la sesión
-        const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
-        await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+        if (!gameFinished) {
+          const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
+          await gamesAPI.finishGameSession(sessionId, totalTimeSeconds);
+        }
       } catch (error) {
         console.error('Error saving early exit:', error);
       }
     }
 
-    // Redirigir al dashboard
-    const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
-    history.push(dashboardRoute);
+    // Redirect to dashboard
+    exitToDashboard();
   };
 
   /**
-   * Maneja el click en un número disponible (zona superior).
-   * Solo permite seleccionar números de la zona disponible para colocarlos en la solución.
+   * Maneja el drag start para HTML5 drag and drop.
    */
-  const handleAvailableNumberClick = (num: number, index: number) => {
-    // No permitir seleccionar cuando se muestra feedback
+  const handleDragStart = (e: React.DragEvent, number: number) => {
+    if (showFeedback) return;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', number.toString());
+
+    // Deseleccionar cualquier número previamente seleccionado
+    setSelectedNumber(null);
+
+    // Crear imagen personalizada para drag
+    const dragElement = e.currentTarget as HTMLElement;
+    const clone = dragElement.cloneNode(true) as HTMLElement;
+
+    // Mantener colores actuales del tema usando las mismas clases
+    clone.classList.add('number-card-selected', 'drag-preview');
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    const { width, height } = window.getComputedStyle(dragElement);
+    clone.style.width = width;
+    clone.style.height = height;
+
+    document.body.appendChild(clone);
+    e.dataTransfer.setDragImage(clone, 55, 55);
+
+    setTimeout(() => {
+      document.body.removeChild(clone);
+    }, 0);
+
+    setDraggingNumber(number);
+  };
+
+  /**
+   * Maneja el drag end para limpiar el estado.
+   */
+  const handleDragEnd = () => {
+    setDraggingNumber(null);
+  };
+
+  /**
+   * Maneja el click en un número para seleccionarlo (rojo).
+   */
+  const handleNumberClick = (number: number) => {
+    if (showFeedback) return;
+    setSelectedNumber(selectedNumber === number ? null : number);
+  };
+
+  /**
+   * Maneja el inicio del touch en un número (dispositivos móviles/tablets).
+   */
+  const handleTouchStart = (e: React.TouchEvent, number: number) => {
     if (showFeedback) return;
 
-    // Si se clickea el mismo número, deseleccionarlo
-    if (selectedNumber?.source === 'available' && selectedNumber.index === index) {
-      setSelectedNumber(null);
-      return;
+    const touch = e.touches[0];
+    //setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+    setDraggingNumber(number);
+    setSelectedNumber(null); // Deseleccionar al empezar drag
+
+    // Crear elemento visual para el drag
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const clone = target.cloneNode(true) as HTMLElement;
+    clone.classList.add('number-card-dragging-touch');
+    clone.style.position = 'fixed';
+    clone.style.pointerEvents = 'none';
+    clone.style.zIndex = '9999';
+    clone.style.width = `${rect.width}px`;
+    clone.style.height = `${rect.height}px`;
+    clone.style.transform = 'none';
+    clone.style.left = `${touch.clientX - rect.width / 2}px`;
+    clone.style.top = `${touch.clientY - rect.height / 2}px`;
+    clone.id = 'touch-drag-clone';
+
+    document.body.appendChild(clone);
+    setDraggedElement(clone);
+  };
+
+  /**
+   * Maneja el movimiento del touch mientras arrastra un número.
+   */
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!draggingNumber || !draggedElement) return;
+
+    e.preventDefault(); // Prevenir scroll mientras arrastra
+
+    const touch = e.touches[0];
+    const rect = draggedElement.getBoundingClientRect();
+    draggedElement.style.left = `${touch.clientX - rect.width / 2}px`;
+    draggedElement.style.top = `${touch.clientY - rect.height / 2}px`;
+  };
+
+  /**
+   * Maneja el fin del touch cuando suelta el número.
+   */
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!draggingNumber) return;
+
+    const touch = e.changedTouches[0];
+
+    // Limpiar elemento visual
+    if (draggedElement && draggedElement.parentNode) {
+      draggedElement.parentNode.removeChild(draggedElement);
     }
+    setDraggedElement(null);
 
-    // Deseleccionar cualquier otro número y seleccionar este
-    setSelectedNumber({ value: num, source: 'available', index });
-  };
+    // Encontrar el slot donde se soltó el número
+    const dropZone = document.getElementById('drop-zone-container');
+    if (dropZone) {
+      const slots = dropZone.querySelectorAll('.droppable-slot');
+      let targetIndex = -1;
 
-  /**
-   * Maneja el click en un slot de la zona de ordenamiento.
-   * - Si el slot está vacío y hay un número seleccionado: lo coloca
-   * - Si el slot tiene un número: lo devuelve a su posición original en availableNumbers
-   */
-  const handleOrderedSlotClick = (targetIndex: number) => {
-    // No permitir clicks cuando se muestra feedback
-    if (showFeedback) return;
-
-    const targetNumber = orderedNumbers[targetIndex];
-
-    // Caso 1: El slot tiene un número - devolverlo a su posición original en availableNumbers
-    if (targetNumber !== undefined) {
-      const newOrdered = [...orderedNumbers];
-      newOrdered[targetIndex] = undefined;
-      setOrderedNumbers(newOrdered);
-
-      const newAvailable = [...availableNumbers];
-      // Obtener la posición original del número
-      const originalIndex = originalPositions.get(targetNumber);
-
-      if (originalIndex !== undefined && originalIndex < newAvailable.length) {
-        // Si la posición original está disponible, colocar ahí
-        if (newAvailable[originalIndex] === undefined) {
-          newAvailable[originalIndex] = targetNumber;
-        } else {
-          // Si la posición original está ocupada, buscar la más cercana disponible
-          let leftIndex = originalIndex - 1;
-          let rightIndex = originalIndex + 1;
-          let placed = false;
-
-          while (!placed && (leftIndex >= 0 || rightIndex < newAvailable.length)) {
-            if (leftIndex >= 0 && newAvailable[leftIndex] === undefined) {
-              newAvailable[leftIndex] = targetNumber;
-              placed = true;
-            } else if (rightIndex < newAvailable.length && newAvailable[rightIndex] === undefined) {
-              newAvailable[rightIndex] = targetNumber;
-              placed = true;
-            }
-            leftIndex--;
-            rightIndex++;
-          }
-
-          // Si no se encontró ninguna posición cercana, agregar al final
-          if (!placed) {
-            newAvailable.push(targetNumber);
-          }
+      slots.forEach((slot, index) => {
+        const rect = slot.getBoundingClientRect();
+        if (
+          touch.clientX >= rect.left &&
+          touch.clientX <= rect.right &&
+          touch.clientY >= rect.top &&
+          touch.clientY <= rect.bottom
+        ) {
+          targetIndex = index;
         }
-      } else {
-        // Si no hay posición original guardada, buscar el primer slot vacío
-        const emptyIndex = newAvailable.findIndex(n => n === undefined);
-        if (emptyIndex !== -1) {
-          newAvailable[emptyIndex] = targetNumber;
-        } else {
-          newAvailable.push(targetNumber);
-        }
+      });
+
+      if (targetIndex !== -1) {
+        tryPlaceNumber(draggingNumber, targetIndex);
       }
-
-      setAvailableNumbers(newAvailable);
-
-      // Deseleccionar si había algo seleccionado
-      setSelectedNumber(null);
-      return;
     }
 
-    // Caso 2: El slot está vacío y hay un número seleccionado de available
-    if (targetNumber === undefined && selectedNumber?.source === 'available') {
-      // Mover desde available a ordered
-      const newAvailable = [...availableNumbers];
-      newAvailable[selectedNumber.index] = undefined;
-      setAvailableNumbers(newAvailable);
+    setDraggingNumber(null);
+    //setTouchStartPos(null);
+  };
 
-      const newOrdered = [...orderedNumbers];
-      newOrdered[targetIndex] = selectedNumber.value;
-      setOrderedNumbers(newOrdered);
+  /**
+   * Opens the video modal for instructions.
+   */
+  const openVideoModal = () => {
+    setShowVideoModal(true);
+  };
 
-      // Deseleccionar después de colocar
-      setSelectedNumber(null);
+  /**
+   * Closes the video modal and stops video playback.
+   */
+  const closeVideoModal = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
     }
+    setShowVideoModal(false);
+  };
+
+  /**
+   * Maneja el drag over en un slot.
+   */
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  /**
+   * Maneja el drop en un slot.
+   */
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    const draggedNumber = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    if (!isNaN(draggedNumber)) {
+      tryPlaceNumber(draggedNumber, targetIndex);
+    }
+    setDraggingNumber(null);
   };
 
 
@@ -783,7 +906,7 @@ const Game2: React.FC = () => {
 
   // Redirigir si no hay usuario autenticado (estudiante o profesor)
   if (!user) {
-    return <Redirect to="/student-login" />;
+    return <Redirect to="/student/login" />;
   }
 
   // Pantalla de carga del juego
@@ -802,6 +925,7 @@ const Game2: React.FC = () => {
     );
   }
 
+  /*
   // Si el juego terminó, mostrar mensaje
   if (gameFinished) {
     return (
@@ -818,60 +942,108 @@ const Game2: React.FC = () => {
       </IonPage>
     );
   }
+  */
+  
 
   return (
     <IonPage>
-      <IonContent className="game2-content">
-        {/* Header */}
-        <GameHeader
-          title="Ordenar Nº"
-          pictogram1={imgOrdenar}
-          pictogramArrow={imgFlecha}
-          pictogram2={imgJuego}
-          currentRound={currentRound}
-          totalRounds={TOTAL_ROUNDS}
-          onHomeClick={handleEarlyExit}
-        />
+      <IonContent className="game2-content" scrollY={false}>
+          {gameFinished ? (
+            <ResultsScreen
+              totalRounds={TOTAL_ROUNDS}
+              completedRounds={roundTimes.length}
+              totalHints={totalHintsUsed}
+              totalErrors={totalErrorsMade}
+              totalNumbersCorrect={totalNumbersCorrect}
+              totalNumbersRequired={totalNumbersRequired}
+              onHomeClick={exitToDashboard}
+              headerTitle="Ordenar Nº"
+              headerPictogram1={imgOrdenar}
+              headerPictogramArrow={imgFlecha}
+              headerPictogram2={imgJuego}
+            />
+          ) : (
+          <>
+        {/* Mostrar pantalla de feedback después de colocar un número */}
+        {showFeedbackScreen ? (
+          <FeedbackScreen
+            isCorrect={feedbackType === 'correct'}
+            currentRound={currentRound}
+            totalRounds={TOTAL_ROUNDS}
+            headerTitle="Ordenar Nº"
+            headerPictogram1={imgOrdenar}
+            headerPictogramArrow={imgFlecha}
+            headerPictogram2={imgJuego}
+            imgTatoFeliz={imgTatoFeliz}
+            imgTatoTriste={imgTatoTriste}
+            imgSiguiente={imgSiguiente}
+            messages={Messages}
+            onNext={closeFeedbackScreen}
+            onHomeClick={handleEarlyExit}
+          />
+        ) : (
+          <>
+            {/* Header */}
+            <GameHeader
+              title="Ordenar Nº"
+              pictogram1={imgOrdenar}
+              pictogramArrow={imgFlecha}
+              pictogram2={imgJuego}
+              currentRound={currentRound}
+              totalRounds={TOTAL_ROUNDS}
+              onHomeClick={handleEarlyExit}
+            />
 
 
 
         {/* Zona de juego */}
         <div className="game2-container">
 
-          {/* Números disponibles (arriba) */}
+          {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
           <div className="available-numbers-top" id="available-zone">
             {availableNumbers.map((num, index) => {
               if (num === undefined) {
-                // Mostrar slot vacío (no hace nada al hacer click)
+                // Hueco vacío - círculo gris con borde punteado negro
                 return (
                   <div
-                    key={`available-slot-${index}`}
-                    className="droppable-slot"
-                  >
-                    <div className="empty-slot" />
-                  </div>
+                    key={`empty-${index}`}
+                    className="number-card-v2 number-card-empty"
+                  />
                 );
               }
 
               const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
-              let cardClass = 'number-card-v2 number-card-available';
-              if (usePictograms) cardClass += ' number-card-pictogram';
+              const isBeingDragged = draggingNumber === num;
+              const isSelected = selectedNumber === num;
 
-              // Resaltar si está seleccionado
-              const isSelected = selectedNumber?.source === 'available' && selectedNumber.index === index;
-              if (isSelected) cardClass += ' number-card-selected';
+              // Determinar las clases CSS
+              let classes = 'number-card-v2';
+              if (isBeingDragged) {
+                classes += ' number-card-dragging';
+              } else if (isSelected) {
+                classes += ' number-card-selected';
+              }
 
               return (
                 <div
                   key={`available-${num}-${index}`}
-                  className={cardClass}
-                  onClick={() => handleAvailableNumberClick(num, index)}
+                  className={classes}
+                  draggable={!showFeedback}
+                  onDragStart={(e) => handleDragStart(e, num)}
+                  onDragEnd={handleDragEnd}
+                  onTouchStart={(e) => handleTouchStart(e, num)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  onClick={() => handleNumberClick(num)}
+                  style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
                 >
                   {pictogramImg ? (
                     <img
                       src={pictogramImg}
                       alt={`Pictograma número ${num}`}
                       className="pictogram-image"
+                      loading="eager"
+                      decoding="sync"
                     />
                   ) : (
                     <span className="number-value">{num}</span>
@@ -881,26 +1053,30 @@ const Game2: React.FC = () => {
             })}
           </div>
 
-          {/* Zona de ordenamiento (abajo con espacios grises) */}
-          <DropZone
-            numbers={orderedNumbers}
-            correctOrder={correctOrder}
-            showFeedback={showFeedback}
-            totalSlots={orderedNumbers.length}
-            usePictogram={usePictograms}
-            lockedIndices={new Set()}
-            selectedNumber={selectedNumber}
-            onSlotClick={handleOrderedSlotClick}
-          />
+          {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
+          <div id="drop-zone-container">
+            <DropZone
+              numbers={orderedNumbers}
+              correctOrder={correctOrder}
+              showFeedback={showFeedback}
+              totalSlots={orderedNumbers.length}
+              usePictogram={usePictograms}
+              lockedIndices={new Set()}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              feedbackType={feedbackType}
+            />
+          </div>
         </div>
 
         {/* Botones de control */}
         <div className="check-button-container">
-          {/* Botón de pistas - siempre visible a la izquierda */}
+          {/* Botón de pistas (Tato) */}
           <IonButton
             fill="clear"
             className="game2-check-button game2-hint-button"
             onClick={useHint}
+            disabled={availableNumbers.every(n => n === undefined)}
           >
             <img
               src={imgTato}
@@ -909,72 +1085,42 @@ const Game2: React.FC = () => {
             />
           </IonButton>
 
-          {/* Mostrar botón Repetir solo cuando hay errores y se muestra feedback */}
-          {showFeedback && hasErrors && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button game2-repeat-button"
-              onClick={repeatExercise}
-            >
-              <img
-                src={imgVolver}
-                alt="Repetir"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
-
-          {/* Botón Aceptar/Comprobar cuando no hay feedback */}
-          {!showFeedback && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button"
-              onClick={checkAnswer}
-            >
-              <img
-                src={imgAceptar}
-                alt="Comprobar"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
-
-          {/* Botón Flecha para continuar cuando está correcto */}
-          {showFeedback && !hasErrors && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button"
-              onClick={() => {
-                if (currentRound < TOTAL_ROUNDS) {
-                  setCurrentRound(prev => prev + 1);
-                } else {
-                  finishGame();
-                }
-              }}
-            >
-              <img
-                src={imgFlecha2}
-                alt="Continuar"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
-
-          {/* Botón Flecha para avanzar cuando hay errores */}
-          {showFeedback && hasErrors && (
-            <IonButton
-              fill="clear"
-              className="game2-check-button"
-              onClick={advanceToNextRound}
-            >
-              <img
-                src={imgFlecha2}
-                alt="Avanzar"
-                className="game2-check-button-image"
-              />
-            </IonButton>
-          )}
+          {/* Botón de instrucciones/tutorial */}
+          <IonButton
+            fill="clear"
+            className="game2-check-button"
+            onClick={openVideoModal}
+          >
+            <img
+              src={imgInstrucciones}
+              alt="Video de ayuda"
+              className="game2-check-button-image"
+            />
+          </IonButton>
         </div>
+        </>
+        )}
+        {/* Video Modal */}
+        {showVideoModal && (
+          <div className="game2-video-modal-overlay" onClick={closeVideoModal}>
+            <div className="game2-video-modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="game2-video-close-button" onClick={closeVideoModal}>
+                ✕
+              </button>
+              <video
+                ref={videoRef}
+                controls
+                autoPlay
+                className="game2-video-player"
+              >
+                <source src="/assets/videos/video_game2.mp4" type="video/mp4" />
+                Tu navegador no soporta la reproducción de videos.
+              </video>
+            </div>
+          </div>
+        )}
+          </>
+        )}
       </IonContent>
     </IonPage>
   );

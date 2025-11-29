@@ -8,6 +8,7 @@ generación automática de la documentación (OpenAPI/Swagger).
 
 """
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 # === REQUEST MODELS ===
@@ -67,16 +68,15 @@ class User(BaseModel):
         from_attributes = True
 
 
-class UserProfile(User):
+class UserData(User):
     """
-    Complete user profile including preferences from user_profiles table
+    Complete user data including preferences from user_profiles table
     """
-    notes: str | None = None
-    visual_preferences: dict | None = None
-    audio_preferences: dict | None = None
-    accessibility_settings: dict | None = None
-    game_preferences: dict | None = None
-
+    group_id: int | None = None
+    user_profile: dict | None = None
+    game_configurations: list | None = None
+    reinforcement_messages: list | None = None
+    
     class Config:
         from_attributes = True
 
@@ -84,7 +84,7 @@ class UserProfile(User):
 class AuthResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    user: User | UserProfile  # Can be basic User or full UserProfile
+    user: User | UserData  # Can be basic User or full UserProfile
     
 class UserResponse(BaseModel):
     """
@@ -151,7 +151,7 @@ class StudentAuthResponse(BaseModel):
     """
     access_token: str
     token_type: str = "bearer"
-    student: UserProfile
+    student: UserData
 
     class Config:
         from_attributes = True
@@ -162,3 +162,13 @@ class ExistsResponse(BaseModel):
     Response for username existence checks
     """
     exists: bool
+
+class UserUpdate(BaseModel):
+    """
+    Schema para actualizar datos del usuario.
+    Todo es opcional para permitir PATCH parcial.
+    """
+    username: Optional[str] = None
+    password: Optional[str] = None  # <--- Agregamos esto
+    photo_url: Optional[str] = None
+    # user_profile: dict | None = None (Para este caso específico no lo usaremos, pero puede estar)

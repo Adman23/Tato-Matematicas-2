@@ -1,18 +1,37 @@
+/**
+ * Functional Summary.
+ *
+ * Renders a collection (grid) of selectable number bubbles
+ * used in the game. It is responsible for mapping `availableNumbers` to `Bubble`s,
+ * marking the current selection, and propagating interaction to the parent component.
+ *
+ * Execution flow.
+ * - Receives a list of numbers (or `undefined` as placeholder) and transforms it
+ *   into a grid of `Bubble` components.
+ * - If `showFeedback` is true, disables interaction.
+ * - Marks bubbles that have been used as hints via `hintsUsed`.
+ *
+ * @example
+ * <BubblesZone availableNumbers={[1,2,3]} selectedNumber={2} setSelectedNumber={...} showFeedback={false} currentNumber={2} />
+ */
+
 import React from 'react';
-import { IonGrid, IonRow, IonCol } from '@ionic/react';
 import Bubble from './Bubble';
 import './BubblesZone.css';
 
+
 /**
- * Props for the BubblesZone component.
+ * Props for `BubblesZone`.
  *
- * @property availableNumbers - Array of numbers (or undefined placeholders) to render as bubbles.
- * @property selectedNumber - Currently selected number or null if none selected.
- * @property setSelectedNumber - Setter to update the selected number state in the parent.
- * @property showFeedback - When true, the zone should render bubbles in feedback mode
- *                          (disabling interactions and showing correct/incorrect states).
- * @property currentNumber - The correct number for the current round; used to mark correct bubble.
- * @property usePictograms - When true, bubbles will attempt to render pictograms for supported values.
+ * @param availableNumbers - Array of numbers (or `undefined` as placeholders).
+ * @param selectedNumber - Currently selected number or `null` if none selected.
+ * @param setSelectedNumber - Setter to update the selection in the parent component.
+ * @param showFeedback - If true, the zone is in feedback mode and bubbles are disabled.
+ * @param currentNumber - The correct number for the current round (can be `null`).
+ * @param usePictograms - If true, bubbles will attempt to show pictograms for 0-10.
+ * @param hintsUsed - List of numbers that have been marked as hints (non-interactive).
+ *
+ * @returns Props used by the `BubblesZone` component.
  */
 type Props = {
     availableNumbers: (number | undefined)[];
@@ -20,59 +39,50 @@ type Props = {
     setSelectedNumber: React.Dispatch<React.SetStateAction<number | null>>;
     showFeedback: boolean;
     currentNumber: number | null;
-    // Use plural to match Game1's variable name
     usePictograms?: boolean;
+    hintsUsed?: number[];
 };
 
 /**
- * BubblesZone renders a responsive grid of `Bubble` components.
+ * `BubblesZone` component.
  *
- * It maps `availableNumbers` to individual bubbles, computes selection and
- * feedback states (correct/incorrect) and forwards user clicks to the parent
- * via `setSelectedNumber` unless `showFeedback` is active.
+ * Render a grid of `Bubble`s and manage local selection and hint state.
+ * Does not mutate data: uses `setSelectedNumber` to notify changes to the parent component.
  *
- * @param props - See {@link Props}
+ * @param props - Props of the {@link Props} component.
+ * @returns React element containing the bubble grid.
  */
 const BubblesZone: React.FC<Props> = ({
     availableNumbers,
     selectedNumber,
     setSelectedNumber,
     showFeedback,
-    currentNumber,
-    usePictograms
+    usePictograms,
+    hintsUsed = []
 }) => {
     return (
-        <IonGrid className="numbers-grid">
-            <IonRow className="ion-justify-content-center">
-                {availableNumbers.map((num, index) => {
-                    if (num === undefined) return null;
+        <div className="numbers-grid">
+            {availableNumbers.map((num, index) => {
+                if (num === undefined) return null;
 
-                    const isSelected = selectedNumber === num;
+                const isSelected = selectedNumber === num;
+                const isHinted = hintsUsed.includes(num);
 
-                    // Determine if we should show correct/incorrect states
-                    const showAsCorrect = showFeedback && num === currentNumber;
-                    const showAsIncorrect = showFeedback && selectedNumber !== null && selectedNumber === num && selectedNumber !== currentNumber;
-
-                    return (
-                        <IonCol size="4" size-md="3" size-lg="2" key={`available-${num}-${index}`} className="ion-text-center">
-                            <Bubble
-                                value={num}
-                                // Bubble expects `usePictogram` (singular) so pass the boolean here
-                                usePictogram={!!usePictograms}
-                                isSelected={isSelected}
-                                isCorrect={showAsCorrect}
-                                isIncorrect={showAsIncorrect}
-                                disabled={showFeedback}
-                                onClick={(v: number) => {
-                                    if (showFeedback) return;
-                                    setSelectedNumber(prev => (prev === v ? null : v));
-                                }}
-                            />
-                        </IonCol>
-                    );
-                })}
-            </IonRow>
-        </IonGrid>
+                return (
+                    <Bubble
+                        key={`available-${num}-${index}`}
+                        value={num}
+                        usePictogram={usePictograms}
+                        isSelected={isSelected}
+                        isHinted={isHinted}
+                        disabled={showFeedback}
+                        onClick={(v: number) => {
+                            setSelectedNumber(prev => (prev === v ? null : v));
+                        }}
+                    />
+                );
+            })}
+        </div>
     );
 };
 

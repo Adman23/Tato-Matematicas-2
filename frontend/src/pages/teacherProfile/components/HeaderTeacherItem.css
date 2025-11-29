@@ -1,52 +1,38 @@
-
 ion-header.headerBackground-teacherProfile {
   color: white;
-  /*padding-bottom: 16px;*/
   box-shadow: none;
   width: 100%;
-  height: 176px;
+  height: clamp(80px, 20vh, 200px);
 }
 
 ion-toolbar.toolbarTransparent-teacherProfile {
-
-  border: none;
-  padding: 0;
-  width: 100%;
-}
-
-.profileAvatar-teacherProfile{
-    width: 150px;
-    height: 150px;
-    border: 6px solid white;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-left: 50px;
-    /*margin-top: 120px;*/
-    flex: 0 0 auto;
-}
-
-.profileAvatar-teacherProfile img {
-
-  width: 100%;
+  --background: var(--ion-color-primary);
+  --border-width: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: clamp(8px, 2vw, 16px);
+  --padding-end: clamp(8px, 2vw, 16px);
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  min-height: clamp(80px, 20vh, 200px);
+  display: flex;
+  align-items: center;
+  align-content: center;
 }
 
 .container-teacherProfile {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-    height: 176px;
-    background: var(--ion-color-primary);
-
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* Centra todo verticalmente */
+  width: 100%;
+  height: 100%; /* Asegura que use la altura del toolbar */
+  background: var(--ion-color-primary);
 }
 
-ion-button.homeButton-teacherProfile{
-
-    align-self: flex-start;
-    margin: 20px 20px;
+/* --- BOTÓN HOME --- */
+ion-button.homeButton-teacherProfile {
+  align-self: center; /* CORREGIDO: Centrado verticalmente */
+  margin: 0 20px;     /* Margen simplificado */
+  flex-shrink: 0;     /* Evita que se aplaste */
 }
 
 ion-button.homeButton-teacherProfile::part(native) {
@@ -64,65 +50,124 @@ ion-button.homeButton-teacherProfile ion-icon {
   height: 30px;
 }
 
-.infoButtons-teacherProfile{
-
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    flex-grow: 2;
-    justify-content: space-between;
-    align-items: center;
-    /*margin-top: 110px;*/
+/* --- AVATAR --- */
+.profileAvatar-teacherProfile {
+  width: 150px;
+  height: 150px;
+  border: 6px solid white;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-left: 10px; /* Ajustado ligeramente */
+  flex: 0 0 auto;    /* No permitir que se encoja ni crezca */
 }
 
-.profileName-teacherProfile{
-
-    font-size: 50px;
-    font-weight: 600;
-    color: white;
-    text-align: left;
-    margin-left: 20px;
+.profileAvatar-teacherProfile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
+/* --- INFO (NOMBRE + BOTONES) --- */
+.infoButtons-teacherProfile {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  flex: 1; /* CORREGIDO: Ocupa todo el espacio restante a la derecha */
+  justify-content: space-between; /* Separa nombre (izq) y botones (der) */
+  align-items: center;
+  margin-left: 20px; /* Separación del avatar */
+  min-width: 0; /* Truco de CSS para evitar desbordes en flex items */
+}
+
+.profileName-teacherProfile {
+  font-size: clamp(24px, 4vw, 50px); /* CORREGIDO: Tamaño dinámico para evitar colisiones */
+  font-weight: 600;
+  color: white;
+  text-align: left;
+  white-space: nowrap; /* Evita saltos de línea feos */
+}
+
+/* --- BOTONES DE ACCIÓN (EDITAR/CERRAR) --- */
 ion-buttons.actionButtons-teacherProfile {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  align-content: center;
-  margin-right: 30px;
+  align-items: center;
+  margin-right: 10px;
+  flex-shrink: 0; /* Importante: Evita que los botones se aplasten */
+}
 
+ion-button.editButton-teacherProfile,
+ion-button.logoutButton-teacherProfile {
+  margin-bottom: 0; /* CORREGIDO: Quitamos márgenes innecesarios que desalinean */
 }
 
 ion-button.editButton-teacherProfile::part(native),
 ion-button.logoutButton-teacherProfile::part(native) {
   border-radius: 18px;
   height: 50px;
-  width: 100px;
-  min-width: 36px;
+  width: auto; /* Dejar automático o definir min-width */
+  min-width: 100px;
   padding: 0 10px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-
-ion-button.editButton-teacherProfile::part(native) {
+ion-button.editButton-teacherProfile {
   --width: 70px;
   --height: 48px;
   background-color: white;
   color: var(--ion-color-primary);
   border-radius: 40px;
   border: 2px solid var(--ion-color-primary);
-  margin-bottom: 20px;
 }
 
-ion-button.logoutButton-teacherProfile::part(native) {
-  --width: 50;
+ion-button.logoutButton-teacherProfile {
+  --width: 50px;
   --height: 48px;
   background-color: white;
   color: var(--ion-color-primary);
   border-radius: 40px;
   border: 2px solid var(--ion-color-primary);
-  margin-bottom: 20px;
 }
 
+/*===========================================
+  Móvil
+=============================================*/
+@media (max-width: 480px) {
+  /* En móvil quizás quieras que el nombre esté arriba y botones abajo, 
+     pero si quieres mantener la línea: */
+  
+  .profileAvatar-teacherProfile {
+    width: 80px;
+    height: 80px;
+    border-width: 3px;
+  }
+
+  .profileName-teacherProfile {
+    font-size: 20px; /* Más pequeño en móvil */
+  }
+
+  ion-button.editButton-teacherProfile::part(native),
+  ion-button.logoutButton-teacherProfile::part(native) {
+    min-width: 70px;
+    height: 36px;
+    font-size: 12px;
+  }
+}
+
+/*===========================================
+  Tablet
+=============================================*/
+@media (min-width: 481px) and (max-width: 1024px) {
+  .profileAvatar-teacherProfile {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .profileName-teacherProfile {
+    font-size: 30px;
+  }
+}

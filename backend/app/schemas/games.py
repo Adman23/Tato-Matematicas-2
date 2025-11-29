@@ -46,18 +46,19 @@ class RoundResult(BaseModel):
     correct_number: Optional[int] = None
 
     # Campos para el juego 2: ordenar una secuencia
-    user_order: Optional[List[int]] = None
     correct_order: Optional[List[int]] = None
 
     # Indicadores adicionales usados por el backend al procesar la ronda
-    # is_final_attempt: marca si el intento es el definitivo de la ronda
-    is_final_attempt: Optional[bool] = False
-    # omissions: número de posiciones omitidas por el usuario (por ejemplo -1 en user_order)
+    # omissions: número de números que no colocó (dejó sin colocar)
     omissions: Optional[int] = 0
-    # attempts: contador de intentos (veces que presionó "Repetir")
-    attempts: Optional[int] = 0
     # hints: contador de pistas usadas
     hints: Optional[int] = 0
+    # attempts: número de intentos realizados en la ronda (usado por juego 1)
+    attempts: Optional[int] = 0
+    # total_incorrect: contador de errores (colocaciones incorrectas)
+    total_incorrect: Optional[int] = 0
+    # is_final_attempt: indica si es el último intento de la ronda (usado en juego 1)
+    is_final_attempt: Optional[bool] = False
 
 
 class SaveRoundRequest(BaseModel):

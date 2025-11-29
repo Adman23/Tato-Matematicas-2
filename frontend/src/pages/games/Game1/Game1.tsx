@@ -11,14 +11,17 @@ import {
     IonPage,
     IonSpinner,
     IonText,
-    IonButton
+    IonButton,
+    useIonRouter
 } from '@ionic/react';
-import { useHistory, Redirect } from 'react-router-dom'
+import {  Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
+import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
-import type { GameConfig } from '../../../lib/api';
+import type { GameConfig, StudentMessage } from '../../../lib/api';
 
-import GameHeader from '../GameHeader';
+import GameHeader from '../components/GameHeader';
+import FeedbackScreen from '../components/FeedbackScreen';
 import './Game1.css';
 
 
@@ -27,16 +30,16 @@ import imgAceptar from '/assets/juegosImg/aceptar.png';
 import imgSonido from '/assets/juegosImg/game1/sonido.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
-import imgSiguiente from '/assets/juegosImg/siguiente.png';
+import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
+
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
 
 // Importar imagen de Tato
 import imgTato from '/assets/Tato/Tato.png';
-import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
-import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import BubblesZone from './BubblesZone';
+import audioManager from '../../../lib/AudioManager';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -44,41 +47,39 @@ const TOTAL_ROUNDS = 5;
 
 
 /**
- * Main component: Associate Sound with Number.
+ * Functional Summary.
  *
- * This educational game presents numbers that the user must associate
- * with the corresponding sound.
+ * Educative game that associates a sound with its corresponding number. The
+ * student listens to the pronunciation of a number and must select the correct
+ * option among several visual bubbles.
  *
- * Main features:
- * - Available for students and teachers with the same features
- * - 5 rounds with different random numbers
- * - Visual pictograms for the range 0-10
- * - Validation with immediate feedback (check/cross)
- * - Complete tracking in backend (time, attempts, results)
- *
- * Game flow:
- * 1. Load user-customized configuration
- * 2. Create game session in DB
+ * Execution flow.
+ * 1. Loads the user's custom configuration (`loadGameConfig`).
+ * 2. Creates a game session in the backend (`createGameSession`).
  * 3. For each round:
- *    - Generate a random number to listen to
- *    - Display several visual options
- *    - User selects an option
- *    - Provide immediate visual feedback
- *    - Validate and save result
- * 4. After 5 rounds, end session and redirect to the appropriate dashboard
+ *    - Generates the options and the target number (`generateRound`).
+ *    - The student can listen to the number (`speakNumber`), use a hint (`useHint`), and select an option.
+ *    - When checking the answer, feedback is shown and the result is saved (`checkAnswer`).
+ * 4. When all rounds are completed, the session is finished (`finishGame`) and redirected.
  *
- * @returns React component with complete game UI
+ * Minimum contract:
+ * - Inputs: game configuration from the backend and user actions (clicks).
+ * - Outputs: API calls to create session, save rounds, and finish session.
+ * - Error modes: network error handling and fallback to default configuration.
+ *
+ * @returns React component that renders the complete game UI.
  *
  * @example
- * // Used in app routing:
- * <Route path="/game1" component={Game1} />
+ * // Routing
+ * <Route path="/game/game1" component={Game1} />
  */
 const Game1: React.FC = () => {
 
-    const history = useHistory();
-    const { user, loading: authLoading } = useAuth();
+    const { user, loadingAuth: authLoading } = useAuth();
+    const router = useIonRouter();
 
     const currentUser = user;
+    const { getAllMessages, refreshUserData, loadingUser } = useUserData();
 
     // Flag to prevent duplicate session creation (React 18 StrictMode)
     const sessionCreatedRef = useRef(false);
@@ -95,13 +96,27 @@ const Game1: React.FC = () => {
     const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
     const [usedNumbers, setUsedNumbers] = useState<number[]>([]);
 
+    // Hints
+    const [hintsUsed, setHintsUsed] = useState<number[]>([]);
+    const [hintsCount, setHintsCount] = useState(0);
+
+    // Attempts
+    const [attemptsCount, setAttemptsCount] = useState(0);
+
+    //Messages
+    const [Messages, setMessages] = useState<StudentMessage[]>([]);
 
     // UI states
     const [showFeedback, setShowFeedback] = useState(false);
+    const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
+    const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
     const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [listeningAudio, setListeningAudio] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Video modal state
+    const [showVideoModal, setShowVideoModal] = useState(false);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
     // Result states
     const [gameFinished, setGameFinished] = useState(false);
@@ -115,10 +130,32 @@ const Game1: React.FC = () => {
 
     // Load configuration on mount (only once)
     useEffect(() => {
+        sessionCreatedRef.current = false;
+
+        setGameFinished(false);
+        setCurrentRound(1);
+        setShowFeedback(false);
+        setSessionId(null);
+        setSelectedNumber(null);
+        setUsedNumbers([]);
+
         loadGameConfig();
         setGameStartTime(Date.now());
+
+        return () => {
+            sessionCreatedRef.current = false;
+        };
     },
         []);
+
+    // Load messages once the UserContext has finished loading user data
+    useEffect(() => {
+        // If the context is still loading, wait. When it's ready, fetch messages.
+        if (loadingUser) return;
+
+        // If userData is present, attempt to load messages from context
+        loadPositiveMessages();
+    }, [loadingUser]); // Solo depende de loadingUser para evitar loops
 
     // Create session when configuration is loaded (only once)
     useEffect(() => {
@@ -136,35 +173,37 @@ const Game1: React.FC = () => {
         }
 
     }, [config, currentRound, sessionId]);
+
     // Effect to redirect when the game finishes
     useEffect(() => {
         if (gameFinished) {
             const timer = setTimeout(() => {
                 // Redirect to the appropriate dashboard based on user type
-                const dashboardRoute = user?.role === "student" ? '/student-dashboard' : '/tutor-dashboard';
-                history.push(dashboardRoute);
+                const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
+                router.push(dashboardRoute, 'back', 'pop')
             }, 2000);
 
             return () => clearTimeout(timer);
         }
-    }, [gameFinished, history, user]);
+    }, [gameFinished, user]);
 
 
     /**
-     * Load the custom game configuration from the backend.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Verify that an authenticated user exists (student or teacher)
-     * 2. Call the API to get the config for the 'touch_number' game
-     * 3. Validate that the received configuration is correct, or use default values
-     * 4. Update the state with the received configuration (range, quantity, order)
-     * 5. Disable the loading indicator
+     * Loads the user's custom game configuration from the backend and
+     * saves it in local state. If the request fails, applies a safe default configuration.
      *
-     * @returns Promise that resolves when the configuration is loaded
+     * Execution flow.
+     * 1. Checks that an authenticated user exists.
+     * 2. Calls the `gamesAPI.getGameConfig` API to get the configuration.
+     * 3. Validates and normalizes the received values.
+     * 4. Updates `config` and disables the `loading` indicator.
+     *
+     * @returns Promise<void> that resolves when the configuration has been loaded.
      *
      * @example
-     * // When the component mounts, it loads automatically:
-     * // config = { number_range: '0-10', settings: { quantity: 5 } }
+     * await loadGameConfig();
      */
     const loadGameConfig = async () => {
         try {
@@ -175,10 +214,10 @@ const Game1: React.FC = () => {
             // Validate that the configuration has valid values
             const validatedConfig: GameConfig = {
                 ...data,
-                number_range: data.number_range,
+                number_range: data.number_range || '0-10',
                 settings: {
-                    options_count: data.settings?.options_count,
-                    voice: data.settings?.voice
+                    options_count: data.settings?.options_count || 6,
+                    voice: data.settings?.voice || 'woman'
                 }
             };
 
@@ -194,7 +233,7 @@ const Game1: React.FC = () => {
                 user_id: currentUser?.id || '',
                 number_range: '0-10',
                 settings: {
-                    options_count: 5,
+                    options_count: 6,
                     voice: 'woman'
                 }
             };
@@ -204,21 +243,47 @@ const Game1: React.FC = () => {
         }
     };
 
+    const loadPositiveMessages = async () => {
+        try {
+            if (!currentUser?.id) return;
+            // Try to get messages from the UserContext (already normalized)
+            let data = getAllMessages?.() || [];
+            console.log('Loaded messages from context:', data);
+
+            // If there are no messages in the context yet, try refreshing user data once
+            if ((!data || data.length === 0) && refreshUserData) {
+                await refreshUserData();
+                data = getAllMessages?.() || [];
+            }
+
+            setMessages(data);
+            setLoading(false);
+
+        } catch (error) {
+            console.error('Error loading positive messages:', error);
+            const defaultMessages: StudentMessage[] = [
+                { id: "0", type: 'positive', text_message: '¡Muy bien!' },
+                { id: "1", type: 'reinforcement', text_message: '¡Inténtalo de nuevo!' }
+            ];
+            setMessages(defaultMessages);
+            setLoading(false);
+        }
+    };
 
     /**
-     * Create a new game session in the backend for progress tracking.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Verify that an authenticated user exists (student or teacher)
-     * 2. Call the API to create a session linked to the user and game
-     * 3. Save the session_id in state to use it when saving rounds
-     * 4. The session_id allows linking all rounds to this game session
+     * Creates a game session in the backend to link all rounds and results
+     * to a single session.
      *
-     * @returns Promise that resolves when the session is created
+     * Execution flow.
+     * 1. Checks that an authenticated user exists.
+     * 2. Calls `gamesAPI.createGameSession` and saves the `session_id` in state.
+     *
+     * @returns Promise<void> that resolves when the session has been created.
      *
      * @example
-     * // When the component mounts:
-     * // sessionId = 'uuid-session-789' (saved in state)
+     * await createGameSession();
      */
     const createGameSession = async () => {
         try {
@@ -232,25 +297,22 @@ const Game1: React.FC = () => {
     };
 
     /**
-      * Generates the numbers and configuration for a new game round.
-      *
-      * Execution flow:
-      * 1. Calculates the number of options: numbers among which to choose the correct one
-      * 2. Generates the number to be heard (currentNumber)
-      * 3. If the number has already been used in another round, generates another one
-      * 4. Generates unique random numbers within the configured range
-      * 5. Adds the correct number to the list
-      * 6. Shuffles the available numbers so they are not in order
-      * 7. Resets the round timer
-      *
-      * @returns void - Updates multiple component states
-      *
-      * @example
-      * // If config.settings.options_count = 5:
-      * // - Generates 4 numbers
-      * // - currentNumber = 9 (number to be heard)
-      * // - availableNumbers = [2, 9, 5, 12, 7] (shuffled, without hints)
-      */
+     * Functional Summary.
+     *
+     * Generates the numeric options for a new round and selects the
+     * number that will be played (currentNumber).
+     *
+     * Execution flow.
+     * 1. Validates the configured number range.
+     * 2. Generates `totalNumbers` unique numbers within the range.
+     * 3. Selects a `roundNumber` not previously used and ensures it is within the options.
+     * 4. Shuffles the options and resets the round counters.
+     *
+     * @returns void - Updates states: currentNumber, availableNumbers, usedNumbers, etc.
+     *
+     * @example
+     * generateRound();
+     */
     const generateRound = () => {
         if (!config) return;
 
@@ -277,35 +339,8 @@ const Game1: React.FC = () => {
         if (totalNumbers > availableInRange) {
             console.error(
                 `Cannot generate ${totalNumbers} unique numbers from range ${min}-${max} (only ${availableInRange} available). ` +
-                `Please reduce options_count or increase range.`
+                `Please reduce totalNumbers or increase range.`
             );
-            // Adjust totalNumbers to the maximum available
-            const adjustedTotal = availableInRange;
-
-            console.warn(`Adjusting: options_count=${adjustedTotal}`);
-
-            // Use all numbers in the range
-            const numbers = new Set<number>();
-            for (let i = min; i <= max; i++) {
-                numbers.add(i);
-            }
-
-            const numbersArray = Array.from(numbers);
-
-            // Shuffle the available numbers randomly
-            const poolNumbers = numbersArray.sort(() => Math.random() - 0.5);
-
-            // Generate number to be heard (currentNumber)
-            let roundNumber: number;
-            do {
-                roundNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-            } while (usedNumbers.includes(roundNumber) && usedNumbers.length < numbersArray.length);
-
-            setCurrentNumber(roundNumber);
-            setUsedNumbers(prev => [...prev, roundNumber]);
-            setAvailableNumbers(poolNumbers);
-            setShowFeedback(false);
-            setRoundStartTime(Date.now());
             return;
         }
 
@@ -340,40 +375,71 @@ const Game1: React.FC = () => {
         console.log('Generated round', currentRound, 'with numbers:', poolNumbers);
         setShowFeedback(false);
         setRoundStartTime(Date.now());
+        setAttemptsCount(0);
+        setHintsUsed([]);
+        setHintsCount(0);
+        setSelectedNumber(null);
     };
 
 
     /**
-     * Provides a hint by automatically placing a correct number.
+     * Functional Summary.
      *
-     * @remarks
-     * This function is prepared to implement a logic of "placing"
-     * a correct number automatically in the interface (for example, moving
-     * a number from available to ordered). Currently the body is
-     * commented out because the existing UI does not use an ordered list.
+     * Marks an incorrect option as a hint for the student.
+     *
+     * Execution flow.
+     * - If `showFeedback` is active or there is no current number, does nothing.
+     * - Searches for an available incorrect option that has not been marked and adds it to `hintsUsed`.
      *
      * @returns void
+     * @example
+     * useHint();
      */
     const useHint = () => {
+        // No hints when feedback is shown
+        if (showFeedback) return;
 
+        // Do not allow hints if there is no current number
+        if (currentNumber === null) return;
+
+        // Search for an available number that is not correct
+        // and has not already been used as a hint
+        const availableIncorrectNumbers = availableNumbers.filter(
+            n => n !== undefined && n !== currentNumber && !hintsUsed.includes(n)
+        );
+
+        if (availableIncorrectNumbers.length === 0) {
+            // No more numbers available to use as hints
+            console.log('No hay más opciones incorrectas disponibles para usar como pista');
+            return;
+        }
+
+        // Select a random incorrect number to disable
+        const randomIndex = Math.floor(Math.random() * availableIncorrectNumbers.length);
+        const hintNumber = availableIncorrectNumbers[randomIndex] as number;
+
+        // Mark the number as used in hints
+        setHintsUsed(prev => [...prev, hintNumber]);
+        setHintsCount(prev => prev + 1);
+
+        console.log(`Pista usada: se ha deshabilitado el número ${hintNumber}`);
     };
 
     /**
-     * Validates the user's answer and saves the round result.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Calculates the elapsed time in the round
-     * 2. Compares the selected number with the correct one
-     * 3. Shows visual feedback (green/red button, check/cross icons)
-     * 4. Saves the result in the backend via API
-     * 5. After 2 seconds, advances to the next round or finishes the game
+     * Validates the answer selected by the user, shows the feedback screen,
+     * and saves the result to the backend if applicable.
      *
-     * @returns Promise that resolves when validation is complete
+     * Execution flow.
+     * - Calculates the time elapsed since the start of the round.
+     * - Determines if the answer is correct and shows `FeedbackScreen`.
+     * - If the answer is correct, saves the result to the API (`saveRoundResultGame1`).
+     *
+     * @returns Promise<void> that resolves when validation and saving (if applicable) are complete.
      *
      * @example
-     * // User selects number 7 when the correct one is 7:
-     * // → is_correct = true, shows green "Correct!" button
-     * // → Saves in DB and advances to round 2
+     * await checkAnswer();
      */
     const checkAnswer = async () => {
         // Verify that a number is selected
@@ -386,12 +452,12 @@ const Game1: React.FC = () => {
         // Compare the selected number with the correct one
         const correct = selectedNumber === currentNumber;
 
-        // Show feedback and save the result in the backend.
-        // We do not advance automatically: we wait for the user to press 'next'.
-        setShowFeedback(true);
+        // Store if answer is correct and show feedback screen
+        setIsCorrectAnswer(correct);
+        setShowFeedbackScreen(true);
 
         // Save in the backend
-        if (sessionId) {
+        if (sessionId && correct) {
             try {
                 await gamesAPI.saveRoundResultGame1(sessionId, {
                     round: currentRound,
@@ -399,7 +465,10 @@ const Game1: React.FC = () => {
                     selected_number: selectedNumber,
                     correct_number: currentNumber,
                     is_correct: correct,
-                    time_seconds: timeSeconds
+                    time_seconds: timeSeconds,
+                    is_final_attempt: true,
+                    attempts: attemptsCount,
+                    hints: hintsCount
                 });
             } catch (error) {
                 console.error('Error saving round:', error);
@@ -408,19 +477,70 @@ const Game1: React.FC = () => {
     };
 
     /**
-     * Advances to the next round or finishes the game when the user presses "next".
+     * Repeats the current exercise.
      *
      * Effects:
-     * - Resets the number selection and hides the feedback.
-     * - Increments `currentRound` up to `TOTAL_ROUNDS` or calls {@link finishGame} if the
-     *   total number of rounds has been completed.
+     * - Increments the attempts counter.
+     * - Hides the feedback screens and resets selection and hints.
      *
      * @returns void
+     * @example
+     * repeatExercise();
      */
-    const handleNext = () => {
-        // Reset the selection and hide feedback
+    const repeatExercise = () => {
+        setAttemptsCount(prev => prev + 1);
         setShowFeedback(false);
+        setShowFeedbackScreen(false);
+        setHintsUsed([]);
+        setRoundStartTime(Date.now());
         setSelectedNumber(null);
+    }
+
+    /**
+     * Functional Summary.
+     *
+     * Advances to the next round or finishes the game when "Next" is pressed.
+     *
+     * Execution flow.
+     * - If the answer was incorrect, saves the final attempt to the API.
+     * - Hides the feedback screen and resets selection.
+     * - Increments `currentRound` up to `TOTAL_ROUNDS` or calls `finishGame`.
+     *
+     * @returns Promise<void>
+     * @example
+     * await advanceToNextRound();
+     */
+    const advanceToNextRound = async () => {
+
+        // Compare the selected number with the correct one
+        const correct = selectedNumber === currentNumber;
+
+        if (selectedNumber === null) {
+            return;
+        }
+
+        if (sessionId && !correct) {
+            try {
+                const timeSeconds = (Date.now() - roundStartTime) / 1000;
+
+                await gamesAPI.saveRoundResultGame1(sessionId, {
+                    round: currentRound,
+                    numbers: availableNumbers.filter((n): n is number => n !== undefined),
+                    selected_number: selectedNumber,
+                    correct_number: currentNumber,
+                    is_correct: false,
+                    time_seconds: timeSeconds,
+                    is_final_attempt: true,
+                    attempts: attemptsCount,
+                    hints: hintsCount
+                });
+            } catch (error) {
+                console.error('Error saving final attempt:', error);
+            }
+        }
+
+        // Hide feedback screen
+        setShowFeedbackScreen(false);
 
         if (currentRound < TOTAL_ROUNDS) {
             setCurrentRound(prev => prev + 1);
@@ -430,21 +550,18 @@ const Game1: React.FC = () => {
     };
 
     /**
-     * Ends the game session and records the total time in the backend.
+     * Functional Summary.
      *
-     * Execution flow:
-     * 1. Calculates the total time since the game started
-     * 2. Sends the time to the backend to close the session
-     * 3. Marks the game as finished in the state
-     * 4. The useEffect redirects to the dashboard after 2 seconds
+     * Ends the game session, calculates the total time, and sends it to the backend.
      *
-     * @returns Promise that resolves when the session is finished
+     * Execution flow.
+     * - Calculates the total time from `gameStartTime`.
+     * - Calls `gamesAPI.finishGameSession` with the total time if `sessionId` exists.
+     * - Sets `gameFinished = true` to trigger subsequent redirection.
      *
+     * @returns Promise<void> that resolves when the session closure has been processed.
      * @example
-     * // When completing round 5:
-     * // totalTimeSeconds = 150.2 (2 and a half minutes)
-     * // → Saves in DB and sets gameFinished = true
-     * // → Shows "Juego completado!" and redirects
+     * await finishGame();
      */
     const finishGame = async () => {
         const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
@@ -461,18 +578,22 @@ const Game1: React.FC = () => {
     };
 
 
+    
     /**
-     * Handles early exit from the game (home button).
+     * Functional Summary.
      *
-     * @remarks
-     * If there is an active session in the backend, it tries to finish it by saving
-     * the elapsed time. After that, it redirects to the dashboard according to the user's role.
+     * Handles the early exit from the game (Home button). If there is an ongoing session,
+     * it attempts to close it by saving the elapsed time and then redirects to the appropriate
+     * dashboard based on the user's role.
      *
      * @returns Promise<void>
+     * @example
+     * await handleEarlyExit();
      */
     const handleEarlyExit = async () => {
         // If there is an active session, save the current state
         if (sessionId) {
+
             try {
                 // Finish the session
                 const totalTimeSeconds = (Date.now() - gameStartTime) / 1000;
@@ -483,21 +604,27 @@ const Game1: React.FC = () => {
         }
 
         // Redirect to the dashboard
-        const dashboardRoute = user?.role == 'student' ? '/student-dashboard' : '/tutor-dashboard';
-        history.push(dashboardRoute);
+        const dashboardRoute = user?.role == 'student' ? '/student/dashboard' : '/teacher/dashboard';
+        router.push(dashboardRoute, "back", "pop");
     };
 
     /**
-     * Plays the sound of the indicated number.
+     * Functional Summary.
      *
-     * @remarks
-     * Builds the sequence of audio files needed to pronounce the number
+     * Reproduces the pronunciation of a number by building the sequence of
+     * necessary audio files (hundreds, tens, units, 'and', etc.) and
+     * using `AudioManager` to play them sequentially.
      *
-     * This function protects against concurrent playbacks using the
-     * `listeningAudio` state and the `audioRef` reference.
+     * Execution flow.
+     * - If `num` is `null` or audio is already playing, it exits immediately.
+     * - Calculates the list of files to play according to numerical rules.
+     * - Calls `audioManager.playSequential` with the appropriate paths based on the voice.
      *
-     * @param num - Number to play. If `null`, the function returns without action.
+     * @param num - NNumber to pronounce. If `null`, the function does nothing.
      * @returns void
+     *
+     * @example
+     * speakNumber(42);
      */
     const speakNumber = (num: number | null) => {
         if (num === null) return;
@@ -557,58 +684,19 @@ const Game1: React.FC = () => {
             return files;
         };
 
-
-        let path = '';
-
-
-        // Play files sequentially
+        // Play files sequentially using AudioManager
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
             setListeningAudio(true);
 
-            for (const f of files) {
-
-                if (useWomanVoice) {
-                    path = `/assets/sounds/woman/${f}`;
-                } else {
-                    path = `/assets/sounds/man/${f}`;
-                }
-
-
-                // Stop previous audio if exists
-                if (audioRef.current) {
-                    try {
-                        audioRef.current.pause();
-                        audioRef.current.currentTime = 0;
-                    } catch (e) { /* ignore */ }
-                    audioRef.current = null;
-                }
-
-                // Play single file and wait until it ends (or errors)
-                await new Promise<void>((resolve) => {
-                    const audio = new Audio(path);
-                    audioRef.current = audio;
-
-                    const finish = () => {
-                        if (audioRef.current === audio) audioRef.current = null;
-                        resolve();
-                    };
-
-                    audio.addEventListener('ended', finish);
-                    audio.addEventListener('error', (err) => {
-                        console.error('Error reproduciendo audio', path, err);
-                        finish();
-                    });
-
-                    audio.play().catch((err) => {
-                        console.error('play() falló para', path, err);
-                        finish();
-                    });
-                });
+            try {
+                const base = useWomanVoice ? '/assets/sounds/woman/' : '/assets/sounds/man/';
+                const paths = files.map(f => `${base}${f}`);
+                await audioManager.playSequential(paths);
+            } finally {
+                setListeningAudio(false);
             }
-
-            setListeningAudio(false);
         };
 
         const files = filesForNumber(num);
@@ -624,14 +712,37 @@ const Game1: React.FC = () => {
     // Clean up audio when the component unmounts
     useEffect(() => {
         return () => {
-            if (audioRef.current) {
-                try {
-                    audioRef.current.pause();
-                    audioRef.current = null;
-                } catch (e) { /* ignore */ }
-            }
+            try {
+                audioManager.stop();
+            } catch (e) { /* ignore */ }
         };
     }, []);
+
+    /**
+     * Opens the video modal with instructions.
+     *
+     * @returns void
+     * @example
+     * openVideoModal();
+     */
+    const openVideoModal = () => {
+        setShowVideoModal(true);
+    };
+
+    /**
+     * Closes the video modal and stops playback if active.
+     *
+     * @returns void
+     * @example
+     * closeVideoModal();
+     */
+    const closeVideoModal = () => {
+        if (videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+        }
+        setShowVideoModal(false);
+    };
 
     // Authentication loading screen
     if (authLoading) {
@@ -647,7 +758,7 @@ const Game1: React.FC = () => {
     }
 
     if (!user) {
-        return <Redirect to="/student-login" />;
+        return <Redirect to="/student/login" />;
     }
 
     // Game loading screen
@@ -666,6 +777,7 @@ const Game1: React.FC = () => {
         );
     }
 
+    /*
     // If the game is finished, show message
     if (gameFinished) {
         return (
@@ -682,11 +794,45 @@ const Game1: React.FC = () => {
             </IonPage>
         );
     }
+    */
+        
 
+
+    // Show feedback screen after checking answer
+    if (showFeedbackScreen) {
+        return (
+            <FeedbackScreen
+                isCorrect={isCorrectAnswer}
+                currentRound={currentRound}
+                totalRounds={TOTAL_ROUNDS}
+                headerTitle="Asociar Nº"
+                headerPictogram1={imgSonido}
+                headerPictogramArrow={imgFlecha}
+                headerPictogram2={imgJuego}
+                messages={Messages}
+                onNext={advanceToNextRound}
+                onHomeClick={handleEarlyExit}
+                onRepeat={repeatExercise}
+            />
+        );
+    }
 
     return (
         <IonPage>
             <IonContent className="game1-content">
+                {gameFinished ? (
+                    // --- VISTA DE ÉXITO ---
+                    <div className="ion-padding ion-text-center" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                        <IonText color="success">
+                            <h1>¡Juego completado!</h1>
+                            {/* Puedes usar tus mensajes positivos aquí */}
+                            <p>{Messages.find(m => m.type === 'positive')?.text_message || "¡Lo has hecho genial!"}</p>
+                            <p>Volviendo al inicio...</p>
+                        </IonText>
+                        <IonSpinner name="dots" style={{ marginTop: '20px' }}/>
+                    </div>
+                ) : (
+                <>
                 {/* Header */}
                 <GameHeader
                     title="Asociar Nº"
@@ -698,80 +844,108 @@ const Game1: React.FC = () => {
                     onHomeClick={handleEarlyExit}
                 />
 
-                {/* Game area */}
-                {/* Available numbers */}
-
-                <BubblesZone
-                    availableNumbers={availableNumbers}
-                    selectedNumber={selectedNumber}
-                    setSelectedNumber={setSelectedNumber}
-                    showFeedback={showFeedback}
-                    currentNumber={currentNumber}
-                    usePictograms={usePictograms}
-                />
-
-                {/* Control buttons */}
-                <div className="game1-buttons-container">
-                    {/* Hint button - always visible on the left */}
-                    <IonButton
-                        fill="clear"
-                        className="game1-check-button game1-hint-button"
-                        onClick={useHint}
-                    >
-                        <img
-                            src={showFeedback && selectedNumber === currentNumber ? imgTatoFeliz :
-                                showFeedback && selectedNumber !== currentNumber ? imgTatoTriste : imgTato}
-                            alt="Pista"
-                            className="game1-check-button-image"
-                        />
-                    </IonButton>
-
-                    {/* Listen button */}
-                    <div className="game1-check-button-container">
-                        <IonButton
-                            fill="clear"
-                            className="game1-check-button"
-                            disabled={listeningAudio || showFeedback}
-                            onClick={() => speakNumber(currentNumber)}
-                        >
-                            <img
-                                src={imgSonidoConTexto}
-                                alt="Escuchar"
-                                className="game1-check-button-image"
-                            />
-                        </IonButton>
+                {/* Game area with grid layout */}
+                <div className="game1-grid-container">
+                    {/* Left column: Tato */}
+                    <div className="game1-tato-column">
+                        <div className="game1-tato-container">
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button"
+                                onClick={useHint}
+                            >
+                                <img
+                                    src={imgTato}
+                                    alt="Pista"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
+                        </div>
                     </div>
 
-                    {/* Accept/Check button when there is no feedback */}
-                    {!showFeedback && (
-                        <IonButton
-                            fill="clear"
-                            className="game1-check-button"
-                            onClick={checkAnswer}
-                        >
-                            <img
-                                src={imgAceptar}
-                                alt="Comprobar"
-                                className="game1-check-button-image"
-                            />
-                        </IonButton>
-                    )}
+                    {/* Right column: Numbers and buttons */}
+                    <div className="game1-game-column">
+                        {/* Available numbers */}
+                        <BubblesZone
+                            availableNumbers={availableNumbers}
+                            selectedNumber={selectedNumber}
+                            setSelectedNumber={setSelectedNumber}
+                            showFeedback={showFeedback}
+                            currentNumber={currentNumber}
+                            usePictograms={usePictograms}
+                            hintsUsed={hintsUsed}
+                        />
 
-                    {/* Arrow button to continue when correct */}
-                    {showFeedback && (
-                        <IonButton
-                            fill="clear"
-                            className="game1-check-button"
-                            onClick={handleNext}
-                        >
-                            <img
-                                src={imgSiguiente}
-                                alt="Continuar"
-                                className="game1-check-button-image"
-                            />
-                        </IonButton>
-                    )}
+                        {/* Control buttons */}
+                        <div className="game1-buttons-container">
+
+                            {/* Listen button */}
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button"
+                                disabled={listeningAudio}
+                                onClick={() => speakNumber(currentNumber)}
+                            >
+                                <img
+                                    src={imgSonidoConTexto}
+                                    alt="Escuchar"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
+
+                            {/* Video button - always visible on the left */}
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button game1"
+                                onClick={openVideoModal}
+                            >
+                                <img
+                                    src={imgInstrucciones}
+                                    alt="Video de ayuda"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
+
+                            {/* Accept/Check button */}
+                            <IonButton
+                                fill="clear"
+                                className="game1-check-button"
+                                onClick={checkAnswer}
+                                disabled={selectedNumber === null}
+                            >
+                                <img
+                                    src={imgAceptar}
+                                    alt="Comprobar"
+                                    className="game1-check-button-image"
+                                />
+                            </IonButton>
+
+                        </div>
+                    </div>
                 </div>
+                {/* End grid container */}
+                    </>
+                )}    
+                {/* Video Modal */}
+                {showVideoModal && (
+                    <div className="game1-video-modal-overlay" onClick={closeVideoModal}>
+                        <div className="game1-video-modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="game1-video-close-button" onClick={closeVideoModal}>
+                                ✕
+                            </button>
+                            <video
+                                ref={videoRef}
+                                controls
+                                autoPlay
+                                className="game1-video-player"
+                            >
+                                <source src="/assets/videos/video_game1.mp4" type="video/mp4" />
+                                Tu navegador no soporta la reproducción de videos.
+                            </video>
+                        </div>
+                    </div>
+                )}
+            
             </IonContent>
         </IonPage>
     );

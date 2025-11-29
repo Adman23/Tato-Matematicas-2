@@ -7,26 +7,214 @@
     Numbers grid
    ======================================== */
 .numbers-grid {
-    width: 100%;
-    max-width: 1500px;
-    margin: 30px auto;
-    background: white;
-    flex-grow: 1;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    display: flex;
-    align-items: center;
+    width: fit-content;
+    height: auto;
+    margin: 0;
+    background: var(--ion-color-primary-contrast);
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(4, 7.5rem);
+    grid-auto-flow: row;
+    justify-items: center;
     justify-content: center;
+    align-items: center;
+    align-content: start;
+    gap: 1.5rem;
     padding: 2rem;
+    box-sizing: border-box;
 }
 
-.numbers-grid ion-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(clamp(60px, 20vw, 200px), 1fr));
-    justify-items: center;
-    align-content: center;
-    gap: clamp(8px, 3.5vw, 60px);
-    width: 100%;
-    max-width: 1200px;
-    padding: 0;
+/* 1 elemento */
+.numbers-grid:has(:nth-child(1):last-child) {
+    grid-template-columns: 8rem;
+    margin-top: 12rem;
+}
+
+/* 2 elementos */
+.numbers-grid:has(:nth-child(2):last-child) {
+    grid-template-columns: repeat(2, 9.5rem);
+    margin-top: 12rem;
+}
+
+/* 3 elementos */
+.numbers-grid:has(:nth-child(3):last-child) {
+    grid-template-columns: repeat(3, 9rem);
+    margin-top: 12rem;
+}
+
+/* 4 elementos */
+.numbers-grid:has(:nth-child(4):last-child) {
+    grid-template-columns: repeat(4, 8.5rem);
+    margin-top: 12rem;
+}
+
+/* 5 elementos */
+.numbers-grid:has(:nth-child(5):last-child) {
+    grid-template-columns: repeat(5, 7.5rem);
+    margin-top: 12rem;
+}
+
+/* 6 elementos */
+.numbers-grid:has(:nth-child(6):last-child) {
+    grid-template-columns: repeat(3, 9rem);
+    margin-top: 8rem;
+}
+
+/* 7-8 elementos */
+.numbers-grid:has(:nth-child(7):last-child),
+.numbers-grid:has(:nth-child(8):last-child) {
+    grid-template-columns: repeat(4, 8.5rem);
+    margin-top: 8rem;
+}
+
+/* 9 elementos */
+.numbers-grid:has(:nth-child(9):last-child) {
+    grid-template-columns: repeat(3, 9rem);
+    margin-top: 5rem;
+}
+
+/* 10 elementos */
+.numbers-grid:has(:nth-child(10):last-child) {
+    grid-template-columns: repeat(5, 7.5rem);
+    margin-top: 8rem;
+}
+
+/* 11-12 elementos */
+.numbers-grid:has(:nth-child(11):last-child),
+.numbers-grid:has(:nth-child(12):last-child) {
+    grid-template-columns: repeat(4, 8.5rem);
+    margin-top: 3rem;
+}
+
+
+/* ========================================
+    Responsive adjustments
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    /* 1 elemento */
+    .numbers-grid:has(:nth-child(1):last-child) {
+        grid-template-columns: 8rem;
+        margin-top: 12rem;
+    }
+
+    /* 2 elementos */
+    .numbers-grid:has(:nth-child(2):last-child) {
+        grid-template-columns: repeat(2, 9.5rem);
+        margin-top: 12rem;
+    }
+
+    /* 3 elementos */
+    .numbers-grid:has(:nth-child(3):last-child) {
+        grid-template-columns: repeat(3, 9rem);
+        margin-top: 12rem;
+    }
+
+    /* 4 elementos */
+    .numbers-grid:has(:nth-child(4):last-child) {
+        grid-template-columns: repeat(4, 8.5rem);
+        margin-top: 12rem;
+    }
+
+    /* 5 elementos */
+    .numbers-grid:has(:nth-child(5):last-child) {
+        grid-template-columns: repeat(5, 5.5rem);
+        margin-top: 12rem;
+    }
+
+    /* 6 elementos */
+    .numbers-grid:has(:nth-child(6):last-child) {
+        grid-template-columns: repeat(3, 9rem);
+        margin-top: 8rem;
+    }
+
+    /* 7-8 elementos */
+    .numbers-grid:has(:nth-child(7):last-child),
+    .numbers-grid:has(:nth-child(8):last-child) {
+        grid-template-columns: repeat(4, 8.5rem);
+        margin-top: 8rem;
+    }
+
+    /* 9 elementos */
+    .numbers-grid:has(:nth-child(9):last-child) {
+        grid-template-columns: repeat(3, 9rem);
+        margin-top: 5rem;
+    }
+
+    /* 10 elementos */
+    .numbers-grid:has(:nth-child(10):last-child) {
+        grid-template-columns: repeat(5, 5.5rem);
+        margin-top: 8rem;
+    }
+
+    /* 11-12 elementos */
+    .numbers-grid:has(:nth-child(11):last-child),
+    .numbers-grid:has(:nth-child(12):last-child) {
+        grid-template-columns: repeat(4, 6.5rem);
+        margin-top: 8rem;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    /* 1 elemento */
+    .numbers-grid:has(:nth-child(1):last-child) {
+        grid-template-columns: 8rem;
+        margin-top: 0rem;
+    }
+
+    /* 2 elementos */
+    .numbers-grid:has(:nth-child(2):last-child) {
+        grid-template-columns: 8rem;
+        margin-top: 0rem;
+    }
+
+    /* 3 elementos */
+    .numbers-grid:has(:nth-child(3):last-child) {
+        grid-template-columns: 8rem;
+        margin-top: 0rem;
+    }
+
+    /* 4 elementos */
+    .numbers-grid:has(:nth-child(4):last-child) {
+        grid-template-columns: repeat(2, 8.5rem);
+        margin-top: 0rem;
+    }
+
+    /* 5 elementos */
+    .numbers-grid:has(:nth-child(5):last-child) {
+        grid-template-columns: repeat(3, 7.5rem);
+        margin-top: 0rem;
+    }
+
+    /* 6 elementos */
+    .numbers-grid:has(:nth-child(6):last-child) {
+        grid-template-columns: repeat(2, 9rem);
+        margin-top: 0rem;
+    }
+
+    /* 7-8 elementos */
+    .numbers-grid:has(:nth-child(7):last-child),
+    .numbers-grid:has(:nth-child(8):last-child) {
+        grid-template-columns: repeat(3, 5.5rem);
+        margin-top: 0rem;
+    }
+
+    /* 9 elementos */
+    .numbers-grid:has(:nth-child(9):last-child) {
+        grid-template-columns: repeat(3, 9rem);
+        margin-top: 0rem;
+    }
+
+    /* 10-11-12 elementos */
+    .numbers-grid:has(:nth-child(10):last-child),
+    .numbers-grid:has(:nth-child(11):last-child),
+    .numbers-grid:has(:nth-child(12):last-child) {
+        grid-template-columns: repeat(4, 5.5rem);
+        margin-top: 0rem;
+    }
 }

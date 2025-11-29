@@ -52,8 +52,10 @@ const PICTOGRAM_IMAGES: { [key: number]: string } = {
  * @property {boolean} [isIncorrect] - Si el número en este slot es incorrecto (feedback rojo)
  * @property {boolean} [usePictogram] - Si se debe mostrar pictograma en vez de número
  * @property {boolean} [isLocked] - Si el número está bloqueado (ayuda pre-colocada, no arrastrable)
- * @property {boolean} [isSelected] - Si el número está seleccionado mediante click
- * @property {(targetIndex: number) => void} [onSlotClick] - Callback al hacer click en el slot
+ * @property {boolean} [isDropTarget] - Si este slot es el objetivo actual de drop
+ * @property {(e: React.DragEvent) => void} [onDragOver] - Callback para drag over
+ * @property {(e: React.DragEvent, targetIndex: number) => void} [onDrop] - Callback para drop
+ * @property {'correct' | 'incorrect' | null} [feedbackType] - Tipo de feedback a mostrar
  */
 interface DroppableSlotProps {
   id: string;
@@ -63,8 +65,10 @@ interface DroppableSlotProps {
   isIncorrect?: boolean;
   usePictogram?: boolean;
   isLocked?: boolean;
-  isSelected?: boolean;
-  onSlotClick?: (targetIndex: number) => void;
+  isDropTarget?: boolean;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent, targetIndex: number) => void;
+  feedbackType?: 'correct' | 'incorrect' | null;
 }
 
 /**
@@ -125,11 +129,14 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
   isIncorrect = false,
   usePictogram = false,
   isLocked = false,
-  isSelected = false,
-  onSlotClick
+  isDropTarget = false,
+  onDragOver,
+  onDrop,
+  feedbackType = null
 }) => {
   // Clase CSS del slot
   let slotClass = 'droppable-slot';
+  if (isDropTarget && number === undefined) slotClass += ' droppable-slot-target';
 
   // Obtener imagen del pictograma si aplica (solo números 0-10)
   const pictogramImg = usePictogram && number !== undefined && number <= 10 ? PICTOGRAM_IMAGES[number] : null;
@@ -138,12 +145,20 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
   let cardClass = 'number-card-v2';
   if (usePictogram) cardClass += ' number-card-pictogram';
   if (isLocked) cardClass += ' number-card-locked';
-  if (isSelected) cardClass += ' number-card-selected';
 
   return (
     <div
       className={slotClass}
-      onClick={() => onSlotClick?.(index)}
+      onDragOver={(e) => {
+        if (isDropTarget) {
+          onDragOver?.(e);
+        }
+      }}
+      onDrop={(e) => {
+        if (isDropTarget) {
+          onDrop?.(e, index);
+        }
+      }}
     >
       {number !== undefined ? (
         <div className={cardClass}>
@@ -152,6 +167,8 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
               src={pictogramImg}
               alt={`Pictograma número ${number}`}
               className="pictogram-image"
+              loading="eager"
+              decoding="sync"
             />
           ) : (
             <span className="number-value">{number}</span>
@@ -165,7 +182,11 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
           )}
         </div>
       ) : (
-        <div className="empty-slot" />
+        <div className="empty-slot">
+          {feedbackType === 'incorrect' && isDropTarget && (
+            <IonIcon icon={closeCircle} className="feedback-icon feedback-incorrect-slot" />
+          )}
+        </div>
       )}
     </div>
   );

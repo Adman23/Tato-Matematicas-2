@@ -1,426 +1,382 @@
 /* ========================================
-   STUDENT LOGIN SELECTION — Step1 & Step2
+   TATO MATEMÁTICAS — CSS FINAL
    ======================================== */
 
 .student-login-content {
-  --background: white;
-  overflow: hidden;
+  --background: #e3f5ff; 
+  --overflow: hidden; 
+  position: relative; 
 }
 
-.sel-login-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  height: 100vh;
-  padding: clamp(0.5rem, 1.5vh, 1.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.5rem, 1.2vh, 1rem);
-}
-
-/* ========================================
-   BOTONES DE NAVEGACIÓN (compartidos)
-   ======================================== */
-
-.sel-button-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-  padding: 0;
-  margin: 0;
-  gap: clamp(0.5rem, 1vw, 1rem);
-}
-
-.sel-action-button {
-  --padding-start: 0;
-  --padding-end: 0;
-  flex-shrink: 0;
-  margin: clamp(0.5rem, 2vh, 1.5rem);
-  width: clamp(60px, 10vw, 100px);
-  height: clamp(60px, 10vw, 100px);
-}
-
-.sel-action-button::part(native) {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(4px, 0.8vw, 8px);
-  border-radius: clamp(10px, 2vw, 20px);
-  padding: clamp(0.4rem, 1vw, 0.8rem);
-}
-
-.sel-action-button::part(native):hover,
-.sel-action-button::part(native):focus-visible {
-  background-color: var(--ion-color-primary);
-}
-
-.sel-boton-imagen {
-  width: 85%;
-  height: 85%;
-  object-fit: contain;
-}
-
-/* ========================================
-   HEADER
-   ======================================== */
-
-.sel-login-header {
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.sel-login-title {
-  font-size: clamp(1.2rem, 3.2vw, 2rem);
-  font-weight: 800;
-  color: #000;
-  margin: clamp(0.25rem, 0.8vh, 0.5rem) 0;
-}
-
-/* ========================================
-   FLECHAS DE NAVEGACIÓN (común)
-   ======================================== */
-
-.sel-group-grid-arrow {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: clamp(0.8rem, 1.8vw, 2rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  min-width: clamp(120px, 12vw, 100px);
-  min-height: clamp(120px, 12vw, 100px);
-}
-
-.sel-group-grid-arrow img {
-  width: clamp(90px, 10vw, 80px);
-  height: clamp(90px, 10vw, 80px);
-}
-
-.sel-group-grid-arrow:disabled {
-  opacity: 0.3;
-  cursor: default;
+/* FONDO DINÁMICO */
+.student-login-content::before {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%; 
+  width: 200%; height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='%23b2dcff' fill-opacity='1' font-family='sans-serif' font-weight='bold'%3E%3Ctext x='40' y='120' font-size='140' transform='rotate(-10 40 120)'%3E+%3C/text%3E%3Ctext x='240' y='150' font-size='160' transform='rotate(10 240 150)'%3E-%3C/text%3E%3Ctext x='60' y='350' font-size='150' transform='rotate(5 60 350)'%3Ex%3C/text%3E%3Ctext x='260' y='340' font-size='140' transform='rotate(-15 260 340)'%3E%C3%B7%3C/text%3E%3Ctext x='180' y='80' font-size='100' transform='rotate(20 180 80)'%3E1%3C/text%3E%3Ctext x='20' y='240' font-size='110' transform='rotate(-25 20 240)'%3E2%3C/text%3E%3Ctext x='200' y='250' font-size='90' transform='rotate(15 200 250)'%3E3%3C/text%3E%3C/g%3E%3C/svg%3E");
+  background-size: 400px 400px; 
+  animation: mathScroll 100s linear infinite; 
+  z-index: 1; 
   pointer-events: none;
 }
 
-.sel-group-grid-arrow:not(:disabled):hover,
-.sel-group-grid-arrow:not(:disabled):focus-visible {
-  transform: scale(1.12);
+@keyframes mathScroll {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(400px, 400px); }
 }
 
-/* Rotación solo para flecha derecha */
-.sel-group-grid-arrow.right img,
-.sel-group-grid-arrow.right-outside img {
-  transform: rotate(180deg);
+.sel-login-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1vh 2vw;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2; 
 }
 
 /* ========================================
-   GRID DE GRUPOS - Responsive con flechas
+   1. HEADER
    ======================================== */
 
-.sel-group-grid-wrapper {
+.sel-header-row {
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  
+  width: 100%;
+  height: 22vh;      
+  min-height: 90px;
+  max-height: 250px;
+  
+  z-index: 10;
+  margin: 0;
+  padding: 0;
+  position: relative; /* Para posicionar botones absolutamente */
+}
+
+/* TÍTULO (Centrado absoluto) */
+.sel-logo-title {
+  display: block; 
+  margin: 0 auto; 
+  width: auto;
+  max-width: 60%; /* Dejar espacio a los botones */
+  height: 100%;
+  object-fit: contain; 
+  object-position: center; 
+  animation: floating 3.5s ease-in-out infinite;
+  filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.8));
+}
+
+/* --- BOTONES DEL HEADER (MEJORADOS) --- */
+.sel-header-button {
+  position: absolute; /* Los sacamos del flujo para no mover el título */
+  top: 50%;
+  transform: translateY(-50%);
+  
+  height: 60px; /* Tamaño fijo cómodo */
+  width: 60px;
+  
+  /* Ajustes de Ionic */
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  
+  /* Círculo base */
+  border-radius: 50%;
+  background-color: white; /* Fondo blanco detrás de la imagen */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra suave */
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.3rem, 0.6vw, 0.6rem);
-  width: 100%;
-  padding: 0 clamp(0.25rem, 0.5vw, 0.5rem);
-  overflow: visible;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  z-index: 20;
 }
 
-.sel-group-grid {
-  display: grid;
-  gap: clamp(0.8rem, 1.2vw, 1.2rem);
-  width: 100%;
-  max-width: min(95vw, 620px);
-  margin: 0 auto;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, minmax(clamp(120px, 22vw, 180px), 1fr));
+/* Posición Izquierda (Admin) */
+.sel-header-button:first-child {
+  left: 2vw; 
 }
 
-@media (max-width: 860px) {
-  .sel-group-grid {
-    grid-template-columns: 1fr;
-  }
+/* Posición Derecha (Confirmar) */
+.sel-header-button:last-child {
+  right: 2vw;
+}
+
+/* Hover Effect */
+.sel-header-button:not([disabled]):hover {
+  transform: translateY(-50%) scale(1.1); /* Mantener centrado vertical */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.sel-header-button:not([disabled]):active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Imagen dentro del botón */
+.sel-boton-imagen {
+  height: 70%; /* Tamaño óptimo dentro del círculo */
+  width: 70%;
+  object-fit: contain;
+  display: block;
+}
+
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
 }
 
 /* ========================================
-   TILES DE GRUPO / USUARIO
+   2. MAIN AREA (WRAPPER)
    ======================================== */
 
-.sel-group-tile {
+.sel-main-wrapper {
+  flex: 0 0 auto;        
+  width: fit-content;    
+  height: fit-content;   
+  margin: auto;          
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
   position: relative;
-  width: 280px;
-  height: 280px;
-  background: white;
-  border: 3px solid #000;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  padding: 0;
-  overflow: hidden;
+  z-index: 5;
+  max-width: 100%; 
 }
 
-.sel-group-tile:empty {
-  background-color: #e0f3fa;
-  border: 3px dashed #888;
-  opacity: 0.7;
+/* TARJETA AZUL */
+.sel-classes-card {
+  --grid-gap: 15px; 
+  background-color: var(--ion-color-primary);
+  border-radius: 3vh;
+  padding: var(--grid-gap);
+  
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  
+  max-height: 60vh;
+  width: min(60vh, 650px, 90vw);
+  height: auto; 
+  aspect-ratio: 1 / 1;
+  
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0; 
 }
 
-.sel-group-tile:empty::before {
-  content: '';
-  display: block;
+/* GRID INTERNO */
+.sel-group-grid {
+  display: grid;
+  gap: var(--grid-gap); 
   width: 100%;
   height: 100%;
-  background: url('/assets/pictograms/placeholder.png') center/contain no-repeat;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+/* ========================================
+   3. TILES
+   ======================================== */
+.sel-group-tile {
+  position: relative;
+  background: white;
+  border: 3px solid #000; 
+  box-sizing: border-box;
+  border-radius: 2vh;
+  cursor: pointer;
+  padding: 10px;
+  overflow: visible;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: auto;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  box-shadow: none;
+  transition: transform 0.1s;
+}
+
+.sel-group-tile:not(:disabled):active {
+  transform: scale(0.95);
 }
 
 .sel-group-tile.selected {
-  border-width: 8px;
   border-color: var(--ion-color-success);
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.9);
-}
-
-.sel-group-tile:hover,
-.sel-group-tile:focus-visible {
-  transform: scale(1.04);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-}
-
-/* Evita que el overlay interfiera con clics */
-.sel-group-tile > * {
-  position: relative;
-  z-index: 1;
+  box-shadow: inset 0 0 0 4px var(--ion-color-success);
+  transform: scale(1.02);
+  z-index: 5;
 }
 
 .sel-group-icon {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
+  width: 100%; height: 100%; object-fit: contain;
 }
 
 .sel-group-letter {
   position: absolute;
-  top: 4%;
-  left: 35%;
-  transform: translateX(-50%);
-  font-size: 8rem;
+  top: 28%; left: 35%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(2rem, 14vh, 8rem);
   font-weight: 900;
   color: #000;
-  line-height: 1;
-  text-align: center;
   pointer-events: none;
+  z-index: 2;
+  text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
 }
 
-.sel-user-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  padding: 0;
+.sel-group-ghost {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    height: auto;
+    visibility: visible;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 3px dashed rgba(0, 0, 0, 0.3);
+    border-radius: 2vh;
+    box-sizing: border-box;
+    pointer-events: none;
 }
-
-.sel-group-label {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: clamp(0.9rem, 2.4vw, 1.3rem);
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-  line-height: 1.3;
-  min-width: 90%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: clamp(6px, 1.2vh, 12px) clamp(12px, 3vw, 24px);
-  background: white;
-  border-radius: 6px;
-  pointer-events: none;
-}
-
-/* ========================================
-   CARD CONTENEDOR DE CLASES — fondo #50BFE6 (tu preferencia)
-   ======================================== */
-
-.sel-classes-card {
-  background-color: var(--ion-color-primary); /* ✅ Tu color preferido */
-  border-radius: clamp(20px, 4vw, 32px);
-  padding: clamp(1.2rem, 3vh, 2.5rem);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  max-width: calc(100% - 2rem);
-  height: fit-content;
-  margin: 0;
-}
-
-/* ========================================
-   DOUBLE-CLICK FEEDBACK OVERLAY (accesible)
-   ======================================== */
-
-.sel-double-click-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  pointer-events: none; /* ✅ No bloquea clics ni teclado */
-  z-index: 10;
-  animation: fade-in-out 0.6s ease forwards;
-}
-
-.sel-dblclick-icon {
-  width: 48%;
-  height: 48%;
-  opacity: 0.9;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
-}
-
-@keyframes fade-in-out {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.2);
-  }
-}
-
-/* ========================================
-   MENSAJES DE ERROR Y CARGA
-   ======================================== */
-
-.sel-error-message {
-  background: rgba(241, 131, 131, 0.95);
-  border-radius: clamp(10px, 2vw, 16px);
-  padding: clamp(0.6rem, 2vw, 1.2rem);
-  text-align: center;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(0.4rem, 1.2vw, 0.8rem);
-}
-
-.sel-loading,
-.sel-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.8rem, 2vw, 1.5rem);
-  padding: clamp(1.5rem, 4vw, 3rem);
-  text-align: center;
-}
-
-.sel-loading p,
-.sel-error p {
-  font-size: clamp(1rem, 2.2vw, 1.5rem);
-  font-weight: 600;
-  color: #000;
-}
-
-/* ========================================
-   ACCESIBILIDAD EXTRA (mejora de contraste y foco)
-   ======================================== */
-
-.sel-group-tile:focus-visible {
-  outline: 3px solid var(--ion-color-primary);
-  outline-offset: 4px;
-}
-
-.sel-group-tile.selected:focus-visible {
-  outline-color: var(--ion-color-success);
-}
-
-/* Asegura que el overlay no cause "salto visual" al aparecer */
-.sel-group-tile {
-  contain: layout style;
-}
-
-/* ========================================
-   CONFIRM OVERLAY — modo "listo para confirmar"
-   ======================================== */
 
 .sel-confirm-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none; /* no bloquea clics */
-  z-index: 5;
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.7);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 1.5vh;
+  z-index: 20;
 }
-
 .sel-confirm-icon {
-  width: 45%;
-  height: 45%;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
-  /* Alternativa: centrar más pequeño */
-  /* width: 64px; height: 64px; */
+  width: 50%; height: 50%; object-fit: contain;
+  animation: popIn 0.3s ease, pulse 1.5s infinite 0.3s;
 }
 
 /* ========================================
-   PAGE INDICATORS (bullets: ● ○)
+   4. FOOTER CONTROLS
    ======================================== */
 
-.sel-page-indicators {
+.sel-footer-controls {
+  flex: 0 0 auto;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: clamp(6px, 1.2vw, 10px);
-  margin-top: clamp(0.5rem, 1.2vh, 1rem);
-  padding: 0;
+  gap: 2rem;
+  height: 12vh;
+  min-height: 60px;
+  width: 100%;
+  z-index: 10;
+  background: transparent !important; 
+  box-shadow: none !important;
+  margin-bottom: 0;
+}
+
+.sel-nav-arrow {
+  background-color: var(--ion-color-primary);
+  color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  width: 60px; 
+  height: 60px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.sel-nav-arrow:disabled {
+  background-color: #e0e0e0;
+  cursor: default;
+  box-shadow: none;
+}
+
+.sel-nav-arrow:not(:disabled):hover {
+  transform: scale(1.1);
+}
+
+.sel-page-indicators {
+  display: flex; gap: 15px;
+  padding: 0; margin: 0;
   list-style: none;
 }
 
 .sel-page-indicator {
-  width: clamp(10px, 2vw, 14px);
-  height: clamp(10px, 2vw, 14px);
+  width: 15px; height: 15px;
   border-radius: 50%;
-  background-color: #ccc; /* gris suave */
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  background-color: #ccc; 
+  border: none; cursor: pointer;
 }
 
 .sel-page-indicator[aria-selected="true"] {
-  background-color: var(--ion-color-primary); /* ✅ tu color preferido */
-  transform: scale(1.2);
-}
-
-.sel-page-indicator:hover,
-.sel-page-indicator:focus-visible {
+  background-color: var(--ion-color-primary);
   transform: scale(1.3);
-  outline: none;
 }
 
-/* Asegurar contraste en foco (WCAG) */
-.sel-page-indicator:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--ion-color-primary);
+.sel-error-message {
+  position: absolute; bottom: 14vh; left: 50%; transform: translateX(-50%);
+  background: rgba(220, 53, 69, 0.95); color: white;
+  padding: 1.5vh 3vw; border-radius: 50px; z-index: 100;
+  white-space: nowrap; font-weight: bold;
+}
+
+/* ========================================
+   MEDIA QUERIES
+   ======================================== */
+
+@media (max-height: 600px) {
+  .sel-header-row { 
+    height: 20vh; 
+    max-height: 80px; 
+  }
+  
+  /* Ajuste de botones en landscape */
+  .sel-header-button {
+    height: 45px; 
+    width: 45px;
+  }
+  
+  .sel-footer-controls { height: 15vh; min-height: 50px; }
+  .sel-nav-arrow { width: 45px; height: 45px; }
+
+  .sel-classes-card {
+    max-height: 55vh;
+    width: 55vh; 
+    padding: 10px;
+  }
+  
+  .sel-group-letter { font-size: 8vh; }
+}
+
+@media (max-width: 650px) {
+  .sel-header-row { 
+    max-height: 140px; 
+  }
+  
+  /* Ajuste de botones en móvil portrait */
+  .sel-header-button {
+    height: 50px; 
+    width: 50px;
+  }
+
+  .sel-classes-card {
+    width: min(85vw, 35vh); 
+    height: auto; 
+    max-height: none; 
+    aspect-ratio: auto; 
+  }
+  .sel-group-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto; 
+  }
+  .sel-footer-controls {
+      gap: 1rem;
+  }
 }

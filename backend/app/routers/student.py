@@ -8,7 +8,7 @@ import jwt
 
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
-from ..dependencies import get_current_user, get_current_admin
+from ..dependencies import is_auth_current_user, is_admin_current_user
 from ..config import settings
 
 router = APIRouter()
@@ -17,7 +17,7 @@ DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
 
 
 @router.get("/all", summary="Gets all students with photo, username and group")
-async def list_students(admin=Depends(get_current_admin)):
+async def list_students(admin=Depends(is_admin_current_user)):
     """
     List all students with groups.
 
@@ -63,7 +63,7 @@ async def list_students(admin=Depends(get_current_admin)):
                 username = None
 
             # Get photo_url or default avatar
-            photo = s.get("photo_url") or DEFAULT_AVATAR
+            photo =  supabase_admin.storage.from_("user_photo").get_public_url(s.get("photo_url"))  or DEFAULT_AVATAR
 
             # Resolve single group for the student (group_id may be None)
             group = None
@@ -111,9 +111,9 @@ async def get_student(student_id: str):
     Raises:
         HTTPException:
             - 404 NOT FOUND: If the student or their authentication data 
-              cannot be found.
+                cannot be found.
             - 500 INTERNAL SERVER ERROR: If an unexpected error occurs 
-              while retrieving the student data.
+                while retrieving the student data.
 
     Returns:
         dict: A dictionary containing:
@@ -143,7 +143,7 @@ async def get_student(student_id: str):
                         user_profiles!user_id(
                             id,
                         ),
-                        reinforcement_messages!student_id(
+                        reinforcement_messages!user_id(
                             id,
                         ),
                         game_configurations!user_id(
@@ -187,6 +187,4 @@ async def get_student(student_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting the student"
-        )  
-    
-
+        )

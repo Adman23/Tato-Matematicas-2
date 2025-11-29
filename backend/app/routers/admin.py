@@ -1,14 +1,67 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi import APIRouter, HTTPException, status, Depends
-from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
-from ..dependencies import get_current_admin
-from pydantic import BaseModel
+from ..dependencies import is_admin_current_user
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
-from ..schemas.admin import AssignStudentsPayload, AssignTeachersPayload, UnassignStudentsPayload, UnassignTeachersPayload
+from ..schemas.admin import AssignStudentsPayload, AssignTeachersPayload, \
+                            UnassignStudentsPayload, UnassignTeachersPayload, \
+                            User
 router = APIRouter()
 
 DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg"
+
+
+
+@router.get("/all_users", summary="Retrieve all the users except admins")
+async def get_all_users(data: tuple=Depends(is_admin_current_user)):
+    """
+    !! NEW
+        -> its way faster than other endpoints
+        
+    Retrieves from the db all the users, with all the basic info (schema admin)
+    
+    Args:
+        None -> Uses the logged in admin
+    
+    Raises:
+        Nothing
+        
+    Returns:
+        list of all the users
+    
+    """
+    
+    try:
+        # Retrieve all the users that doesnt have role="admin" and are 
+        # To get that, we have to get all the users from auth that exist in public with that role
+        
+        resp = supabase_admin.table("user_accounts") \
+                            .select("id, username, role, photo_url, group_id, role") \
+                            .in_("role", ["teacher", "student"]) \
+                            .execute()
+        
+        if not resp.data:
+            return []
+        
+        users = [
+            {
+                **user, # Copy all the data
+                
+                # Get the url for the photo 
+                "photo_url": supabase_admin.storage
+                    .from_("user_photo")
+                    .get_public_url(user["photo_url"]) 
+                    if user["photo_url"] else DEFAULT_AVATAR 
+            }
+            for user in resp.data]
+        
+        return users
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting the users: {str(e)}"
+        )
 
 @router.get("/teachers", summary="Obtener todos los profesores")
 async def list_teachers():
@@ -26,8 +79,9 @@ async def list_teachers():
         if not resp.data:
             return []
 
-        teachers = []
 
+        teachers = []
+        
         # Para cada usuario, buscar su perfil en user_profiles
         for user in resp.data:
 
@@ -102,7 +156,7 @@ async def list_students():
 
 
 @router.post("/students/assign", summary="Asignar alumnos a un grupo")
-async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends(get_current_admin)):
+async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends(is_admin_current_user)):
     """
     Assign students to a group.
     Assign a list of students to a group by setting their `group_id` in the `users` table.
@@ -140,7 +194,7 @@ async def assign_students_to_group(payload: AssignStudentsPayload, admin=Depends
 
 
 @router.post("/teachers/assign", summary="Asignar profesores a un grupo")
-async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends(get_current_admin)):
+async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends(is_admin_current_user)):
     """
     Assign teachers to a group.
 
@@ -206,7 +260,7 @@ async def assign_teachers_to_group(payload: AssignTeachersPayload, admin=Depends
 
 
 @router.post("/students/unassign", summary="Desmatricular alumnos de un grupo")
-async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=Depends(get_current_admin)):
+async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=Depends(is_admin_current_user)):
     """
     Unassign students from their groups.
 
@@ -245,7 +299,7 @@ async def unassign_students_from_group(payload: UnassignStudentsPayload, admin=D
 
 
 @router.post("/teachers/unassign", summary="Desasignar profesores de un grupo")
-async def unassign_teachers_from_group(payload: UnassignTeachersPayload, admin=Depends(get_current_admin)):
+async def unassign_teachers_from_group(payload: UnassignTeachersPayload, admin=Depends(is_admin_current_user)):
     """
     Unassign teachers from a group.
 
@@ -405,7 +459,7 @@ async def list_groups():
 
 
 @router.delete("/groups/{group_id}", summary="Eliminar un grupo")
-async def delete_group(group_id: int, admin=Depends(get_current_admin)):
+async def delete_group(group_id: int, admin=Depends(is_admin_current_user)):
     """
     Delete a group.
 

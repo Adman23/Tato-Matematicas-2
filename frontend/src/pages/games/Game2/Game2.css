@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * ESTILOS PARA Game2 - Componente principal del juego de ordenamiento
+ * GAME 2 - ORDENAR NÚMEROS - ESTILOS PRINCIPALES
  * ============================================================================
  */
 
@@ -9,167 +9,175 @@
    ============================================================================ */
 
 .game2-content {
-  --background: #ffffff;
+  --background: var(--ion-color-primary-contrast);
+  --viewport-unit: min(100vw, 90vh);
+  --size-card: clamp(42px, calc(var(--viewport-unit) * 0.12), 110px);
+  --gap-card: clamp(0.3rem, calc(var(--viewport-unit) * 0.01), 1rem);
+  --pad-zone: clamp(0.4rem, calc(var(--viewport-unit) * 0.018), 1rem);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.game2-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 3vw, 1.5rem);
+  box-sizing: border-box;
+}
+
+.game2-content::part(scroll) {
+  overflow: hidden;
 }
 
 .game2-container {
-  padding: 2rem 1rem;
+  padding: var(--pad-zone) clamp(0.5rem, 2vw, 1rem)
+           calc(var(--pad-zone) + env(safe-area-inset-bottom, 0px) + 8px);
   max-width: 2000px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: clamp(0.75rem, 2.5vw, 1.75rem);
+  flex: 1 1 auto;
 }
 
 /* ============================================================================
-   2. ZONA DE NÚMEROS DISPONIBLES (Superior)
+   2. ZONA DE NÚMEROS DISPONIBLES (Arriba)
    ============================================================================ */
 
 .available-numbers-top {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: var(--gap-card);
   justify-content: center;
-  padding: 2rem;
-  background: white;
+  align-items: center;
+  padding: var(--pad-zone);
+  background: var(--ion-color-primary-contrast);
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-height: 120px;
+  min-height: calc(var(--size-card) + var(--gap-card) * 0.2);
 }
 
 /* ============================================================================
-   3. TARJETAS DE NÚMEROS (Compartidas entre zona disponible y DroppableSlot)
+   3. TARJETAS DE NÚMEROS - Más grandes y responsive
    ============================================================================ */
 
-/* Base: Tarjeta de número genérica */
+/* Base: Tarjeta de número */
 .number-card-v2 {
-  width: 90px;
-  height: 90px;
+  width: var(--size-card);
+  height: var(--size-card);
+  min-width: var(--size-card);
+  min-height: var(--size-card);
+  flex: 0 0 var(--size-card);
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #6a98e7;
-  color: white;
-  font-size: 2.5rem;
+  background: var(--bubble-bg);
+  color: var(--tatomaths-text);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
   font-weight: bold;
   border-radius: 50%;
-  border: 3px solid #6a98e7;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border: 3px solid var(--bubble-selected-bg);
+  box-shadow: 0 4px 12px rgba(132, 172, 241, 0.3);
   cursor: grab;
-  transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
   position: relative;
-  overflow: hidden;
 }
 
 .number-value {
   font-family: 'Arial', sans-serif;
   z-index: 1;
+  color: black;
 }
 
-/* Variantes de tarjetas */
-.number-card-available {
-  background: #84acf1;
-  border-color: #84acf1;
-  box-shadow: 0 4px 12px rgba(132, 172, 241, 0.3);
-}
-
-.number-card-locked {
-  background: #10b981 !important;
-  border-color: #059669 !important;
-  cursor: not-allowed !important;
-  opacity: 0.9;
-}
-
-.number-card-selected {
-  border: 5px solid #def50b !important;
-  box-shadow: 0 0 0 3px rgba(222, 245, 11, 0.3) !important;
-  transform: scale(1.1);
-  z-index: 5;
-}
-
-/* Estados hover */
+/* Hover: Escala 1.3 */
 .number-card-v2:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  transform: scale(1.3);
+  box-shadow: 0 8px 20px rgba(132, 172, 241, 0.5);
+  z-index: 10;
 }
 
-.number-card-available:hover {
-  box-shadow: 0 6px 16px rgba(132, 172, 241, 0.4);
-}
-
-.number-card-locked:hover {
-  transform: none !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
-}
-
-.number-card-selected:hover {
-  transform: scale(1.1);
-}
-
-/* Estados active/dragging */
+/* Active (click): Escala 1.3 + cursor grabbing */
 .number-card-v2:active {
+  transform: scale(1.3);
   cursor: grabbing;
 }
 
-.number-card-locked:active {
-  cursor: not-allowed !important;
+/* Selected (clicked): Rojo con escala 1.3 - sin sombra */
+.number-card-selected {
+  transform: scale(1.3) !important;
+  background: var(--bubble-selected-bg) !important;
+  border-color: #000000 !important;
+  box-shadow: none !important;
+  z-index: 10;
 }
 
+/* Dragging: Espacio vacío con borde punteado */
 .number-card-dragging {
-  opacity: 0.5;
-  transform: scale(1.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  background: var(--bubble-bg, #e5e7eb) !important;
+  border: 3px dashed var(--bubble-selected-bg, #000000) !important;
+  box-shadow: none !important;
+  cursor: default !important;
+  transform: none !important;
 }
 
-/* Pictogramas */
-.number-card-pictogram {
-  background: #6a98e7;
-  border-color: #6a98e7;
+.number-card-dragging .number-value,
+.number-card-dragging .pictogram-image {
+  opacity: 0;
 }
 
-.number-card-pictogram.number-card-available {
-  background: #84acf1;
-  border-color: #84acf1;
+/* Hueco vacío permanente (cuando se quita un número) */
+.number-card-empty {
+  background: var(--bubble-bg, #e5e7eb) !important;
+  border: 3px dashed var(--bubble-selected-bg, #000000) !important;
+  box-shadow: none !important;
+  cursor: default !important;
 }
 
-.number-card-pictogram.number-card-locked {
-  background: #10b981 !important;
-  border-color: #059669 !important;
+/* Drag preview clone so it respects theme colors */
+.drag-preview {
+  transform: scale(1.3);
+  box-shadow: none !important;
+  cursor: grabbing;
+  pointer-events: none;
 }
+
+/* ============================================================================
+   4. PICTOGRAMAS (0-10)
+   ============================================================================ */
 
 .pictogram-image {
-  width: 75px;
-  height: 75px;
+  width: clamp(28px, 48%, 64px);
+  height: clamp(28px, 48%, 64px);
   object-fit: contain;
   pointer-events: none;
 }
 
 /* ============================================================================
-   4. BOTONES DE CONTROL (Comprobar, Repetir, Pista)
+   5. BOTONES DE CONTROL (Tato, Continuar)
    ============================================================================ */
 
 .check-button-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  padding: 0 clamp(0.75rem, 3vw, 1.5rem);
   max-width: 900px;
-  margin: -1rem auto 2rem auto;
-  gap: 1rem;
-}
-
-/* Ajustar contenedor cuando solo hay dos botones (sin repetir) */
-.check-button-container:not(:has(.game2-repeat-button)) {
-  justify-content: space-between;
+  margin: -0.5rem auto 1.5rem auto;
+  gap: 0.75rem 1rem;
 }
 
 .game2-check-button {
   --padding-start: 0;
   --padding-end: 0;
-  width: 150px;
-  height: 150px;
+  width: clamp(72px, 12vw, 150px);
+  height: clamp(72px, 12vw, 150px);
   margin: 0;
+  flex-shrink: 0;
 }
 
 .game2-check-button::part(native) {
@@ -197,12 +205,234 @@
   opacity: 0.4;
 }
 
-/* Botón de repetir (en el centro) */
-.game2-repeat-button {
-  order: 0;
-}
-
-/* Botón de pista (a la izquierda) */
+/* Botón de pista (Tato - izquierda) */
 .game2-hint-button {
   order: -1;
+}
+
+/* Botón de continuar (derecha) */
+.game2-continue-button {
+  order: 1;
+  margin-left: auto;
+}
+
+/* ============================================================================
+   6. ANIMACIONES Y EFECTOS
+   ============================================================================ */
+
+/* Animación del slot objetivo (abajo) */
+.droppable-slot-target .empty-slot {
+  border: 3px dashed var(--bubble-selected-bg, #6a98e7);
+  background-color: var(--bubble-bg, rgba(106, 152, 231, 0.1));
+  animation: pulse-target 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-target {
+  0%, 100% {
+    transform: scale(1);
+    border-color: #6a98e7;
+  }
+  50% {
+    transform: scale(1.05);
+    border-color: #84acf1;
+  }
+}
+
+/* Animación de error (shake) */
+@keyframes shake-error {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* ============================================================================
+   7. RESPONSIVE DESIGN - Igual que Game1
+   ============================================================================ */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .game2-check-button {
+    width: clamp(100px, 11vw, 180px);
+    height: clamp(100px, 11vw, 180px);
+  }
+}
+
+@media (min-width:480px) and (max-width: 768px) {
+  .game2-check-button {
+    width: clamp(60px, 14vw, 140px);
+    height: clamp(60px, 14vw, 140px);
+  }
+}
+
+@media (max-width: 480px) {
+  .game2-check-button {
+    width: clamp(56px, 20vw, 130px);
+    height: clamp(56px, 20vw, 130px);
+  }
+}
+
+/* ============================================================================
+   8. VIDEO MODAL - Igual que Game1
+   ============================================================================ */
+
+.game2-video-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.game2-video-modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background-color: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.game2-video-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.game2-video-close-button:hover {
+  background-color: #fff;
+  transform: scale(1.1);
+}
+
+.game2-video-close-button:active {
+  transform: scale(0.95);
+}
+
+.game2-video-player {
+  width: 100%;
+  height: 100%;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: block;
+}
+
+/* Responsive adjustments for video modal */
+@media (max-width: 768px) {
+  .game2-video-modal-content {
+    max-width: 95vw;
+    max-height: 80vh;
+  }
+
+  .game2-video-close-button {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+    top: 5px;
+    right: 5px;
+  }
+}
+
+/* ============================================================================
+   9. TOUCH DRAG AND DROP (Mobile/Tablet)
+   ============================================================================ */
+
+/* Elemento que se arrastra en dispositivos táctiles */
+.number-card-dragging-touch {
+  opacity: 0.8;
+  transform: none !important;
+  box-shadow: 0 8px 20px rgba(132, 172, 241, 0.5);
+  pointer-events: none;
+  z-index: 9999;
+  transition: none;
+}
+
+/* Ajustes adicionales para pantallas bajas o móviles */
+@media (max-width: 640px) {
+  .game2-content {
+    --viewport-unit: min(100vw, 85vh);
+    --size-card: clamp(46px, 17vw, 110px);
+    --gap-card: clamp(0.35rem, 2.8vw, 0.9rem);
+    --pad-zone: clamp(0.45rem, 2.8vw, 0.9rem);
+  }
+
+  .game2-container {
+    gap: clamp(0.75rem, 2.5vw, 1.5rem);
+  }
+
+  .number-card-v2 {
+    border-width: 2px;
+  }
+
+  .pictogram-image {
+    width: clamp(34px, 50%, 70px);
+    height: clamp(34px, 50%, 70px);
+  }
+}
+
+@media (max-height: 740px) {
+  .game2-content {
+    --viewport-unit: min(100vw, 78vh);
+    --size-card: clamp(44px, 16vw, 105px);
+    --gap-card: clamp(0.3rem, 2.3vw, 0.85rem);
+    --pad-zone: clamp(0.35rem, 2.3vw, 0.85rem);
+  }
+
+  .check-button-container {
+    margin: -0.25rem auto 1rem auto;
+  }
+}
+
+@media (max-height: 640px) {
+  .game2-check-button {
+    width: clamp(60px, 12vw, 120px);
+    height: clamp(60px, 12vw, 120px);
+  }
+
+  .game2-container {
+    gap: clamp(0.65rem, 2vw, 1.2rem);
+  }
 }

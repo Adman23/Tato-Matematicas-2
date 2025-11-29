@@ -17,7 +17,7 @@ import { useHistory } from 'react-router-dom';
 export default function UserManagement() {
 
   const { tipo } = useParams<{ tipo: string }>();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loadingAuth: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<{ id: string; username: string; photo_url: string }[]>([]);
@@ -26,7 +26,7 @@ export default function UserManagement() {
 
   // Redirige si el tipo no es válido
   if (tipo !== 'profesores' && tipo !== 'alumnos') {
-    return <Redirect to="/admin-dashboard" />;
+    return <Redirect to="/admin/dashboard" />;
   }
 
   /*useEffect(() => {
@@ -117,8 +117,8 @@ export default function UserManagement() {
               className="teacherManagement-AddButoon"
               onClick={() =>
                 tipo === 'profesores'
-                  ? history.push('/teacher-register')
-                  : history.push('/student-register')
+                  ? history.push('/teacher/register')
+                  : history.push('/student/register')
               }
             >
               Añadir nuevo {tipo === 'profesores' ? 'profesor' : 'alumno'}

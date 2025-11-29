@@ -1,5 +1,8 @@
 """
-Router de Autenticación
+!! EDITED 1.2.0
+    -> Changed all the comments to english and fixed some.
+    
+Auth router
 Endpoints: /auth/register, /auth/login, /auth/me
 """
 from fastapi import APIRouter, HTTPException, status, Depends
@@ -11,8 +14,7 @@ from ..schemas.auth import (
     RegisterRequest,
     LoginRequest,
     User,
-    UserProfile,
-    UserResponse,
+    UserData,
     AuthResponse,
     MessageResponse,
     Group,
@@ -23,15 +25,16 @@ from ..schemas.auth import (
 )
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
-from ..dependencies import get_current_user, get_current_admin
+from ..dependencies import is_auth_current_user, is_admin_current_user
 from ..config import settings
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+# Config router 
+router = APIRouter()
 
 
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register( data: RegisterRequest, 
-                    current_admin: dict = Depends(get_current_admin)):
+                    current_admin: dict = Depends(is_admin_current_user)):
     """
     Register new user
 
@@ -91,7 +94,7 @@ async def register( data: RegisterRequest,
 
 
 @router.post("/register/group", response_model=Group, status_code=status.HTTP_201_CREATED)
-async def register_group(data: Group, current_admin: dict = Depends(get_current_admin)):
+async def register_group(data: Group, current_admin: dict = Depends(is_admin_current_user)):
     """
     Register new group
 
@@ -215,10 +218,11 @@ async def login(data: LoginRequest):
                 "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
                 "accessibility_settings": response_user_profile.data[0].get("accessibility_settings"),
                 "game_preferences": response_user_profile.data[0].get("game_preferences"),
+                "color_preferences": response_user_profile.data[0].get("color_preferences"),
             }
             return AuthResponse(
                 access_token=auth_response.session.access_token,
-                user=UserProfile(**user)
+                user=UserData(**user)
             )
         else:
             # User without profile (teachers(puede tener perfil), admins)
@@ -242,9 +246,15 @@ async def login(data: LoginRequest):
         )
 
 
-@router.get("/me", response_model=User)
-async def get_me(current_user: dict = Depends(get_current_user)):
+
+# !! DEPRECATED 1.2.0
+# -> me is not used anymore
+#	-> replaced by get_basic_info
+#
+#@router.get("/me", response_model=User)
+#async def get_me(current_user: dict = Depends(get_current_user)):
     """
+    ###
     Obtiene la información del usuario autenticado actual.
 
     Este endpoint requiere un token JWT válido. Devuelve los datos del perfil
@@ -256,8 +266,11 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
     Returns:
         UserProfile: Perfil del usuario autenticado (id, username, email, role, full_name).
-    """
+    ###
+    
     return User(**current_user)
+	"""
+
 
 
 @router.get("/exists/{username}", response_model=ExistsResponse)
@@ -383,7 +396,7 @@ async def group_exists(groupId: str):
 
 
 @router.post("/logout", response_model=MessageResponse)
-async def logout(current_user: dict = Depends(get_current_user)):
+async def logout(current_user: tuple = Depends(is_auth_current_user)):
     """
     Cierra la sesión del usuario autenticado.
 
@@ -392,7 +405,7 @@ async def logout(current_user: dict = Depends(get_current_user)):
     del token) se gestiona desde el cliente (frontend).
 
     Args:
-        current_user (dict): Información del usuario autenticado, obtenida mediante
+        current_user (tuple): Información del usuario autenticado, obtenida mediante
             la dependencia `get_current_user`.
 
     Returns:
@@ -401,6 +414,7 @@ async def logout(current_user: dict = Depends(get_current_user)):
     # En Supabase, el logout se hace desde el cliente
     # Aquí solo confirmamos que el token es válido
     return MessageResponse(message="Sesión cerrada correctamente")
+
 
 
 # === STUDENT LOGIN ENDPOINTS ===
@@ -436,7 +450,6 @@ async def get_groups():
             detail=f"Error fetching groups: {str(e)}"
         )
 
-
 @router.get("/groups/{group_id}/students", response_model=list[StudentBasicInfo])
 async def get_students_by_group(group_id: int):
     """
@@ -462,10 +475,10 @@ async def get_students_by_group(group_id: int):
     try:
         # Get students from public.users (id and photo_url)
         resp = supabase_admin.table("users") \
-                             .select("id, photo_url") \
-                             .eq("group_id", group_id) \
-                             .eq("role", "student") \
-                             .execute()
+                            .select("id, photo_url") \
+                            .eq("group_id", group_id) \
+                            .eq("role", "student") \
+                            .execute()
 
         if not resp.data:
             return []
@@ -598,10 +611,11 @@ async def login_student(data: StudentLoginRequest):
                 "audio_preferences": response_profile.data[0].get("audio_preferences"),
                 "accessibility_settings": response_profile.data[0].get("accessibility_settings"),
                 "game_preferences": response_profile.data[0].get("game_preferences"),
+                "color_preferences": response_profile.data[0].get("color_preferences"),
             }
             return StudentAuthResponse(
                 access_token=auth_response.session.access_token,
-                student=UserProfile(**student_data)
+                student=UserData(**student_data)
             )
         else:
             # Student without profile
@@ -613,7 +627,7 @@ async def login_student(data: StudentLoginRequest):
             }
             return StudentAuthResponse(
                 access_token=auth_response.session.access_token,
-                student=UserProfile(**student_data)
+                student=UserData(**student_data)
             )
 
     except HTTPException:

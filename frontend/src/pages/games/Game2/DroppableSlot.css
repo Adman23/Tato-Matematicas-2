@@ -10,8 +10,12 @@
    ============================================================================ */
 
 .droppable-slot {
-  width: 90px;
-  height: 90px;
+  width: var(--size-card);
+  height: var(--size-card);
+  min-width: var(--size-card);
+  min-height: var(--size-card);
+  flex: 0 0 var(--size-card);
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,12 +31,19 @@
    ============================================================================ */
 
 .empty-slot {
-  width: 90px;
-  height: 90px;
+  width: var(--size-card);
+  height: var(--size-card);
   border-radius: 50%;
-  background: #d1d5db;
-  border: 3px dashed #9ca3af;
+  background: transparent;
+  border: 3px dashed transparent;
   transition: all 0.2s;
+  cursor: default;
+}
+
+/* Solo la casilla objetivo (primera vacía) se ve */
+.droppable-slot-target .empty-slot {
+  background: var(--bubble-bg, #d1d5db);
+  border: 3px dashed var(--bubble-selected-bg, #9ca3af);
   cursor: pointer;
 }
 
@@ -74,4 +85,28 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.feedback-incorrect-slot {
+  position: absolute;
+  font-size: 3rem;
+  color: #ef4444;
+  animation: shake-error 0.5s ease-in-out;
+}
+
+@keyframes shake-error {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* ============================================================================
+   4. ESTILOS PARA DRAG AND DROP
+   ============================================================================ */
+
+.empty-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
