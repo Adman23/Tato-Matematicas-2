@@ -29,7 +29,7 @@ import './Game2.css';
 // Importar imágenes para el header
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgTato from '/assets/Tato/TatoPista.jpeg';
+import imgTato from '/assets/Tato/TatoPista.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
@@ -93,7 +93,7 @@ const TOTAL_ROUNDS = 5;
  * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
-  
+
   const location = useLocation();
   const router = useIonRouter();
   const { user, loadingAuth: authLoading } = useAuth();
@@ -943,43 +943,24 @@ const Game2: React.FC = () => {
     );
   }
   */
-  
+
 
   return (
     <IonPage>
       <IonContent className="game2-content" scrollY={false}>
-          {gameFinished ? (
-            <ResultsScreen
-              totalRounds={TOTAL_ROUNDS}
-              completedRounds={roundTimes.length}
-              totalHints={totalHintsUsed}
-              totalErrors={totalErrorsMade}
-              totalNumbersCorrect={totalNumbersCorrect}
-              totalNumbersRequired={totalNumbersRequired}
-              onHomeClick={exitToDashboard}
-              headerTitle="Ordenar Nº"
-              headerPictogram1={imgOrdenar}
-              headerPictogramArrow={imgFlecha}
-              headerPictogram2={imgJuego}
-            />
-          ) : (
-          <>
-        {/* Mostrar pantalla de feedback después de colocar un número */}
-        {showFeedbackScreen ? (
-          <FeedbackScreen
-            isCorrect={feedbackType === 'correct'}
-            currentRound={currentRound}
+        {gameFinished ? (
+          <ResultsScreen
             totalRounds={TOTAL_ROUNDS}
+            completedRounds={roundTimes.length}
+            totalHints={totalHintsUsed}
+            totalErrors={totalErrorsMade}
+            totalNumbersCorrect={totalNumbersCorrect}
+            totalNumbersRequired={totalNumbersRequired}
+            onHomeClick={exitToDashboard}
             headerTitle="Ordenar Nº"
             headerPictogram1={imgOrdenar}
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
-            imgTatoFeliz={imgTatoFeliz}
-            imgTatoTriste={imgTatoTriste}
-            imgSiguiente={imgSiguiente}
-            messages={Messages}
-            onNext={closeFeedbackScreen}
-            onHomeClick={handleEarlyExit}
           />
         ) : (
           <>
@@ -994,13 +975,13 @@ const Game2: React.FC = () => {
               onHomeClick={handleEarlyExit}
             />
 
+        {/* Wrapper principal */}
+        <div className="game2-main-wrapper">
+          {/* Zona de juego */}
+          <div className="game2-container">
 
-
-        {/* Zona de juego */}
-        <div className="game2-container">
-
-          {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
-          <div className="available-numbers-top" id="available-zone">
+            {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
+            <div className="available-numbers-top" id="available-zone">
             {availableNumbers.map((num, index) => {
               if (num === undefined) {
                 // Hueco vacío - círculo gris con borde punteado negro
@@ -1046,7 +1027,7 @@ const Game2: React.FC = () => {
                       decoding="sync"
                     />
                   ) : (
-                    <span className="number-value">{num}</span>
+                    <span>{num}</span>
                   )}
                 </div>
               );
@@ -1069,37 +1050,47 @@ const Game2: React.FC = () => {
           </div>
         </div>
 
-        {/* Botones de control */}
-        <div className="check-button-container">
-          {/* Botón de pistas (Tato) */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button game2-hint-button"
-            onClick={useHint}
-            disabled={availableNumbers.every(n => n === undefined)}
-          >
-            <img
-              src={imgTato}
-              alt="Pista"
-              className="game2-check-button-image"
-            />
-          </IonButton>
+          {/* Botones de control */}
+          <div className="check-button-container">
+            {/* Botón de pistas (Tato) */}
+            <IonButton
+              fill="clear"
+              className="game2-check-button game2-hint-button"
+              onClick={useHint}
+              disabled={availableNumbers.every(n => n === undefined)}
+            >
+              <img
+                src={imgTato}
+                alt="Pista"
+                className="game2-check-button-image"
+              />
+            </IonButton>
 
-          {/* Botón de instrucciones/tutorial */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button"
-            onClick={openVideoModal}
-          >
-            <img
-              src={imgInstrucciones}
-              alt="Video de ayuda"
-              className="game2-check-button-image"
-            />
-          </IonButton>
+            {/* Indicador de orden */}
+            <div className="order-indicator">
+              <span className="order-icon">
+                {config?.settings.order === 'ascending' ? '↑' : '↓'}
+              </span>
+              <span className="order-text">
+                {config?.settings.order === 'ascending' ? 'Ascendente' : 'Descendente'}
+              </span>
+            </div>
+
+            {/* Botón de instrucciones/tutorial */}
+            <IonButton
+              fill="clear"
+              className="game2-check-button"
+              onClick={openVideoModal}
+            >
+              <img
+                src={imgInstrucciones}
+                alt="Video de ayuda"
+                className="game2-check-button-image"
+              />
+            </IonButton>
+          </div>
         </div>
-        </>
-        )}
+
         {/* Video Modal */}
         {showVideoModal && (
           <div className="game2-video-modal-overlay" onClick={closeVideoModal}>
@@ -1119,7 +1110,7 @@ const Game2: React.FC = () => {
             </div>
           </div>
         )}
-          </>
+        </>
         )}
       </IonContent>
     </IonPage>

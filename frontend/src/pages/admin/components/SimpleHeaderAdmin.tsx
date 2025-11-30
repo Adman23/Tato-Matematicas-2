@@ -99,7 +99,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
     }
 
     return (
-        <IonHeader>
+        <IonHeader className='header-admin-simpleHeader'>
             <IonToolbar className="toolbar-header-admin">
                 <IonButtons slot='start'>
                     <IonButton className='homeButton-header-admin' onClick={handleHome} >
