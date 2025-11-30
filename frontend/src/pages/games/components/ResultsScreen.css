@@ -1,0 +1,118 @@
+.results-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 100dvh;
+}
+
+.results-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.75rem, 3vw, 1.25rem);
+  padding: clamp(0.85rem, 3.5vw, 1.35rem);
+  padding-bottom: calc(clamp(0.85rem, 3.5vw, 1.35rem) + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  overflow: hidden;
+  flex: 1;
+}
+
+.results-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+}
+
+.results-subtitle {
+  margin: 0;
+  color: #555;
+  font-size: clamp(0.85rem, 2.6vw, 1rem);
+  text-align: center;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: clamp(0.5rem, 2.5vw, 0.85rem);
+  width: 100%;
+  max-width: 880px;
+}
+
+.results-card {
+  background: #f9fbff;
+  border: 1px solid #e0e7ff;
+  border-radius: 12px;
+  padding: 0.85rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.results-label {
+  margin: 0 0 0.35rem 0;
+  color: #5d6b82;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.results-value {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: #102a56;
+}
+
+.results-icon {
+  width: clamp(32px, 8vw, 44px);
+  height: clamp(32px, 8vw, 44px);
+  object-fit: contain;
+}
+
+@media (max-width: 640px) {
+  .results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .results-title {
+    text-align: center;
+  }
+}
+
+@media (max-width: 460px) {
+  .results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .results-card {
+    min-height: 90px;
+  }
+}
+
+.results-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(360px, 100%);
+  margin-top: 0.25rem;
+}
+
+.results-button {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+@media (max-height: 700px) {
+  .results-screen {
+    gap: 0.75rem;
+  }
+
+  .results-card {
+    min-height: 100px;
+  }
+}

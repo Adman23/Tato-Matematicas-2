@@ -1,33 +1,18 @@
-/**
- * !! EDITED
- *  -> Now there is no student
- * 
- * Pantalla de Paso 3: Secuencia de Pictogramas (Contraseña)
- * ---------------------------------------------------------
- * El estudiante selecciona una secuencia de pictogramas (animales) que
- * es su contraseña. Si coincide con la registrada en backend, se le
- * autentica y redirige a su panel (`/student/dashboard`).
- *
- * Utiliza:
- * - **Ionic React** (estructura y botones).
- * - **AuthContext** (`useAuth`) para `login`.
- * - **React Router** (`useHistory`, `useParams`) para navegación y parámetros.
- * - Estilos en `StudentLoginAuth.css`.
- */
-
 import {
   IonPage,
   IonContent,
-  IonButton,
   IonText,
+  IonIcon,
   useIonViewWillEnter,
+  useIonRouter,
 } from '@ionic/react';
+import { arrowBack, checkmark, trash } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { Button3Dtext } from '../global_components/PushableButtons'; 
 import './StudentLoginAuth.css';
 
-/** Pictogramas disponibles para componer la clave visual del estudiante. */
 const PICTOGRAMS = [
   { id: 'perro', name: 'Perro', image: '/assets/pictograms/perro.png' },
   { id: 'gato', name: 'Gato', image: '/assets/pictograms/gato.png' },
@@ -36,19 +21,16 @@ const PICTOGRAMS = [
   { id: 'elefante', name: 'Elefante', image: '/assets/pictograms/elefante.png' },
 ];
 
-/** Longitud mínima requerida para validar la secuencia. */
 const REQUIRED_LENGTH = 3;
 const MAX_LENGTH = REQUIRED_LENGTH;
 
-/**
- * Paso 3 del login de estudiante: Secuencia de pictogramas (contraseña).
- */
 export default function StudentLoginStep3() {
+  const router = useIonRouter(); // Usamos router de Ionic para animaciones
   const params = useParams<{ groupId: string; username: string }>();
-  const history = useHistory();
+  const history = useHistory(); // Mantenemos history para leer location si es necesario
   const { login } = useAuth();
 
-  // Extract groupId and username from URL pathname as fallback
+  // Obtener IDs de la URL de forma robusta
   const pathParts = history.location.pathname.split('/');
   const groupId = params.groupId || pathParts[pathParts.length - 2] || '';
   const username = params.username || pathParts[pathParts.length - 1] || '';
@@ -57,13 +39,11 @@ export default function StudentLoginStep3() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Resetear secuencia cada vez que la vista se muestra
   useIonViewWillEnter(() => {
     setSelected([]);
     setError('');
   });
 
-  // Temporizador para ocultar el mensaje de error
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(''), 4000);
@@ -78,30 +58,27 @@ export default function StudentLoginStep3() {
         return prev;
       }
       setError('');
-
-      const newSequence = [...prev, pictogramId];
-
-      // Auto-submit al completar los 3 pictogramas
-      if (newSequence.length === REQUIRED_LENGTH) {
-        setTimeout(() => {
-          handleLoginWithSequence(newSequence);
-        }, 100);
-      }
-
-      return newSequence;
+      return [...prev, pictogramId];
     });
   };
 
-  const removeLastPictogram = () => {
-    setSelected(prev => {
-      if (prev.length === 0) return prev;
-      return prev.slice(0, -1);
-    });
+  const removePictoAtIndex = (indexToRemove: number) => {
+    setSelected(prev => prev.filter((_, index) => index !== indexToRemove));
     setError('');
   };
 
-  const handleLoginWithSequence = async (sequence: string[]) => {
-    if (sequence.length < REQUIRED_LENGTH) {
+  // --- LÓGICA DE NAVEGACIÓN CORREGIDA ---
+  const handleBack = () => {
+    // En lugar de goBack(), forzamos ir a la vista de selección de alumnos de este grupo.
+    // Usamos 'back' como dirección para que la animación sea correcta (deslizar izquierda a derecha).
+    
+    // NOTA: Asegúrate de tener la ruta "/student/login/step2/:groupId" definida en App.tsx
+    // apuntando a StudentLoginUnified (o StudentLoginStep1) para que esto funcione.
+    router.push(`/student/login/step2/${groupId}`, 'back');
+  };
+
+  const handleLogin = async () => {
+    if (selected.length < REQUIRED_LENGTH) {
       setError('Aún faltan imágenes');
       return;
     }
@@ -110,8 +87,7 @@ export default function StudentLoginStep3() {
     setError('');
 
     try {
-      const password = sequence.join('-');
-
+      const password = selected.join('-');
       await login({
         group_id: groupId,
         username: username,
@@ -119,136 +95,89 @@ export default function StudentLoginStep3() {
       });
 
       setSelected([]);
-      setError('');
-      console.log("A");
-      history.push('/student/dashboard');
+      router.push('/student/dashboard', 'forward'); // Animación hacia adelante al éxito
     } catch (err: any) {
-      setError('Oh, te has equivocado, inténtalo otra vez');
+      setError('Contraseña incorrecta, inténtalo de nuevo');
       setSelected([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogin = () => {
-    handleLoginWithSequence(selected);
-  };
-
   return (
     <IonPage>
       <IonContent className="student-login-content">
         <div className="auth-login-container">
-          {/* Fila de botones superior */}
-          <div className="auth-button-row">
-            <IonButton
-              fill="clear"
-              className="auth-action-button"
-              onClick={() => history.goBack()}
+          
+          {/* === HEADER === */}
+          <div className="auth-header-row">
+            
+            {/* Botón Volver (Ahora usa handleBack) */}
+            <Button3Dtext 
+              color="var(--ion-color-primary)" 
+              onClick={handleBack}
             >
-              <img
-                src="/assets/pictograms/boton_volver.png"
-                alt="Volver"
-                className="auth-boton-imagen"
-              />
-            </IonButton>
+               <IonIcon icon={arrowBack} className="btn-icon" />
+            </Button3Dtext>
 
-            <IonButton
-              fill="clear"
-              className="auth-action-button"
-              onClick={() => history.push('/')}
-            >
-              <img
-                src="/assets/pictograms/home.png"
-                alt="Volver a la página principal"
-                className="auth-boton-imagen"
-              />
-            </IonButton>
-
-            <IonButton
-              fill="clear"
-              className="auth-action-button"
-              onClick={handleLogin}
-              disabled={loading}
-            >
-              <img
-                src="/assets/pictograms/correcto.png"
-                alt="Avanzar"
-                className="auth-boton-imagen"
-              />
-            </IonButton>
-          </div>
-
-          {/* Título y subtítulo */}
-          <div className="auth-login-header">
-            <img
-              src="/assets/pictograms/contrasena.png"
-              alt="imagen de contraseña"
-              className="auth-login-image"
+            {/* Título Central */}
+                        <img 
+              src="/assets/Tato/Tatitulo.png" 
+              alt="Tato Matemáticas" 
+              className="auth-logo-title" 
             />
 
-            <h1 className="auth-login-title">Selección de clave</h1>
-            <p className="auth-login-subtitle">
-              Toca {REQUIRED_LENGTH} animales en el orden correcto
-            </p>
+            {/* Botón Confirmar */}
+            <Button3Dtext 
+              color="var(--ion-color-success)" 
+              onClick={handleLogin}
+              disabled={loading || selected.length !== REQUIRED_LENGTH}
+            >
+               <IonIcon icon={checkmark} className="btn-icon" />
+            </Button3Dtext>
           </div>
 
-          {/* Secuencia seleccionada con botón borrar a la derecha */}
+          {/* Subtítulo / Instrucciones */}
+          <div className="auth-instructions">
+            <h2 className="auth-subtitle">
+               Selecciona tu clave secreta ({REQUIRED_LENGTH} animales)
+            </h2>
+          </div>
+
+          {/* === SECUENCIA SELECCIONADA === */}
           <div className="auth-sequence-row">
-            <div
-              className="auth-sequence-display"
-              aria-live="polite"
-              aria-label="Posiciones de la contraseña"
-            >
-              <div className="auth-sequence-slots" role="list">
+            <div className="auth-sequence-display">
+              <div className="auth-sequence-slots">
                 {Array.from({ length: REQUIRED_LENGTH }, (_, index) => {
                   const pictogramId = selected[index];
-                  const picto = pictogramId
-                    ? PICTOGRAMS.find(p => p.id === pictogramId)
-                    : null;
+                  const picto = pictogramId ? PICTOGRAMS.find(p => p.id === pictogramId) : null;
+                  
                   return (
-                    <div
-                      key={`password-slot-${index}`}
-                      className={`auth-sequence-slot ${picto ? 'filled' : ''}`}
-                      role="listitem"
-                      aria-label={
-                        picto
-                          ? `Posición ${index + 1} seleccionada: ${picto.name}`
-                          : `Posición ${index + 1} vacía`
-                      }
+                    <button
+                      key={`slot-${index}`}
+                      className={`auth-sequence-slot ${picto ? 'filled' : 'empty'}`}
+                      onClick={() => picto && removePictoAtIndex(index)}
+                      disabled={!picto}
+                      aria-label={picto ? `Eliminar ${picto.name}` : `Posición ${index + 1} vacía`}
                     >
                       {picto ? (
-                        <img
-                          src={picto.image}
-                          alt={picto.name}
-                          className="auth-sequence-image"
-                        />
+                        <>
+                          <img src={picto.image} alt={picto.name} className="auth-sequence-image" />
+                          <div className="auth-slot-delete-overlay">
+                            <IonIcon icon={trash} />
+                          </div>
+                        </>
                       ) : (
-                        <span className="auth-sequence-slot-placeholder">
-                          Posición {index + 1}
-                        </span>
+                        <span className="auth-sequence-placeholder-dot">?</span>
                       )}
-                    </div>
+                    </button>
                   );
                 })}
               </div>
             </div>
-
-            {/* Botón: borrar último pictograma */}
-            <IonButton
-              fill="clear"
-              className="auth-action-button"
-              onClick={removeLastPictogram}
-              disabled={selected.length === 0}
-            >
-              <img
-                src="/assets/pictograms/boton_borrar.png"
-                alt="Borrar último pictograma"
-                className="auth-boton-imagen"
-              />
-            </IonButton>
           </div>
 
-          {/* Grid de pictogramas */}
+          {/* === GRID DE PICTOGRAMAS === */}
           <div className="auth-pictograms-grid">
             {PICTOGRAMS.map((picto) => (
               <button
@@ -256,7 +185,6 @@ export default function StudentLoginStep3() {
                 onClick={() => addPicto(picto.id)}
                 disabled={loading || selected.length >= MAX_LENGTH}
                 className="auth-pictogram-button"
-                aria-label={picto.name}
               >
                 <img
                   src={picto.image}
@@ -267,15 +195,14 @@ export default function StudentLoginStep3() {
             ))}
           </div>
 
-          {/* Mensaje de error accesible */}
+          {/* Mensaje de Error */}
           {error && (
-            <IonText color="danger">
-              <div className="auth-error-message">
-                <div className="auth-error-icon">❌</div>
-                <p>{error}</p>
-              </div>
-            </IonText>
+            <div className="auth-error-message">
+              <span className="auth-error-icon">❌</span>
+              <p>{error}</p>
+            </div>
           )}
+
         </div>
       </IonContent>
     </IonPage>

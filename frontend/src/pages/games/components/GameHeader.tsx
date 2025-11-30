@@ -12,9 +12,11 @@
  *
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { IonText, IonButton } from '@ionic/react';
 import './GameHeader.css';
+import iconCorrect from '/assets/juegosImg/correct.png';
+import iconIncorrect from '/assets/juegosImg/incorrecto.png';
 
 /**
  * Props del componente GameHeader.
@@ -26,7 +28,7 @@ import './GameHeader.css';
  * @property {string} pictogram2 - URL o ruta del tercer pictograma (imagen derecha)
  * @property {number} currentRound - Número de ronda actual (1-based, ej: 1, 2, 3...)
  * @property {number} totalRounds - Total de rondas del juego (ej: 5 para "1/5")
- * @property {() => void} [onHomeClick] - Callback opcional al hacer doble click en el botón home
+ * @property {() => void} [onHomeClick] - Callback opcional al confirmar salida con el botón home
  */
 interface GameHeaderProps {
   title: string;
@@ -66,81 +68,84 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   totalRounds,
   onHomeClick
 }) => {
-  const [homeSelected, setHomeSelected] = useState(false);
-  const clickTimeoutRef = useRef<number | null>(null);
-
-  // Limpiar timeout al desmontar
-  useEffect(() => {
-    return () => {
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-      }
-    };
-  }, []);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const handleHomeClick = () => {
-    if (homeSelected) {
-      // Segundo click: ejecutar acción
-      setHomeSelected(false);
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-      }
-      onHomeClick?.();
-    } else {
-      // Primer click: seleccionar
-      setHomeSelected(true);
+    setShowExitConfirm(true);
+  };
 
-      // Deseleccionar automáticamente después de 3 segundos si no hace segundo click
-      clickTimeoutRef.current = setTimeout(() => {
-        setHomeSelected(false);
-      }, 3000);
-    }
+  const confirmExit = () => {
+    setShowExitConfirm(false);
+    onHomeClick?.();
+  };
+
+  const cancelExit = () => {
+    setShowExitConfirm(false);
   };
 
   return (
-    <div className="game-header-component">
-      {/* Botón Home a la izquierda */}
-      <div className="game-header-left">
-        <IonButton
-          className={`game-header-home-button ${homeSelected ? 'home-selected' : ''}`}
-          onClick={handleHomeClick}
-          fill="clear"
-        >
-          <img
-            src="/assets/pictograms/home.png"
-            alt="Home"
-          />
-        </IonButton>
-      </div>
-
-      <div className="game-header-center">
-        <IonText>
-          <h2 className="game-header-title">{title}</h2>
-        </IonText>
-
-        <div className="game-header-pictograms">
-          <img
-            src={pictogram1}
-            alt="Pictograma 1"
-            className="game-header-pictogram"
-          />
-          <img
-            src={pictogramArrow}
-            alt="Flecha"
-            className="game-header-pictogram game-header-arrow"
-          />
-          <img
-            src={pictogram2}
-            alt="Pictograma 2"
-            className="game-header-pictogram"
-          />
+    <>
+      <div className="game-header-component">
+        {/* Botón Home a la izquierda */}
+        <div className="game-header-left">
+          <IonButton
+            className="game-header-home-button"
+            onClick={handleHomeClick}
+            fill="clear"
+            aria-label="Salir del juego"
+          >
+            <img
+              src="/assets/pictograms/home.png"
+              alt="Home"
+            />
+          </IonButton>
         </div>
+
+        <div className="game-header-center">
+          <IonText>
+            <h2 className="game-header-title">{title}</h2>
+          </IonText>
+
+          <div className="game-header-pictograms">
+            <img
+              src={pictogram1}
+              alt="Pictograma 1"
+              className="game-header-pictogram"
+            />
+            <img
+              src={pictogramArrow}
+              alt="Flecha"
+              className="game-header-pictogram game-header-arrow"
+            />
+            <img
+              src={pictogram2}
+              alt="Pictograma 2"
+              className="game-header-pictogram"
+            />
+          </div>
+        </div>
+
+        <IonText className="game-header-round">
+          <p>{currentRound}/{totalRounds}</p>
+        </IonText>
       </div>
 
-      <IonText className="game-header-round">
-        <p>{currentRound}/{totalRounds}</p>
-      </IonText>
-    </div>
+      {showExitConfirm && (
+        <div className="game-header-exit-overlay" role="dialog" aria-modal="true" aria-label="Confirmar salida">
+          <div className="game-header-exit-card">
+            <p className="game-header-exit-text">¿Seguro que quieres salir?</p>
+            <div className="game-header-exit-actions">
+              <button className="exit-btn" onClick={confirmExit} aria-label="Sí, salir">
+                <img src={iconCorrect} alt="Confirmar" />
+              </button>
+              <button className="exit-btn" onClick={cancelExit} aria-label="No, continuar">
+                <img src={iconIncorrect} alt="Cancelar" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
