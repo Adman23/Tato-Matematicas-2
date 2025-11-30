@@ -25,7 +25,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
   url
 }) => {
   const history = useHistory();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleProfile = () => {
     if (url != null) {
@@ -37,10 +37,15 @@ const SimpleHeaderUser: React.FC<Props> = ({
     }
   }
 
+  const handleLogout = async () => {
+    await logout();
+    history.replace('/home');
+  }
+
   return (
     <IonHeader className="ion-no-border">
       <IonToolbar className="toolbar-header-user">
-        
+
         {/* IZQUIERDA: Restaurado al estilo original */}
         <IonButtons slot="start">
           <img
@@ -52,7 +57,17 @@ const SimpleHeaderUser: React.FC<Props> = ({
         </IonButtons>
 
         <IonButtons slot="end">
-          <Button3Dtext onClick={handleProfile}>  
+          <Button3Dtext onClick={handleLogout}>
+            <>
+              <span className="btn-text">CERRAR SESIÓN</span>
+              <img
+                src="/assets/pictograms/salir.png"
+                alt="Cerrar sesión"
+                className="btn-icon"
+              />
+            </>
+          </Button3Dtext>
+          <Button3Dtext onClick={handleProfile}>
             {url != null ? (
               <>
                 <span className="btn-text">JUEGOS</span>

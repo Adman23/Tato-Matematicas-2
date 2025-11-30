@@ -116,7 +116,7 @@ export default function GroupsManagement() {
                             className="groupManagement-AddButoon"
                             onClick={() =>
 
-                                history.push('/group-register')
+                                history.push('/admin/group/register')
 
                             }
                         >

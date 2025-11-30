@@ -53,19 +53,31 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
 
 /* Texto del header (Estilo Original) */
 .header-text {
-  color: var(--tatomaths-text-primary); /* Tu variable de color original */
+  color: var(--tatomaths-text-primary);
+  /* Tu variable de color original */
   font-weight: 700;
   font-size: clamp(1.2rem, 4vmin, 2.5rem);
   white-space: nowrap;
 }
 
 
+/* ========================================
+    BOTONES
+   ======================================== */
+.btn-icon {
+  height: clamp(30px, 8vh, 70px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
+  margin-left: clamp(10px, 2vw, 20px);
+}
 
 /* ========================================
     NUEVO BOTÓN 3D "PUSHABLE"
    ======================================== */
 
-  /*
+/*
 .pushable-button {
   position: relative;
   background: transparent;
