@@ -10,6 +10,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 
 import { Button3Dtext } from '../../global_components/PushableButtons';
 
+
 setupIonicReact();
 
 interface Props {
@@ -25,7 +26,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
   url
 }) => {
   const router = useIonRouter();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleProfile = () => {
     if (url != null) {
@@ -35,6 +36,11 @@ const SimpleHeaderUser: React.FC<Props> = ({
     } else {
       router.push('/student/profile');
     }
+  }
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/home',"none","replace");
   }
 
   return (
@@ -52,14 +58,24 @@ const SimpleHeaderUser: React.FC<Props> = ({
         </IonButtons>
 
         <IonButtons slot="end">
-          <Button3Dtext onClick={handleProfile}>  
+          <Button3Dtext onClick={handleLogout}>
+            <>
+              <span className="btn-text">CERRAR SESIÓN</span>
+              <img
+                src="/assets/pictograms/salir.png"
+                alt="Cerrar sesión"
+                className="btn-icon-header-user"
+              />
+            </>
+          </Button3Dtext>
+          <Button3Dtext onClick={handleProfile}>
             {url != null ? (
               <>
                 <span className="btn-text">JUEGOS</span>
                 <img
                   src="/assets/pictograms/juegos.png"
                   alt="Ir al dashboard"
-                  className="btn-icon"
+                  className="btn-icon-header-user"
                 />
               </>
             ) : (
@@ -68,7 +84,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"
-                  className="btn-icon"
+                  className="btn-icon-header-user"
                 />
               </>
             )}

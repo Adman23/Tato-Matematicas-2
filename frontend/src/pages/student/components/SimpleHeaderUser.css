@@ -64,7 +64,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
 /* ========================================
     BOTONES
    ======================================== */
-.btn-icon {
+.btn-icon-header-user {
   height: clamp(30px, 8vh, 70px);
   width: auto;
   object-fit: contain;
