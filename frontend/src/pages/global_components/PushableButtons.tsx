@@ -27,7 +27,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
   onClick, 
   children, 
   className = '', 
-  color = 'var(--ion-color-primary)',
+  color = 'var(--bubble-selected-bg)',
   disabled = false
 }) => {
 

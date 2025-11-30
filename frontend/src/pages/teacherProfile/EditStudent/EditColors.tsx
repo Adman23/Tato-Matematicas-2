@@ -19,7 +19,8 @@ import {
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonIcon
+    IonIcon,
+    IonFooter
 
 } from '@ionic/react';
 import { close } from 'ionicons/icons';
@@ -70,19 +71,19 @@ export default function EditColor() {
     const examplePalette = [
         {
             id: 1,
-            colors: ["#50BFE6", "#ffffff", "#ffffff", "#000000", "#A9DAF3", "#FFB7FA", "#34D399", "#F87171", "#059669", "#b91c1c" ]
+            colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#A9DAF3", "#FFB7FA"]
         },
         {
             id: 2,
-            colors: ["#6A1B9A", "#FFFFFF", "#FDF7FF", "#1A1A1A", "#EDE7F6", "#FFCA28", "#C8E6C9", "#FFCDD2", "#2E7D32", "#D32F2F"]
+            colors: ["#6A1B9A", "#FFFFFF", "#f3e8f7ff", "#1A1A1A", "#E1C4FF", "#1FA5A5"]
         },
         {
             id: 3,
-            colors: ["#76B875", "#1A1A1A", "#e3fde6ff", "#1A1A1A", "#FFFFFF", "#80c3eaff", "#c8d9e6ff", "#FFCDD2", "#3B82F6", "#D32F2F"]
+            colors: ["#6FB96D", "#1A1A1A", "#effff0ff", "#1A1A1A", "#A9DDA9", "#E09A70"]
         },
         {
             id: 4,
-            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a", "#94d2bd", "#ee9b00", "#52b788", "#d62828", "#006d5b", "#9d0208"]
+            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a", "#94d2bd", "#ee9b00"]
         },
 
     ];
@@ -94,10 +95,6 @@ export default function EditColor() {
       const [colorTextoFondo] = useState("#FFFFFF");
       const [colorBubble] = useState("#FFFFFF");
       const [colorBubbleSelected] = useState("#FFFFFF");
-      const [colorBubbleCorrect] = useState("#FFFFFF");
-      const [colorBubbleIncorrect] = useState("#FFFFFF");
-      const [colorCorrectFed] = useState("#FFFFFF");
-      const [colorIncorrectFed] = useState("#FFFFFF");
     
     //Palette index
     //const [selectedPaletteIdx, setSelectedPaletteIdx] = useState<number | null>(0); // 0..N para predefinidas, null para personalizada
@@ -109,10 +106,7 @@ export default function EditColor() {
         text_on_bg: colorTextoFondo,
         bubble: colorBubble,
         bubble_selected: colorBubbleSelected,
-        bubble_correct: colorBubbleCorrect,
-        bubble_incorrect: colorBubbleIncorrect,
-        feedback_correct: colorCorrectFed,
-        feedback_incorrect: colorIncorrectFed,
+
     });
 
     //The palette that initially loads on the page
@@ -124,13 +118,13 @@ export default function EditColor() {
     textOnBackground: "checking",
     primaryOnBackground: "checking",
     bubbleOnBackground: "checking",
-    selectedBubbleOnBackground: "checking",
-    feedbackOnBackground: "checking",
-    feedbackIncOnBackground: "checking"
+    selectedBubbleOnBackground: "checking"
     });
 
     //State for the modal
     const [showModal, setShowModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+
 
     //Function that updates the preview of the final palette
     const applyPalette = (palette: Palette) => {
@@ -141,11 +135,7 @@ export default function EditColor() {
         background: palette.colors[2],
         text_on_bg: palette.colors[3],
         bubble: palette.colors[4],
-        bubble_selected: palette.colors[5],
-        bubble_correct: palette.colors[6],
-        bubble_incorrect: palette.colors[7],
-        feedback_correct: palette.colors[8],
-        feedback_incorrect: palette.colors[9],
+        bubble_selected: palette.colors[5]
     });
     };
 
@@ -162,11 +152,7 @@ export default function EditColor() {
                 background: prefs.background,
                 text_on_bg: prefs.text_on_bg,
                 bubble: prefs.bubble,
-                bubble_selected: prefs.bubble_selected,
-                bubble_correct: prefs.bubble_correct,
-                bubble_incorrect: prefs.bubble_incorrect,
-                feedback_correct: prefs.feedback_correct,
-                feedback_incorrect: prefs.feedback_incorrect,
+                bubble_selected: prefs.bubble_selected
             });
             
             //Updates the original palette 
@@ -176,11 +162,7 @@ export default function EditColor() {
                 background: prefs.background,
                 text_on_bg: prefs.text_on_bg,
                 bubble: prefs.bubble,
-                bubble_selected: prefs.bubble_selected,
-                bubble_correct: prefs.bubble_correct,
-                bubble_incorrect: prefs.bubble_incorrect,
-                feedback_correct: prefs.feedback_correct,
-                feedback_incorrect: prefs.feedback_incorrect,
+                bubble_selected: prefs.bubble_selected
             });
 
         } catch (err) {
@@ -209,8 +191,6 @@ export default function EditColor() {
             primaryOnBackground: evaluateContrast(customPalette.primary, customPalette.background),
             bubbleOnBackground: evaluateContrast(customPalette.bubble, customPalette.background),
             selectedBubbleOnBackground: evaluateContrast(customPalette.bubble_selected, customPalette.background),
-            feedbackOnBackground: evaluateContrast(customPalette.feedback_correct, customPalette.background), 
-            feedbackIncOnBackground: evaluateContrast(customPalette.feedback_incorrect, customPalette.background),
         });
     }, [customPalette]);
 
@@ -225,12 +205,9 @@ export default function EditColor() {
                 background: customPalette.background,
                 text_on_bg: customPalette.text_on_bg,
                 bubble: customPalette.bubble,
-                bubble_selected: customPalette.bubble_selected,
-                bubble_correct: customPalette.bubble_correct,
-                bubble_incorrect: customPalette.bubble_incorrect,
-                feedback_correct: customPalette.feedback_correct,
-                feedback_incorrect: customPalette.feedback_incorrect,
+                bubble_selected: customPalette.bubble_selected
             });
+            setShowToast(true);
             console.log("Paleta guardada correctamente!", customPalette);
         } catch (err) {
             console.error("Error al guardar la paleta", err);
@@ -257,64 +234,15 @@ export default function EditColor() {
             <SimpleHeaderEdit studentName={name} Editing={"Editar colores"} />
             <IonContent className="ion-padding">
                 <div className="studentEditProfile-editcolors-outer-container">
-                    <IonTitle className='studentEditColor-ionTitle'>Paletas predefinidas</IonTitle>
+                    <div className='studentEditColor-ionTitle'>Paletas predefinidas</div>
 
                     <PaletteSelector palettes={examplePalette} onSelect={applyPalette}></PaletteSelector>
 
                 </div>
                 <div className="studentEditProfile-editcolors-outer-container">
-                    <IonTitle className='studentEditColor-ionTitle'>Personalización avanzada</IonTitle>
+                    <div className='studentEditColor-ionTitle'>Personalización avanzada</div>
                     
                     <div className='studenEditColors-personalizacionAvanzada'>
-
-                        <IonGrid>
-                            <IonRow>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Color principal</IonLabel>
-                                <PopoverPicker color={customPalette.primary} onChange={(c) => setCustomPalette({...customPalette, primary: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Texto principal</IonLabel>
-                                <PopoverPicker color={customPalette.text_on_primary} onChange={(c) => setCustomPalette({...customPalette, text_on_primary: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Fondo</IonLabel>
-                                <PopoverPicker color={customPalette.background} onChange={(c) => setCustomPalette({...customPalette, background: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Texto fondo</IonLabel>
-                                <PopoverPicker color={customPalette.text_on_bg} onChange={(c) => setCustomPalette({...customPalette, text_on_bg: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Burbujas</IonLabel>
-                                <PopoverPicker color={customPalette.bubble} onChange={(c) => setCustomPalette({...customPalette, bubble: c})}/>
-                            </IonCol>
-                            
-                            </IonRow>
-
-                            <IonRow>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Burbuja seleccionada</IonLabel>
-                                <PopoverPicker color={customPalette.bubble_selected} onChange={(c) => setCustomPalette({...customPalette, bubble_selected: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Burbuja correcta</IonLabel>
-                                <PopoverPicker color={customPalette.bubble_correct} onChange={(c) => setCustomPalette({...customPalette, bubble_correct: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Burbuja incorrecta</IonLabel>
-                                <PopoverPicker color={customPalette.bubble_incorrect} onChange={(c) => setCustomPalette({...customPalette, bubble_incorrect: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Feedback positivo</IonLabel>
-                                <PopoverPicker color={customPalette.feedback_correct} onChange={(c) => setCustomPalette({...customPalette, feedback_correct: c})}/>
-                            </IonCol>
-                            <IonCol className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Feedback negativo</IonLabel>
-                                <PopoverPicker color={customPalette.feedback_incorrect} onChange={(c) => setCustomPalette({...customPalette, feedback_incorrect: c})}/>
-                            </IonCol>
-                            </IonRow>
-                        </IonGrid>
                         <div className='EditColor-PalettePreview'>
                             <ColorPaletteCard
                                 palette={{
@@ -325,27 +253,52 @@ export default function EditColor() {
                                         customPalette.background,
                                         customPalette.text_on_bg,
                                         customPalette.bubble,
-                                        customPalette.bubble_selected,
-                                        customPalette.bubble_correct,
-                                        customPalette.bubble_incorrect,
-                                        customPalette.feedback_correct,
-                                        customPalette.feedback_incorrect,
+                                        customPalette.bubble_selected
                                     ]
                                 }}
                             />
                             <AccessibilityIndicator status={accessibilityStatus} />
 
                         </div>
+
+                        <IonGrid>
+                            <IonRow>
+                                <IonCol  className='EditColor-IonCol'>
+                                <IonLabel className='EditColor-label'>Color principal</IonLabel>
+                                <PopoverPicker color={customPalette.primary} onChange={(c) => setCustomPalette({...customPalette, primary: c})}/>
+                                </IonCol>
+                                <IonCol  className='EditColor-IonCol'>
+                                <IonLabel className='EditColor-label'>Texto principal</IonLabel>
+                                <PopoverPicker color={customPalette.text_on_primary} onChange={(c) => setCustomPalette({...customPalette, text_on_primary: c})}/>
+                                </IonCol>
+                                <IonCol  className='EditColor-IonCol'>
+                                <IonLabel className='EditColor-label'>Fondo</IonLabel>
+                                <PopoverPicker color={customPalette.background} onChange={(c) => setCustomPalette({...customPalette, background: c})}/>
+                                </IonCol>
+                            </IonRow>
+
+                            <IonRow>
+                                <IonCol  className='EditColor-IonCol'>
+                                <IonLabel className='EditColor-label'>Texto fondo</IonLabel>
+                                <PopoverPicker color={customPalette.text_on_bg} onChange={(c) => setCustomPalette({...customPalette, text_on_bg: c})}/>
+                                </IonCol>
+                                <IonCol className='EditColor-IonCol'>
+                                <IonLabel className='EditColor-label'>Burbujas</IonLabel>
+                                <PopoverPicker color={customPalette.bubble} onChange={(c) => setCustomPalette({...customPalette, bubble: c})}/>
+                                </IonCol>
+                                <IonCol  className='EditColor-IonCol'>
+                                <IonLabel className='EditColor-label'>Burbuja seleccionada</IonLabel>
+                                <PopoverPicker color={customPalette.bubble_selected} onChange={(c) => setCustomPalette({...customPalette, bubble_selected: c})}/>
+                                </IonCol>
+                            </IonRow>
+                            </IonGrid>
+                        
                         
 
                     </div>
-                    <div className='LinkProfiles-buttons'>
-                        <IonButton
-                            type="submit"
-                            className='LinkProfiles-button'
-                            onClick={savePalette}
-                        >
-                            Aceptar
+                    <div className='LinkProfiles-buttons editColorsButtons'>
+                        <IonButton type="button" className='LinkProfiles-button' onClick={() => setShowModal(true)}>
+                            Guardar
                         </IonButton>
                         <IonButton
                             type="submit"
@@ -354,9 +307,7 @@ export default function EditColor() {
                         >
                             Cancelar
                         </IonButton>
-                        <IonButton type="button" className='LinkProfiles-button' onClick={() => setShowModal(true)}>
-                            Informe accesibilidad
-                        </IonButton>
+                        
 
                     </div>
 
@@ -365,18 +316,37 @@ export default function EditColor() {
                 <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
                 <IonHeader>
                     <IonToolbar>
-                        <IonTitle>Informe de accesibilidad</IonTitle>
-                        <IonButtons slot="end">
-                        <IonButton onClick={() => setShowModal(false)}>
-                            <IonIcon icon={close} />
+                    <IonTitle>Informe de accesibilidad</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={() => {setShowModal(false); setShowToast(false);}}>
+                        <IonIcon icon={close} />
                         </IonButton>
-                        </IonButtons>
+                    </IonButtons>
                     </IonToolbar>
-                    </IonHeader>
-                    <IonContent className="ion-padding">
+                </IonHeader>
+
+                <IonContent className="ion-padding ModalColorEditContent">
                     <AccessibilityDashboard report={accessibilityReport} />
-                    </IonContent>
+
+                    {showToast && (
+                        <div className="SuccessEditColor" >
+                        Cambios guardados correctamente ✔️
+                        </div>
+                    )}
+                </IonContent>
+
+                <IonFooter>
+                    <IonToolbar>
+                    <IonButton
+                        expand="block"
+                        onClick={savePalette}
+                    >
+                        Aceptar
+                    </IonButton>
+                    </IonToolbar>
+                </IonFooter>
                 </IonModal>
+
             </IonContent>
         </IonPage>
     );

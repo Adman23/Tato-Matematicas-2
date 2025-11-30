@@ -1,6 +1,6 @@
 import React from 'react';
 import { IonAvatar, IonItem, IonIcon, IonButton } from '@ionic/react';
-import { trendingUpSharp, informationCircle, create } from 'ionicons/icons';
+import { trendingUpSharp, create } from 'ionicons/icons';
 import './StudentItem.css';
 
 interface Props {
@@ -17,8 +17,7 @@ const StudentItem: React.FC<Props> = ({
   studentName,
   studentClass,
   onStatisticsClick,
-  onEditClick,
-  onInfoClick
+  onEditClick
 }) => {
   return (
 
@@ -42,10 +41,6 @@ const StudentItem: React.FC<Props> = ({
 
                     <IonButton className='StudentItem_perfilProfesor_Button' onClick={onStatisticsClick}>
                         <IonIcon slot="icon-only" md={trendingUpSharp}></IonIcon>
-                    </IonButton>
-
-                    <IonButton className='StudentItem_perfilProfesor_Button' onClick={onInfoClick}>
-                        <IonIcon slot="icon-only" md={informationCircle}></IonIcon>
                     </IonButton>
 
                     <IonButton className='StudentItem_perfilProfesor_Button' onClick={onEditClick}>

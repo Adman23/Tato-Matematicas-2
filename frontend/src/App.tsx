@@ -40,7 +40,7 @@ import Game2 from './pages/games/Game2/Game2';
 
 // == Paginas de tutor ====
 
-import TutorDashboard from './pages/tutor/Dashboard';
+import TutorDashboard from './pages/teacherProfile/teacherDashboard';
 
 // === Páginas de admin ===
 import LinkProfiles from './pages/admin/LinkProfiles';

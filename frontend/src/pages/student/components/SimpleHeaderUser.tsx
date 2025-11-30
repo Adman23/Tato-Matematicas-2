@@ -2,13 +2,14 @@ import {
   IonToolbar,
   IonHeader,
   IonButtons,
+  useIonRouter
 } from '@ionic/react';
 import './SimpleHeaderUser.css';
-import { useHistory } from 'react-router-dom';
 import { setupIonicReact } from '@ionic/react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 import { Button3Dtext } from '../../global_components/PushableButtons';
+
 
 setupIonicReact();
 
@@ -24,28 +25,28 @@ const SimpleHeaderUser: React.FC<Props> = ({
   photoUrl,
   url
 }) => {
-  const history = useHistory();
+  const router = useIonRouter();
   const { user, logout } = useAuth();
 
   const handleProfile = () => {
     if (url != null) {
-      history.replace(url);
+      router.push(url, "back", "pop");
     } else if (user?.role === "teacher") {
-      history.replace('/teacher/profile');
+      router.push('/teacher/profile');
     } else {
-      history.replace('/student/profile');
+      router.push('/student/profile');
     }
   }
 
   const handleLogout = async () => {
     await logout();
-    history.replace('/home');
+    router.push('/home',"none","replace");
   }
 
   return (
     <IonHeader className="ion-no-border">
       <IonToolbar className="toolbar-header-user">
-
+        
         {/* IZQUIERDA: Restaurado al estilo original */}
         <IonButtons slot="start">
           <img

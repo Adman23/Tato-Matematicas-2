@@ -12,12 +12,12 @@ import {
     IonSpinner,
     IonCard,
     IonCardContent,
-    IonButton
+    IonButton,
+    useIonRouter
 
 } from '@ionic/react';
 
 import './MenuAdmin.css';
-import { useHistory } from 'react-router-dom';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -44,7 +44,7 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function AdminDashboard() {
 
     const { user, loadingAuth: loading } = useAuth();
-    const history = useHistory();
+    const router = useIonRouter();
 
     // Show spinner while loading
     if (loading) {
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
                                     expand="block"
                                     type="submit"
                                     className='admin-dashboard-button'
-                                    onClick={() => history.push('/admin/dashboard/profesores')}
+                                    onClick={() => router.push('/admin/dashboard/profesores')}
                                 >
                                     Gestionar profesores
                                 </IonButton>
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
                                     className='admin-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin/dashboard/alumnos')}
+                                    onClick={() => router.push('/admin/dashboard/alumnos')}
                                 >
                                     Gestionar alumnos
                                 </IonButton>
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
                                     className='admin-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin/dashboard/link-profiles')}
+                                    onClick={() => router.push('/admin/dashboard/link-profiles')}
                                 >
                                     Gestionar matrículas
                                 </IonButton>
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
                                     className='admin-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin/dashboard/groups-management')}
+                                    onClick={() => router.push('/admin/dashboard/groups-management')}
                                 >
                                     Gestionar grupos
                                 </IonButton>

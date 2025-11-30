@@ -1,19 +1,19 @@
 /* =============================================================================
    CSS Styles for SimpleHeaderAdmin component
    ========================================================================== */
-ion-header.editStudentProfile{
-
-    display: flex;
-    align-items: bottom;
-    height: 150px;
+.header-editStudentProfile{
+  display: flex;
+  align-items: bottom;
+  height: 130px;
 }
+
 
 /* ========================================
     Toolbar
    ======================================== */
-ion-toolbar.toolbar-header-editStudentProfile {
+.toolbar-header-editStudentProfile {
   --background: var(--ion-color-primary);
-  height: 150px;
+  height: 130px;
   display: flex;
   align-items: center;
   padding: 0px 30px;
@@ -25,11 +25,12 @@ ion-toolbar.toolbar-header-editStudentProfile {
    ======================================== */
 ion-buttons[slot="start"],
 ion-buttons[slot="end"] {
-  width: 160px;
+  width: auto;
   flex-shrink: 0;
   display: flex;
   align-items: center;
 }
+
 
 ion-buttons[slot="start"] {
   justify-content: flex-start;
@@ -43,11 +44,12 @@ ion-buttons[slot="end"] {
 /* ========================================
    Home button
    ======================================== */
-ion-button.homeButton-header-editStudentProfile {
+.homeButton-header-editStudentProfile {
   align-self: center;
+  flex-shrink: 0;
 }
 
-ion-button.homeButton-header-editStudentProfile::part(native) {
+.homeButton-header-editStudentProfile::part(native) {
   background: white;
   border-radius: 10px;
   width: 50px;
@@ -59,7 +61,7 @@ ion-button.homeButton-header-editStudentProfile::part(native) {
   --background-hover: white;
 }
 
-ion-button.homeButton-header-editStudentProfile ion-icon {
+.homeButton-header-editStudentProfile ion-icon {
   color: var(--ion-color-primary);
   background-color: white;
   width: 50px;
@@ -69,12 +71,11 @@ ion-button.homeButton-header-editStudentProfile ion-icon {
 /* ========================================
     Title
    ======================================== */
-ion-title.title-header-editStudentProfile {
+.title-header-editStudentProfile {
   font-family: var(--ion-font-family);
   font-weight: var(--ion-weight-regular);
   color: white;
   font-size: 3rem;
-  font-weight: bold;
 
   text-align: center;
   flex-grow: 1;
@@ -96,15 +97,42 @@ ion-title.title-header-editStudentProfile {
     font-weight: var(--ion-weight-regular);
     color: white;
     font-size: 2rem;
-    
+    padding-bottom: 20px;
     text-align: center;
 
 }
 
-.container-info-editStudentProfile{
+.container-info-editStudentProfile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: 130px;
+  padding-top: 10px;
+}
 
-    display: flex;
-    flex-direction: column;
-    align-content: space-around;
-    height: 150px;
+.spacer-end {
+  width: 50px;
+  height: 100%;
+  display: block;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+
+  .title-header-editStudentProfile{
+
+    font-size: 2.6rem;
+  }
+
+  .label-header-editStudentProfile{
+
+    font-size: 1.4rem;
+  }
+
+  .container-info-editStudentProfile {
+
+    height: 110px;
+  }
 }

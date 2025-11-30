@@ -9,6 +9,7 @@ import {
   IonIcon,
   IonToast,
   IonImg,
+  useIonRouter
 } from '@ionic/react';
 import {
   checkmarkOutline,
@@ -19,7 +20,6 @@ import {
   addOutline,
 } from 'ionicons/icons';
 import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { authAPI, uploadImage, getImages } from '../../lib/api';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
@@ -28,7 +28,7 @@ import { createPortal } from 'react-dom';
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function TeacherRegister() {
-  const history = useHistory();
+  const router = useIonRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const avatarPickerRef = useRef<HTMLDivElement>(null);
   const formCardRef = useRef<HTMLDivElement>(null);
@@ -166,7 +166,7 @@ export default function TeacherRegister() {
       setIsToastOpen(true);
 
       setTimeout(() => {
-        history.push('/register/confirmation/profesores');
+        router.push('/register-confirmation/profesores');
       }, 2000);
     } catch (err: any) {
       console.error('Error en el registro:', err);
@@ -255,7 +255,7 @@ export default function TeacherRegister() {
     setSelectedAvatar('');
     setAvatarPreview(DEFAULT_AVATAR);
     if (showAvatarModal) closeAvatarModal();
-    history.replace('/admin/profesores');
+    router.push('/admin/profesores',"back","pop");
   };
 
   return (

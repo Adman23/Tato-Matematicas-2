@@ -1,14 +1,13 @@
 import {
   IonPage,
   IonContent,
-  IonText,
   IonIcon,
   useIonViewWillEnter,
   useIonRouter,
 } from '@ionic/react';
 import { arrowBack, checkmark, trash } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button3Dtext } from '../global_components/PushableButtons'; 
 import './StudentLoginAuth.css';
@@ -25,15 +24,12 @@ const REQUIRED_LENGTH = 3;
 const MAX_LENGTH = REQUIRED_LENGTH;
 
 export default function StudentLoginStep3() {
-  const router = useIonRouter(); // Usamos router de Ionic para animaciones
+  const router = useIonRouter();
   const params = useParams<{ groupId: string; username: string }>();
-  const history = useHistory(); // Mantenemos history para leer location si es necesario
   const { login } = useAuth();
 
-  // Obtener IDs de la URL de forma robusta
-  const pathParts = history.location.pathname.split('/');
-  const groupId = params.groupId || pathParts[pathParts.length - 2] || '';
-  const username = params.username || pathParts[pathParts.length - 1] || '';
+  const groupId = params.groupId || "";
+  const username = params.username || "";
 
   const [selected, setSelected] = useState<string[]>([]);
   const [error, setError] = useState('');
