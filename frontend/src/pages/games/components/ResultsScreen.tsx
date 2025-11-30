@@ -4,7 +4,7 @@ import './ResultsScreen.css';
 import GameHeader from './GameHeader';
 import iconCorrect from '/assets/juegosImg/correct.png';
 import iconIncorrect from '/assets/juegosImg/incorrecto.png';
-import iconHint from '/assets/Tato/TatoPista.jpeg';
+import iconHint from '/assets/Tato/TatoPista.png';
 
 interface ResultsScreenProps {
   totalRounds: number;

@@ -14,7 +14,7 @@ import {
     IonButton,
     useIonRouter
 } from '@ionic/react';
-import {  Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext';
 import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
@@ -37,7 +37,7 @@ import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
 const imgFlecha = '/assets/juegosImg/flecha.png';
 
 // Importar imagen de Tato
-import imgTato from '/assets/Tato/Tato.png';
+import imgTato from '/assets/Tato/TatoPista.png';
 import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
 
@@ -578,7 +578,7 @@ const Game1: React.FC = () => {
     };
 
 
-    
+
     /**
      * Functional Summary.
      *
@@ -795,7 +795,7 @@ const Game1: React.FC = () => {
         );
     }
     */
-        
+
 
 
     // Show feedback screen after checking answer
@@ -829,103 +829,104 @@ const Game1: React.FC = () => {
                             <p>{Messages.find(m => m.type === 'positive')?.text_message || "¡Lo has hecho genial!"}</p>
                             <p>Volviendo al inicio...</p>
                         </IonText>
-                        <IonSpinner name="dots" style={{ marginTop: '20px' }}/>
+                        <IonSpinner name="dots" style={{ marginTop: '20px' }} />
                     </div>
                 ) : (
-                <>
-                {/* Header */}
-                <GameHeader
-                    title="Asociar Nº"
-                    pictogram1={imgSonido}
-                    pictogramArrow={imgFlecha}
-                    pictogram2={imgJuego}
-                    currentRound={currentRound}
-                    totalRounds={TOTAL_ROUNDS}
-                    onHomeClick={handleEarlyExit}
-                />
-
-                {/* Game area with grid layout */}
-                <div className="game1-grid-container">
-                    {/* Left column: Tato */}
-                    <div className="game1-tato-column">
-                        <div className="game1-tato-container">
-                            <IonButton
-                                fill="clear"
-                                className="game1-check-button"
-                                onClick={useHint}
-                            >
-                                <img
-                                    src={imgTato}
-                                    alt="Pista"
-                                    className="game1-check-button-image"
-                                />
-                            </IonButton>
-                        </div>
-                    </div>
-
-                    {/* Right column: Numbers and buttons */}
-                    <div className="game1-game-column">
-                        {/* Available numbers */}
-                        <BubblesZone
-                            availableNumbers={availableNumbers}
-                            selectedNumber={selectedNumber}
-                            setSelectedNumber={setSelectedNumber}
-                            showFeedback={showFeedback}
-                            currentNumber={currentNumber}
-                            usePictograms={usePictograms}
-                            hintsUsed={hintsUsed}
+                    <>
+                        {/* Header */}
+                        <GameHeader
+                            title="Asociar Nº"
+                            pictogram1={imgSonido}
+                            pictogramArrow={imgFlecha}
+                            pictogram2={imgJuego}
+                            currentRound={currentRound}
+                            totalRounds={TOTAL_ROUNDS}
+                            onHomeClick={handleEarlyExit}
                         />
 
-                        {/* Control buttons */}
-                        <div className="game1-buttons-container">
+                        {/* Game area with grid layout */}
+                        <div className="game1-grid-container">
+                            {/* Left column: Tato */}
+                            <div className="game1-tato-column">
+                                <div className="game1-tato-container">
+                                    <IonButton
+                                        fill="clear"
+                                        className="game1-check-button"
+                                        onClick={useHint}
+                                    >
+                                        <img
+                                            src={imgTato}
+                                            alt="Pista"
+                                            className="game1-check-button-image"
+                                        />
+                                    </IonButton>
+                                </div>
+                            </div>
 
-                            {/* Listen button */}
-                            <IonButton
-                                fill="clear"
-                                className="game1-check-button"
-                                disabled={listeningAudio}
-                                onClick={() => speakNumber(currentNumber)}
-                            >
-                                <img
-                                    src={imgSonidoConTexto}
-                                    alt="Escuchar"
-                                    className="game1-check-button-image"
+                            {/* Right column: Numbers and buttons */}
+                            <div className="game1-game-column">
+                                {/* Available numbers */}
+                                <BubblesZone
+                                    availableNumbers={availableNumbers}
+                                    selectedNumber={selectedNumber}
+                                    setSelectedNumber={setSelectedNumber}
+                                    showFeedback={showFeedback}
+                                    currentNumber={currentNumber}
+                                    usePictograms={usePictograms}
+                                    hintsUsed={hintsUsed}
                                 />
-                            </IonButton>
 
-                            {/* Video button - always visible on the left */}
-                            <IonButton
-                                fill="clear"
-                                className="game1-check-button game1"
-                                onClick={openVideoModal}
-                            >
-                                <img
-                                    src={imgInstrucciones}
-                                    alt="Video de ayuda"
-                                    className="game1-check-button-image"
-                                />
-                            </IonButton>
 
-                            {/* Accept/Check button */}
-                            <IonButton
-                                fill="clear"
-                                className="game1-check-button"
-                                onClick={checkAnswer}
-                                disabled={selectedNumber === null}
-                            >
-                                <img
-                                    src={imgAceptar}
-                                    alt="Comprobar"
-                                    className="game1-check-button-image"
-                                />
-                            </IonButton>
+                                {/* Control buttons */}
+                                <div className="game1-buttons-container">
 
+                                    {/* Listen button */}
+                                    <IonButton
+                                        fill="clear"
+                                        className="game1-check-button"
+                                        disabled={listeningAudio}
+                                        onClick={() => speakNumber(currentNumber)}
+                                    >
+                                        <img
+                                            src={imgSonidoConTexto}
+                                            alt="Escuchar"
+                                            className="game1-check-button-image"
+                                        />
+                                    </IonButton>
+
+                                    {/* Video button - always visible on the left */}
+                                    <IonButton
+                                        fill="clear"
+                                        className="game1-check-button game1"
+                                        onClick={openVideoModal}
+                                    >
+                                        <img
+                                            src={imgInstrucciones}
+                                            alt="Video de ayuda"
+                                            className="game1-check-button-image"
+                                        />
+                                    </IonButton>
+
+                                    {/* Accept/Check button */}
+                                    <IonButton
+                                        fill="clear"
+                                        className="game1-check-button"
+                                        onClick={checkAnswer}
+                                        disabled={selectedNumber === null}
+                                    >
+                                        <img
+                                            src={imgAceptar}
+                                            alt="Comprobar"
+                                            className="game1-check-button-image"
+                                        />
+                                    </IonButton>
+
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                {/* End grid container */}
+                        {/* End grid container */}
                     </>
-                )}    
+                )}
                 {/* Video Modal */}
                 {showVideoModal && (
                     <div className="game1-video-modal-overlay" onClick={closeVideoModal}>
@@ -945,7 +946,7 @@ const Game1: React.FC = () => {
                         </div>
                     </div>
                 )}
-            
+
             </IonContent>
         </IonPage>
     );

@@ -29,7 +29,7 @@ import './Game2.css';
 // Importar imágenes para el header
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgTato from '/assets/Tato/TatoPista.jpeg';
+import imgTato from '/assets/Tato/TatoPista.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
@@ -93,7 +93,7 @@ const TOTAL_ROUNDS = 5;
  * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
-  
+
   const location = useLocation();
   const router = useIonRouter();
   const { user, loadingAuth: authLoading } = useAuth();
@@ -943,182 +943,182 @@ const Game2: React.FC = () => {
     );
   }
   */
-  
+
 
   return (
     <IonPage>
       <IonContent className="game2-content" scrollY={false}>
-          {gameFinished ? (
-            <ResultsScreen
-              totalRounds={TOTAL_ROUNDS}
-              completedRounds={roundTimes.length}
-              totalHints={totalHintsUsed}
-              totalErrors={totalErrorsMade}
-              totalNumbersCorrect={totalNumbersCorrect}
-              totalNumbersRequired={totalNumbersRequired}
-              onHomeClick={exitToDashboard}
-              headerTitle="Ordenar Nº"
-              headerPictogram1={imgOrdenar}
-              headerPictogramArrow={imgFlecha}
-              headerPictogram2={imgJuego}
-            />
-          ) : (
-          <>
-        {/* Mostrar pantalla de feedback después de colocar un número */}
-        {showFeedbackScreen ? (
-          <FeedbackScreen
-            isCorrect={feedbackType === 'correct'}
-            currentRound={currentRound}
+        {gameFinished ? (
+          <ResultsScreen
             totalRounds={TOTAL_ROUNDS}
+            completedRounds={roundTimes.length}
+            totalHints={totalHintsUsed}
+            totalErrors={totalErrorsMade}
+            totalNumbersCorrect={totalNumbersCorrect}
+            totalNumbersRequired={totalNumbersRequired}
+            onHomeClick={exitToDashboard}
             headerTitle="Ordenar Nº"
             headerPictogram1={imgOrdenar}
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
-            imgTatoFeliz={imgTatoFeliz}
-            imgTatoTriste={imgTatoTriste}
-            imgSiguiente={imgSiguiente}
-            messages={Messages}
-            onNext={closeFeedbackScreen}
-            onHomeClick={handleEarlyExit}
           />
         ) : (
           <>
-            {/* Header */}
-            <GameHeader
-              title="Ordenar Nº"
-              pictogram1={imgOrdenar}
-              pictogramArrow={imgFlecha}
-              pictogram2={imgJuego}
-              currentRound={currentRound}
-              totalRounds={TOTAL_ROUNDS}
-              onHomeClick={handleEarlyExit}
-            />
+            {/* Mostrar pantalla de feedback después de colocar un número */}
+            {showFeedbackScreen ? (
+              <FeedbackScreen
+                isCorrect={feedbackType === 'correct'}
+                currentRound={currentRound}
+                totalRounds={TOTAL_ROUNDS}
+                headerTitle="Ordenar Nº"
+                headerPictogram1={imgOrdenar}
+                headerPictogramArrow={imgFlecha}
+                headerPictogram2={imgJuego}
+                imgTatoFeliz={imgTatoFeliz}
+                imgTatoTriste={imgTatoTriste}
+                imgSiguiente={imgSiguiente}
+                messages={Messages}
+                onNext={closeFeedbackScreen}
+                onHomeClick={handleEarlyExit}
+              />
+            ) : (
+              <>
+                {/* Header */}
+                <GameHeader
+                  title="Ordenar Nº"
+                  pictogram1={imgOrdenar}
+                  pictogramArrow={imgFlecha}
+                  pictogram2={imgJuego}
+                  currentRound={currentRound}
+                  totalRounds={TOTAL_ROUNDS}
+                  onHomeClick={handleEarlyExit}
+                />
 
 
 
-        {/* Zona de juego */}
-        <div className="game2-container">
+                {/* Zona de juego */}
+                <div className="game2-container">
 
-          {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
-          <div className="available-numbers-top" id="available-zone">
-            {availableNumbers.map((num, index) => {
-              if (num === undefined) {
-                // Hueco vacío - círculo gris con borde punteado negro
-                return (
-                  <div
-                    key={`empty-${index}`}
-                    className="number-card-v2 number-card-empty"
-                  />
-                );
-              }
+                  {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
+                  <div className="available-numbers-top" id="available-zone">
+                    {availableNumbers.map((num, index) => {
+                      if (num === undefined) {
+                        // Hueco vacío - círculo gris con borde punteado negro
+                        return (
+                          <div
+                            key={`empty-${index}`}
+                            className="number-card-v2 number-card-empty"
+                          />
+                        );
+                      }
 
-              const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
-              const isBeingDragged = draggingNumber === num;
-              const isSelected = selectedNumber === num;
+                      const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
+                      const isBeingDragged = draggingNumber === num;
+                      const isSelected = selectedNumber === num;
 
-              // Determinar las clases CSS
-              let classes = 'number-card-v2';
-              if (isBeingDragged) {
-                classes += ' number-card-dragging';
-              } else if (isSelected) {
-                classes += ' number-card-selected';
-              }
+                      // Determinar las clases CSS
+                      let classes = 'number-card-v2';
+                      if (isBeingDragged) {
+                        classes += ' number-card-dragging';
+                      } else if (isSelected) {
+                        classes += ' number-card-selected';
+                      }
 
-              return (
-                <div
-                  key={`available-${num}-${index}`}
-                  className={classes}
-                  draggable={!showFeedback}
-                  onDragStart={(e) => handleDragStart(e, num)}
-                  onDragEnd={handleDragEnd}
-                  onTouchStart={(e) => handleTouchStart(e, num)}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  onClick={() => handleNumberClick(num)}
-                  style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
-                >
-                  {pictogramImg ? (
-                    <img
-                      src={pictogramImg}
-                      alt={`Pictograma número ${num}`}
-                      className="pictogram-image"
-                      loading="eager"
-                      decoding="sync"
+                      return (
+                        <div
+                          key={`available-${num}-${index}`}
+                          className={classes}
+                          draggable={!showFeedback}
+                          onDragStart={(e) => handleDragStart(e, num)}
+                          onDragEnd={handleDragEnd}
+                          onTouchStart={(e) => handleTouchStart(e, num)}
+                          onTouchMove={handleTouchMove}
+                          onTouchEnd={handleTouchEnd}
+                          onClick={() => handleNumberClick(num)}
+                          style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
+                        >
+                          {pictogramImg ? (
+                            <img
+                              src={pictogramImg}
+                              alt={`Pictograma número ${num}`}
+                              className="pictogram-image"
+                              loading="eager"
+                              decoding="sync"
+                            />
+                          ) : (
+                            <span className="number-value">{num}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
+                  <div id="drop-zone-container">
+                    <DropZone
+                      numbers={orderedNumbers}
+                      correctOrder={correctOrder}
+                      showFeedback={showFeedback}
+                      totalSlots={orderedNumbers.length}
+                      usePictogram={usePictograms}
+                      lockedIndices={new Set()}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                      feedbackType={feedbackType}
                     />
-                  ) : (
-                    <span className="number-value">{num}</span>
-                  )}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
-          <div id="drop-zone-container">
-            <DropZone
-              numbers={orderedNumbers}
-              correctOrder={correctOrder}
-              showFeedback={showFeedback}
-              totalSlots={orderedNumbers.length}
-              usePictogram={usePictograms}
-              lockedIndices={new Set()}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              feedbackType={feedbackType}
-            />
-          </div>
-        </div>
+                {/* Botones de control */}
+                <div className="check-button-container">
+                  {/* Botón de pistas (Tato) */}
+                  <IonButton
+                    fill="clear"
+                    className="game2-check-button game2-hint-button"
+                    onClick={useHint}
+                    disabled={availableNumbers.every(n => n === undefined)}
+                  >
+                    <img
+                      src={imgTato}
+                      alt="Pista"
+                      className="game2-check-button-image"
+                    />
+                  </IonButton>
 
-        {/* Botones de control */}
-        <div className="check-button-container">
-          {/* Botón de pistas (Tato) */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button game2-hint-button"
-            onClick={useHint}
-            disabled={availableNumbers.every(n => n === undefined)}
-          >
-            <img
-              src={imgTato}
-              alt="Pista"
-              className="game2-check-button-image"
-            />
-          </IonButton>
-
-          {/* Botón de instrucciones/tutorial */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button"
-            onClick={openVideoModal}
-          >
-            <img
-              src={imgInstrucciones}
-              alt="Video de ayuda"
-              className="game2-check-button-image"
-            />
-          </IonButton>
-        </div>
-        </>
-        )}
-        {/* Video Modal */}
-        {showVideoModal && (
-          <div className="game2-video-modal-overlay" onClick={closeVideoModal}>
-            <div className="game2-video-modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="game2-video-close-button" onClick={closeVideoModal}>
-                ✕
-              </button>
-              <video
-                ref={videoRef}
-                controls
-                autoPlay
-                className="game2-video-player"
-              >
-                <source src="/assets/videos/video_game2.mp4" type="video/mp4" />
-                Tu navegador no soporta la reproducción de videos.
-              </video>
-            </div>
-          </div>
-        )}
+                  {/* Botón de instrucciones/tutorial */}
+                  <IonButton
+                    fill="clear"
+                    className="game2-check-button"
+                    onClick={openVideoModal}
+                  >
+                    <img
+                      src={imgInstrucciones}
+                      alt="Video de ayuda"
+                      className="game2-check-button-image"
+                    />
+                  </IonButton>
+                </div>
+              </>
+            )}
+            {/* Video Modal */}
+            {showVideoModal && (
+              <div className="game2-video-modal-overlay" onClick={closeVideoModal}>
+                <div className="game2-video-modal-content" onClick={(e) => e.stopPropagation()}>
+                  <button className="game2-video-close-button" onClick={closeVideoModal}>
+                    ✕
+                  </button>
+                  <video
+                    ref={videoRef}
+                    controls
+                    autoPlay
+                    className="game2-video-player"
+                  >
+                    <source src="/assets/videos/video_game2.mp4" type="video/mp4" />
+                    Tu navegador no soporta la reproducción de videos.
+                  </video>
+                </div>
+              </div>
+            )}
           </>
         )}
       </IonContent>
