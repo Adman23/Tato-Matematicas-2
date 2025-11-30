@@ -19,7 +19,8 @@ import {
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonIcon
+    IonIcon,
+    IonFooter
 
 } from '@ionic/react';
 import { close } from 'ionicons/icons';
@@ -70,19 +71,19 @@ export default function EditColor() {
     const examplePalette = [
         {
             id: 1,
-            colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#A9DAF3", "#FFB7FA", "#34D399", "#F87171", "#059669", "#b91c1c" ]
+            colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#A9DAF3", "#FFB7FA"]
         },
         {
             id: 2,
-            colors: ["#6A1B9A", "#FFFFFF", "#FDF7FF", "#1A1A1A", "#EDE7F6", "#FFCA28", "#C8E6C9", "#FFCDD2", "#2E7D32", "#D32F2F"]
+            colors: ["#6A1B9A", "#FFFFFF", "#f3e8f7ff", "#1A1A1A", "#E1C4FF", "#1FA5A5"]
         },
         {
             id: 3,
-            colors: ["#76B875", "#1A1A1A", "#e3fde6ff", "#1A1A1A", "#FFFFFF", "#80c3eaff", "#c8d9e6ff", "#FFCDD2", "#3B82F6", "#D32F2F"]
+            colors: ["#6FB96D", "#1A1A1A", "#effff0ff", "#1A1A1A", "#A9DDA9", "#E09A70"]
         },
         {
             id: 4,
-            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a", "#94d2bd", "#ee9b00", "#52b788", "#d62828", "#006d5b", "#9d0208"]
+            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a", "#94d2bd", "#ee9b00"]
         },
 
     ];
@@ -122,6 +123,8 @@ export default function EditColor() {
 
     //State for the modal
     const [showModal, setShowModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+
 
     //Function that updates the preview of the final palette
     const applyPalette = (palette: Palette) => {
@@ -204,6 +207,7 @@ export default function EditColor() {
                 bubble: customPalette.bubble,
                 bubble_selected: customPalette.bubble_selected
             });
+            setShowToast(true);
             console.log("Paleta guardada correctamente!", customPalette);
         } catch (err) {
             console.error("Error al guardar la paleta", err);
@@ -293,12 +297,8 @@ export default function EditColor() {
 
                     </div>
                     <div className='LinkProfiles-buttons editColorsButtons'>
-                        <IonButton
-                            type="submit"
-                            className='LinkProfiles-button'
-                            onClick={savePalette}
-                        >
-                            Aceptar
+                        <IonButton type="button" className='LinkProfiles-button' onClick={() => setShowModal(true)}>
+                            Guardar
                         </IonButton>
                         <IonButton
                             type="submit"
@@ -307,9 +307,7 @@ export default function EditColor() {
                         >
                             Cancelar
                         </IonButton>
-                        <IonButton type="button" className='LinkProfiles-button' onClick={() => setShowModal(true)}>
-                            Informe accesibilidad
-                        </IonButton>
+                        
 
                     </div>
 
@@ -318,18 +316,37 @@ export default function EditColor() {
                 <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
                 <IonHeader>
                     <IonToolbar>
-                        <IonTitle>Informe de accesibilidad</IonTitle>
-                        <IonButtons slot="end">
-                        <IonButton onClick={() => setShowModal(false)}>
-                            <IonIcon icon={close} />
+                    <IonTitle>Informe de accesibilidad</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={() => {setShowModal(false); setShowToast(false);}}>
+                        <IonIcon icon={close} />
                         </IonButton>
-                        </IonButtons>
+                    </IonButtons>
                     </IonToolbar>
-                    </IonHeader>
-                    <IonContent className="ion-padding">
+                </IonHeader>
+
+                <IonContent className="ion-padding ModalColorEditContent">
                     <AccessibilityDashboard report={accessibilityReport} />
-                    </IonContent>
+
+                    {showToast && (
+                        <div className="SuccessEditColor" >
+                        Cambios guardados correctamente ✔️
+                        </div>
+                    )}
+                </IonContent>
+
+                <IonFooter>
+                    <IonToolbar>
+                    <IonButton
+                        expand="block"
+                        onClick={savePalette}
+                    >
+                        Aceptar
+                    </IonButton>
+                    </IonToolbar>
+                </IonFooter>
                 </IonModal>
+
             </IonContent>
         </IonPage>
     );

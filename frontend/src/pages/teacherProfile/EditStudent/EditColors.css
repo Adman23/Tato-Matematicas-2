@@ -91,3 +91,21 @@
     gap: 8px
   }
 }
+
+.ModalColorEditContent{
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.SuccessEditColor{
+
+  margin-top: 20px; 
+  text-align: center;
+  color: var(--ion-color-success);
+  font-size: 25px;
+  font-weight: bold;
+}
