@@ -141,13 +141,14 @@
    ======================================== */
 @media (min-width: 768px) and (max-width: 1024px) {
     .game1-grid-container {
+        justify-content: center;
         grid-template-columns: minmax(100px, 25%) 1fr;
         gap: clamp(0.3rem, 0.6vw, 0.8rem);
     }
 
     .game1-tato-container {
-        max-width: min(95%, 500px);
-        max-height: min(70vh, 500px);
+        max-width: min(95%, 520px);
+        max-height: min(70vh, 520px);
     }
 
     .game1-game-column {
@@ -197,6 +198,10 @@
         gap: 0rem;
     }
 
+    .game1-buttons-container {
+        align-items: flex-end;
+    }
+
     .game1-check-button {
         width: clamp(50px, 15vw, 180px);
         height: clamp(50px, 15vw, 180px);
@@ -240,8 +245,31 @@
     }
 
     .game1-check-button {
-        width: clamp(50px, 20vw, 180px);
-        height: clamp(50px, 20vw, 180px);
+        width: clamp(50px, 24vw, 180px);
+        height: clamp(50px, 24vw, 180px);
+    }
+}
+
+@media (min-height: 540px) and (max-height: 800px) and (max-width: 768px) {
+    .game1-check-button {
+        width: clamp(50px, 12vw, 150px);
+        height: clamp(50px, 12vw, 150px);
+    }
+}
+
+@media (min-height: 540px) and (max-height: 800px) and (min-width:375px) and (max-width: 768px) {
+
+    .game1-check-button {
+        width: clamp(50px, 12vw, 150px);
+        height: clamp(50px, 12vw, 150px);
+    }
+}
+
+@media (min-height: 540px) and (max-height: 800px) and (max-width:375px) {
+
+    .game1-check-button {
+        width: clamp(50px, 20vw, 150px);
+        height: clamp(50px, 20vw, 150px);
     }
 }
 
