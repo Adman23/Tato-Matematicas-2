@@ -63,7 +63,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
               <img
                 src="/assets/pictograms/salir.png"
                 alt="Cerrar sesión"
-                className="btn-icon"
+                className="btn-icon-header-user"
               />
             </>
           </Button3Dtext>
@@ -74,7 +74,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
                 <img
                   src="/assets/pictograms/juegos.png"
                   alt="Ir al dashboard"
-                  className="btn-icon"
+                  className="btn-icon-header-user"
                 />
               </>
             ) : (
@@ -83,7 +83,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"
-                  className="btn-icon"
+                  className="btn-icon-header-user"
                 />
               </>
             )}
