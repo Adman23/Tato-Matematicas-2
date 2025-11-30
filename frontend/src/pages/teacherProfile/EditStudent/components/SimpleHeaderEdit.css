@@ -25,7 +25,7 @@
    ======================================== */
 ion-buttons[slot="start"],
 ion-buttons[slot="end"] {
-  /*width: auto;*/
+  width: auto;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -46,6 +46,7 @@ ion-buttons[slot="end"] {
    ======================================== */
 .homeButton-header-editStudentProfile {
   align-self: center;
+  flex-shrink: 0;
 }
 
 .homeButton-header-editStudentProfile::part(native) {
@@ -107,11 +108,31 @@ ion-buttons[slot="end"] {
   justify-content: center;
   align-items: center;
   flex: 1;
-  height: 150px;
+  height: 130px;
+  padding-top: 10px;
 }
 
 .spacer-end {
   width: 50px;
   height: 100%;
   display: block;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+
+  .title-header-editStudentProfile{
+
+    font-size: 2.6rem;
+  }
+
+  .label-header-editStudentProfile{
+
+    font-size: 1.4rem;
+  }
+
+  .container-info-editStudentProfile {
+
+    height: 110px;
+  }
 }

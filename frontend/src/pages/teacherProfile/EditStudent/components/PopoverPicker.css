@@ -1,33 +1,80 @@
-/* contenedor general */
+/* Popover general */
 .picker {
-  position: relative;
   display: inline-block;
+  position: relative;
 }
 
-/* cuadradito que muestra el color */
+/* Swatch (el botón que abre el selector) */
 .swatch {
   width: 36px;
   height: 36px;
-  border-radius: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
   cursor: pointer;
-  border: 2px solid #ddd;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* hover bonito */
-.swatch:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* popup flotante */
+/* Popover (el contenedor del color picker) */
 .popover {
   position: absolute;
-  top: 45px;
+  z-index: 100;
+  top: 40px;  /* debajo del swatch */
   left: 0;
-  z-index: 9999;
   background: white;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  max-width: 300px; /* límite en móviles */
+}
+
+/* Responsive: pantalla pequeña */
+@media (max-width: 480px) {
+  .popover {
+    position: fixed; /* que se quede dentro de la pantalla */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;     /* ancho casi completo de móvil */
+    max-width: none;
+    padding: 16px;
+  }
+
+  .swatch {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Responsive: pantalla pequeña */
+@media (max-width: 915px) {
+  .popover {
+    position: fixed; /* que se quede dentro de la pantalla */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -30%);
+    width: 50%;     /* ancho casi completo de móvil */
+    max-width: none;
+    padding: 16px;
+  }
+
+  .swatch {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .popover {
+    position: fixed; /* que se quede dentro de la pantalla */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -30%);
+    width: 50%;     /* ancho casi completo de móvil */
+    max-width: none;
+    padding: 16px;
+  }
+
+  .swatch {
+    width: 32px;
+    height: 32px;
+  }
 }

@@ -72,7 +72,7 @@ export default function EditMenu() {
             <IonContent className="ion-padding">
                 <div className="studentEditProfile-dashboard-outer-container">
                     <IonCard className="studentEditProfile-dashboard-card">
-                        <IonCardContent>
+                        <IonCardContent className='studentEditProfile-card-content'>
                             <div className='studentEditProfile-dashboard-main-container'>
 
                                 <IonButton
@@ -100,6 +100,15 @@ export default function EditMenu() {
                                     onClick={() => history.push('/admin-dashboard/link-profiles')}
                                 >
                                     Sonidos
+                                </IonButton>
+
+                                <IonButton
+                                    className='studentEditProfile-dashboard-button'
+                                    expand="block"
+                                    fill="clear"
+                                    onClick={() => history.push('/admin-dashboard/link-profiles')}
+                                >
+                                    Texto
                                 </IonButton>
 
                                 <IonButton

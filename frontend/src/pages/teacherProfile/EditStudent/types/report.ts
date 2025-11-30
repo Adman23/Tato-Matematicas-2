@@ -6,6 +6,4 @@ export interface AccessibilityReport {
   primaryOnBackground: ContrastLevel;
   bubbleOnBackground: ContrastLevel;
   selectedBubbleOnBackground: ContrastLevel;
-  feedbackOnBackground: ContrastLevel;
-  feedbackIncOnBackground: ContrastLevel;
 }

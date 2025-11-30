@@ -20,13 +20,11 @@
  */
 
 import {
-    IonTitle,
     IonToolbar,
     IonButton,
     IonHeader,
     IonButtons,
-    IonIcon,
-    IonLabel
+    IonIcon
 } from '@ionic/react';
 
 import './SimpleHeaderEdit.css';
@@ -86,8 +84,8 @@ const SimpleHeaderEdit: React.FC<Props> = ({
                 </IonButtons>
 
                 <div className='container-info-editStudentProfile'>
-                    <IonTitle className='title-header-editStudentProfile'>{studentName}</IonTitle>
-                    <IonLabel className='label-header-editStudentProfile'>{Editing}</IonLabel>
+                    <div className='title-header-editStudentProfile'>{studentName}</div>
+                    <div className='label-header-editStudentProfile'>{Editing}</div>
                 </div>
 
                 <IonButtons slot="end">
