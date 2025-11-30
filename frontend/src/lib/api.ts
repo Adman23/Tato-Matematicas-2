@@ -364,6 +364,7 @@ export const authAPI = {
   },
 
 
+  
   /**
    * Cerrar sesión del usuario actual.
    * Limpia tokens y perfil del almacenamiento local.
