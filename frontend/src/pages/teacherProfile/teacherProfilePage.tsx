@@ -23,7 +23,6 @@ export default function TeacherProfilePage() {
   const { loadingUser } = useUserData();
   const { users: students, loadingUsers } = useManager();
 
-
   const handleLogout = async () => {
     await logout();
     router.push('/student/login',"none","replace");
