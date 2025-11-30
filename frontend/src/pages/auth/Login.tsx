@@ -369,7 +369,7 @@ export default function Login() {
                 fill="clear"
                 onClick={() => {
                   clearForm();
-                  router.push('/home');
+                  router.push('/student/login');
                 }}
               >
                 Volver al inicio
