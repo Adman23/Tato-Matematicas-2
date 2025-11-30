@@ -9,7 +9,6 @@ import acceptButton from '/assets/juegosImg/aceptar.png';
 
 interface ResultsScreenProps {
   totalRounds: number;
-  completedRounds: number;
   totalHints: number;
   totalErrors: number;
   totalNumbersCorrect: number;

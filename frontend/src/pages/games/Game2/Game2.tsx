@@ -942,7 +942,6 @@ const Game2: React.FC = () => {
         {gameFinished ? (
           <ResultsScreen
             totalRounds={TOTAL_ROUNDS}
-            completedRounds={roundTimes.length}
             totalHints={totalHintsUsed}
             totalErrors={totalErrorsMade}
             totalNumbersCorrect={totalNumbersCorrect}
