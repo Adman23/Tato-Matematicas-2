@@ -66,8 +66,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
      *
      * Execution flow.
      *
-     * - Calls `logout` from the context.
-     * - Replaces the current route with '/login' using `history.replace`.
+     * - Calls `logout` from the context
      *
      * @param {void}
      * @returns {Promise<void>}

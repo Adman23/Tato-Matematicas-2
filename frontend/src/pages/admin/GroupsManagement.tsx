@@ -24,7 +24,7 @@ setupIonicReact();
  * ```
  */
 
-import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, IonSearchbar } from '@ionic/react';
+import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, IonSearchbar, useIonRouter } from '@ionic/react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { fetchGroups, deleteGroup } from '../../lib/api';
@@ -32,7 +32,6 @@ import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import GroupItem from './components/GroupItem';
 import './GroupsManagement.css';
 
-import { useHistory } from 'react-router-dom';
 
 
 export default function GroupsManagement() {
@@ -43,7 +42,7 @@ export default function GroupsManagement() {
     const [groups, setGroups] = useState<{ id: string; name: string; }[]>([]);
     const [groupQuery, setGroupQuery] = useState<string>('');
 
-    const history = useHistory();
+    const router = useIonRouter();
 
 
     useEffect(() => {
@@ -116,7 +115,7 @@ export default function GroupsManagement() {
                             className="groupManagement-AddButoon"
                             onClick={() =>
 
-                                history.push('/admin/group/register')
+                                router.push('/admin/group/register')
 
                             }
                         >

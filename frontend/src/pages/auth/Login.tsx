@@ -36,10 +36,10 @@ import {
   IonText,
   IonIcon,
   IonToast,
+  useIonRouter
 } from '@ionic/react';
 import { eyeOutline, eyeOffOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
@@ -86,7 +86,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
-  const history = useHistory();
+  const router = useIonRouter();
 
 
   /*
@@ -179,9 +179,9 @@ export default function Login() {
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       clearForm();
       if (userData.role === 'admin') {
-        history.push('/admin/dashboard');
+        router.push('/admin/dashboard');
       } else if (userData.role === 'teacher') {
-        history.push('/teacher/dashboard');
+        router.push('/teacher/dashboard');
       };
     } catch (err: any) {
 
@@ -369,7 +369,7 @@ export default function Login() {
                 fill="clear"
                 onClick={() => {
                   clearForm();
-                  history.push('/home');
+                  router.push('/student/login','back','pop');
                 }}
               >
                 Volver al inicio

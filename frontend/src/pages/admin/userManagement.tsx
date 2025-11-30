@@ -1,7 +1,7 @@
 import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
 
-import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton } from '@ionic/react';
+import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, useIonRouter } from '@ionic/react';
 import { Redirect, useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -10,7 +10,6 @@ import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import TeacherManagementItem from './components/TeacherManagementItem';
 import './userManagement.css';
 
-import { useHistory } from 'react-router-dom';
 
 // Nota: interface User no usada — eliminada para evitar error de lint/ts
 
@@ -22,12 +21,14 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<{ id: string; username: string; photo_url: string }[]>([]);
 
-  const history = useHistory();
+  const router = useIonRouter();
 
+  /*
   // Redirige si el tipo no es válido
   if (tipo !== 'profesores' && tipo !== 'alumnos') {
     return <Redirect to="/admin/dashboard" />;
   }
+  */
 
   /*useEffect(() => {
     let isMounted = true; // evita actualizar estado si se desmonta
@@ -117,8 +118,8 @@ export default function UserManagement() {
               className="teacherManagement-AddButoon"
               onClick={() =>
                 tipo === 'profesores'
-                  ? history.push('/teacher/register')
-                  : history.push('/student/register')
+                  ? router.push('/teacher/register')
+                  : router.push('/student/register')
               }
             >
               Añadir nuevo {tipo === 'profesores' ? 'profesor' : 'alumno'}

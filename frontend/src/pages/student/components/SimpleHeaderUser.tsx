@@ -2,9 +2,9 @@ import {
   IonToolbar,
   IonHeader,
   IonButtons,
+  useIonRouter
 } from '@ionic/react';
 import './SimpleHeaderUser.css';
-import { useHistory } from 'react-router-dom';
 import { setupIonicReact } from '@ionic/react';
 import { useAuth } from '../../../contexts/AuthContext';
 
@@ -24,28 +24,23 @@ const SimpleHeaderUser: React.FC<Props> = ({
   photoUrl,
   url
 }) => {
-  const history = useHistory();
-  const { user, logout } = useAuth();
+  const router = useIonRouter();
+  const { user } = useAuth();
 
   const handleProfile = () => {
     if (url != null) {
-      history.replace(url);
+      router.push(url, "back", "pop");
     } else if (user?.role === "teacher") {
-      history.replace('/teacher/profile');
+      router.push('/teacher/profile');
     } else {
-      history.replace('/student/profile');
+      router.push('/student/profile');
     }
-  }
-
-  const handleLogout = async () => {
-    await logout();
-    history.replace('/home');
   }
 
   return (
     <IonHeader className="ion-no-border">
       <IonToolbar className="toolbar-header-user">
-
+        
         {/* IZQUIERDA: Restaurado al estilo original */}
         <IonButtons slot="start">
           <img
@@ -57,17 +52,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
         </IonButtons>
 
         <IonButtons slot="end">
-          <Button3Dtext onClick={handleLogout}>
-            <>
-              <span className="btn-text">CERRAR SESIÓN</span>
-              <img
-                src="/assets/pictograms/salir.png"
-                alt="Cerrar sesión"
-                className="btn-icon"
-              />
-            </>
-          </Button3Dtext>
-          <Button3Dtext onClick={handleProfile}>
+          <Button3Dtext onClick={handleProfile}>  
             {url != null ? (
               <>
                 <span className="btn-text">JUEGOS</span>
