@@ -1026,8 +1026,13 @@ const Game2: React.FC = () => {
                       loading="eager"
                       decoding="sync"
                     />
-                  </div>
+                  ) : (
+                    <span>{num}</span>
+                  )}
                 </div>
+              );
+            })}
+          </div>
 
           {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
           <div id="drop-zone-container">
@@ -1085,8 +1090,7 @@ const Game2: React.FC = () => {
             </IonButton>
           </div>
         </div>
-        </>
-        )}
+
         {/* Video Modal */}
         {showVideoModal && (
           <div className="game2-video-modal-overlay" onClick={closeVideoModal}>
@@ -1106,7 +1110,7 @@ const Game2: React.FC = () => {
             </div>
           </div>
         )}
-          </>
+        </>
         )}
       </IonContent>
     </IonPage>
