@@ -20,14 +20,7 @@ export const AccessibilityDashboard: React.FC<AccessibilityDashboardProps> = ({ 
         <span>Primario sobre fondo: </span>
         <AccessibilityIndicator status={report.primaryOnBackground} />
       </div>
-      <div>
-        <span>Feedback Correcto sobre fondo: </span>
-        <AccessibilityIndicator status={report.feedbackOnBackground} />
-      </div>
-      <div>
-        <span>Feedback Incorrecto sobre fondo: </span>
-        <AccessibilityIndicator status={report.feedbackIncOnBackground} />
-      </div>
+
     </div>
   );
 };
