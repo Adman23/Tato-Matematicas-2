@@ -1,4 +1,7 @@
 /**
+ * !! EDITED
+ *  -> Now there is a new UI, its in figma
+ * 
  * @file StudentProfile.tsx
  * @description Component for the student profile page.
  * @author Adam
@@ -6,32 +9,26 @@
 
 
 // Imports--------------------------------------------------------------
-import { useState } from 'react';
 import {
     IonPage, 
     IonContent, 
-    IonButton,
     IonSpinner,
-    IonIcon,
+    useIonRouter
 } from '@ionic/react';
 
-import {
-    volumeMute,   
-    volumeMedium, 
-    volumeHigh    
-} from 'ionicons/icons';
-import { useAuth } from '../../contexts/AuthContext';// Authentication context
-import { useUserData } from "../../contexts/UserContext" // UserData context
+import { useAuth } from '../../contexts/AuthContext';
+import { useUserData } from "../../contexts/UserContext" 
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
+import { Button3Dtext } from '../global_components/PushableButtons';
+
 import './StudentProfile.css';
 // End of Imports-------------------------------------------------------
 
 /**
  * !! EDITED
- *  -> Fixed some problems with the UI
- *  -> Integrated with the backend
- *  -> Added the userData context
+ *  -> Now its 2 buttons that refresh and logout and 6 buttons to navigate to other options
+ * 
  * @returns {JSX.Element} Interface of the student profile page.
  */
 export default function StudentProfile() {
@@ -44,36 +41,38 @@ export default function StudentProfile() {
      *               username: string;
      *               role: 'student';
      *               photo_url?: string;
+     *               group_id?: string;
+     *               group_alias?: string;
      *           }  
      */ 
     const { user } = useAuth();
     const { loadingUser } = useUserData();
+    const router = useIonRouter();
 
+    const handleDirection = (url: string) => {
+        router.push(url);
+    }
+    
+    /*
+    !! DEPRECATED, not useful
     // Variables and functions---------------------------------
     const [color, setColor] = useState('original');
     const [sound, setSound] = useState('medio');
     const [text, setText] = useState('normal');
     // End of variables and functions--------------------------
+    */
 
     // Show loading icon
     if (loadingUser) {
         return (
             <IonPage>
-                <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <IonContent className="ion-padding ion-text-center" 
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <IonSpinner name="crescent" />
                 </IonContent>
             </IonPage>
         );
     }
-
-    /* 
-    !! DEPRECATED
-        -> RouteController should manage this
-    // Redirect if not authenticated
-    if (!user) {
-        return <Redirect to="/student/login" />;
-    }
-    */
 
     // Component-----------------------------------------------
     return (
@@ -83,78 +82,114 @@ export default function StudentProfile() {
                     photoUrl={user?.photo_url} url="/student/dashboard" />
 
             {/* Main Content */}
-            <IonContent className="ion-padding StudentProfile-IonContent">
+            <IonContent className="main-container">
+
+                    {/* Edit section */}
+                    <section className="edit-section">
+                        {/* Edit colors */}
+                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar colores"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">COLORES</span>
+                        </Button3Dtext>
+                        
+                        {/* Edit colors */}
+                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar colores"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">COLORES</span>
+                        </Button3Dtext>
+                        
+                        {/* Edit colors */}
+                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar colores"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">COLORES</span>
+                        </Button3Dtext>
+
+                        {/* Edit colors */}
+                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar colores"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">COLORES</span>
+                        </Button3Dtext>
+
+                        {/* Edit colors */}
+                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar colores"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">COLORES</span>
+                        </Button3Dtext>
+
+                        {/* Edit colors */}
+                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar colores"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">COLORES</span>
+                        </Button3Dtext>                  
+
+                        {/* 
+                        <div className="settings-section">
+                            <img
+                                src="/assets/pictograms/color.png"
+                                alt="Eligir entre las opciones de color"
+                                className="image-icon"
+                            />
+                            <p className="section-title">Colores</p>
+                            <div className="options-container">
+
+                            </div>
+                        </div>
+
+                        <div className="settings-section">
+                            <img
+                                src="/assets/pictograms/sound.png"
+                                alt="Eligir entre las opciones de color"
+                                className="image-icon"
+                            />                            
+                            <p className="section-title">Sonido</p>
+                            <div className="options-container">
+
+                            </div>
+                        </div>
+
+                        <div className="settings-section">
+                            <img
+                                src="/assets/pictograms/text.png"
+                                alt="Eligir entre las opciones de color"
+                                className="image-icon"
+                            />                            
+                            <p className="section-title">Texto</p>
+                            <div className="options-container">
+                            
+                            </div>
+                        </div>*/}
+                    </section>
+
+
+                    {/* Button section */}
+                    <section className="button-section">
+
+                    </section>
                     
-                <div className='main-container'>
-                    {/* COLOR */}
-                    <div className="settings-section">
-                        <img
-                            src="/assets/pictograms/color.png"
-                            alt="Eligir entre las opciones de color"
-                            className="image-icon"
-                        />
-                        <p className="section-title">Colores</p>
-                        <div className="options-container">
-                        <IonButton fill={color === 'original' ? 'solid' : 'outline'} 
-                            onClick={() => setColor('original')} className="color-btn palette-original"></IonButton>
-
-                        <IonButton fill={color === 'pastel' ? 'solid' : 'outline'} 
-                            onClick={() => setColor('pastel')} className="color-btn palette-pastel"></IonButton>
-
-                        <IonButton fill={color === 'vibrante' ? 'solid' : 'outline'} 
-                            onClick={() => setColor('vibrante')} className="color-btn palette-vibrante"></IonButton>
-                        </div>
-                    </div>
-
-                    {/* 2. SOUND */}
-                    <div className="settings-section">
-                        <img
-                            src="/assets/pictograms/sound.png"
-                            alt="Eligir entre las opciones de color"
-                            className="image-icon"
-                        />                            
-                        <p className="section-title">Sonido</p>
-                        <div className="options-container">
-                        <IonButton className="sound-btn" fill={sound === 'mudo' ? 'solid' : 'outline'} 
-                            onClick={() => setSound('mudo')}> Mudo
-                            <IonIcon slot="icon-only" icon={volumeMute}></IonIcon>    
-                        </IonButton>
-
-                        <IonButton className="sound-btn" fill={sound === 'medio' ? 'solid' : 'outline'} 
-                            onClick={() => setSound('medio')}> Medio
-                            <IonIcon slot="icon-only" icon={volumeMedium}></IonIcon>    
-                        </IonButton>
-
-                        <IonButton className="sound-btn" fill={sound === 'alto' ? 'solid' : 'outline'} 
-                            onClick={() => setSound('alto')}> Alto
-                            <IonIcon slot="icon-only" icon={volumeHigh}></IonIcon>    
-                        </IonButton>
-                        </div>
-                    </div>
-
-                    {/* 2. TEXT */}
-                    <div className="settings-section">
-                        <img
-                            src="/assets/pictograms/text.png"
-                            alt="Eligir entre las opciones de color"
-                            className="image-icon"
-                        />                            
-                        <p className="section-title">Texto</p>
-                        <div className="options-container">
-                        <IonButton fill={text === 'normal' ? 'solid' : 'outline'} 
-                            onClick={() => setText('normal')} className="text-normal">Normal</IonButton>
-                        <IonButton fill={text === 'grande' ? 'solid' : 'outline'} 
-                            onClick={() => setText('grande')} className="text-grande">Grande</IonButton>
-                        </div>
-                    </div>
-
-                </div> 
-
-                {/* Text preview */}
-                <div className={`text-preview ${text}`}>
-                    Texto de ejemplo para previsualizar los cambios.
-                </div>
-
             </IonContent>
         </IonPage> 
     ); 
