@@ -60,7 +60,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
         <IonButtons slot="end">
           <Button3Dtext onClick={handleLogout}>
             <>
-              <span className="btn-text">CERRAR SESIÓN</span>
+              <span className="btn-text">SALIR</span>
               <img
                 src="/assets/pictograms/salir.png"
                 alt="Cerrar sesión"

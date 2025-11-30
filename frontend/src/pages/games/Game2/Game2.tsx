@@ -994,13 +994,13 @@ const Game2: React.FC = () => {
               onHomeClick={handleEarlyExit}
             />
 
+        {/* Wrapper principal */}
+        <div className="game2-main-wrapper">
+          {/* Zona de juego */}
+          <div className="game2-container">
 
-
-        {/* Zona de juego */}
-        <div className="game2-container">
-
-          {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
-          <div className="available-numbers-top" id="available-zone">
+            {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
+            <div className="available-numbers-top" id="available-zone">
             {availableNumbers.map((num, index) => {
               if (num === undefined) {
                 // Hueco vacío - círculo gris con borde punteado negro
@@ -1069,34 +1069,45 @@ const Game2: React.FC = () => {
           </div>
         </div>
 
-        {/* Botones de control */}
-        <div className="check-button-container">
-          {/* Botón de pistas (Tato) */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button game2-hint-button"
-            onClick={useHint}
-            disabled={availableNumbers.every(n => n === undefined)}
-          >
-            <img
-              src={imgTato}
-              alt="Pista"
-              className="game2-check-button-image"
-            />
-          </IonButton>
+          {/* Botones de control */}
+          <div className="check-button-container">
+            {/* Botón de pistas (Tato) */}
+            <IonButton
+              fill="clear"
+              className="game2-check-button game2-hint-button"
+              onClick={useHint}
+              disabled={availableNumbers.every(n => n === undefined)}
+            >
+              <img
+                src={imgTato}
+                alt="Pista"
+                className="game2-check-button-image"
+              />
+            </IonButton>
 
-          {/* Botón de instrucciones/tutorial */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button"
-            onClick={openVideoModal}
-          >
-            <img
-              src={imgInstrucciones}
-              alt="Video de ayuda"
-              className="game2-check-button-image"
-            />
-          </IonButton>
+            {/* Indicador de orden */}
+            <div className="order-indicator">
+              <span className="order-icon">
+                {config?.settings.order === 'ascending' ? '↑' : '↓'}
+              </span>
+              <span className="order-text">
+                {config?.settings.order === 'ascending' ? 'Ascendente' : 'Descendente'}
+              </span>
+            </div>
+
+            {/* Botón de instrucciones/tutorial */}
+            <IonButton
+              fill="clear"
+              className="game2-check-button"
+              onClick={openVideoModal}
+            >
+              <img
+                src={imgInstrucciones}
+                alt="Video de ayuda"
+                className="game2-check-button-image"
+              />
+            </IonButton>
+          </div>
         </div>
         </>
         )}
