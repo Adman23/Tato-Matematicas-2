@@ -369,7 +369,7 @@ export default function Login() {
                 fill="clear"
                 onClick={() => {
                   clearForm();
-                  history.push('/home');
+                  history.push('/student/login');
                 }}
               >
                 Volver al inicio
