@@ -236,7 +236,7 @@
 .order-text {
   font-size: clamp(0.8rem, 2.5vw, 1.4rem);
   font-weight: 600;
-  color: var(--tatomaths-text-primary);
+  color: var(--ion-color-dark);
   text-align: center;
   white-space: nowrap;
 }
