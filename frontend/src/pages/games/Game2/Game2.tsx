@@ -29,7 +29,7 @@ import './Game2.css';
 // Importar imágenes para el header
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgTato from '/assets/Tato/TatoPista.jpeg';
+import imgTato from '/assets/Tato/TatoPista.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
@@ -93,7 +93,7 @@ const TOTAL_ROUNDS = 5;
  * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
-  
+
   const location = useLocation();
   const router = useIonRouter();
   const { user, loadingAuth: authLoading } = useAuth();
@@ -943,43 +943,24 @@ const Game2: React.FC = () => {
     );
   }
   */
-  
+
 
   return (
     <IonPage>
       <IonContent className="game2-content" scrollY={false}>
-          {gameFinished ? (
-            <ResultsScreen
-              totalRounds={TOTAL_ROUNDS}
-              completedRounds={roundTimes.length}
-              totalHints={totalHintsUsed}
-              totalErrors={totalErrorsMade}
-              totalNumbersCorrect={totalNumbersCorrect}
-              totalNumbersRequired={totalNumbersRequired}
-              onHomeClick={exitToDashboard}
-              headerTitle="Ordenar Nº"
-              headerPictogram1={imgOrdenar}
-              headerPictogramArrow={imgFlecha}
-              headerPictogram2={imgJuego}
-            />
-          ) : (
-          <>
-        {/* Mostrar pantalla de feedback después de colocar un número */}
-        {showFeedbackScreen ? (
-          <FeedbackScreen
-            isCorrect={feedbackType === 'correct'}
-            currentRound={currentRound}
+        {gameFinished ? (
+          <ResultsScreen
             totalRounds={TOTAL_ROUNDS}
+            completedRounds={roundTimes.length}
+            totalHints={totalHintsUsed}
+            totalErrors={totalErrorsMade}
+            totalNumbersCorrect={totalNumbersCorrect}
+            totalNumbersRequired={totalNumbersRequired}
+            onHomeClick={exitToDashboard}
             headerTitle="Ordenar Nº"
             headerPictogram1={imgOrdenar}
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
-            imgTatoFeliz={imgTatoFeliz}
-            imgTatoTriste={imgTatoTriste}
-            imgSiguiente={imgSiguiente}
-            messages={Messages}
-            onNext={closeFeedbackScreen}
-            onHomeClick={handleEarlyExit}
           />
         ) : (
           <>
@@ -1045,13 +1026,8 @@ const Game2: React.FC = () => {
                       loading="eager"
                       decoding="sync"
                     />
-                  ) : (
-                    <span className="number-value">{num}</span>
-                  )}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
 
           {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
           <div id="drop-zone-container">

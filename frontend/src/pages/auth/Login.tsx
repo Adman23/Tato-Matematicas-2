@@ -303,10 +303,12 @@ export default function Login() {
       <IonContent fullscreen className="ion-padding login-background">
 
         <div className="login-container">
-          <div className="main-title">
-            <IonText>
-              <h1>Tato Matemáticas 2</h1>
-            </IonText>
+          <div className="login-header">
+            <img
+              src="/assets/Tato/Tatitulo.png"
+              alt="Tato Matemáticas"
+              className="login-logo-title"
+            />
           </div>
 
           <div className="login-card">
@@ -369,7 +371,7 @@ export default function Login() {
                 fill="clear"
                 onClick={() => {
                   clearForm();
-                  router.push('/home');
+                  router.push('/student/login');
                 }}
               >
                 Volver al inicio

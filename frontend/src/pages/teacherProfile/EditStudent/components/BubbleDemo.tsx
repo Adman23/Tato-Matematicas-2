@@ -16,11 +16,7 @@ const BubbleDemo: React.FC <{colors: string[] }> = ({ colors }) => {
         <div
             style={{
                 "--bubble-demo-bg": colors[0],
-                "--bubble-demo-selected-bg": colors[1],
-                "--bubble-demo-correct-bg": colors[2],
-                "--bubble-demo-incorrect-bg": colors[3],
-                "--bubble-demo-feedback-correct": colors[4],
-                "--bubble-demo-feedback-incorrect": colors[5],
+                "--bubble-demo-selected-bg": colors[1]
             } as React.CSSProperties}
         >
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '1rem' }}>
@@ -30,11 +26,6 @@ const BubbleDemo: React.FC <{colors: string[] }> = ({ colors }) => {
                 {/* Selected */}
                 <ExampleBubble value={3} isSelected className='bubble-demo' />
 
-                {/* Correct */}
-                <ExampleBubble value={5} isCorrect className='bubble-demo' />
-
-                {/* Incorrect */}
-                <ExampleBubble value={7} isIncorrect className='bubble-demo' />
             </div>
         </div>
         

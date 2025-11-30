@@ -37,12 +37,10 @@ const ColorPaletteCard: React.FC<Props> = ({
 
     //Definition of the colors we are going to use in the example card
     const [headerBg, headerText, contentBg, contentText, 
-        bubbleBg, bubbleSelected, bubbleCorrect,bubbleIncorrect, 
-        bubbleCorrectFeed, bubbleIncorrectFeed] = palette.colors;
+        bubbleBg, bubbleSelected] = palette.colors;
 
     //Definition of the colors from the bubbles examples
-    const bubbleColors = [bubbleBg, bubbleSelected, bubbleCorrect,bubbleIncorrect, 
-        bubbleCorrectFeed, bubbleIncorrectFeed];
+    const bubbleColors = [bubbleBg, bubbleSelected];
 
     return(
         
