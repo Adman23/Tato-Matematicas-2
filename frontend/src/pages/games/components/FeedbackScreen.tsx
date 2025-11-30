@@ -96,6 +96,7 @@ interface FeedbackScreenProps {
     onNext: () => void;
     onHomeClick: () => void;
     onRepeat?: () => void;
+    hideNextOnError?: boolean; // Si es true, oculta el botón "Siguiente" cuando hay error
 }
 
 /**
@@ -122,7 +123,8 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     messages,
     onNext,
     onHomeClick,
-    onRepeat
+    onRepeat,
+    hideNextOnError = false
 }) => {
 
 
@@ -317,17 +319,20 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                             </IonButton>
                         )}
 
-                        <IonButton
-                            fill="clear"
-                            className="feedback-check-button"
-                            onClick={() => { incrementMessageIndex(); onNext(); }}
-                        >
-                            <img
-                                src={imgSiguiente}
-                                alt="Siguiente"
-                                className="feedback-check-button-image"
-                            />
-                        </IonButton>
+                        {/* Mostrar botón "Siguiente" solo si: es correcto O (es incorrecto pero hideNextOnError es false) */}
+                        {(isCorrect || !hideNextOnError) && (
+                            <IonButton
+                                fill="clear"
+                                className="feedback-check-button"
+                                onClick={() => { incrementMessageIndex(); onNext(); }}
+                            >
+                                <img
+                                    src={imgSiguiente}
+                                    alt="Siguiente"
+                                    className="feedback-check-button-image"
+                                />
+                            </IonButton>
+                        )}
                     </div>
                 </div>
             </IonContent>

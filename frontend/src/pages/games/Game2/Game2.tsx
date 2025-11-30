@@ -510,25 +510,16 @@ const Game2: React.FC = () => {
     setAvailableNumbers(newAvailable);
 
     // Verificar si todos los números fueron colocados (todos son undefined)
-    if (newAvailable.every(n => n === undefined)) {
+    const allPlaced = newAvailable.every(n => n === undefined);
+
+    if (allPlaced) {
       // Todos los números colocados: guardar resultados
       saveRoundResults(currentHints);
       setIsRoundCompleted(true);
 
-      // Si NO es una pista, mostrar feedback
-      if (!isHint) {
-        setFeedbackType('correct');
-        setShowFeedbackScreen(true);
-      } else {
-        // Si es una pista y es el último número, avanzar automáticamente con un pequeño delay
-        setTimeout(() => {
-          if (currentRound < TOTAL_ROUNDS) {
-            setCurrentRound(prev => prev + 1);
-          } else {
-            finishGame();
-          }
-        }, 800); // Pequeño delay para que el usuario vea que se colocó el número
-      }
+      // Siempre mostrar feedback al completar la ronda (ya sea manual o con pista)
+      setFeedbackType('correct');
+      setShowFeedbackScreen(true);
     } else {
       // Aún quedan números: solo mostrar feedback si NO es una pista
       if (!isHint) {
@@ -1108,6 +1099,29 @@ const Game2: React.FC = () => {
                 Tu navegador no soporta la reproducción de videos.
               </video>
             </div>
+          </div>
+        )}
+
+        {/* Feedback Screen */}
+        {showFeedbackScreen && feedbackType && (
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1000 }}>
+            <FeedbackScreen
+              isCorrect={feedbackType === 'correct'}
+              currentRound={currentRound}
+              totalRounds={TOTAL_ROUNDS}
+              headerTitle="Ordenar Nº"
+              headerPictogram1={imgOrdenar}
+              headerPictogramArrow={imgFlecha}
+              headerPictogram2={imgJuego}
+              imgTatoFeliz={imgTatoFeliz}
+              imgTatoTriste={imgTatoTriste}
+              imgSiguiente={imgSiguiente}
+              messages={Messages}
+              onNext={closeFeedbackScreen}
+              onHomeClick={handleEarlyExit}
+              onRepeat={feedbackType === 'incorrect' ? closeFeedbackScreen : undefined}
+              hideNextOnError={true}
+            />
           </div>
         )}
         </>
