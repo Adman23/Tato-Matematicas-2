@@ -26,7 +26,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
   url
 }) => {
   const router = useIonRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const handleProfile = () => {
     if (url != null) {
@@ -38,10 +38,6 @@ const SimpleHeaderUser: React.FC<Props> = ({
     }
   }
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/home',"none","replace");
-  }
 
   return (
     <IonHeader className="ion-no-border">
@@ -58,16 +54,6 @@ const SimpleHeaderUser: React.FC<Props> = ({
         </IonButtons>
 
         <IonButtons slot="end">
-          <Button3Dtext onClick={handleLogout}>
-            <>
-              <span className="btn-text">SALIR</span>
-              <img
-                src="/assets/pictograms/salir.png"
-                alt="Cerrar sesión"
-                className="btn-icon-header-user"
-              />
-            </>
-          </Button3Dtext>
           <Button3Dtext onClick={handleProfile}>
             {url != null ? (
               <>

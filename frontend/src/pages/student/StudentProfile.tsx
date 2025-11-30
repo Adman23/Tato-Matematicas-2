@@ -1,6 +1,7 @@
 /**
  * !! EDITED
  *  -> Now there is a new UI, its in figma
+ *  -> Almost like a new file
  * 
  * @file StudentProfile.tsx
  * @description Component for the student profile page.
@@ -45,22 +46,32 @@ export default function StudentProfile() {
      *               group_alias?: string;
      *           }  
      */ 
-    const { user } = useAuth();
-    const { loadingUser } = useUserData();
+    const { user, logout } = useAuth();
+    const { loadingUser, refreshUserData } = useUserData();
     const router = useIonRouter();
 
+    /**
+     * @brief Its used by the buttons to make redirection
+     * @param url the objetive url
+     */
     const handleDirection = (url: string) => {
         router.push(url);
     }
     
-    /*
-    !! DEPRECATED, not useful
-    // Variables and functions---------------------------------
-    const [color, setColor] = useState('original');
-    const [sound, setSound] = useState('medio');
-    const [text, setText] = useState('normal');
-    // End of variables and functions--------------------------
-    */
+    /**
+     * @brief Its used by the logout button
+     */
+    const handleLogout = async () => {
+        await logout();
+        router.push('/home',"none","replace");
+    }
+
+    /**
+     * @brief Its used by the refresh button
+     */
+    const handleRefresh = async () => {
+        await refreshUserData();
+    }
 
     // Show loading icon
     if (loadingUser) {
@@ -96,54 +107,54 @@ export default function StudentProfile() {
                             <span className="btn-text">COLORES</span>
                         </Button3Dtext>
                         
-                        {/* Edit colors */}
+                        {/* Edit game_1 */}
                         <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                             <img
                             src="/assets/pictograms/yo.png"
-                            alt="Ir a editar colores"
+                            alt="Ir a editar juego uno"
                             className="btn-icon-header-user"
                             />
-                            <span className="btn-text">COLORES</span>
+                            <span className="btn-text">JUEGO 1</span>
                         </Button3Dtext>
                         
-                        {/* Edit colors */}
+                        {/* Edit game_2 */}
                         <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                             <img
                             src="/assets/pictograms/yo.png"
-                            alt="Ir a editar colores"
+                            alt="Ir a editar Juego dos"
                             className="btn-icon-header-user"
                             />
-                            <span className="btn-text">COLORES</span>
+                            <span className="btn-text">JUEGO 2</span>
                         </Button3Dtext>
 
-                        {/* Edit colors */}
+                        {/* Edit sound */}
                         <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                             <img
                             src="/assets/pictograms/yo.png"
-                            alt="Ir a editar colores"
+                            alt="Ir a editar sonido"
                             className="btn-icon-header-user"
                             />
-                            <span className="btn-text">COLORES</span>
+                            <span className="btn-text">SONIDO</span>
                         </Button3Dtext>
 
-                        {/* Edit colors */}
+                        {/* Edit game_3 */}
                         <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                             <img
                             src="/assets/pictograms/yo.png"
-                            alt="Ir a editar colores"
+                            alt="Ir a editar juego tres"
                             className="btn-icon-header-user"
                             />
-                            <span className="btn-text">COLORES</span>
+                            <span className="btn-text">JUEGO 3</span>
                         </Button3Dtext>
 
-                        {/* Edit colors */}
+                        {/* Edit game_4 */}
                         <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                             <img
                             src="/assets/pictograms/yo.png"
-                            alt="Ir a editar colores"
+                            alt="Ir a editar juego cuatro"
                             className="btn-icon-header-user"
                             />
-                            <span className="btn-text">COLORES</span>
+                            <span className="btn-text">JUEGO 4</span>
                         </Button3Dtext>                  
 
                         {/* 
@@ -187,7 +198,25 @@ export default function StudentProfile() {
 
                     {/* Button section */}
                     <section className="button-section">
-
+                        {/* Logout button */}
+                        <Button3Dtext className="small-button" onClick={handleRefresh}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar juego cuatro"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">RECARGAR</span>
+                        </Button3Dtext>  
+                        
+                        {/* Exit button */}
+                        <Button3Dtext className="small-button" onClick={handleLogout}>
+                            <img
+                            src="/assets/pictograms/yo.png"
+                            alt="Ir a editar juego cuatro"
+                            className="btn-icon-header-user"
+                            />
+                            <span className="btn-text">SALIR</span>
+                        </Button3Dtext>     
                     </section>
                     
             </IonContent>

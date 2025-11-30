@@ -25,7 +25,6 @@ import {
     IonHeader,
     IonButtons,
     IonIcon,
-    IonLabel,
     useIonRouter
 } from '@ionic/react';
 
