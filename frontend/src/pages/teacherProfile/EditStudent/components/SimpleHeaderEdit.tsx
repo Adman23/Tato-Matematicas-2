@@ -24,12 +24,13 @@ import {
     IonButton,
     IonHeader,
     IonButtons,
-    IonIcon
+    IonIcon,
+    IonLabel,
+    useIonRouter
 } from '@ionic/react';
 
 import './SimpleHeaderEdit.css';
 import { homeOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
 import { setupIonicReact } from '@ionic/react';
 
 setupIonicReact();
@@ -54,7 +55,7 @@ const SimpleHeaderEdit: React.FC<Props> = ({
     Editing
 }) => {
 
-    const history = useHistory();
+    const router = useIonRouter();
 
     /**
      * Functional Summary.
@@ -70,7 +71,7 @@ const SimpleHeaderEdit: React.FC<Props> = ({
      * ```
      */
     const handleHome = () => {
-        history.replace('/teacher-profile');
+        router.push('/teacher/profile',"back","replace");
     }
 
     return (

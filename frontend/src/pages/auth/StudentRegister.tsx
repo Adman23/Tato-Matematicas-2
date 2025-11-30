@@ -10,10 +10,10 @@ import {
   IonToast,
   IonImg,
   IonText,
+  useIonRouter
 } from '@ionic/react';
 import { personOutline, addOutline, closeOutline, checkmarkOutline } from 'ionicons/icons';
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI, uploadImage, getImages } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
@@ -35,7 +35,7 @@ const MAX_PICTOGRAMS = 3;
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function StudentRegister() {
-  const history = useHistory();
+  const router = useIonRouter();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pictoPickerRef = useRef<HTMLDivElement>(null);
@@ -177,7 +177,7 @@ export default function StudentRegister() {
       setIsToastOpen(true);
 
       setTimeout(() => {
-        history.push('/register/confirmation/alumnos'); 
+        router.push('/register/confirmation/alumnos',"none","replace"); 
       }, 2000); 
     } catch (err: any) {
       console.error('Error en el registro:', err);
@@ -199,7 +199,7 @@ export default function StudentRegister() {
     setPictograms([]);
     if (showPictoModal) closePictoModal();
     if (showAvatarModal) closeAvatarModal();
-    history.replace('/admin/alumnos');
+    router.push('/admin/alumnos',"back","pop");
   };
 
   // === PICTOGRAMAS ===

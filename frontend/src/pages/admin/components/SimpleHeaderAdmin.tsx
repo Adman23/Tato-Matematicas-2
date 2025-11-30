@@ -27,12 +27,12 @@ import {
     IonButton,
     IonHeader,
     IonButtons,
-    IonIcon
+    IonIcon,
+    useIonRouter
 } from '@ionic/react';
 
 import './SimpleHeaderAdmin.css';
 import { homeOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { setupIonicReact } from '@ionic/react';
 
@@ -56,7 +56,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
     adminName
 }) => {
 
-    const history = useHistory();
+    const router = useIonRouter();
     const { logout } = useAuth();
 
     /**
@@ -66,8 +66,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
      *
      * Execution flow.
      *
-     * - Calls `logout` from the context.
-     * - Replaces the current route with '/login' using `history.replace`.
+     * - Calls `logout` from the context
      *
      * @param {void}
      * @returns {Promise<void>}
@@ -79,7 +78,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
      */
     const handleLogout = async () => {
         await logout();
-        history.replace('/login');
+        router.push('/login');
     };
 
     /**
@@ -96,7 +95,7 @@ const SimpleHeaderAdmin: React.FC<Props> = ({
      * ```
      */
     const handleHome = () => {
-        history.replace('/admin/dashboard');
+        router.push('/admin/dashboard');
     }
 
     return (

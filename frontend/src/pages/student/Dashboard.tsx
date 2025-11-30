@@ -4,9 +4,9 @@ import {
   IonPage,
   IonContent,
   IonButton,
-  IonSpinner
+  IonSpinner,
+  useIonRouter
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
@@ -40,7 +40,7 @@ import { useUserData } from '../../contexts/UserContext';
 export default function StudentDashboard() {
   const { user } = useAuth();
   const { loadingUser } = useUserData();
-  const history = useHistory();
+  const router = useIonRouter();
 
 
   /*
@@ -76,7 +76,7 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game1')}
+              onClick={() => router.push('/game/game1')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juego2.png" alt="Juego 1" className="game-image" />
@@ -88,7 +88,7 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game2')}
+              onClick={() => router.push('/game/game2')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/juegoX.png" alt="Juego 2" className="game-image" />
@@ -100,7 +100,7 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game3')}
+              onClick={() => router.push('/game/game3')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/repartir.png" alt="Juego 3" className="game-image" />
@@ -112,7 +112,7 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game4')}
+              onClick={() => router.push('/game/game4')}
             >
               <div className="game-button-content">
                 <img src="/assets/juegosImg/meter.png" alt="Juego 4" className="game-image" />

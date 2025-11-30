@@ -5,10 +5,10 @@ import {
   IonButtons,
   IonButton,
   IonIcon,
-  IonAvatar
+  IonAvatar,
+  useIonRouter
 } from '@ionic/react';
 import { homeOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
 import './HeaderTeacherItem.css';
 
 interface Props {
@@ -22,14 +22,14 @@ const HeaderItem: React.FC<Props> = ({
   teacherAvatar,
   onLogoutClick,
 }) => {
-  const history = useHistory();
+  const router = useIonRouter();
 
   const handleEditClick = () => {
-    history.push('/teacheredit/profile');
+    router.push('/teacheredit/profile');
   };
 
   const handleHomeClick = () => {
-    history.push('/home');
+    router.push('/home');
   };
 
   return (

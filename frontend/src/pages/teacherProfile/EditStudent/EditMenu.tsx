@@ -11,12 +11,13 @@ import {
     IonContent,
     IonCard,
     IonCardContent,
-    IonButton
+    IonButton,
+    useIonRouter
 
 } from '@ionic/react';
 
 import './EditMenu.css';
-import { useHistory, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import SimpleHeaderEdit from './components/SimpleHeaderEdit';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useParams } from "react-router-dom";
@@ -45,7 +46,7 @@ import { useParams } from "react-router-dom";
 export default function EditMenu() {
 
     const { user } = useAuth();
-    const history = useHistory();
+    const router = useIonRouter();
     //const { id, name } = useParams();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
@@ -79,7 +80,7 @@ export default function EditMenu() {
                                     expand="block"
                                     type="submit"
                                     className='studentEditProfile-dashboard-button'
-                                    onClick={() => history.push('/admin-dashboard/profesores')}
+                                    onClick={() => router.push('/admin-dashboard/profesores')}
                                 >
                                     Datos del alumno
                                 </IonButton>
@@ -88,7 +89,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push(`/student-edit-color/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-color/${id}/${name}`)}
                                 >
                                     Colores
                                 </IonButton>
@@ -97,7 +98,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/link-profiles')}
+                                    onClick={() => router.push('/admin-dashboard/link-profiles')}
                                 >
                                     Sonidos
                                 </IonButton>
@@ -106,7 +107,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/link-profiles')}
+                                    onClick={() => ""}
                                 >
                                     Texto
                                 </IonButton>
@@ -115,7 +116,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push('/admin-dashboard/groups-management')}
                                 >
                                     Juego 1
                                 </IonButton>
@@ -124,7 +125,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push('/admin-dashboard/groups-management')}
                                 >
                                     Juego 2
                                 </IonButton>
@@ -133,7 +134,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push('/admin-dashboard/groups-management')}
                                 >
                                     Juego 3
                                 </IonButton>
@@ -142,7 +143,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push('/admin-dashboard/groups-management')}
                                 >
                                     Juego 4
                                 </IonButton>
@@ -151,7 +152,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => history.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push('/admin-dashboard/groups-management')}
                                 >
                                     Mensajes
                                 </IonButton>

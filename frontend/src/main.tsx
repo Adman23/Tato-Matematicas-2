@@ -14,6 +14,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { setupIonicReact } from '@ionic/react';
+
+// Inicializa Ionic React (registra los web components y configura la integración)
+setupIonicReact();
 
 /**
  * Punto de montaje de la aplicación.
