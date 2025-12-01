@@ -89,7 +89,7 @@
     margin: 0.4rem 0.3rem;
 }
 
-.group-register-input-item {
+ion-input.group-register-input-item {
     --background: white;
     --border-radius: 20px;
     --padding-start: 1rem;

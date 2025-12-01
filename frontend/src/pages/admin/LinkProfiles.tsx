@@ -405,7 +405,7 @@ export default function LinkProfiles() {
                         <div className='LinkProfiles-searchbar'>
                             <IonTitle className='LinkProfiles-title'>Alumnos</IonTitle>
                             <IonSearchbar
-                                placeholder="Buscar alumno"
+                                placeholder="Buscar"
                                 value={studentQuery}
                                 onIonInput={(e) => setStudentQuery(e.detail.value ?? '')}
                                 onIonClear={() => setStudentQuery('')}
@@ -446,7 +446,7 @@ export default function LinkProfiles() {
                         <div className='LinkProfiles-searchbar'>
                             <IonTitle className='LinkProfiles-title'>Profesores</IonTitle>
                             <IonSearchbar
-                                placeholder="Buscar profesor"
+                                placeholder="Buscar"
                                 value={teacherQuery}
                                 onIonInput={(e) => setTeacherQuery(e.detail.value ?? '')}
                                 onIonClear={() => setTeacherQuery('')}
@@ -520,7 +520,7 @@ export default function LinkProfiles() {
                         expand="block"
                         type="submit"
                         className='LinkProfiles-button'
-                        onClick={() => router.push('/admin/dashboard',"forward","pop")}
+                        onClick={() => router.push('/admin/dashboard', "forward", "pop")}
                     >
                         Cancelar
                     </IonButton>

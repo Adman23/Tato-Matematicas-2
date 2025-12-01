@@ -9,6 +9,7 @@ import React from 'react';
 interface button3DtextProps {
   onClick?: () => void;
   className?: string;
+  frontClassName?: string;
   children: React.ReactNode;
   color?: string;
   disabled?: boolean; // Added disabled prop for logic handling
@@ -27,7 +28,8 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
   onClick, 
   children, 
   className = '', 
-  color = 'var(--ion-color-primary)',
+  frontClassName = '',
+  color = 'var(--bubble-bg)',
   disabled = false
 }) => {
 
@@ -79,7 +81,6 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           height: 100%;
           width: 100%;
           border-radius: 12px;
-          background-color: ${color};
           filter: brightness(0.7);
           background-image: linear-gradient(
             to left,
@@ -95,10 +96,11 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           display: block;
           position: relative;
           border-radius: 12px;
-          background: ${color}; 
           /* Padding ajustado para que no sea tan ancho si solo tiene icono */
           padding: 12px 20px;
           color: white;
+          width: 100%;
+          height: 100%;
           font-weight: 700;
           transform: translateY(-6px);
           transition: transform 100ms cubic-bezier(0.3, 0.7, 0.4, 1), background-color 250ms;
@@ -109,7 +111,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
            background: #999; /* Fallback gray */
         }
         .pushable-button:disabled .edge {
-           background: #777;
+          background: #777;
         }
 
         /* Contenido del botón */
@@ -125,6 +127,18 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           font-size: 1.2rem;
           font-weight: bold;
           white-space: nowrap;
+          color: #000000;
+          border: 2px solid #1e3a8a;
+          padding: 4px 12px;
+          border-radius: 6px;
+          background-color: rgba(255, 255, 255, 0.9);
+          max-width: 95%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: clip;
+          font-size: clamp(12px, 1.7vw, 20px);
+          line-height: 1.2;
+          flex-shrink: 0;
         }
 
         .btn-icon {
@@ -147,6 +161,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
 
         .pushable-button:not(:disabled):active .front {
           transform: translateY(-2px);
+
         }
 
         .pushable-button:not(:disabled):active .shadow {
@@ -165,10 +180,10 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
         type="button"
         disabled={disabled}
       >
-        <span className="shadow"></span>
-        <span className="edge"></span>
-        <span className="front">
-          <div className="button-content">
+        <span className={`shadow`}></span>
+        <span className={`edge`} style={{ backgroundColor: color }}></span>
+        <span className={`front ${frontClassName}`} style={{ background: color }}>
+          <div className={`button-content`}>
             {children}
           </div>
         </span>
