@@ -942,7 +942,6 @@ const Game2: React.FC = () => {
         {gameFinished ? (
           <ResultsScreen
             totalRounds={TOTAL_ROUNDS}
-            completedRounds={roundTimes.length}
             totalHints={totalHintsUsed}
             totalErrors={totalErrorsMade}
             totalNumbersCorrect={totalNumbersCorrect}
@@ -952,6 +951,7 @@ const Game2: React.FC = () => {
             headerPictogram1={imgOrdenar}
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
+            elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
           />
         ) : (
           <>
@@ -1018,7 +1018,7 @@ const Game2: React.FC = () => {
                       decoding="sync"
                     />
                   ) : (
-                    <span>{num}</span>
+                    <span className="number-value">{num}</span>
                   )}
                 </div>
               );
