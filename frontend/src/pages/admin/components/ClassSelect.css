@@ -85,3 +85,77 @@ ion-select.select-class::part(icon) {
     top: 50%;
     transform: translateY(-50%);
 }
+
+/* ========================================
+    Responsive adjustments
+   ======================================== */
+@media (max-width: 669px) {
+    .class-select-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 20px 10px;
+    }
+
+    ion-label.select-class-label {
+        font-size: 1.5rem;
+    }
+
+    ion-select.select-class {
+        height: 40px;
+    }
+
+    ion-select.select-class::part(icon) {
+        display: none;
+    }
+
+    ion-select.select-class::part(placeholder),
+    ion-select.select-class::part(text) {
+        font-size: 0.9rem;
+        top: 25%;
+    }
+
+}
+
+
+@media (min-height: 640px) and (max-height: 800px) {
+    .class-select-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 20px 10px;
+    }
+}
+
+@media (max-height: 639px) {
+    .class-select-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 20px 10px;
+    }
+
+    ion-label.select-class-label {
+        font-size: 1rem;
+    }
+
+    ion-select.select-class {
+        height: 40px;
+    }
+
+    ion-select.select-class::part(placeholder),
+    ion-select.select-class::part(text) {
+        font-size: 0.9rem;
+        top: 25%;
+    }
+
+    ion-select.select-class::part(icon) {
+        top: 25%;
+    }
+}
