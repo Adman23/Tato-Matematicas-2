@@ -7,13 +7,13 @@ import {
   useIonViewWillEnter,
 } from '@ionic/react';
 import { arrowBack, arrowForward, person, checkmark, trash } from 'ionicons/icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type KeyboardEvent } from 'react'; 
 import { authAPI } from '../../lib/api'; 
 import type { Group, User } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext'; 
 // --- IMPORTACIONES ---
 import { Button3Dtext } from '../global_components/PushableButtons'; 
-import { Background } from '../global_components/Background'; // <--- AQUI (ajusta la ruta)
+import { Background } from '../global_components/Background'; 
 
 import './StudentLogin.css';
 
@@ -34,7 +34,7 @@ type LoginPhase = 'GROUPS' | 'STUDENTS' | 'PASSWORD';
 export default function StudentLoginUnified() {
   const router = useIonRouter();
   const { login } = useAuth(); 
-  
+   
   const [currentPhase, setCurrentPhase] = useState<LoginPhase>('GROUPS');
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
@@ -43,11 +43,11 @@ export default function StudentLoginUnified() {
   const [selectedGridItem, setSelectedGridItem] = useState<GridItem | null>(null);
   const [confirmPendingId, setConfirmPendingId] = useState<string | null>(null);
   const [gridPage, setGridPage] = useState(0);
-  
+   
   const [selectedPictos, setSelectedPictos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+   
   const getLayoutConfig = () => {
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -203,6 +203,13 @@ export default function StudentLoginUnified() {
     }
   };
 
+  // Manejador de teclado para la paginación (Accesibilidad)
+  const handleDotKeyDown = (e: KeyboardEvent, index: number) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      setGridPage(index);
+    }
+  };
+
   const getLetterFromAlias = (alias?: string) => {
     if (!alias) return '?'; 
     const parts = alias.split(' ');
@@ -212,44 +219,63 @@ export default function StudentLoginUnified() {
   const totalPages = Math.ceil(items.length / layout.itemsPerPage);
   const startIndex = gridPage * layout.itemsPerPage;
   const visibleItems = items.slice(startIndex, startIndex + layout.itemsPerPage);
-  
+   
   const emptySlots = loading 
     ? layout.itemsPerPage 
     : Math.max(0, layout.itemsPerPage - visibleItems.length);
 
   return (
     <IonPage>
-      {/* NOTA IMPORTANTE: El scrollY debe ser false para que el fondo
-         funcione bien y no haya scrolls indeseados en la pantalla.
+      {/* ACCESIBILIDAD (VIDEO/AUDIO): 
+         Si 'Background' contiene un video, asegúrate en ese archivo de que tenga 'muted'
+         y si es decorativo aria-hidden="true". Aquí lo ocultamos del lector de pantalla 
+         preventivamente si es solo visual.
       */}
       <IonContent className="st-login-content" scrollY={false}>
         
-        {/* COMPONENTE DE FONDO NUEVO */}
-        <Background color="var(--ion-color-primary)" />
+        <div aria-hidden="true">
+            <Background color="var(--ion-color-primary)" />
+        </div>
 
         <div className="st-login-layout">
-            
+             
             {/* HEADER */}
             <header className="st-login-header">
                 <div className="st-header-side">
                     <div style={{ transform: 'scale(1.2)' }}>
-                        <Button3Dtext color="var(--ion-color-primary)" onClick={handleBack} disabled={loading}>
-                            <IonIcon icon={currentPhase === 'GROUPS' ? person : arrowBack} />
+                        {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Back) */}
+                        <Button3Dtext 
+                            color="var(--ion-color-primary)" 
+                            onClick={handleBack} 
+                            disabled={loading}
+                            aria-label="Volver atrás"
+                        >
+                            <IonIcon icon={currentPhase === 'GROUPS' ? person : arrowBack} aria-hidden="true" />
                         </Button3Dtext>
                     </div>
                 </div>
                 <div className="st-header-center">
-                    <img src="/assets/Tato/Tatitulo.png" alt="Tato" className="st-login-logo" />
+                    <img src="/assets/Tato/Tatitulo.png" alt="Logo de Tato" className="st-login-logo" />
                 </div>
                 <div className="st-header-side">
                     <div style={{ transform: 'scale(1.2)' }}>
+                        {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Check/Confirm) */}
                         {currentPhase === 'PASSWORD' ? (
-                            <Button3Dtext onClick={handleAdvance} disabled={loading || selectedPictos.length !== REQUIRED_LENGTH}>
-                                {loading ? <IonSpinner name="dots" /> : <IonIcon icon={checkmark} />}
+                            <Button3Dtext 
+                                onClick={handleAdvance} 
+                                disabled={loading || selectedPictos.length !== REQUIRED_LENGTH}
+                                aria-label="Confirmar contraseña"
+                            >
+                                {loading ? <IonSpinner name="dots" /> : <IonIcon icon={checkmark} aria-hidden="true" />}
                             </Button3Dtext>
                         ) : (
-                            <Button3Dtext color="var(--ion-color-primary)" onClick={handleAdvance} disabled={loading || !selectedGridItem}>
-                                <IonIcon icon={checkmark} />
+                            <Button3Dtext 
+                                color="var(--ion-color-primary)" 
+                                onClick={handleAdvance} 
+                                disabled={loading || !selectedGridItem}
+                                aria-label="Confirmar selección"
+                            >
+                                <IonIcon icon={checkmark} aria-hidden="true" />
                             </Button3Dtext>
                         )}
                     </div>
@@ -257,11 +283,12 @@ export default function StudentLoginUnified() {
             </header>
 
             <div className="st-login-subtitle-area">
-                <h2 className="st-login-subtitle">
+                {/* ERROR 2 FIXED: Changed h2 to h1 for First Level Heading */}
+                <h1 className="st-login-subtitle">
                     {currentPhase === 'GROUPS' && "Selecciona tu clase"}
                     {currentPhase === 'STUDENTS' && "Selecciona tu usuario"}
                     {currentPhase === 'PASSWORD' && `Hola, ${selectedStudent?.username}. Tu clave:`}
-                </h2>
+                </h1>
             </div>
 
             {/* AREA PRINCIPAL */}
@@ -286,15 +313,18 @@ export default function StudentLoginUnified() {
                                 {visibleItems.map((item) => {
                                     const isSelected = selectedGridItem?.id === item.id;
                                     const isGroup = currentPhase === 'GROUPS';
+                                    const labelText = isGroup ? `Clase ${(item as Group).alias}` : `Alumno ${(item as User).username}`;
+                                    
                                     return (
                                         <button
                                             key={item.id}
                                             onClick={() => handleTileClick(item)}
                                             className={`st-grid-btn ${isSelected ? 'selected' : ''}`}
+                                            aria-label={labelText}
                                         >
                                             {isGroup ? (
                                                 <div className="st-group-layout">
-                                                    <img src="/assets/pictograms/clase.png" alt="Clase" className="st-group-icon" />
+                                                    <img src="/assets/pictograms/clase.png" alt="" className="st-group-icon" aria-hidden="true" />
                                                     <span className="st-group-letter">{getLetterFromAlias((item as Group).alias)}</span>
                                                 </div>
                                             ) : (
@@ -302,8 +332,9 @@ export default function StudentLoginUnified() {
                                                     <div className="st-student-img-box">
                                                         <img 
                                                             src={(item as User).photo_url || "/assets/pictograms/user_default.png"} 
-                                                            alt={(item as User).username} 
+                                                            alt="" // Decorativo, el botón ya tiene aria-label
                                                             className="st-student-photo"
+                                                            aria-hidden="true"
                                                         />
                                                     </div>
                                                     <span className="st-student-name">{(item as User).username}</span>
@@ -312,14 +343,14 @@ export default function StudentLoginUnified() {
                                             
                                             {confirmPendingId === String(item.id) && (
                                                 <div className="st-btn-overlay">
-                                                    <img src="/assets/pictograms/si.png" alt="OK" className="st-overlay-icon" />
+                                                    <img src="/assets/pictograms/si.png" alt="Confirmar" className="st-overlay-icon" />
                                                 </div>
                                             )}
                                         </button>
                                     );
                                 })}
                                 {Array.from({ length: emptySlots }).map((_, i) => (
-                                    <div key={`ghost-${i}`} className="st-grid-btn ghost"></div>
+                                    <div key={`ghost-${i}`} className="st-grid-btn ghost" aria-hidden="true"></div>
                                 ))}
                             </div>
                         )}
@@ -336,14 +367,17 @@ export default function StudentLoginUnified() {
                                         key={index} 
                                         className={`st-pass-slot ${picto ? 'filled' : ''}`}
                                         onClick={() => picto && removePictoAtIndex(index)}
+                                        role="button"
+                                        aria-label={picto ? `Eliminar pictograma ${picto.name}` : `Espacio vacío ${index + 1}`}
+                                        tabIndex={0}
                                     >
                                         {picto ? (
                                             <>
-                                                <img src={picto.image} alt="picto" />
-                                                <div className="st-slot-delete"><IonIcon icon={trash} /></div>
+                                                <img src={picto.image} alt={picto.name} />
+                                                <div className="st-slot-delete"><IonIcon icon={trash} aria-hidden="true" /></div>
                                             </>
                                         ) : (
-                                            <span>?</span>
+                                            <span aria-hidden="true">?</span>
                                         )}
                                     </div>
                                 );
@@ -358,8 +392,9 @@ export default function StudentLoginUnified() {
                                         className="st-pass-key"
                                         onClick={() => addPicto(picto.id)}
                                         disabled={loading || selectedPictos.length >= MAX_LENGTH}
+                                        aria-label={`Añadir pictograma ${picto.name}`}
                                     >
-                                        <img src={picto.image} alt={picto.name} />
+                                        <img src={picto.image} alt="" aria-hidden="true" />
                                     </button>
                                 ))}
                             </div>
@@ -372,28 +407,46 @@ export default function StudentLoginUnified() {
             <div className="st-login-footer">
                 {!loading && currentPhase !== 'PASSWORD' && items.length > layout.itemsPerPage && (
                     <>
-                        <Button3Dtext color="var(--ion-color-primary)" onClick={() => setGridPage(p => p-1)} disabled={gridPage === 0}>
-                            <IonIcon icon={arrowBack} />
+                        {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Previous Page) */}
+                        <Button3Dtext 
+                            color="var(--ion-color-primary)" 
+                            onClick={() => setGridPage(p => p-1)} 
+                            disabled={gridPage === 0}
+                            aria-label="Página anterior"
+                        >
+                            <IonIcon icon={arrowBack} aria-hidden="true" />
                         </Button3Dtext>
                         
-                        <div className="st-pagination-dots">
+                        {/* IMPROVEMENT: Fixed accessibility for non-semantic divs acting as buttons */}
+                        <div className="st-pagination-dots" role="navigation" aria-label="Paginación">
                             {Array.from({ length: totalPages }, (_, i) => (
                                 <div 
                                     key={i} 
                                     className={`st-dot ${gridPage === i ? 'active' : ''}`}
                                     onClick={() => setGridPage(i)}
+                                    onKeyDown={(e) => handleDotKeyDown(e, i)}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label={`Ir a la página ${i + 1}`}
+                                    aria-current={gridPage === i ? 'page' : undefined}
                                 />
                             ))}
                         </div>
 
-                        <Button3Dtext color="var(--ion-color-primary)" onClick={() => setGridPage(p => p+1)} disabled={gridPage >= totalPages - 1}>
-                            <IonIcon icon={arrowForward} />
+                        {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Next Page) */}
+                        <Button3Dtext 
+                            color="var(--ion-color-primary)" 
+                            onClick={() => setGridPage(p => p+1)} 
+                            disabled={gridPage >= totalPages - 1}
+                            aria-label="Página siguiente"
+                        >
+                            <IonIcon icon={arrowForward} aria-hidden="true" />
                         </Button3Dtext>
                     </>
                 )}
             </div>
 
-            {error && <div className="st-error-toast">{error}</div>}
+            {error && <div className="st-error-toast" role="alert">{error}</div>}
 
         </div>
       </IonContent>
