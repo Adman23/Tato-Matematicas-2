@@ -172,7 +172,7 @@ export default function StudentProfile() {
                                         className="small-button vertical-card" onClick={handleRefresh}>
                                     <img
                                     src="/assets/pictograms/recargar.png"
-                                    alt="Cerrar sesión"
+                                    alt="Recargar los estilos"
                                     className="btn-icon"
                                     />
                                     <span className="btn-text">RECARGA</span>
@@ -183,7 +183,7 @@ export default function StudentProfile() {
                                         className="small-button vertical-card" onClick={handleLogout}>
                                     <img
                                     src="/assets/pictograms/salir.png"
-                                    alt="Recargar los estilos"
+                                    alt="Cerrar sesión"
                                     className="btn-icon"
                                     />
                                     <span className="btn-text">SALIR</span>
