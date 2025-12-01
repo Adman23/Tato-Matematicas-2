@@ -105,7 +105,7 @@ export default function StudentProfile() {
                                 {/* Edit colors */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/color.png"
+                                    src="/assets/pictograms/colores.png"
                                     alt="Ir a editar colores"
                                     className="btn-icon"
                                     />
@@ -115,7 +115,7 @@ export default function StudentProfile() {
                                 {/* Edit game_1 */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/juego2.png"
+                                    src="/assets/juegosImg/juego1.png"
                                     alt="Ir a editar juego uno"
                                     className="btn-icon"
                                     />
@@ -125,7 +125,7 @@ export default function StudentProfile() {
                                 {/* Edit game_2 */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/juegoX.png"
+                                    src="/assets/juegosImg/juego2.png"
                                     alt="Ir a editar Juego dos"
                                     className="btn-icon"
                                     />
@@ -135,7 +135,7 @@ export default function StudentProfile() {
                                 {/* Edit sound */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/escuchar.png"
+                                    src="/assets/pictograms/escucha.png"
                                     alt="Ir a editar sonido"
                                     className="btn-icon"
                                     />
@@ -145,7 +145,7 @@ export default function StudentProfile() {
                                 {/* Edit game_3 */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/meter.png"
+                                    src="/assets/juegosImg/juego3.png"
                                     alt="Ir a editar juego tres"
                                     className="btn-icon"
                                     />
@@ -155,7 +155,7 @@ export default function StudentProfile() {
                                 {/* Edit game_4 */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/repartir.png"
+                                    src="/assets/juegosImg/juego4.png"
                                     alt="Ir a editar juego cuatro"
                                     className="btn-icon"
                                     />
