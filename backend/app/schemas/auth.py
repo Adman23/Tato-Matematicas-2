@@ -169,6 +169,7 @@ class UserUpdate(BaseModel):
     Todo es opcional para permitir PATCH parcial.
     """
     username: Optional[str] = None
-    password: Optional[str] = None  # <--- Agregamos esto
+    password: Optional[str] = None
     photo_url: Optional[str] = None
+    password_type: Optional[str] = None
     # user_profile: dict | None = None (Para este caso específico no lo usaremos, pero puede estar)
