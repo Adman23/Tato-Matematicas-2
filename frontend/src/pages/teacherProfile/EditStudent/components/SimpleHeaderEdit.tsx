@@ -24,8 +24,7 @@ import {
     IonButton,
     IonHeader,
     IonButtons,
-    IonIcon,
-    useIonRouter
+    IonIcon    
 } from '@ionic/react';
 
 import './SimpleHeaderEdit.css';
@@ -43,6 +42,7 @@ setupIonicReact();
 interface Props {
     studentName: String;
     Editing: String;
+    onHome?: () => void;
 }
 
 /**
@@ -51,10 +51,11 @@ interface Props {
  */
 const SimpleHeaderEdit: React.FC<Props> = ({
     studentName,
-    Editing
+    Editing,
+    onHome
 }) => {
 
-    const router = useIonRouter();
+    
 
     /**
      * Functional Summary.
@@ -69,16 +70,14 @@ const SimpleHeaderEdit: React.FC<Props> = ({
      * handleHome();
      * ```
      */
-    const handleHome = () => {
-        router.push('/teacher/profile',"back","replace");
-    }
+
 
     return (
         <IonHeader className='header-editStudentProfile'>
             <IonToolbar className="toolbar-header-editStudentProfile">
 
                 <IonButtons slot='start'>
-                    <IonButton className='homeButton-header-editStudentProfile' onClick={handleHome} >
+                    <IonButton className='homeButton-header-editStudentProfile' onClick={onHome} >
                         <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
                     </IonButton>
                 </IonButtons>
