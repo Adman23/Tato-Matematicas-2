@@ -136,8 +136,9 @@
     opacity: 0.4;
 }
 
+
 /* ========================================
-    Responsive Design
+    Responsive Adjustments
    ======================================== */
 @media (min-width: 768px) and (max-width: 1024px) {
     .game1-grid-container {
@@ -273,6 +274,22 @@
     }
 }
 
+@media (max-width: 768px) {
+    .game1-video-modal-content {
+        max-width: 95vw;
+        max-height: 80vh;
+    }
+
+    .game1-video-close-button {
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+        top: 5px;
+        right: 5px;
+    }
+}
+
+
 /* ========================================
     Video Modal
    ======================================== */
@@ -360,20 +377,4 @@
     max-width: 90vw;
     max-height: 90vh;
     display: block;
-}
-
-/* Responsive adjustments for video modal */
-@media (max-width: 768px) {
-    .game1-video-modal-content {
-        max-width: 95vw;
-        max-height: 80vh;
-    }
-
-    .game1-video-close-button {
-        width: 35px;
-        height: 35px;
-        font-size: 20px;
-        top: 5px;
-        right: 5px;
-    }
 }
