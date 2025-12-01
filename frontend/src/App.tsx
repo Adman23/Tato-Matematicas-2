@@ -27,7 +27,7 @@ import { PrivateRoute, PublicRoute} from './routes/AppRoutes';
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
 import StudentRegister from './pages/auth/StudentRegister';
-import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
+import StudentLogin from './pages/auth/StudentLogin';
 
 
 // === Páginas de estudiante ===
@@ -95,9 +95,9 @@ export default function App() {
               <PublicRoute path="/login" exact component={Login} />
 
               {/* Rutas del login de estudiante en 3 pasos */}
-              <PublicRoute path="/student/login" exact component={StudentLoginStep1} />
+              <PublicRoute path="/student/login" exact component={StudentLogin} />
               {/* Ruta específica (Alumnos) - NECESARIA para que el botón 'Atrás' funcione */}
-              <PublicRoute exact path="/student/login/step2/:groupId" component={StudentLoginStep1} />
+              <PublicRoute exact path="/student/login/step2/:groupId" component={StudentLogin} />
 
               {/* Game Routes */}
               <PrivateRoute path="/game/game1" allowedRoles={["student", "teacher"]}
