@@ -80,7 +80,7 @@ export default function EditMenu() {
                                     expand="block"
                                     type="submit"
                                     className='studentEditProfile-dashboard-button'
-                                    onClick={() => router.push('/admin-dashboard/profesores')}
+                                    onClick={() => router.push('/admin/dashboard/profesores')}
                                 >
                                     Datos del alumno
                                 </IonButton>

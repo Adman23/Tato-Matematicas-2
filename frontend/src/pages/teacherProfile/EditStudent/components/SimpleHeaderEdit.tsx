@@ -70,7 +70,7 @@ const SimpleHeaderEdit: React.FC<Props> = ({
      * ```
      */
     const handleHome = () => {
-        router.push('/teacher/profile',"back","replace");
+        router.push('/teacher/profile',"back","pop");
     }
 
     return (
