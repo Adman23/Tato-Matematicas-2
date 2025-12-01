@@ -20,7 +20,8 @@ import {
     IonToolbar,
     IonButtons,
     IonIcon,
-    IonFooter
+    IonFooter,
+    useIonRouter
 
 } from '@ionic/react';
 import { close } from 'ionicons/icons';
@@ -38,7 +39,7 @@ import AccessibilityIndicator from './components/AccesibilityIndicator';
 import { analyzePalette } from './utils/analyzePalette';
 import { getColorPreferences, saveColorPalette } from '../../../lib/api';
 import { AccessibilityDashboard } from './components/AccesibilityDashboard';
-import { evaluateContrast } from './utils/contrast';
+import { evaluateContrast, evaluateContrastForElements } from './utils/contrast';
 import type { AccessibilityReport } from './types/report';
 
 
@@ -67,23 +68,29 @@ export default function EditColor() {
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
 
+    const router = useIonRouter();
+
+    const handleHome = () => {
+        router.push(`/student-edit-menu/${id}/${name}`);
+    }
+
     //Predefined color palettes
     const examplePalette = [
         {
             id: 1,
-            colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#A9DAF3", "#FFB7FA"]
+            colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#4793AB", "#D76FBF"]
         },
         {
             id: 2,
-            colors: ["#6A1B9A", "#FFFFFF", "#f3e8f7ff", "#1A1A1A", "#E1C4FF", "#1FA5A5"]
+            colors: ["#6A1B9A", "#FFFFFF", "#f3e8f7ff", "#1A1A1A", "#AF65EB", "#0F8F8F"]
         },
         {
             id: 3,
-            colors: ["#6FB96D", "#1A1A1A", "#effff0ff", "#1A1A1A", "#A9DDA9", "#E09A70"]
+            colors: ["#6FB96D", "#1A1A1A", "#effff0ff", "#1A1A1A", "#4E8F4E", "#B8653C"]
         },
         {
             id: 4,
-            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a", "#94d2bd", "#ee9b00"]
+            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a", "#4E967F", "#e06200"]
         },
 
     ];
@@ -116,7 +123,8 @@ export default function EditColor() {
     const [accessibilityReport, setAccessibilityReport] = useState<AccessibilityReport>({
     textOnPrimary: "checking",
     textOnBackground: "checking",
-    primaryOnBackground: "checking",
+    textOnBubble: "checking",
+    textOnBubbleSelected: "checking",
     bubbleOnBackground: "checking",
     selectedBubbleOnBackground: "checking"
     });
@@ -182,15 +190,18 @@ export default function EditColor() {
             text_on_primary: customPalette.text_on_primary,
             background: customPalette.background,
             text_on_bg: customPalette.text_on_bg,
+            bubble: customPalette.bubble,
+            bubble_selected: customPalette.bubble_selected
         });
         setAccessibilityStatus(status);
 
         setAccessibilityReport({
             textOnPrimary: evaluateContrast(customPalette.text_on_primary, customPalette.primary),
             textOnBackground: evaluateContrast(customPalette.text_on_bg, customPalette.background),
-            primaryOnBackground: evaluateContrast(customPalette.primary, customPalette.background),
-            bubbleOnBackground: evaluateContrast(customPalette.bubble, customPalette.background),
-            selectedBubbleOnBackground: evaluateContrast(customPalette.bubble_selected, customPalette.background),
+            textOnBubble: evaluateContrast(customPalette.bubble, "#000000"),
+            textOnBubbleSelected: evaluateContrast(customPalette.bubble_selected, "#000000"),
+            bubbleOnBackground: evaluateContrastForElements(customPalette.bubble, customPalette.background),
+            selectedBubbleOnBackground: evaluateContrastForElements(customPalette.bubble_selected, customPalette.background),
         });
     }, [customPalette]);
 
@@ -231,7 +242,7 @@ export default function EditColor() {
 
     return (
         <IonPage>
-            <SimpleHeaderEdit studentName={name} Editing={"Editar colores"} />
+            <SimpleHeaderEdit studentName={name} Editing={"Editar colores"} onHome={handleHome}/>
             <IonContent className="ion-padding">
                 <div className="studentEditProfile-editcolors-outer-container">
                     <div className='studentEditColor-ionTitle'>Paletas predefinidas</div>
@@ -340,6 +351,7 @@ export default function EditColor() {
                     <IonButton
                         expand="block"
                         onClick={savePalette}
+                        disabled={accessibilityStatus == "fail"}
                     >
                         Aceptar
                     </IonButton>
