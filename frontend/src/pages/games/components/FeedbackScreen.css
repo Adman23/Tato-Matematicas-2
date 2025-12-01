@@ -69,8 +69,8 @@
 .feedback-check-button {
     --padding-start: 0;
     --padding-end: 0;
-    width: clamp(64px, 14vw, 180px);
-    height: clamp(64px, 14vw, 180px);
+    width: clamp(64px, 12vw, 200px);
+    height: clamp(64px, 12vw, 200px);
     margin: 0;
     flex-shrink: 0;
 }
@@ -154,5 +154,16 @@
 
     .feedback-message {
         font-size: clamp(1.2rem, 7vw, 2.4rem);
+    }
+}
+
+@media (max-height: 600px) {
+    .feedback-tato-image {
+        max-height: 30vh;
+    }
+
+    .feedback-check-button {
+        width: clamp(54px, 24vw, 140px);
+        height: clamp(54px, 24vw, 140px);
     }
 }
