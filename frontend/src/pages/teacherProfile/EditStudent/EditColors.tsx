@@ -123,7 +123,6 @@ export default function EditColor() {
     const [accessibilityReport, setAccessibilityReport] = useState<AccessibilityReport>({
     textOnPrimary: "checking",
     textOnBackground: "checking",
-    primaryOnBackground: "checking",
     textOnBubble: "checking",
     textOnBubbleSelected: "checking",
     bubbleOnBackground: "checking",
@@ -199,7 +198,6 @@ export default function EditColor() {
         setAccessibilityReport({
             textOnPrimary: evaluateContrast(customPalette.text_on_primary, customPalette.primary),
             textOnBackground: evaluateContrast(customPalette.text_on_bg, customPalette.background),
-            primaryOnBackground: evaluateContrast(customPalette.primary, customPalette.background),
             textOnBubble: evaluateContrast(customPalette.bubble, "#000000"),
             textOnBubbleSelected: evaluateContrast(customPalette.bubble_selected, "#000000"),
             bubbleOnBackground: evaluateContrastForElements(customPalette.bubble, customPalette.background),
