@@ -117,7 +117,7 @@
     margin-bottom: 20px;
 }
 
-.login-custom-input {
+ion-input.login-custom-input {
     --background: white;
     --padding-start: 15px;
     --padding-end: 50px;
