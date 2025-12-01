@@ -15,18 +15,13 @@ import { useUserData } from '../../contexts/UserContext';
 
 
 /**
- * 
- * !! EDITED
- *  -> Now there is no "student" only user
- * Componente funcional que representa el panel del estudiante.
- *
  * Permite al alumno autenticado:
  * - Ver su nombre y foto (o inicial si no tiene imagen).
  * - Acceder a las secciones de juegos y progreso.
  * - Cerrar sesión y volver a la página principal.
  *
  * Muestra un *spinner* mientras se carga el estado de autenticación
- * y redirige a `/student-login` si no hay sesión activa.
+ * y redirige a `/student/login` si no hay sesión activa.
  *
  * @returns {JSX.Element} Interfaz del panel principal del estudiante.
  *
