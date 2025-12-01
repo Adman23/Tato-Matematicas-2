@@ -20,25 +20,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
-    gap: 5px;
+    gap: 8px;
     padding: 8px;
-}
-
-.vertical-card .btn-text {
-    color: #000000;
-    border: 2px solid #1e3a8a;
-    padding: 4px 12px;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.9);
-    max-width: 95%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: clip;
-    font-size: clamp(12px, 1.7vw, 20px);
-    line-height: 1.2;
+    flex: 1;
 }
 
 /* --- EDIT SECTION STYLE --- */
@@ -71,9 +58,9 @@
 
 .big-button img {
     width: 100%;
-    max-width: 120px;
+    max-width: 180px;
     height: auto;
-    flex: 1;
+    flex: 3;
     object-fit: contain;
 }
 
@@ -114,14 +101,14 @@
 }
 
 .small-padding {
-    padding: 10px 1px !important;
+    padding: 10px 0px !important;
 }
 
 .small-button img {
     width: 100%;
-    max-width: 80px;
+    max-width: 100px;
     height: auto;
-    flex: 1;
+    flex: 3;
     object-fit: contain;
 }
 
@@ -166,19 +153,9 @@
     }
     
     .vertical-card .button-content {
-        padding: 4px;
-        gap: 2px;
-    }
-    
-    .vertical-card .btn-text {
-        font-size: clamp(8px, 2vw, 12px);
-        padding: 2px 6px;
-        border: 1px solid #1e3a8a;
-        white-space: normal;
-        word-break: break-word;
-        text-align: center;
-        max-width: 90%;
-        line-height: 1.1;
+        padding: 6px;
+        gap: 4px;
+        flex: 1;
     }
     
     .big-button {
@@ -187,7 +164,8 @@
     }
     
     .big-button img {
-        max-width: 60px;
+        max-width: 80px;
+        flex: 3;
     }
     
     .big-button span {
@@ -201,12 +179,11 @@
         flex-shrink: 0;
     }
     
-    .small-padding {
-        padding: 20px 20px !important;
-    }
+
     .small-button img {
-        max-width: 45px;
+        max-width: 60px;
         width: auto;
+        flex: 3;
     }
     
     .small-button span {

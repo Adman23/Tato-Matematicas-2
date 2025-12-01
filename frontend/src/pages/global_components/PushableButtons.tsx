@@ -29,7 +29,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
   children, 
   className = '', 
   frontClassName = '',
-  color = 'var(--bubble-selected-bg)',
+  color = 'var(--bubble-bg)',
   disabled = false
 }) => {
 
@@ -127,6 +127,18 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           font-size: 1.2rem;
           font-weight: bold;
           white-space: nowrap;
+          color: #000000;
+          border: 2px solid #1e3a8a;
+          padding: 4px 12px;
+          border-radius: 6px;
+          background-color: rgba(255, 255, 255, 0.9);
+          max-width: 95%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: clip;
+          font-size: clamp(12px, 1.7vw, 20px);
+          line-height: 1.2;
+          flex-shrink: 0;
         }
 
         .btn-icon {

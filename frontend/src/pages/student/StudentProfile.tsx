@@ -103,9 +103,9 @@ export default function StudentProfile() {
                         <IonCol size="12" sizeMd="9.6" className="edit-section-col">
                             <div className="edit-section">
                                 {/* Edit colors */}
-                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/pictograms/color.png"
                                     alt="Ir a editar colores"
                                     className="btn-icon"
                                     />
@@ -113,9 +113,9 @@ export default function StudentProfile() {
                                 </Button3Dtext>
                                 
                                 {/* Edit game_1 */}
-                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/juegosImg/juego2.png"
                                     alt="Ir a editar juego uno"
                                     className="btn-icon"
                                     />
@@ -123,9 +123,9 @@ export default function StudentProfile() {
                                 </Button3Dtext>
                                 
                                 {/* Edit game_2 */}
-                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/juegosImg/juegoX.png"
                                     alt="Ir a editar Juego dos"
                                     className="btn-icon"
                                     />
@@ -133,9 +133,9 @@ export default function StudentProfile() {
                                 </Button3Dtext>
 
                                 {/* Edit sound */}
-                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/pictograms/escuchar.png"
                                     alt="Ir a editar sonido"
                                     className="btn-icon"
                                     />
@@ -143,9 +143,9 @@ export default function StudentProfile() {
                                 </Button3Dtext>
 
                                 {/* Edit game_3 */}
-                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/juegosImg/meter.png"
                                     alt="Ir a editar juego tres"
                                     className="btn-icon"
                                     />
@@ -153,9 +153,9 @@ export default function StudentProfile() {
                                 </Button3Dtext>
 
                                 {/* Edit game_4 */}
-                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/juegosImg/repartir.png"
                                     alt="Ir a editar juego cuatro"
                                     className="btn-icon"
                                     />
@@ -168,10 +168,10 @@ export default function StudentProfile() {
                         <IonCol size="12" sizeMd="2.4" className="button-section-col">
                             <div className="button-section">
                                 {/* Refresh button */}
-                                <Button3Dtext color="#3b82f6" frontClassName="small-padding"
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding"
                                         className="small-button vertical-card" onClick={handleRefresh}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/pictograms/recargar.png"
                                     alt="Cerrar sesión"
                                     className="btn-icon"
                                     />
@@ -179,10 +179,10 @@ export default function StudentProfile() {
                                 </Button3Dtext>  
                                 
                                 {/* Exit button */}
-                                <Button3Dtext color="#3b82f6" frontClassName="small-padding"
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding"
                                         className="small-button vertical-card" onClick={handleLogout}>
                                     <img
-                                    src="/assets/pictograms/yo.png"
+                                    src="/assets/pictograms/salir.png"
                                     alt="Recargar los estilos"
                                     className="btn-icon"
                                     />
