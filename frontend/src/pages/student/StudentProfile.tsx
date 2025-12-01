@@ -14,7 +14,10 @@ import {
     IonPage, 
     IonContent, 
     IonSpinner,
-    useIonRouter
+    useIonRouter,
+    IonGrid,
+    IonRow,
+    IonCol
 } from '@ionic/react';
 
 import { useAuth } from '../../contexts/AuthContext';
@@ -93,132 +96,102 @@ export default function StudentProfile() {
                     photoUrl={user?.photo_url} url="/student/dashboard" />
 
             {/* Main Content */}
-            <IonContent className="main-container">
+            <IonContent className="ion-padding">
+                <IonGrid className="main-container">
+                    <IonRow className="ion-align-items-stretch" style={{ height: '100%' }}>
+                        {/* Edit section - 80% en desktop, 100% en móvil */}
+                        <IonCol size="12" sizeMd="9.6" className="edit-section-col">
+                            <div className="edit-section">
+                                {/* Edit colors */}
+                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Ir a editar colores"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">COLORES</span>
+                                </Button3Dtext>
+                                
+                                {/* Edit game_1 */}
+                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Ir a editar juego uno"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">JUEGO 1</span>
+                                </Button3Dtext>
+                                
+                                {/* Edit game_2 */}
+                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Ir a editar Juego dos"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">JUEGO 2</span>
+                                </Button3Dtext>
 
-                    {/* Edit section */}
-                    <section className="edit-section">
-                        {/* Edit colors */}
-                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar colores"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">COLORES</span>
-                        </Button3Dtext>
-                        
-                        {/* Edit game_1 */}
-                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar juego uno"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">JUEGO 1</span>
-                        </Button3Dtext>
-                        
-                        {/* Edit game_2 */}
-                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar Juego dos"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">JUEGO 2</span>
-                        </Button3Dtext>
+                                {/* Edit sound */}
+                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Ir a editar sonido"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">SONIDO</span>
+                                </Button3Dtext>
 
-                        {/* Edit sound */}
-                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar sonido"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">SONIDO</span>
-                        </Button3Dtext>
+                                {/* Edit game_3 */}
+                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Ir a editar juego tres"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">JUEGO 3</span>
+                                </Button3Dtext>
 
-                        {/* Edit game_3 */}
-                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar juego tres"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">JUEGO 3</span>
-                        </Button3Dtext>
-
-                        {/* Edit game_4 */}
-                        <Button3Dtext className="vertical-card" onClick={() => handleDirection("/student/dashboard")}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar juego cuatro"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">JUEGO 4</span>
-                        </Button3Dtext>                  
-
-                        {/* 
-                        <div className="settings-section">
-                            <img
-                                src="/assets/pictograms/color.png"
-                                alt="Eligir entre las opciones de color"
-                                className="image-icon"
-                            />
-                            <p className="section-title">Colores</p>
-                            <div className="options-container">
-
+                                {/* Edit game_4 */}
+                                <Button3Dtext color="#3b82f6" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Ir a editar juego cuatro"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">JUEGO 4</span>
+                                </Button3Dtext>
                             </div>
-                        </div>
+                        </IonCol>
 
-                        <div className="settings-section">
-                            <img
-                                src="/assets/pictograms/sound.png"
-                                alt="Eligir entre las opciones de color"
-                                className="image-icon"
-                            />                            
-                            <p className="section-title">Sonido</p>
-                            <div className="options-container">
-
+                        {/* Button section - 20% en desktop, 100% en móvil */}
+                        <IonCol size="12" sizeMd="2.4" className="button-section-col">
+                            <div className="button-section">
+                                {/* Refresh button */}
+                                <Button3Dtext color="#3b82f6" frontClassName="small-padding"
+                                        className="small-button vertical-card" onClick={handleRefresh}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Cerrar sesión"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">RECARGA</span>
+                                </Button3Dtext>  
+                                
+                                {/* Exit button */}
+                                <Button3Dtext color="#3b82f6" frontClassName="small-padding"
+                                        className="small-button vertical-card" onClick={handleLogout}>
+                                    <img
+                                    src="/assets/pictograms/yo.png"
+                                    alt="Recargar los estilos"
+                                    className="btn-icon"
+                                    />
+                                    <span className="btn-text">SALIR</span>
+                                </Button3Dtext>
                             </div>
-                        </div>
-
-                        <div className="settings-section">
-                            <img
-                                src="/assets/pictograms/text.png"
-                                alt="Eligir entre las opciones de color"
-                                className="image-icon"
-                            />                            
-                            <p className="section-title">Texto</p>
-                            <div className="options-container">
-                            
-                            </div>
-                        </div>*/}
-                    </section>
-
-
-                    {/* Button section */}
-                    <section className="button-section">
-                        {/* Logout button */}
-                        <Button3Dtext className="small-button" onClick={handleRefresh}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar juego cuatro"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">RECARGAR</span>
-                        </Button3Dtext>  
-                        
-                        {/* Exit button */}
-                        <Button3Dtext className="small-button" onClick={handleLogout}>
-                            <img
-                            src="/assets/pictograms/yo.png"
-                            alt="Ir a editar juego cuatro"
-                            className="btn-icon-header-user"
-                            />
-                            <span className="btn-text">SALIR</span>
-                        </Button3Dtext>     
-                    </section>
-                    
+                        </IonCol>
+                    </IonRow>
+                </IonGrid>
             </IonContent>
         </IonPage> 
     ); 

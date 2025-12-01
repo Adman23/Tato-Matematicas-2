@@ -1,80 +1,219 @@
 
 /* --- MAIN STYLE --- */
-
-.StudentProfile-IonContent{
-    --background: var(--ion-color-primary-contrast);
-}
-
 .main-container {
     --background: var(--ion-color-primary-contrast);
-    flex-direction: row;       
-    justify-content: center;
-    align-items: center;  
-    min-height: 70%;
-    gap: 20px;
-    flex-wrap: wrap;
-
+    height: 100%;
+    padding: 0;
 }
 
-
-/* --- SECTION STYLE --- */
-.settings-section {
-    display: flex;             
-    flex-direction: column;    
-    align-items: center;
-    flex-basis: 27vw;
-    box-sizing: border-box;
-    padding: 4vw;
-}
-
-.image-icon {
-    width: clamp(50px, 10vw, 100px);
-    height: auto;
-    margin-bottom: 10px;
-}
-
-.section-title {
-    font-weight: bold;
-    font-size: 1.1em;
-    margin-top: 20px;
-    text-align: center;
-}
-
-.options-container {
+/* layout for all the buttons */
+.vertical-card {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    flex-wrap: wrap; 
+    padding: 0;
+    gap: 0;
 }
 
-
-.color-btn {
-    width: 50px;
-    height: 50px;
+.vertical-card .button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 5px;
+    padding: 8px;
 }
 
-.sound-btn::part(native) {
-    padding:1vw;
-    font-size:1.3vw;
+.vertical-card .btn-text {
+    color: #000000;
+    border: 2px solid #1e3a8a;
+    padding: 4px 12px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.9);
+    max-width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    font-size: clamp(12px, 1.7vw, 20px);
+    line-height: 1.2;
 }
 
-.palette-original { --background: #3880ff; }
-.palette-pastel { --background: #f0e6ef; --color: #333; }
-.palette-vibrante { --background: #ff0000; }
+/* --- EDIT SECTION STYLE --- */
 
-/* --- Estilos de Texto (botones) --- */
-.text-normal { font-size: 1em; }
-.text-grande { font-size: 1.2em; }
-.text-enorme { font-size: 1.4em; }
+/* Column wrapper */
+.edit-section-col {
+    display: flex;
+    align-items: stretch;
+}
 
-/* --- Estilos del Preview --- */
-    .text-preview {
-    margin-top: 25px;
+/* layout */
+.edit-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 30px;
+    width: 100%;
+    height: 100%;
     padding: 15px;
-    transition: font-size 0.2s;
-    text-align: center;
+    justify-items: center;
 }
 
-.text-preview.normal { font-size: 1em; }
-.text-preview.grande { font-size: 1.2em; }
-.text-preview.enorme { font-size: 1.4em; }
+/* for the size of the buttons */
+.big-button {
+    width: 80%;
+    height: 100%;
+    min-width: 100px;
+    min-height: 150px;
+}
+
+.big-button img {
+    width: 100%;
+    max-width: 120px;
+    height: auto;
+    flex: 1;
+    object-fit: contain;
+}
+
+.big-button span {
+    font-size: clamp(14px, 2vw, 24px);
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* --- BUTTON SECTION STYLE --- */
+
+/* Column wrapper */
+.button-section-col {
+    display: flex;
+    align-items: center;
+}
+
+/* layout */
+.button-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+}
+
+/* size of the buttons */
+.small-button {
+    width: 70%;
+    height: auto;
+    max-width: 120px;
+    min-height: 190px;
+}
+
+.small-padding {
+    padding: 10px 1px !important;
+}
+
+.small-button img {
+    width: 100%;
+    max-width: 80px;
+    height: auto;
+    flex: 1;
+    object-fit: contain;
+}
+
+.small-button span {
+    font-size: clamp(12px, 1.5vw, 18px);
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.small-button .btn-text {
+    font-size: clamp(10px, 1.3vw, 16px);
+}
+
+
+/* --- RESPONSIVE --- */
+
+/* Phone: change edit-section to 2 columns and button-section to horizontal */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 8px;
+        overflow: hidden;
+    }
+    
+    .edit-section-col,
+    .button-section-col {
+        padding: 0;
+    }
+    
+    .edit-section {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .button-section {
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 8px;
+        padding: 8px;
+    }
+    
+    .vertical-card .button-content {
+        padding: 4px;
+        gap: 2px;
+    }
+    
+    .vertical-card .btn-text {
+        font-size: clamp(8px, 2vw, 12px);
+        padding: 2px 6px;
+        border: 1px solid #1e3a8a;
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
+        max-width: 90%;
+        line-height: 1.1;
+    }
+    
+    .big-button {
+        min-height: 90px;
+        width: 90%;
+    }
+    
+    .big-button img {
+        max-width: 60px;
+    }
+    
+    .big-button span {
+        font-size: clamp(10px, 2.2vw, 14px);
+    }
+    
+    .small-button {
+        min-height: 80px;
+        max-width: 45vw;
+        width: auto;
+        flex-shrink: 0;
+    }
+    
+    .small-padding {
+        padding: 20px 20px !important;
+    }
+    .small-button img {
+        max-width: 45px;
+        width: auto;
+    }
+    
+    .small-button span {
+        font-size: clamp(9px, 2vw, 12px);
+    }
+    
+    .small-button .btn-text {
+        font-size: clamp(7px, 1.8vw, 11px);
+    }
+}
