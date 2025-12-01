@@ -1,0 +1,257 @@
+/* ============================================================
+   TATO MATEMÁTICAS — CSS LOGIN (AUTO-SCALE + SHAKE ERROR)
+   ============================================================ */
+
+/* --- CONFIGURACIÓN BASE --- */
+.st-login-content {
+  /* Usamos color-mix para mezclar el color primario con blanco.
+     92% blanco + 8% primary = Fondo muy clarito
+  */
+  --background: color-mix(in srgb, var(--ion-color-primary), white 70%);
+}
+
+/* 1. FONDO ANIMADO CON COLOR DINÁMICO */
+.st-login-content::before {
+  content: "";
+  position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  
+  /* Aquí definimos el color de los números/símbolos.
+     80% blanco + 20% primary = Más oscuro que el fondo, pero más claro que el botón
+  */
+  background-color: color-mix(in srgb, var(--ion-color-primary), white 60%);
+  
+  /* TRUCO: Usamos el SVG como máscara para recortar este color */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='black' font-family='sans-serif' font-weight='bold'%3E%3Ctext x='40' y='120' font-size='140' transform='rotate(-10 40 120)'%3E+%3C/text%3E%3Ctext x='240' y='150' font-size='160' transform='rotate(10 240 150)'%3E-%3C/text%3E%3Ctext x='60' y='350' font-size='150' transform='rotate(5 60 350)'%3Ex%3C/text%3E%3Ctext x='260' y='340' font-size='140' transform='rotate(-15 260 340)'%3E%C3%B7%3C/text%3E%3Ctext x='180' y='80' font-size='100' transform='rotate(20 180 80)'%3E1%3C/text%3E%3Ctext x='20' y='240' font-size='110' transform='rotate(-25 20 240)'%3E2%3C/text%3E%3Ctext x='200' y='250' font-size='90' transform='rotate(15 200 250)'%3E3%3C/text%3E%3C/g%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='black' font-family='sans-serif' font-weight='bold'%3E%3Ctext x='40' y='120' font-size='140' transform='rotate(-10 40 120)'%3E+%3C/text%3E%3Ctext x='240' y='150' font-size='160' transform='rotate(10 240 150)'%3E-%3C/text%3E%3Ctext x='60' y='350' font-size='150' transform='rotate(5 60 350)'%3Ex%3C/text%3E%3Ctext x='260' y='340' font-size='140' transform='rotate(-15 260 340)'%3E%C3%B7%3C/text%3E%3Ctext x='180' y='80' font-size='100' transform='rotate(20 180 80)'%3E1%3C/text%3E%3Ctext x='20' y='240' font-size='110' transform='rotate(-25 20 240)'%3E2%3C/text%3E%3Ctext x='200' y='250' font-size='90' transform='rotate(15 200 250)'%3E3%3C/text%3E%3C/g%3E%3C/svg%3E");
+  
+  -webkit-mask-size: 400px 400px;
+  mask-size: 400px 400px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+
+  /* IMPORTANTE: Quitamos el background-image antiguo porque ahora usamos background-color + mask */
+  background-image: none;
+  
+  z-index: 1; pointer-events: none;
+}
+
+/* ANIMACIONES */
+@keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pulseCheck { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes ghostPulse { 0% { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); } 50% { background: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.9); } 100% { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); } }
+
+/* NUEVA ANIMACIÓN: SHAKE (Sacudida) CENTRADA */
+@keyframes shakeError {
+  0% { transform: translate(-50%, -50%); } 
+  10%, 90% { transform: translate(calc(-50% - 5px), -50%); } 
+  20%, 80% { transform: translate(calc(-50% + 5px), -50%); } 
+  30%, 50%, 70% { transform: translate(calc(-50% - 8px), -50%); } 
+  40%, 60% { transform: translate(calc(-50% + 8px), -50%); } 
+  100% { transform: translate(-50%, -50%); } 
+}
+
+.st-anim-pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+/* LAYOUT PRINCIPAL */
+.st-login-layout {
+  display: flex; flex-direction: column;
+  height: 100%; width: 100%;
+  overflow: hidden; padding: 10px; box-sizing: border-box;
+  position: relative; z-index: 1;
+}
+
+/* HEADER - Flexible con vh */
+.st-login-header {
+  flex: 0 0 auto; 
+  height: 12vh; min-height: 50px; max-height: 100px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 5px; width: 100%;
+}
+.st-header-side { width: 80px; display: flex; justify-content: center; }
+.st-header-center { flex: 1; height: 100%; display: flex; justify-content: center; align-items: center; }
+.st-login-logo { height: 100%; width: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
+
+/* SUBTÍTULO */
+.st-login-subtitle-area { flex: 0 0 auto; text-align: center; margin-bottom: 5px; }
+.st-login-subtitle {
+  background: white; color: var(--ion-color-primary);
+  padding: 4px 20px; border-radius: 50px;
+  font-weight: 800; font-size: clamp(0.9rem, 2.2vh, 1.2rem);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; margin: 0;
+}
+
+/* AREA PRINCIPAL */
+.st-login-main-area {
+  flex: 1; min-height: 0; /* Permite encogerse si hace falta */
+  display: flex; justify-content: center; align-items: center;
+  width: 100%; padding: 0; 
+}
+
+/* CARD GENERAL */
+.st-card-wrapper {
+  background-color: var(--ion-color-primary);
+  border-radius: 20px; padding: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  display: flex; align-items: center; justify-content: center;
+  max-width: 95vw; max-height: 100%;
+}
+.st-card-wrapper.grid-portrait-2 { width: min(30vh, 80vw); }
+.st-card-wrapper.grid-landscape-2 { width: min(55vh, 600px); }
+.st-card-wrapper.grid-standard-4 { width: min(55vh, 600px); }
+
+/* GRID INTERNO (CLASES/ALUMNOS) */
+.st-grid-inner { display: grid; width: 100%; gap: 12px; }
+.grid-portrait-2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+.grid-landscape-2 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
+.grid-standard-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
+/* TILE (CLASES/ALUMNOS) */
+.st-grid-btn {
+  background: white; border: 3px solid black; border-radius: 15px;
+  position: relative; overflow: hidden; cursor: pointer;
+  width: 100%; aspect-ratio: 1 / 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s ease;
+}
+.st-grid-btn:hover:not(.ghost) { transform: scale(1.05); box-shadow: 0 8px 15px rgba(0,0,0,0.15); z-index: 5; }
+.st-grid-btn:active:not(.ghost) { transform: scale(0.95); background-color: #f5f5f5; box-shadow: none; }
+.st-grid-btn.selected { border-color: var(--ion-color-success); background: #f0fff4; box-shadow: inset 0 0 0 3px var(--ion-color-success); }
+.st-grid-btn.ghost { opacity: 1; pointer-events: none; background: rgba(255, 255, 255, 0.3); border: 3px dashed rgba(255, 255, 255, 0.6); box-shadow: none; transform: none !important; }
+.st-grid-btn.ghost.loading { animation: ghostPulse 1.5s infinite ease-in-out; border-style: solid; }
+
+/* MENSAJE NO DATA */
+.st-grid-no-data-message {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  color: #555; font-weight: bold; font-size: clamp(1rem, 3vmin, 1.5rem); padding: 15px; pointer-events: none; 
+  width: 100%; height: 100%; background: white; border-radius: 15px; border: 2px solid rgba(0,0,0,0.1); box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* CONTENIDOS TILE */
+.st-group-layout, .st-student-layout { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
+.st-group-icon { width: 80%; height: 80%; object-fit: contain; opacity: 0.9; }
+.st-group-letter { position: absolute; top: 31%; left: 38%; transform: translate(-50%, -50%); font-size: 9vmin; font-weight: 900; color: black; text-shadow: 2px 2px 0 white, -2px -2px 0 white; z-index: 3; }
+.grid-portrait-2 .st-group-letter { font-size: 13vmin; left: 38%; } 
+.st-student-layout { flex-direction: column; padding: 8px; justify-content: space-between; }
+.st-student-img-box { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.st-student-photo { max-width: 70%; max-height: 70%; }
+.st-student-name { flex: 0 0 auto; width: 100%; font-weight: bold; color: #333; font-size: clamp(0.7rem, 2.2vmin, 1.1rem); text-align: center; margin-top: 4px; }
+.st-btn-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.st-overlay-icon { width: 50%; animation: pulseCheck 1.5s ease-in-out infinite 0.3s; }
+
+/* FOOTER */
+.st-login-footer { flex: 0 0 auto; height: 60px; display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; }
+.st-pagination-dots { display: flex; gap: 10px; }
+.st-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; cursor: pointer; }
+.st-dot.active { background: var(--ion-color-primary); transform: scale(1.3); }
+
+/* =========================================================
+   PASSWORD SECTION (HARD-CODED 3x2 SCALABLE)
+   ========================================================= */
+
+/* CONTENEDOR ESPECÍFICO */
+.st-card-wrapper.pass-mode { 
+    width: min(95vw, 600px); 
+    overflow: hidden; /* IMPORTANTE: Previene scroll */
+    padding: 10px;    /* Reducimos padding para ganar espacio */
+    display: flex; flex-direction: column; justify-content: center;
+}
+
+.st-pass-layout { 
+  display: flex; flex-direction: column; 
+  align-items: center; 
+  justify-content: center; /* Centrar verticalmente */
+  width: 100%; height: 100%; 
+  gap: 1vh; /* Espacio flexible pequeño entre slots y grid */
+}
+
+/* SLOTS (???) */
+.st-pass-slots { 
+    display: flex; gap: 10px; flex: 0 0 auto; 
+}
+.st-pass-slot {
+    /* Tamaño basado en la altura de pantalla (vh) para que no coman mucho espacio */
+    width: 12vh; height: 12vh;
+    min-width: 45px; min-height: 45px; /* Mínimo para que sea pulsable */
+    max-width: 80px; max-height: 80px; /* Máximo para que no sea gigante */
+    
+    background: white; border: 3px dashed var(--ion-color-primary);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: #aaa; position: relative;
+}
+.st-pass-slot.filled { border-style: solid; border-color: var(--ion-color-success); cursor: pointer; }
+.st-pass-slot img { width: 80%; height: 80%; object-fit: contain; }
+.st-slot-delete { position: absolute; inset: 0; background: rgba(200,0,0,0.8); display: flex; align-items: center; justify-content: center; color: white; opacity: 0; transition: 0.2s; border-radius: 10px; }
+.st-pass-slot.filled:hover .st-slot-delete { opacity: 1; }
+
+/* GRID DE BOTONES */
+.st-pass-grid { 
+  display: flex; 
+  flex-wrap: wrap; 
+  justify-content: center; 
+  width: 100%;
+  gap: 10px; /* Espacio fijo entre botones */
+}
+
+/* BOTONES INDIVIDUALES */
+.st-pass-key {
+    /* LÓGICA 3 ARRIBA / 2 ABAJO:
+       En pantallas pequeñas (< 700px), usamos 31% width.
+       31% + 31% + 31% + gaps > 100%, así que caben 3.
+       El 4º baja.
+    */
+    flex: 0 0 31%; 
+    aspect-ratio: 1/1; /* Siempre cuadrado */
+    
+    /* LIMITADOR DE ALTURA: CRÍTICO PARA NO HACER SCROLL */
+    /* El botón nunca será más alto que el 18% de la pantalla */
+    max-height: 18vh; 
+    /* Y su ancho tampoco, para mantener el cuadrado */
+    max-width: 18vh;
+
+    background: white; border: 3px solid black; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.2); 
+    transition: transform 0.1s;
+}
+
+.st-pass-key:active { transform: translateY(4px); box-shadow: none; background-color: #f5f5f5; }
+.st-pass-key img { width: 70%; height: 70%; object-fit: contain; }
+
+/* --- NUEVO TOAST CENTRADO CON ANIMACIÓN SHAKE --- */
+.st-error-toast {
+  position: absolute;
+  top: 50%; left: 50%; /* Centrado */
+  
+  background: #ff4d4d; color: white; 
+  padding: 15px 30px; 
+  border-radius: 30px; font-weight: bold; font-size: 1.2rem; text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 100;
+  
+  /* Animación de sacudida */
+  animation: shakeError 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* --- PANTALLAS GRANDES (TABLETS/DESKTOP) --- */
+/* Aquí sí permitimos los 5 en línea porque hay espacio de sobra */
+@media (min-width: 768px) and (min-height: 600px) {
+    .st-pass-key {
+        flex: 0 0 18%; /* Caben 5: 18*5 = 90% */
+        max-width: 110px; max-height: 110px; /* Tamaño máximo fijo */
+    }
+    .st-pass-slot {
+        width: 90px; height: 90px;
+        max-width: none; max-height: none;
+    }
+}
+
+/* --- AJUSTE EXTREMO PARA MÓVILES APAISADOS (como la foto) --- */
+@media (max-height: 450px) {
+    .st-login-header { height: 45px; min-height: 0; margin-bottom: 2px; }
+    .st-login-footer { height: 40px; }
+    .st-pass-slots { margin-bottom: 5px; gap: 8px; }
+    .st-pass-grid { gap: 6px; }
+    
+    /* Forzamos que sean pequeños para caber */
+    .st-pass-key { border-width: 2px; border-radius: 8px; }
+    .st-pass-slot { border-width: 2px; }
+}
