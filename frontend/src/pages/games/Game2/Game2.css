@@ -165,7 +165,8 @@
 
 .number-card-dragging .number-value,
 .number-card-dragging .pictogram-image {
-  opacity: 0;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 /* Hueco vacío permanente */

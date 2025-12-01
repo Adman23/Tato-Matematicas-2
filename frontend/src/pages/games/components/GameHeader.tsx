@@ -13,7 +13,7 @@
  */
 
 import React, { useState } from 'react';
-import { IonText, IonButton } from '@ionic/react';
+import { IonText } from '@ionic/react';
 import './GameHeader.css';
 import iconCorrect from '/assets/juegosImg/correct.png';
 import iconIncorrect from '/assets/juegosImg/incorrecto.png';
@@ -86,19 +86,23 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   return (
     <>
       <div className="game-header-component">
-        {/* Botón Home a la izquierda */}
+        {/* Botón Home a la izquierda - Estilo 3D Pushable */}
         <div className="game-header-left">
-          <IonButton
-            className="game-header-home-button"
+          <button
+            className="pushable-home-button"
             onClick={handleHomeClick}
-            fill="clear"
             aria-label="Salir del juego"
           >
-            <img
-              src="/assets/pictograms/home.png"
-              alt="Home"
-            />
-          </IonButton>
+            <span className="shadow-home"></span>
+            <span className="edge-home"></span>
+            <span className="front-home">
+              <img
+                src="/assets/pictograms/home.png"
+                alt="Home"
+                className="home-icon"
+              />
+            </span>
+          </button>
         </div>
 
         <div className="game-header-center">
