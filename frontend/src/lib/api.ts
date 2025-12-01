@@ -125,6 +125,12 @@ api.interceptors.response.use(
 export type Role = 'admin' | 'teacher' | 'student';
 
 /**
+ * @brief Represents the type of password a user can have
+ */
+export type PasswordType = 'graphical' | 'pin' | 'alphanumeric';
+
+
+/**
  * @brief Represents a user.
  */
 export interface User {
@@ -142,6 +148,7 @@ export interface User {
  */
 export interface UserData {
   username: string;
+  password_type: PasswordType;
   user_profile: any;
   game_configurations: any;
   reinforcement_messages: any;
@@ -160,6 +167,7 @@ export interface UserComplete {
   role: Role;
   photo_url?: string;
   group_id?: string;
+  password_type: PasswordType;
   group_alias?: string;
   user_profile: any;
   game_configurations: any;
@@ -229,6 +237,7 @@ export interface UserUpdatePayload {
   username?: string;
   password?: string;
   photo_url?: string;
+  password_type?: PasswordType;
 }
 
 
@@ -407,20 +416,6 @@ export const authAPI = {
   },
   */
 };
-
-/**
- * Obtiene todos los datos completos de un estudiante a partir de su ID.
- * @param studentId - ID del estudiante.
- * @returns Los datos completos del estudiante.
- */
-export const getStudentById = async (studentId: string) => {
-  const response = await api.get('/api/admin/students', {
-    params: { student_id: studentId }
-  });
-  const data = response.data;
-  return Array.isArray(data) ? data[0] : data;
-};
-
 
 
 // === USER API ===

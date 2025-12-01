@@ -25,9 +25,10 @@ import {
 import { personOutline, addOutline, closeOutline, checkmarkOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useManager } from '../../../contexts/ManagerContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { authAPI, uploadImage, getImages, getStudentById} from '../../../lib/api';
-import type { User } from '../../../lib/api';
+import { authAPI, uploadImage, getImages, userAPI} from '../../../lib/api';
+import type { UserData } from '../../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 import SimpleHeaderEdit from './components/SimpleHeaderEdit';
 import { createPortal } from 'react-dom';
@@ -82,6 +83,7 @@ export default function StudentEditProfile() {
 
   
   const history = useHistory();
+  const { users, retrieveUser } = useManager();
   const { user } = useAuth();
   const { id, name } = useParams<{ id: string; name: string }>();
 
@@ -91,7 +93,7 @@ export default function StudentEditProfile() {
   const avatarPickerRef = useRef<HTMLDivElement>(null);
   const formCardRef = useRef<HTMLDivElement>(null);
   
-  const [studentData, setStudentData] = useState<User | null>(null);
+  const [studentData, setStudentData] = useState<UserData | null>(null);
 
   const [userName, setUserName] = useState('');
 
@@ -156,13 +158,27 @@ export default function StudentEditProfile() {
     const loadStudentData = async () => {
       try {
         if (!id) return;
-        const data = await getStudentById (id);
+        let userEntry = users.get(id);  // revisamos si los datos ya existen en el context
+        if (!userEntry || !userEntry.data) {  // si no existen o no tienen data, los recuperamos
+          retrieveUser(id);
+          userEntry = users.get(id);
+        }
+        if (!userEntry || !userEntry.data) throw new Error("No se han podido cargar los datos del estudiante.");
+        const data = userEntry.data;
+        const user = userEntry.user;
+        setStudentData(data);
+        setUserName(user.username || '');
+        setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
+        setSelectedAvatar(user.photo_url ? 'custom' : '');
+        setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
+        setPasswordType(data.password_type || 'graphical');
+        /*const data = await userAPI.fetchUserData (id);
         setStudentData(data);
         setUserName(data.username || '');
         setAvatarPreview(data.photo_url || DEFAULT_AVATAR);
         setSelectedAvatar(data.photo_url ? 'custom' : '');
         setSelectedAvatarUrl(data.photo_url || DEFAULT_AVATAR);
-        setPasswordType(data.password_type || 'graphical');
+        setPasswordType(data.password_type || 'graphical');*/
         if (data.password_type === 'graphical') {
           setNewPassword([]);
           setRepeatNewPassword([]);
@@ -402,17 +418,13 @@ export default function StudentEditProfile() {
         photoUrl = await uploadImage(file, uniqueFilename);
       }
 
-      // Actualizamos el nombre de usuario y la foto de perfil del estudiante y el tipo de contraseña que tiene asociado
-      await updateStudent( id, { 
+      // Actualizamos el nombre de usuario, la foto de perfil, la contraseña y el tipo de contraseña del estudiante
+      await userAPI.updateUser( id, { 
         username: userName, 
         photo_url: photoUrl, 
-        /*password_type: passwordType,*/
+        password: Array.isArray(newPassword) ? newPassword.join('-') : newPassword || undefined,  
+        password_type: passwordType
       });
-
-      // Actualizamos la contraseña
-      if (newPassword) {
-        await updateStudentPassword(id, { password: newPassword, password_type: passwordType });
-      }
       
       setToastMessage('Perfil de estudiante actualizado correctamente.');
       setToastColor('success');
@@ -839,7 +851,7 @@ export default function StudentEditProfile() {
                         );
                       })}
                       <div 
-                        className={`student-register-pictogram-add ${Array.isArray(newPassword) && newPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
+                        className={`studentEditProfile-pictogram-add ${Array.isArray(newPassword) && newPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
                         onClick={() => handleAddPictogram('newGraphicalPassword')}
                       >
                         <IonIcon icon={addOutline} />
@@ -866,7 +878,7 @@ export default function StudentEditProfile() {
                         );
                       })}
                       <div 
-                        className={`student-register-pictogram-add ${Array.isArray(repeatNewPassword) && repeatNewPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
+                        className={`studentEditProfile-pictogram-add ${Array.isArray(repeatNewPassword) && repeatNewPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
                         onClick={() => handleAddPictogram('repeatNewGraphicalPassword')}
                       >
                         <IonIcon icon={addOutline} />
@@ -883,8 +895,8 @@ export default function StudentEditProfile() {
           <div className="studentEditProfile-field-wrapper-buttons">
             <IonButton 
               expand="block"
-              className={`student-register-confirm-button ${
-                !isFormReadyForSubmit ? 'student-register-confirm-button--disabled' : ''
+              className={`studentEditProfile-confirm-button ${
+                !isFormReadyForSubmit ? 'studentEditProfile-confirm-button--disabled' : ''
               }`}
               onClick={handleConfirmClick}
             >
@@ -923,8 +935,8 @@ export default function StudentEditProfile() {
         <div className="studentEditProfile-picto-picker-overlay" onClick={closePictoModal}>
           <div
             ref={pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef : repeatPictoPickerRef}
-            className={`student-register-picto-picker-custom ${
-              pictoModalState.visible ? 'student-register-picto-picker-visible' : ''
+            className={`studentEditProfile-picto-picker-custom ${
+              pictoModalState.visible ? 'studentEditProfile-picto-picker-visible' : ''
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -955,8 +967,8 @@ export default function StudentEditProfile() {
         <div className="studentEditProfile-avatar-picker-overlay" onClick={closeAvatarModal}>
           <div
             ref={avatarPickerRef}
-            className={`student-register-avatar-picker ${
-              isAvatarModalVisible ? 'student-register-avatar-picker-visible' : ''
+            className={`studentEditProfile-avatar-picker ${
+              isAvatarModalVisible ? 'studentEditProfile-avatar-picker-visible' : ''
             }`}
             onClick={(e) => e.stopPropagation()}
           >
