@@ -66,7 +66,7 @@ export default function StudentProfile() {
      */
     const handleLogout = async () => {
         await logout();
-        router.push('/home',"none","replace");
+        router.push('/student/login',"none","replace");
     }
 
     /**
