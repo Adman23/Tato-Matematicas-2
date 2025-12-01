@@ -11,7 +11,9 @@ import { useState, useEffect } from 'react';
 import { authAPI } from '../../lib/api'; 
 import type { Group, User } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext'; 
+// --- IMPORTACIONES ---
 import { Button3Dtext } from '../global_components/PushableButtons'; 
+import { Background } from '../global_components/Background'; // <--- AQUI (ajusta la ruta)
 
 import './StudentLogin.css';
 
@@ -217,8 +219,14 @@ export default function StudentLoginUnified() {
 
   return (
     <IonPage>
+      {/* NOTA IMPORTANTE: El scrollY debe ser false para que el fondo
+         funcione bien y no haya scrolls indeseados en la pantalla.
+      */}
       <IonContent className="st-login-content" scrollY={false}>
         
+        {/* COMPONENTE DE FONDO NUEVO */}
+        <Background color="var(--ion-color-primary)" />
+
         <div className="st-login-layout">
             
             {/* HEADER */}

@@ -2,39 +2,6 @@
    TATO MATEMÁTICAS — CSS LOGIN (AUTO-SCALE + SHAKE ERROR)
    ============================================================ */
 
-/* --- CONFIGURACIÓN BASE --- */
-.st-login-content {
-  /* Usamos color-mix para mezclar el color primario con blanco.
-     92% blanco + 8% primary = Fondo muy clarito
-  */
-  --background: color-mix(in srgb, var(--ion-color-primary), white 70%);
-}
-
-/* 1. FONDO ANIMADO CON COLOR DINÁMICO */
-.st-login-content::before {
-  content: "";
-  position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-  
-  /* Aquí definimos el color de los números/símbolos.
-     80% blanco + 20% primary = Más oscuro que el fondo, pero más claro que el botón
-  */
-  background-color: color-mix(in srgb, var(--ion-color-primary), white 60%);
-  
-  /* TRUCO: Usamos el SVG como máscara para recortar este color */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='black' font-family='sans-serif' font-weight='bold'%3E%3Ctext x='40' y='120' font-size='140' transform='rotate(-10 40 120)'%3E+%3C/text%3E%3Ctext x='240' y='150' font-size='160' transform='rotate(10 240 150)'%3E-%3C/text%3E%3Ctext x='60' y='350' font-size='150' transform='rotate(5 60 350)'%3Ex%3C/text%3E%3Ctext x='260' y='340' font-size='140' transform='rotate(-15 260 340)'%3E%C3%B7%3C/text%3E%3Ctext x='180' y='80' font-size='100' transform='rotate(20 180 80)'%3E1%3C/text%3E%3Ctext x='20' y='240' font-size='110' transform='rotate(-25 20 240)'%3E2%3C/text%3E%3Ctext x='200' y='250' font-size='90' transform='rotate(15 200 250)'%3E3%3C/text%3E%3C/g%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='black' font-family='sans-serif' font-weight='bold'%3E%3Ctext x='40' y='120' font-size='140' transform='rotate(-10 40 120)'%3E+%3C/text%3E%3Ctext x='240' y='150' font-size='160' transform='rotate(10 240 150)'%3E-%3C/text%3E%3Ctext x='60' y='350' font-size='150' transform='rotate(5 60 350)'%3Ex%3C/text%3E%3Ctext x='260' y='340' font-size='140' transform='rotate(-15 260 340)'%3E%C3%B7%3C/text%3E%3Ctext x='180' y='80' font-size='100' transform='rotate(20 180 80)'%3E1%3C/text%3E%3Ctext x='20' y='240' font-size='110' transform='rotate(-25 20 240)'%3E2%3C/text%3E%3Ctext x='200' y='250' font-size='90' transform='rotate(15 200 250)'%3E3%3C/text%3E%3C/g%3E%3C/svg%3E");
-  
-  -webkit-mask-size: 400px 400px;
-  mask-size: 400px 400px;
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-
-  /* IMPORTANTE: Quitamos el background-image antiguo porque ahora usamos background-color + mask */
-  background-image: none;
-  
-  z-index: 1; pointer-events: none;
-}
-
 /* ANIMACIONES */
 @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes pulseCheck { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
