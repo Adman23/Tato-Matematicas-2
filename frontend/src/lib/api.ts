@@ -719,6 +719,30 @@ export const gamesAPI = {
   },
 
   /**
+   * Actualiza la configuración personalizada de un juego para un usuario.
+   *
+   * Flujo de ejecución:
+   * 1. Realiza petición POST al endpoint de configuración
+   * 2. El backend actualiza o crea el registro en game_configs
+   * 3. Devuelve la configuración actualizada
+   *
+   * @param userId - UUID del usuario en la base de datos
+   * @param gameKey - Identificador del juego
+   * @param config - Nueva configuración del juego
+   * @returns Promesa que resuelve con la configuración actualizada
+   *
+   * @example
+   * await gamesAPI.updateGameConfig('uuid-123', 'order_sequence', {
+   *   number_range: '0-20',
+   *   settings: { quantity: 8, order: 'ascending' }
+   * });
+   */
+  updateGameConfig: async (userId: string, gameKey: string, config: GameConfig): Promise<GameConfig> => {
+    const response = await api.post<GameConfig>(`/games/config/${userId}/${gameKey}`, config);
+    return response.data;
+  },
+
+  /**
    * Crea una nueva sesión de juego para tracking de resultados.
    *
    * Flujo de ejecución:
