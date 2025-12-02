@@ -85,7 +85,6 @@ const Game1: React.FC = () => {
     const sessionCreatedRef = useRef(false);
 
     // Main states
-    const [loading, setLoading] = useState(true);
     const [loadingGame, setLoadingGame] = useState(true);
     const [loadingMessages, setLoadingMessages] = useState(true);
     const [config, setConfig] = useState<GameConfig | null>(null);
