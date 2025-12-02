@@ -23,7 +23,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
   children, 
   className = '', 
   frontClassName = '',
-  color = 'var(--bubble-bg)',
+  color = 'var(--button-profile-bg)',
   ...props // 2. Capturamos el resto de props (incluyendo aria-label, disabled, onClick)
 }) => {
 

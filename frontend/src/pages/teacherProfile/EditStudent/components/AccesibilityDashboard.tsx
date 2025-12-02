@@ -17,6 +17,14 @@ export const AccessibilityDashboard: React.FC<AccessibilityDashboardProps> = ({ 
         <AccessibilityIndicator status={report.textOnBackground} />
       </div>
       <div>
+        <span>Color principal sobre fondo: </span>
+        <AccessibilityIndicator status={report.PrimaryOnBackgroud} />
+      </div>
+      <div>
+        <span>Color del botón sobre el color principal: </span>
+        <AccessibilityIndicator status={report.buttonOnPrimary} />
+      </div>
+      <div>
         <span>Texto sobre burbujas: </span>
         <AccessibilityIndicator status={report.textOnBubble} />
       </div>
