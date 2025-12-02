@@ -2,7 +2,7 @@
    Header adaptativo (Original + Ajuste de altura)
    ======================================== */
 ion-header {
-  height: clamp(80px, 20vh, 200px);
+  height: clamp(64px, 14vh, 140px);
   background: var(--ion-color-primary);
   /* Aseguramos que los elementos 3D no se corten */
   z-index: 10;
@@ -37,8 +37,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
   display: flex;
   align-items: center;
   height: 100%;
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 0 auto;
   justify-content: flex-end;
   gap: clamp(10px, 2vw, 20px);
 }
@@ -49,7 +48,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
 
 /* Imágenes de avatar (Estilo Original) */
 .user-dashborad-img {
-  height: clamp(50px, 14vh, 120px);
+  height: clamp(44px, 12vh, 92px);
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
@@ -73,7 +72,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
     BOTONES
    ======================================== */
 .btn-icon-header-user {
-  height: clamp(30px, 8vh, 70px);
+  height: clamp(28px, 7vh, 60px);
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.2));
@@ -81,8 +80,71 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
 }
 
 .btn-text {
-  font-size: clamp(0.9rem, 3vmin, 1.8rem);
+  font-size: clamp(0.85rem, 2.6vmin, 1.6rem);
   white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  ion-header {
+    height: 72px;
+  }
+
+  ion-toolbar.toolbar-header-user {
+    --padding-start: 10px;
+    --padding-end: 10px;
+  }
+
+  ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
+    gap: 10px;
+    flex: 1 1 auto;
+  }
+
+  .user-dashborad-img {
+    height: 48px;
+  }
+
+  .header-text {
+    font-size: 1rem;
+  }
+
+  .btn-text {
+    font-size: 0.95rem;
+  }
+
+  .btn-icon-header-user {
+    height: 34px;
+  }
+}
+
+@media (max-width: 420px) {
+  ion-header {
+    height: 68px;
+  }
+
+  ion-toolbar.toolbar-header-user {
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+
+  ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
+    gap: 8px;
+  }
+
+  .user-dashborad-img {
+    height: 42px;
+  }
+
+  .header-text {
+    font-size: 0.95rem;
+  }
+
+  .btn-text {
+    font-size: 0.9rem;
+  }
+
+  .btn-icon-header-user {
+    height: 30px;
+  }
 }
 
 /* ========================================

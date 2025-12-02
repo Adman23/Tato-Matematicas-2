@@ -123,7 +123,7 @@ export default function StudentProfile() {
                                 </Button3Dtext>
                                 
                                 {/* Edit game_2 */}
-                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/edit-game2")}>
                                     <img
                                     src="/assets/juegosImg/juego2.png"
                                     alt="Ir a editar Juego dos"

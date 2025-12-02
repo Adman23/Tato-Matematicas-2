@@ -107,6 +107,99 @@ async def get_game_config(student_id: str, game_key: str):
         )
 
 
+@router.post("/config/{user_id}/{game_key}")
+async def update_game_config(user_id: str, game_key: str, config_data: Dict[str, Any]):
+    """
+    Updates or creates the configuration for a specific user's game.
+
+    Args:
+        user_id (str): ID of the user (student or teacher).
+        game_key (str): Unique key of the game (e.g., "order_sequence").
+        config_data (dict): Configuration data with number_range and settings.
+
+    Raises:
+        HTTPException:
+            - 404 NOT FOUND: If the game does not exist.
+            - 500 INTERNAL SERVER ERROR: If an error occurs while updating the configuration.
+
+    Returns:
+        GameConfigResponse: Updated configuration object.
+    """
+    try:
+        # 1. Get the game_id from the games table
+        game_resp = supabase_admin.table("games") \
+            .select("id") \
+            .eq("key", game_key) \
+            .execute()
+
+        if not game_resp.data or len(game_resp.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Game with key '{game_key}' not found"
+            )
+
+        game_id = game_resp.data[0]["id"]
+
+        # 2. Check if configuration already exists
+        existing_config = supabase_admin.table("game_configurations") \
+            .select("*") \
+            .eq("user_id", user_id) \
+            .eq("game_id", game_id) \
+            .execute()
+
+        # 3. Prepare configuration data
+        config_update = {
+            "user_id": user_id,
+            "game_id": game_id,
+            "number_range": config_data.get("number_range", "0-10"),
+            "settings": config_data.get("settings", {})
+        }
+
+        # 4. Update or insert
+        if existing_config.data and len(existing_config.data) > 0:
+            # Update existing configuration
+            update_resp = supabase_admin.table("game_configurations") \
+                .update(config_update) \
+                .eq("user_id", user_id) \
+                .eq("game_id", game_id) \
+                .execute()
+
+            if not update_resp.data:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Error updating game configuration"
+                )
+        else:
+            # Insert new configuration
+            insert_resp = supabase_admin.table("game_configurations") \
+                .insert(config_update) \
+                .execute()
+
+            if not insert_resp.data:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Error creating game configuration"
+                )
+
+        # 5. Return updated configuration
+        return GameConfigResponse(
+            game_id=game_id,
+            game_key=game_key,
+            user_id=user_id,
+            number_range=config_update["number_range"],
+            settings=config_update["settings"]
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error updating game config: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error updating game configuration: {str(e)}"
+        )
+
+
 @router.post("/sessions")
 async def create_game_session(request: CreateSessionRequest):
     """

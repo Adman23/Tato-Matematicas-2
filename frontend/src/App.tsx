@@ -32,6 +32,7 @@ import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
 
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
+import EditGame2 from './pages/student/EditGame2';
 
 // === Juegos ===
 import Game1 from './pages/games/Game1/Game1';
@@ -108,8 +109,10 @@ export default function App() {
               {/* Users Routes (except admin) */}
               <PrivateRoute path="/student/dashboard" allowedRoles={["student"]}  
                 exact component={StudentDashboard} />
-              <PrivateRoute path="/student/profile" allowedRoles={["student"]} 
+              <PrivateRoute path="/student/profile" allowedRoles={["student"]}
                 exact component={StudentProfile} />
+              <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
+                exact component={EditGame2} />
               <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]} 
                 exact component={TutorDashboard} />
               <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]} 
