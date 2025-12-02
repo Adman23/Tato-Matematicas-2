@@ -6,6 +6,7 @@ export function analyzePalette(palette: {
   primary: string;
   text_on_primary: string;
   background: string;
+  button: string;
   text_on_bg: string;
   bubble:string;
   bubble_selected:string;
@@ -14,6 +15,8 @@ export function analyzePalette(palette: {
   const results = [
     evaluateContrast(palette.primary, palette.text_on_primary),
     evaluateContrast(palette.background, palette.text_on_bg),
+    evaluateContrastForElements(palette.primary, palette.background),
+    evaluateContrastForElements(palette.primary, palette.button),
     evaluateContrast("#000000", palette.bubble),
     evaluateContrast(palette.bubble_selected, "#000000"),
     evaluateContrastForElements(palette.background, palette.bubble),

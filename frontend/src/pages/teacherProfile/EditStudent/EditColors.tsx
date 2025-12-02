@@ -78,19 +78,19 @@ export default function EditColor() {
     const examplePalette = [
         {
             id: 1,
-            colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#4793AB", "#D76FBF"]
+            colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#A9DAF3", "#4793AB", "#D76FBF"]
         },
         {
             id: 2,
-            colors: ["#6A1B9A", "#FFFFFF", "#f3e8f7ff", "#1A1A1A", "#AF65EB", "#0F8F8F"]
+            colors: ["#6A1B9A", "#FFFFFF", "#f3e8f7ff", "#1A1A1A","#E8D6F3", "#AF65EB", "#0F8F8F"]
         },
         {
             id: 3,
-            colors: ["#6FB96D", "#1A1A1A", "#effff0ff", "#1A1A1A", "#4E8F4E", "#B8653C"]
+            colors: ["#579457", "#1A1A1A", "#effff0ff", "#1A1A1A","#DCEFDC", "#4E8F4E", "#B8653C"]
         },
         {
             id: 4,
-            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a", "#4E967F", "#e06200"]
+            colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a","#9AF5F9", "#4E967F", "#e06200"]
         },
 
     ];
@@ -100,6 +100,7 @@ export default function EditColor() {
       const [colorTextoPrincipal] = useState("#FFFFFF");
       const [colorFondo] = useState("#FFFFFF");
       const [colorTextoFondo] = useState("#FFFFFF");
+      const [colorButton] = useState("#FFFFFF");
       const [colorBubble] = useState("#FFFFFF");
       const [colorBubbleSelected] = useState("#FFFFFF");
     
@@ -111,6 +112,7 @@ export default function EditColor() {
         text_on_primary: colorTextoPrincipal,
         background: colorFondo,
         text_on_bg: colorTextoFondo,
+        button : colorButton,
         bubble: colorBubble,
         bubble_selected: colorBubbleSelected,
 
@@ -123,6 +125,8 @@ export default function EditColor() {
     const [accessibilityReport, setAccessibilityReport] = useState<AccessibilityReport>({
     textOnPrimary: "checking",
     textOnBackground: "checking",
+    PrimaryOnBackgroud: "checking",
+    buttonOnPrimary: "checking",
     textOnBubble: "checking",
     textOnBubbleSelected: "checking",
     bubbleOnBackground: "checking",
@@ -142,8 +146,9 @@ export default function EditColor() {
         text_on_primary: palette.colors[1],
         background: palette.colors[2],
         text_on_bg: palette.colors[3],
-        bubble: palette.colors[4],
-        bubble_selected: palette.colors[5]
+        button: palette.colors[4],
+        bubble: palette.colors[5],
+        bubble_selected: palette.colors[6]
     });
     };
 
@@ -158,6 +163,7 @@ export default function EditColor() {
                 primary: prefs.primary,
                 text_on_primary: prefs.text_on_primary,
                 background: prefs.background,
+                button: prefs.button,
                 text_on_bg: prefs.text_on_bg,
                 bubble: prefs.bubble,
                 bubble_selected: prefs.bubble_selected
@@ -168,6 +174,7 @@ export default function EditColor() {
                 primary: prefs.primary,
                 text_on_primary: prefs.text_on_primary,
                 background: prefs.background,
+                button: prefs.button,
                 text_on_bg: prefs.text_on_bg,
                 bubble: prefs.bubble,
                 bubble_selected: prefs.bubble_selected
@@ -189,6 +196,7 @@ export default function EditColor() {
             primary: customPalette.primary,
             text_on_primary: customPalette.text_on_primary,
             background: customPalette.background,
+            button: customPalette.button,
             text_on_bg: customPalette.text_on_bg,
             bubble: customPalette.bubble,
             bubble_selected: customPalette.bubble_selected
@@ -198,6 +206,8 @@ export default function EditColor() {
         setAccessibilityReport({
             textOnPrimary: evaluateContrast(customPalette.text_on_primary, customPalette.primary),
             textOnBackground: evaluateContrast(customPalette.text_on_bg, customPalette.background),
+            PrimaryOnBackgroud: evaluateContrastForElements(customPalette.primary, customPalette.background),
+            buttonOnPrimary: evaluateContrastForElements(customPalette.button, customPalette.primary),
             textOnBubble: evaluateContrast(customPalette.bubble, "#000000"),
             textOnBubbleSelected: evaluateContrast(customPalette.bubble_selected, "#000000"),
             bubbleOnBackground: evaluateContrastForElements(customPalette.bubble, customPalette.background),
@@ -215,6 +225,7 @@ export default function EditColor() {
                 text_on_primary: customPalette.text_on_primary,
                 background: customPalette.background,
                 text_on_bg: customPalette.text_on_bg,
+                button: customPalette.button,
                 bubble: customPalette.bubble,
                 bubble_selected: customPalette.bubble_selected
             });
@@ -263,6 +274,7 @@ export default function EditColor() {
                                         customPalette.text_on_primary,
                                         customPalette.background,
                                         customPalette.text_on_bg,
+                                        customPalette.button,
                                         customPalette.bubble,
                                         customPalette.bubble_selected
                                     ]
@@ -286,12 +298,16 @@ export default function EditColor() {
                                 <IonLabel className='EditColor-label'>Fondo</IonLabel>
                                 <PopoverPicker color={customPalette.background} onChange={(c) => setCustomPalette({...customPalette, background: c})}/>
                                 </IonCol>
+                                <IonCol  className='EditColor-IonCol'>
+                                <IonLabel className='EditColor-label'>Texto fondo</IonLabel>
+                                <PopoverPicker color={customPalette.text_on_bg} onChange={(c) => setCustomPalette({...customPalette, text_on_bg: c})}/>
+                                </IonCol>
                             </IonRow>
 
                             <IonRow>
                                 <IonCol  className='EditColor-IonCol'>
-                                <IonLabel className='EditColor-label'>Texto fondo</IonLabel>
-                                <PopoverPicker color={customPalette.text_on_bg} onChange={(c) => setCustomPalette({...customPalette, text_on_bg: c})}/>
+                                <IonLabel className='EditColor-label'>Botón</IonLabel>
+                                <PopoverPicker color={customPalette.button} onChange={(c) => setCustomPalette({...customPalette, button: c})}/>
                                 </IonCol>
                                 <IonCol className='EditColor-IonCol'>
                                 <IonLabel className='EditColor-label'>Burbujas</IonLabel>
@@ -325,8 +341,8 @@ export default function EditColor() {
                 </div>
 
                 <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
-                <IonHeader>
-                    <IonToolbar>
+                <IonHeader className='Modal-EditColors-toolbar'>
+                    <IonToolbar >
                     <IonTitle>Informe de accesibilidad</IonTitle>
                     <IonButtons slot="end">
                         <IonButton onClick={() => {setShowModal(false); setShowToast(false);}}>
