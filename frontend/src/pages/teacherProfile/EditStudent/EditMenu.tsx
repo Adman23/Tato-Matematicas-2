@@ -67,9 +67,13 @@ export default function EditMenu() {
         return <Redirect to="/login" />;
     }
 
+    const handleHome = () => {
+        router.push('/teacher/profile',"back","replace");
+    }
+
     return (
         <IonPage>
-            <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} />
+            <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} onHome={handleHome}/>
             <IonContent className="ion-padding">
                 <div className="studentEditProfile-dashboard-outer-container">
                     <IonCard className="studentEditProfile-dashboard-card">

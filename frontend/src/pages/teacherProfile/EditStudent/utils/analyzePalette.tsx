@@ -1,4 +1,4 @@
-import { evaluateContrast } from "./contrast";
+import { evaluateContrast, evaluateContrastForElements } from "./contrast";
 
 export type PaletteAnalysis = "aaa" | "aa" | "fail";
 
@@ -7,11 +7,17 @@ export function analyzePalette(palette: {
   text_on_primary: string;
   background: string;
   text_on_bg: string;
+  bubble:string;
+  bubble_selected:string;
 }): PaletteAnalysis {
   
   const results = [
     evaluateContrast(palette.primary, palette.text_on_primary),
     evaluateContrast(palette.background, palette.text_on_bg),
+    evaluateContrast("#000000", palette.bubble),
+    evaluateContrast(palette.bubble_selected, "#000000"),
+    evaluateContrastForElements(palette.background, palette.bubble),
+    evaluateContrastForElements(palette.bubble_selected, palette.background),
   ];
 
   // Si cualquiera falla → falla todo
@@ -24,24 +30,5 @@ export function analyzePalette(palette: {
   return "aaa";
 }
 
-export function analyzePaletteDetailed(palette: {
-  primary: string;
-  text_on_primary: string;
-  background: string;
-  text_on_bg: string;
-  bubble: string;
-  bubble_selected: string;
-  feedback_correct: string;
-  feedback_incorrect: string;
-}) {
-  return {
-    textOnPrimary: evaluateContrast(palette.text_on_primary, palette.primary),
-    textOnBackground: evaluateContrast(palette.text_on_bg, palette.background),
-    primaryOnBackground: evaluateContrast(palette.primary, palette.background),
-    bubbleOnBackground: evaluateContrast(palette.bubble, palette.background),
-    bubbleSelectedOnBackground: evaluateContrast(palette.bubble_selected, palette.background),
-    feedbackCorrectOnBackground: evaluateContrast(palette.feedback_correct, palette.background),
-    feedbackIncorrectOnBackground: evaluateContrast(palette.feedback_incorrect, palette.background),
-  };
-}
+
 

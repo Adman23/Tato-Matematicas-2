@@ -29,7 +29,7 @@ const HeaderItem: React.FC<Props> = ({
   };
 
   const handleHomeClick = () => {
-    router.push('/home');
+    router.push('/teacher/dashboard');
   };
 
   return (

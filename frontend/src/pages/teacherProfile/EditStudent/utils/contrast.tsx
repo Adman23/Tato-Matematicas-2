@@ -27,3 +27,11 @@ export function evaluateContrast(color1: string, color2: string): "aaa" | "aa" |
   if (ratio >= 4.5) return "aa";
   return "fail";
 }
+
+export function evaluateContrastForElements(color1: string, color2: string): "aaa" | "aa" | "fail" {
+  const ratio = contrastRatio(color1, color2);
+
+  if (ratio >= 3) return "aa";
+  if (ratio >= 4.5) return "aaa";
+  return "fail";
+}

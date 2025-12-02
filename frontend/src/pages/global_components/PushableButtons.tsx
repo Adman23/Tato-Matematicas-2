@@ -1,36 +1,30 @@
-/**
- * !! NEW FILE
- * -> Component that every page can use
- * -> One of the buttons that will be used
- */
-
 import React from 'react';
 
-interface button3DtextProps {
-  onClick?: () => void;
+// 1. Extendemos las propiedades nativas de un botón HTML para aceptar aria-label, onClick, etc. automáticamente.
+interface button3DtextProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
   frontClassName?: string;
   children: React.ReactNode;
   color?: string;
-  disabled?: boolean; // Added disabled prop for logic handling
+  // 'disabled' y 'onClick' ya vienen incluidos en ButtonHTMLAttributes, no hace falta re-declararlos obligatoriamente,
+  // pero podemos dejarlos si queremos tipado explícito o JSDoc específico.
 }
 
 /**
  * @brief Button with 3D css, that uses the css variables and you can change the content
- * * @information btn-icon y btn-text are the classes for span text and img elements in the content
+ * @information btn-icon y btn-text are the classes for span text and img elements in the content
  * @param children The content of the button, it should be a span and a img elements
- * @param onClick The function that happens when you click 
- * @param className if you need to add more css to the button
- * @param disabled Disables interaction and changes visual state
- * @returns 
+ * @param props Any standard HTML button attribute (onClick, aria-label, disabled, etc.)
+ * @param className if you need to add more css to the button container
+ * @param frontClassName if you need to add classes specifically to the front face
+ * @param color Background color for the 3D effect
  */
 export const Button3Dtext: React.FC<button3DtextProps> = ({ 
-  onClick, 
   children, 
   className = '', 
   frontClassName = '',
   color = 'var(--bubble-bg)',
-  disabled = false
+  ...props // 2. Capturamos el resto de props (incluyendo aria-label, disabled, onClick)
 }) => {
 
   return (
@@ -44,14 +38,12 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           cursor: pointer;
           outline-offset: 4px;
           transition: filter 250ms;
-          /* Margin removed from here to control it via parent layout if needed */
           margin: 0; 
           flex-shrink: 0;
           -webkit-tap-highlight-color: transparent;
           user-select: none;
         }
 
-        /* Disabled State */
         .pushable-button:disabled {
           cursor: default;
           pointer-events: none;
@@ -59,7 +51,6 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           filter: grayscale(0.8);
         }
 
-        /* 1. La Sombra */
         .pushable-button .shadow {
           position: absolute;
           top: 0;
@@ -73,7 +64,6 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           transition: transform 250ms cubic-bezier(.3, .7, .4, 1);
         }
 
-        /* 2. El Borde/Grosor 3D */
         .pushable-button .edge {
           position: absolute;
           top: 0;
@@ -91,12 +81,10 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           );
         }
 
-        /* 3. La Cara Frontal */
         .pushable-button .front {
           display: block;
           position: relative;
           border-radius: 12px;
-          /* Padding ajustado para que no sea tan ancho si solo tiene icono */
           padding: 12px 20px;
           color: white;
           width: 100%;
@@ -107,14 +95,13 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
         }
 
         .pushable-button:disabled .front {
-           transform: translateY(-6px); /* Stay up if disabled, or move down? usually stay up but grayed */
-           background: #999; /* Fallback gray */
+           transform: translateY(-6px);
+           background: #999;
         }
         .pushable-button:disabled .edge {
           background: #777;
         }
 
-        /* Contenido del botón */
         .pushable-button .button-content {
           display: flex;
           align-items: center;
@@ -122,7 +109,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           gap: 10px;
         }
 
-        /* Clases utilitarias */
+        /* Clases utilitarias internas */
         .btn-text {
           font-size: 1.2rem;
           font-weight: bold;
@@ -142,11 +129,10 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
         }
 
         .btn-icon {
-          font-size: 1.8rem; /* Tamaño para IonIcon */
+          font-size: 1.8rem;
           display: block;
         }
 
-        /* --- Animaciones de interacción --- */
         @media (hover: hover) {
           .pushable-button:not(:disabled):hover .front {
             transform: translateY(-8px);
@@ -161,7 +147,6 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
 
         .pushable-button:not(:disabled):active .front {
           transform: translateY(-2px);
-
         }
 
         .pushable-button:not(:disabled):active .shadow {
@@ -176,14 +161,13 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
 
       <button 
         className={`pushable-button ${className}`} 
-        onClick={onClick} 
         type="button"
-        disabled={disabled}
+        {...props} // 3. IMPORTANTE: Aquí pasamos aria-label, disabled, onClick, etc. al elemento DOM real
       >
-        <span className={`shadow`}></span>
-        <span className={`edge`} style={{ backgroundColor: color }}></span>
+        <span className="shadow"></span>
+        <span className="edge" style={{ backgroundColor: color }}></span>
         <span className={`front ${frontClassName}`} style={{ background: color }}>
-          <div className={`button-content`}>
+          <div className="button-content">
             {children}
           </div>
         </span>
