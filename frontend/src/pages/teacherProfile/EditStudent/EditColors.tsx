@@ -86,7 +86,7 @@ export default function EditColor() {
         },
         {
             id: 3,
-            colors: ["#579457", "#1A1A1A", "#effff0ff", "#1A1A1A","#DCEFDC", "#4E8F4E", "#B8653C"]
+            colors: ["#006B33", "#FFFFFF", "#effff0ff", "#1A1A1A","#b1ecb1ff", "#4E8F4E", "#B8653C"]
         },
         {
             id: 4,

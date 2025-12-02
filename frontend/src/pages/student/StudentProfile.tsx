@@ -103,7 +103,7 @@ export default function StudentProfile() {
                         <IonCol size="12" sizeMd="9.6" className="edit-section-col">
                             <div className="edit-section">
                                 {/* Edit colors */}
-                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/edit-colors")}>
                                     <img
                                     src="/assets/pictograms/colores.png"
                                     alt="Ir a editar colores"
