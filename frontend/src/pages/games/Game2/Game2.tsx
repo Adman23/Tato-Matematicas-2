@@ -483,6 +483,9 @@ const Game2: React.FC = () => {
   const tryPlaceNumber = (draggedNumber: number, targetIndex: number, currentHints?: number, isHint: boolean = false) => {
     if (showFeedback) return;
 
+    // Asegurar que draggedNumber es un número (no string)
+    const numericDragged = typeof draggedNumber === 'number' ? draggedNumber : Number(draggedNumber);
+
     // Buscar el primer slot vacío
     const firstEmptyIndex = orderedNumbers.findIndex(n => n === undefined);
 
@@ -490,7 +493,7 @@ const Game2: React.FC = () => {
     if (targetIndex !== firstEmptyIndex) return;
 
     // Verificar si el número es correcto para esta posición
-    const isCorrect = draggedNumber === correctOrder[firstEmptyIndex];
+    const isCorrect = numericDragged === correctOrder[firstEmptyIndex];
 
     if (!isCorrect) {
       // Mostrar pantalla de feedback con error
@@ -502,11 +505,17 @@ const Game2: React.FC = () => {
 
     // Es correcto: colocar el número y quitarlo de availableNumbers
     const newOrdered = [...orderedNumbers];
-    newOrdered[firstEmptyIndex] = draggedNumber;
+    newOrdered[firstEmptyIndex] = numericDragged;
     setOrderedNumbers(newOrdered);
 
     // Reemplazar el número con undefined en availableNumbers (mantener posición fija)
-    const newAvailable = availableNumbers.map(n => n === draggedNumber ? undefined : n);
+    // Usar comparación estricta de tipos para asegurar que funciona con 0
+    const newAvailable = availableNumbers.map(n => {
+      if (typeof n === 'number' && typeof numericDragged === 'number') {
+        return n === numericDragged ? undefined : n;
+      }
+      return n;
+    });
     setAvailableNumbers(newAvailable);
 
     // Verificar si todos los números fueron colocados (todos son undefined)
@@ -601,7 +610,8 @@ const Game2: React.FC = () => {
     // No permitir usar pista durante feedback o si no hay números disponibles
     if (showFeedback) return;
 
-    const hasAvailableNumbers = availableNumbers.some(n => n !== undefined);
+    // Verificación correcta: buscar cualquier número válido (incluyendo 0)
+    const hasAvailableNumbers = availableNumbers.some(n => typeof n === 'number');
     if (!hasAvailableNumbers) return;
 
     // Calcular el nuevo valor de hints
@@ -714,8 +724,9 @@ const Game2: React.FC = () => {
    */
   const handleDragStart = (e: React.DragEvent, number: number) => {
     if (showFeedback) return;
+
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', number.toString());
+    e.dataTransfer.setData('text/plain', String(number));
 
     // Deseleccionar cualquier número previamente seleccionado
     setSelectedNumber(null);
@@ -723,6 +734,14 @@ const Game2: React.FC = () => {
     // Crear imagen personalizada para drag
     const dragElement = e.currentTarget as HTMLElement;
     const clone = dragElement.cloneNode(true) as HTMLElement;
+
+    // Asegurar que todas las imágenes dentro del clon no sean draggables
+    const cloneImages = clone.querySelectorAll('img');
+    cloneImages.forEach(img => {
+      img.draggable = false;
+      img.setAttribute('draggable', 'false');
+      (img as HTMLElement).style.pointerEvents = 'none';
+    });
 
     // Mantener colores actuales del tema usando las mismas clases
     clone.classList.add('number-card-selected', 'drag-preview');
@@ -736,7 +755,9 @@ const Game2: React.FC = () => {
     e.dataTransfer.setDragImage(clone, 55, 55);
 
     setTimeout(() => {
-      document.body.removeChild(clone);
+      if (clone.parentNode) {
+        clone.parentNode.removeChild(clone);
+      }
     }, 0);
 
     setDraggingNumber(number);
@@ -763,6 +784,9 @@ const Game2: React.FC = () => {
   const handleTouchStart = (e: React.TouchEvent, number: number) => {
     if (showFeedback) return;
 
+    // Prevenir comportamiento por defecto para evitar scroll
+    e.preventDefault();
+
     const touch = e.touches[0];
     //setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setDraggingNumber(number);
@@ -783,15 +807,16 @@ const Game2: React.FC = () => {
     clone.style.top = `${touch.clientY - rect.height / 2}px`;
     clone.id = 'touch-drag-clone';
 
-    document.body.appendChild(clone);
-    setDraggedElement(clone);
+   document.body.appendChild(clone);
+   setDraggedElement(clone);
   };
 
   /**
    * Maneja el movimiento del touch mientras arrastra un número.
    */
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!draggingNumber || !draggedElement) return;
+    // Permitir arrastrar el número 0 usando comprobación explícita de null
+    if (draggingNumber === null || !draggedElement) return;
 
     e.preventDefault(); // Prevenir scroll mientras arrastra
 
@@ -802,22 +827,47 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el fin del touch cuando suelta el número.
+   * Limpia el estado de arrastre (reutilizable para touchEnd y touchCancel)
    */
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!draggingNumber) return;
-
-    const touch = e.changedTouches[0];
-
+  const cleanupTouchDrag = () => {
     // Limpiar elemento visual
     if (draggedElement && draggedElement.parentNode) {
       draggedElement.parentNode.removeChild(draggedElement);
     }
     setDraggedElement(null);
 
+    // Limpiar cualquier clon huérfano
+    const orphanClone = document.getElementById('touch-drag-clone');
+    if (orphanClone && orphanClone.parentNode) {
+      orphanClone.parentNode.removeChild(orphanClone);
+    }
+
+    // Resetear estados
+    setDraggingNumber(null);
+  };
+
+  /**
+   * Maneja el fin del touch cuando suelta el número.
+   */
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    // Prevenir comportamiento por defecto
+    e.preventDefault();
+
+    // CRÍTICO: Verificar typeof number para que funcione con 0
+    if (typeof draggingNumber !== 'number') {
+      cleanupTouchDrag();
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const currentDragging = draggingNumber;
+
+    // Limpiar elementos visuales primero
+    cleanupTouchDrag();
+
     // Encontrar el slot donde se soltó el número
     const dropZone = document.getElementById('drop-zone-container');
-    if (dropZone) {
+    if (dropZone && touch) {
       const slots = dropZone.querySelectorAll('.droppable-slot');
       let targetIndex = -1;
 
@@ -833,13 +883,18 @@ const Game2: React.FC = () => {
         }
       });
 
-      if (targetIndex !== -1) {
-        tryPlaceNumber(draggingNumber, targetIndex);
+      if (targetIndex !== -1 && typeof currentDragging === 'number') {
+        tryPlaceNumber(currentDragging, targetIndex);
       }
     }
+  };
 
-    setDraggingNumber(null);
-    //setTouchStartPos(null);
+  /**
+   * Maneja la cancelación del touch (cuando el sistema interrumpe el gesto).
+   */
+  const handleTouchCancel = (e: React.TouchEvent) => {
+    e.preventDefault();
+    cleanupTouchDrag();
   };
 
   /**
@@ -873,7 +928,9 @@ const Game2: React.FC = () => {
    */
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
-    const draggedNumber = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    const dataStr = e.dataTransfer.getData('text/plain');
+    const draggedNumber = parseInt(dataStr, 10);
+
     if (!isNaN(draggedNumber)) {
       tryPlaceNumber(draggedNumber, targetIndex);
     }
@@ -984,7 +1041,8 @@ const Game2: React.FC = () => {
                 );
               }
 
-              const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
+              // Verificar explícitamente que num está en el rango válido de pictogramas (0-10)
+              const pictogramImg = usePictograms && num >= 0 && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
               const isBeingDragged = draggingNumber === num;
               const isSelected = selectedNumber === num;
 
@@ -1006,8 +1064,16 @@ const Game2: React.FC = () => {
                   onTouchStart={(e) => handleTouchStart(e, num)}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchCancel}
                   onClick={() => handleNumberClick(num)}
                   style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
+                  onDragStartCapture={(e) => {
+                    // Prevenir drag de elementos hijos en fase de captura
+                    if (e.target !== e.currentTarget) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+                  }}
                 >
                   {pictogramImg ? (
                     <img
@@ -1016,6 +1082,11 @@ const Game2: React.FC = () => {
                       className="pictogram-image"
                       loading="eager"
                       decoding="sync"
+                      draggable={false}
+                      onDragStart={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     />
                   ) : (
                     <span className="number-value">{num}</span>

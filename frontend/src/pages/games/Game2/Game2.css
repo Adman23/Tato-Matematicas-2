@@ -24,6 +24,12 @@
 
   height: 100dvh;
   overflow: hidden;
+
+  /* Prevenir comportamientos no deseados en touch */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
 }
 
 .game2-content::part(scroll) {
@@ -122,8 +128,11 @@
   cursor: grab;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   position: relative;
   flex-shrink: 0;
+  touch-action: none;
 }
 
 .number-value {
