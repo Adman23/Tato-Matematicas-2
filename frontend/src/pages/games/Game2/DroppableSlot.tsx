@@ -139,7 +139,8 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
   if (isDropTarget && number === undefined) slotClass += ' droppable-slot-target';
 
   // Obtener imagen del pictograma si aplica (solo números 0-10)
-  const pictogramImg = usePictogram && number !== undefined && number <= 10 ? PICTOGRAM_IMAGES[number] : null;
+  // Verificar explícitamente el rango completo incluyendo el 0
+  const pictogramImg = usePictogram && number !== undefined && number >= 0 && number <= 10 ? PICTOGRAM_IMAGES[number] : null;
 
   // Clases CSS de la tarjeta de número
   let cardClass = 'number-card-v2';
@@ -169,6 +170,7 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
               className="pictogram-image"
               loading="eager"
               decoding="sync"
+              draggable="false"
             />
           ) : (
             <span className="number-value">{number}</span>

@@ -103,6 +103,9 @@ const DropZone: React.FC<DropZoneProps> = ({
   onDrop,
   feedbackType = null
 }) => {
+  // Calcular el primer índice vacío UNA SOLA VEZ, fuera del loop
+  const firstEmptyIndex = numbers.findIndex(n => n === undefined);
+
   // Crear array de slots con posiciones fijas (evita reordenamiento visual)
   const slots = Array.from({ length: totalSlots }, (_, index) => {
     const num = numbers[index];
@@ -119,7 +122,6 @@ const DropZone: React.FC<DropZoneProps> = ({
     }
 
     // Verificar si este slot es el primero vacío (el que acepta el drop)
-    const firstEmptyIndex = numbers.findIndex(n => n === undefined);
     const isDropTarget = index === firstEmptyIndex;
 
     return (
