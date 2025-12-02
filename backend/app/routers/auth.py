@@ -481,6 +481,7 @@ async def get_students_by_group(group_id: int):
             - id (str): Unique identifier of the student.
             - username (str): Username extracted from the email.
             - photo_url (str): URL of the student's photo (if any).
+            - password_type (str): Type of password (graphical, PIN or alphanumeric) used by the student.
     """
     try:
         # Get students from public.users (id and photo_url)

@@ -28,7 +28,7 @@ import { useHistory } from 'react-router-dom';
 import { useManager } from '../../../contexts/ManagerContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { authAPI, uploadImage, getImages, userAPI} from '../../../lib/api';
-import type { UserData } from '../../../lib/api';
+import type { User } from '../../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 import SimpleHeaderEdit from './components/SimpleHeaderEdit';
 import { createPortal } from 'react-dom';
@@ -93,7 +93,7 @@ export default function StudentEditProfile() {
   const avatarPickerRef = useRef<HTMLDivElement>(null);
   const formCardRef = useRef<HTMLDivElement>(null);
   
-  const [studentData, setStudentData] = useState<UserData | null>(null);
+  const [studentUser, setStudentUser] = useState<User | null>(null);
 
   const [userName, setUserName] = useState('');
 
@@ -130,7 +130,7 @@ export default function StudentEditProfile() {
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
 
   const isAvatarSelected = selectedAvatar !== '';
-  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
+  //const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
 
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -144,41 +144,57 @@ export default function StudentEditProfile() {
   const isUserNameSpaceless = !userName.includes(' ');
   const isUsernameValid = isUserNameLong && isUserNameSpaceless && isUsernameAvailable === true;
 
-  // Determina si el formulario tiene los campos obligatorios rellenados.
+  // Cambio en el nombre de usuario
+  const isUserNameChanged = (userName.trim()) !== (studentUser?.username || '');
+
+  // Cambio en la foto de perfil del usuario (en este caso, se va a asumir que el usuario selecciona una foto de perfil distinta a la que tiene, por lo que, aunque seleccione la misma foto, 'isAvaterChanged' será 'true')
+  const isAvatarChanged =
+    (selectedAvatar && avatarOptions.some(a => a.id === selectedAvatar)) ||
+    (fileInputRef.current?.files?.[0] != null);
+
+  // Cambio en la contraseña del usuario
+  const isPasswordChanged = !isEmptyPassword(newPassword);
+
+  // Determina si el formulario tiene datos cambiados respecto a los datos actuales y si tiene los campos obligatorios rellenados.
   // Se usa únicamente para controlar la habilitación/visibilidad del botón "Guardar cambios".
-  // No realiza validaciones completas; las validaciones estrictas se aplican en 'handleSubmit'.
+  // No realiza validaciones completas (formatos de nombre de usuario y contraseña), pues las validaciones estrictas (formatos de nombre de usuario y contraseña) ya se aplican dentrro de 'handleSubmit'.
   const isFormReadyForSubmit =
+    studentUser &&
+    (isUserNameChanged || isAvatarChanged || isPasswordChanged) &&
     isUserNameFilled &&
     isAvatarSelected &&
-    (!isEmptyPassword(newPassword) ? !isEmptyPassword(repeatNewPassword) : true);
+    (!isPasswordChanged ? true : !isEmptyPassword(repeatNewPassword));
 
 
   // Cargamos los datos actuales del estudiante
   useIonViewWillEnter(() => {
+
     const loadStudentData = async () => {
+
       try {
+
         if (!id) return;
-        let userEntry = users.get(id);  // revisamos si los datos ya existen en el context
-        if (!userEntry || !userEntry.data) {  // si no existen o no tienen data, los recuperamos
-          retrieveUser(id);
+        
+        let userEntry = users.get(id);
+
+        if (!userEntry || !userEntry.data) {
+          await retrieveUser(id);
           userEntry = users.get(id);
         }
-        if (!userEntry || !userEntry.data) throw new Error("No se han podido cargar los datos del estudiante.");
-        const data = userEntry.data;
+
+        if (!userEntry || !userEntry.data) 
+          throw new Error("No se han podido cargar los datos del estudiante.");
+
         const user = userEntry.user;
-        setStudentData(data);
+        const data = userEntry.data;
+      
+        setStudentUser(user);
         setUserName(user.username || '');
         setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
         setSelectedAvatar(user.photo_url ? 'custom' : '');
-        setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
+        //setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
         setPasswordType(data.password_type || 'graphical');
-        /*const data = await userAPI.fetchUserData (id);
-        setStudentData(data);
-        setUserName(data.username || '');
-        setAvatarPreview(data.photo_url || DEFAULT_AVATAR);
-        setSelectedAvatar(data.photo_url ? 'custom' : '');
-        setSelectedAvatarUrl(data.photo_url || DEFAULT_AVATAR);
-        setPasswordType(data.password_type || 'graphical');*/
+
         if (data.password_type === 'graphical') {
           setNewPassword([]);
           setRepeatNewPassword([]);
@@ -186,29 +202,39 @@ export default function StudentEditProfile() {
           setNewPassword('');
           setRepeatNewPassword('');
         }
+
         setIsPasswordMatch(null);
+
       } catch (err) {
         console.error(err);
         setToastMessage('No se han podido cargar los datos del estudiante.');
         setToastColor('danger');
         setIsToastOpen(true);
       }
+
     };
+
     loadStudentData();
+
   });
 
 
   useEffect(() => {
+
     const trimmed = userName.trim();
+
     if (trimmed.length < 3 || trimmed.includes(' ')) {
       setIsUsernameAvailable(false);
       return;
     }
-    if (trimmed === studentData?.username) {
+
+    if (trimmed === studentUser?.username) {
       setIsUsernameAvailable(true);
       return;
     }
+
     const currentId = ++usernameCheckIdRef.current;
+
     const handler = setTimeout(() => {
       authAPI.checkUsername(trimmed)
         .then(res => {
@@ -222,12 +248,16 @@ export default function StudentEditProfile() {
           }
         });
     }, 400);
+
     return () => clearTimeout(handler);
-  }, [userName, studentData?.username]);
+
+  }, [userName, studentUser?.username]);
   
   
   useEffect(() => {
+
     const loadAvatars = async () => {
+
       try {
         const imagesMap = await getImages();
         const options = Object.entries(imagesMap).map(([filename, url]) => ({
@@ -244,14 +274,17 @@ export default function StudentEditProfile() {
       } finally {
         setLoadingAvatars(false);
       }
+      
     };
 
     loadAvatars();
+
   }, []);
 
 
   // Reseteamos los campos de contraseña y el estado al cambiar el tipo de contraseña
   useEffect(() => {
+
     if (passwordType === 'graphical') {
       setNewPassword([]);
       setRepeatNewPassword([]);
@@ -259,19 +292,24 @@ export default function StudentEditProfile() {
       setNewPassword('');
       setRepeatNewPassword('');
     }
+
     setIsPasswordMatch(null);
+
   }, [passwordType]);
 
 
   // Actualizamos el estado de repetición de contraseña
   useEffect(() => {
+
     if (isEmptyPassword(newPassword) || isEmptyPassword(repeatNewPassword)) {
       setIsPasswordMatch(null);
       return;
     }
+
     let normalizeNewPassword = Array.isArray(newPassword) ? newPassword.join('-') : newPassword;
     let normalizedRepeatNewPassword = Array.isArray(repeatNewPassword) ? repeatNewPassword.join('-') : repeatNewPassword;
     setIsPasswordMatch(normalizeNewPassword === normalizedRepeatNewPassword);
+
   }, [newPassword, repeatNewPassword]);
 
 
@@ -393,13 +431,13 @@ export default function StudentEditProfile() {
       errors.push('Debes seleccionar una imagen de perfil.');
 
     // Validaciones de la contraseña
-    if (!isEmptyPassword(newPassword)) {
+    if (isPasswordChanged) {
       const passwordErrors = validatePassword(newPassword, passwordType);
       errors.push(...passwordErrors);
     }
 
     // Verificación de coincidencia de nueva contraseña con su repetición
-    if (isPasswordMatch === false)
+    if ((isPasswordChanged) && (isPasswordMatch === false))
       errors.push('La contraseña repetida no coincide con la nueva que has introducido.');
 
     if (errors.length > 0) {
@@ -410,21 +448,37 @@ export default function StudentEditProfile() {
     }
 
     try {
-      
-      let photoUrl = selectedAvatarUrl;
-      if (fileInputRef.current?.files?.[0]) {
+
+      let photoUrl = null;
+
+      if (selectedAvatar && avatarOptions.some(a => a.id === selectedAvatar)) {
+        photoUrl = selectedAvatar; 
+      } 
+      else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
-        const uniqueFilename = `${userName.trim()}_${Date.now()}_${file.name}`;
+        const sanitize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9._-]/g, "");
+        const uniqueFilename = `${sanitize(userName.trim())}_${Date.now()}_${sanitize(file.name)}`;
         photoUrl = await uploadImage(file, uniqueFilename);
+      }
+      
+      const payload: any = {};
+      if (isUserNameChanged) payload.username = userName;
+      if (photoUrl) payload.photo_url = photoUrl;
+      if (isPasswordChanged) payload.password = Array.isArray(newPassword) ? newPassword.join('-') : newPassword;
+      payload.password_type = passwordType;
+      
+      if (Object.keys(payload).length === 0) {
+        setToastMessage('No se han detectado cambios en los datos del perfil del estudiante.');
+        setToastColor('danger');
+        setIsToastOpen(true);
+        return;
       }
 
       // Actualizamos el nombre de usuario, la foto de perfil, la contraseña y el tipo de contraseña del estudiante
-      await userAPI.updateUser( id, { 
-        username: userName, 
-        photo_url: photoUrl, 
-        password: Array.isArray(newPassword) ? newPassword.join('-') : newPassword || undefined,  
-        password_type: passwordType
-      });
+      await userAPI.updateUser(id, payload);
+
+      // Refrescamos el usuario en ManagerContext
+      await retrieveUser(id);
       
       setToastMessage('Perfil de estudiante actualizado correctamente.');
       setToastColor('success');
@@ -436,7 +490,7 @@ export default function StudentEditProfile() {
 
     } catch (err) {
       console.error(err);
-      setToastMessage('Error al actualizar los datos del estudiante.');
+      setToastMessage('Error al actualizar los datos del perfil del estudiante.');
       setToastColor('danger');
       setIsToastOpen(true);
     }

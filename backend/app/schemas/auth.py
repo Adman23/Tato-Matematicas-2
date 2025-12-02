@@ -63,6 +63,7 @@ class User(BaseModel):
     username: str
     role: str
     photo_url: str | None = None
+    password_type: str | None = None
 
     class Config:
         from_attributes = True
@@ -121,6 +122,7 @@ class StudentBasicInfo(BaseModel):
     id: str
     username: str
     photo_url: str | None = None
+    password_type: str | None = None
 
     class Config:
         from_attributes = True
