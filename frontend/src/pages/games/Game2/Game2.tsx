@@ -1,8 +1,28 @@
 /**
- * Juego 2: Ordena la Secuencia
+ * @file Game2.tsx
+ * @description Juego 2: Ordena la Secuencia
  *
- * El estudiante debe ordenar números de forma ascendente o descendente
- * arrastrándolos desde la zona superior a la zona de ordenamiento.
+ * Juego educativo que presenta números desordenados que el usuario debe
+ * ordenar arrastrándolos a sus posiciones correctas (ascendente o descendente).
+ *
+ * Flujo del juego:
+ * 1. Carga configuración personalizada del usuario (rango, cantidad, orden)
+ * 2. Crea sesión de juego en backend para tracking
+ * 3. Por cada ronda (5 totales):
+ *    - Genera números aleatorios según configuración
+ *    - Usuario arrastra números a posiciones correctas
+ *    - Valida en tiempo real y guarda resultado
+ * 4. Finaliza sesión y muestra pantalla de resultados
+ *
+ * Características:
+ * - Drag & drop nativo HTML5 + soporte táctil
+ * - Slots vacíos persistentes
+ * - Pictogramas visuales para rango 0-10
+ * - Sistema de pistas (Tato)
+ * - Video tutorial integrado
+ * - Tracking completo (tiempo, intentos, errores)
+ *
+ * @returns Componente React con UI completa del juego
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -56,37 +76,27 @@ const PICTOGRAM_IMAGES: { [key: number]: string } = {
 const TOTAL_ROUNDS = 5;
 
 /**
- * 
- * !! EDITED
- *  -> Now there is no student only user
- *  -> If differenciation is needed, use the role
  * Componente principal del Juego 2: Ordena la Secuencia.
  *
- * Este juego educativo presenta números desordenados que el usuario (estudiante o profesor)
- * debe ordenar arrastrándolos a sus posiciones correctas (ascendente o descendente).
- * Incluye números de ayuda pre-colocados y bloqueados para facilitar la tarea.
+ * Resumen funcional:
+ * Juego educativo de ordenamiento de números mediante drag & drop. El usuario
+ * debe colocar números desordenados en el orden correcto (ascendente o descendente)
+ * arrastrándolos uno por uno a los slots disponibles.
  *
- * Características principales:
- * - Disponible para estudiantes y profesores con las mismas características
- * - 5 rondas con números aleatorios diferentes
- * - Drag & drop nativo HTML5 para mover números
- * - Números de ayuda (40% del total) pre-colocados en verde
- * - Slots vacíos persistentes que permiten devolver números
- * - Pictogramas visuales para el rango 0-10
- * - Validación con feedback inmediato (check/cruz)
- * - Tracking completo en backend (tiempo, intentos, resultados)
+ * Flujo de ejecución:
+ * 1. Carga configuración personalizada (`loadGameConfig`)
+ * 2. Crea sesión en backend (`createGameSession`)
+ * 3. Genera 5 rondas con números aleatorios (`generateRound`)
+ * 4. Valida cada colocación en tiempo real (`tryPlaceNumber`)
+ * 5. Guarda resultados de cada ronda (`saveRoundResults`)
+ * 6. Finaliza sesión y muestra resultados (`finishGame`)
  *
- * Flujo del juego:
- * 1. Carga configuración personalizada del usuario
- * 2. Crea sesión de juego en BD
- * 3. Por cada ronda:
- *    - Genera números aleatorios según config
- *    - Coloca algunos como ayuda (bloqueados)
- *    - Usuario arrastra números a posiciones correctas
- *    - Valida y guarda resultado
- * 4. Tras 5 rondas, finaliza sesión y redirige al dashboard correspondiente
+ * Contrato mínimo:
+ * - Entradas: configuración del juego (rango, cantidad, orden) y acciones del usuario
+ * - Salidas: llamadas API para crear sesión, guardar rondas y finalizar sesión
+ * - Modos de error: manejo de errores de red y configuración por defecto
  *
- * @returns Componente React con UI completa del juego
+ * @returns Componente React que renderiza la UI completa del juego
  *
  * @example
  * // Usado en el routing de la app:
@@ -362,16 +372,19 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Carga los mensajes personalizados desde el UserContext.
+   * Resumen funcional:
+   * Carga los mensajes personalizados de feedback desde el UserContext.
    *
    * Flujo de ejecución:
    * 1. Espera a que el UserContext termine de cargar
-   * 2. Obtiene los mensajes normalizados desde getAllMessages()
+   * 2. Obtiene los mensajes normalizados desde `getAllMessages()`
    * 3. Si no hay mensajes, refresca los datos del usuario
    * 4. Actualiza el estado con los mensajes personalizados
-   * 5. Si falla, usa mensajes por defecto
    *
-   * @returns Promesa que resuelve cuando se cargan los mensajes
+   * @returns Promise<void> que resuelve cuando se cargan los mensajes
+   *
+   * @example
+   * await loadPositiveMessages();
    */
   const loadPositiveMessages = async () => {
     try {
@@ -400,8 +413,21 @@ const Game2: React.FC = () => {
   };
 
   /**
+   * Resumen funcional:
    * Genera los números y configuración para una nueva ronda del juego.
-   * Nueva lógica: Arriba todos los números mezclados, abajo una casilla vacía a la vez.
+   *
+   * Flujo de ejecución:
+   * 1. Extrae y valida el rango de números de la configuración
+   * 2. Genera números únicos aleatorios según la cantidad configurada
+   * 3. Ordena los números según configuración (ascendente/descendente)
+   * 4. Mezcla los números para mostrar en zona superior
+   * 5. Crea array vacío para zona de ordenamiento
+   * 6. Reinicia contadores y estados de la ronda
+   *
+   * @returns void - Actualiza estados: currentNumber, availableNumbers, correctOrder, etc.
+   *
+   * @example
+   * generateRound();
    */
   const generateRound = () => {
     if (!config) return;
@@ -475,10 +501,25 @@ const Game2: React.FC = () => {
 
 
   /**
-   * Intenta colocar un número arrastrado en el slot especificado.
-   * Valida inmediatamente si es correcto o no.
+   * Resumen funcional:
+   * Intenta colocar un número arrastrado en el primer slot vacío disponible
+   * y valida si es correcto en tiempo real.
+   *
+   * Flujo de ejecución:
+   * 1. Verifica que el slot objetivo es el primer slot vacío
+   * 2. Comprueba si el número es correcto para esa posición
+   * 3. Si es incorrecto, muestra feedback de error e incrementa contador
+   * 4. Si es correcto, coloca el número y lo quita de availableNumbers
+   * 5. Si todos los números están colocados, guarda resultados de la ronda
+   *
+   * @param draggedNumber - Número que se está intentando colocar
+   * @param targetIndex - Índice del slot objetivo
    * @param currentHints - Valor actual de hints para evitar problemas de estado asíncrono
    * @param isHint - Si true, no muestra feedback (es una pista automática)
+   * @returns void
+   *
+   * @example
+   * tryPlaceNumber(5, 0);
    */
   const tryPlaceNumber = (draggedNumber: number, targetIndex: number, currentHints?: number, isHint: boolean = false) => {
     if (showFeedback) return;
@@ -539,8 +580,19 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Guarda los resultados de la ronda actual.
-   * @param currentHints - Valor actual de hints (opcional, usa hintsCount del estado si no se proporciona)
+   * Resumen funcional:
+   * Guarda los resultados de la ronda actual en el backend y acumula métricas.
+   *
+   * Flujo de ejecución:
+   * 1. Calcula el tiempo transcurrido desde el inicio de la ronda
+   * 2. Acumula métricas (pistas, errores, tiempo, aciertos)
+   * 3. Envía resultado de la ronda al backend mediante API
+   *
+   * @param currentHints - Valor actual de hints (opcional, usa hintsCount si no se proporciona)
+   * @returns Promise<void> que resuelve cuando se guardan los resultados
+   *
+   * @example
+   * await saveRoundResults(2);
    */
   const saveRoundResults = async (currentHints?: number) => {
     const timeSeconds = (Date.now() - roundStartTime) / 1000;
@@ -574,7 +626,18 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Cierra la pantalla de feedback y continúa según corresponda.
+   * Resumen funcional:
+   * Cierra la pantalla de feedback y avanza a la siguiente ronda si corresponde.
+   *
+   * Flujo de ejecución:
+   * 1. Guarda el estado de completitud de la ronda actual
+   * 2. Cierra pantalla de feedback
+   * 3. Si la ronda está completa y fue correcta, avanza a la siguiente ronda
+   *
+   * @returns void
+   *
+   * @example
+   * closeFeedbackScreen();
    */
   const closeFeedbackScreen = () => {
     const wasCompleted = isRoundCompleted;
@@ -591,8 +654,17 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Avanza a la siguiente ronda o finaliza el juego.
-   * Se llama cuando el usuario pulsa el botón de continuar.
+   * Resumen funcional:
+   * Avanza a la siguiente ronda o finaliza el juego si es la última ronda.
+   *
+   * Flujo de ejecución:
+   * 1. Si quedan rondas, incrementa el contador de ronda
+   * 2. Si era la última ronda, llama a `finishGame()`
+   *
+   * @returns void
+   *
+   * @example
+   * advanceToNextRound();
    */
   const advanceToNextRound = () => {
     if (currentRound < TOTAL_ROUNDS) {
@@ -603,8 +675,20 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Proporciona una pista colocando automáticamente el número correcto.
-   * No muestra feedback para no recompensar el uso de pistas.
+   * Resumen funcional:
+   * Proporciona una pista colocando automáticamente el número correcto en el
+   * primer slot vacío. No muestra feedback para no recompensar el uso de pistas.
+   *
+   * Flujo de ejecución:
+   * 1. Verifica que no haya feedback activo y que haya números disponibles
+   * 2. Incrementa el contador de pistas
+   * 3. Encuentra el primer slot vacío y el número correcto
+   * 4. Coloca automáticamente el número sin mostrar feedback
+   *
+   * @returns void
+   *
+   * @example
+   * useHint();
    */
   const useHint = () => {
     // No permitir usar pista durante feedback o si no hay números disponibles
@@ -663,7 +747,13 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Salir al dashboard desde cualquier estado sin recrear sesión.
+   * Resumen funcional:
+   * Redirige al dashboard correspondiente según el rol del usuario.
+   *
+   * @returns void
+   *
+   * @example
+   * exitToDashboard();
    */
   const exitToDashboard = () => {
     setExiting(true);
@@ -672,7 +762,19 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja la salida anticipada del juego (botón home).
+   * Resumen funcional:
+   * Maneja la salida anticipada del juego (botón home) guardando el progreso actual.
+   *
+   * Flujo de ejecución:
+   * 1. Cierra pantallas de feedback activas
+   * 2. Si hay números colocados, guarda la ronda incompleta con omisiones
+   * 3. Finaliza la sesión en el backend
+   * 4. Redirige al dashboard correspondiente
+   *
+   * @returns Promise<void>
+   *
+   * @example
+   * await handleEarlyExit();
    */
   const handleEarlyExit = async () => {
     setExiting(true);
@@ -720,7 +822,20 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el drag start para HTML5 drag and drop.
+   * Resumen funcional:
+   * Maneja el inicio del arrastre mediante HTML5 drag and drop.
+   *
+   * Flujo de ejecución:
+   * 1. Configura los datos de transferencia del drag
+   * 2. Crea una imagen personalizada para el preview del drag
+   * 3. Actualiza el estado con el número que se está arrastrando
+   *
+   * @param e - Evento de drag de React
+   * @param number - Número que se está arrastrando
+   * @returns void
+   *
+   * @example
+   * handleDragStart(event, 5);
    */
   const handleDragStart = (e: React.DragEvent, number: number) => {
     if (showFeedback) return;
@@ -764,14 +879,27 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el drag end para limpiar el estado.
+   * Resumen funcional:
+   * Maneja el fin del arrastre HTML5 limpiando el estado.
+   *
+   * @returns void
+   *
+   * @example
+   * handleDragEnd();
    */
   const handleDragEnd = () => {
     setDraggingNumber(null);
   };
 
   /**
-   * Maneja el click en un número para seleccionarlo (rojo).
+   * Resumen funcional:
+   * Maneja el click en un número para seleccionarlo/deseleccionarlo visualmente.
+   *
+   * @param number - Número clickeado
+   * @returns void
+   *
+   * @example
+   * handleNumberClick(5);
    */
   const handleNumberClick = (number: number) => {
     if (showFeedback) return;
@@ -779,7 +907,20 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el inicio del touch en un número (dispositivos móviles/tablets).
+   * Resumen funcional:
+   * Maneja el inicio del touch en un número para dispositivos móviles/tablets.
+   *
+   * Flujo de ejecución:
+   * 1. Previene el comportamiento por defecto para evitar scroll
+   * 2. Guarda el número que se está arrastrando
+   * 3. Crea un clon visual del elemento para seguir el toque
+   *
+   * @param e - Evento touch de React
+   * @param number - Número que se está arrastrando
+   * @returns void
+   *
+   * @example
+   * handleTouchStart(event, 5);
    */
   const handleTouchStart = (e: React.TouchEvent, number: number) => {
     if (showFeedback) return;
@@ -812,7 +953,14 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el movimiento del touch mientras arrastra un número.
+   * Resumen funcional:
+   * Maneja el movimiento del touch actualizando la posición visual del elemento arrastrado.
+   *
+   * @param e - Evento touch de React
+   * @returns void
+   *
+   * @example
+   * handleTouchMove(event);
    */
   const handleTouchMove = (e: React.TouchEvent) => {
     // Permitir arrastrar el número 0 usando comprobación explícita de null
@@ -827,7 +975,14 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Limpia el estado de arrastre (reutilizable para touchEnd y touchCancel)
+   * Resumen funcional:
+   * Limpia el estado de arrastre eliminando elementos visuales y reseteando estados.
+   * Reutilizable para touchEnd y touchCancel.
+   *
+   * @returns void
+   *
+   * @example
+   * cleanupTouchDrag();
    */
   const cleanupTouchDrag = () => {
     // Limpiar elemento visual
@@ -847,7 +1002,20 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el fin del touch cuando suelta el número.
+   * Resumen funcional:
+   * Maneja el fin del touch detectando dónde se soltó el número y colocándolo si es válido.
+   *
+   * Flujo de ejecución:
+   * 1. Verifica que hay un número siendo arrastrado
+   * 2. Limpia elementos visuales del drag
+   * 3. Detecta en qué slot se soltó el número
+   * 4. Si es un slot válido, intenta colocar el número
+   *
+   * @param e - Evento touch de React
+   * @returns void
+   *
+   * @example
+   * handleTouchEnd(event);
    */
   const handleTouchEnd = (e: React.TouchEvent) => {
     // Prevenir comportamiento por defecto
@@ -890,7 +1058,14 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja la cancelación del touch (cuando el sistema interrumpe el gesto).
+   * Resumen funcional:
+   * Maneja la cancelación del touch limpiando el estado cuando el sistema interrumpe el gesto.
+   *
+   * @param e - Evento touch de React
+   * @returns void
+   *
+   * @example
+   * handleTouchCancel(event);
    */
   const handleTouchCancel = (e: React.TouchEvent) => {
     e.preventDefault();

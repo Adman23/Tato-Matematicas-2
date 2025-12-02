@@ -1,7 +1,24 @@
 /**
  * @file EditGame2.tsx
  * @description Pantalla de configuración del Juego 2 para estudiantes.
- * Permite modificar: sentido (ascendente/descendente), cantidad de números y rango.
+ *
+ * Permite al usuario personalizar los parámetros del Juego 2 (Ordena la Secuencia)
+ * antes de jugar. La configuración se guarda en el backend y se aplica al iniciar el juego.
+ *
+ * Flujo de la pantalla:
+ * 1. Carga la configuración actual del usuario desde el backend
+ * 2. Muestra 3 botones de configuración (Cantidad, Rango, Orden)
+ * 3. Al pulsar cada botón, abre un modal para seleccionar el valor
+ * 4. Valida la configuración (cantidad no puede exceder el rango)
+ * 5. Guarda la configuración en el backend
+ * 6. Vuelve al perfil del estudiante
+ *
+ * Parámetros configurables:
+ * - Orden: Ascendente (menor a mayor) o Descendente (mayor a menor)
+ * - Cantidad: Número de elementos a ordenar (3-12)
+ * - Rango: Rango de números disponibles (0-10, 0-20, 0-100, 0-1000)
+ *
+ * @returns Componente React con UI de configuración
  */
 
 import {
@@ -31,8 +48,27 @@ const RANGE_OPTIONS = [
 const QUANTITY_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 /**
- * Componente de configuración del Juego 2.
- * Diseño con 3 botones principales que abren modales para configurar.
+ * Componente principal de configuración del Juego 2.
+ *
+ * Resumen funcional:
+ * Interfaz de configuración que permite al estudiante personalizar los parámetros
+ * del Juego 2 mediante tres botones principales que abren modales de selección.
+ *
+ * Flujo de ejecución:
+ * 1. Carga configuración actual (`loadGameConfig`)
+ * 2. Usuario selecciona valores mediante modales
+ * 3. Valida la configuración (`validateInputs`)
+ * 4. Guarda en backend y vuelve al perfil (`handleSave`)
+ *
+ * Contrato mínimo:
+ * - Entradas: acciones del usuario (clicks en botones y opciones)
+ * - Salidas: llamada API para guardar configuración
+ * - Modos de error: validación de rango vs cantidad
+ *
+ * @returns Componente React con UI de configuración
+ *
+ * @example
+ * <Route path="/student/edit-game2" component={EditGame2} />
  */
 export default function EditGame2() {
   const { user } = useAuth();
@@ -59,7 +95,19 @@ export default function EditGame2() {
   }, []);
 
   /**
-   * Carga la configuración actual del juego desde el backend.
+   * Resumen funcional:
+   * Carga la configuración actual del juego desde el backend y la muestra en la UI.
+   *
+   * Flujo de ejecución:
+   * 1. Verifica que existe usuario autenticado
+   * 2. Llama a la API para obtener config de 'order_sequence'
+   * 3. Extrae valores de orden, cantidad y rango
+   * 4. Actualiza estados y desactiva spinner de carga
+   *
+   * @returns Promise<void> que resuelve cuando se carga la configuración
+   *
+   * @example
+   * await loadGameConfig();
    */
   const loadGameConfig = async () => {
     try {
@@ -80,7 +128,18 @@ export default function EditGame2() {
   };
 
   /**
-   * Valida que la cantidad sea válida para el rango seleccionado.
+   * Resumen funcional:
+   * Valida que la cantidad seleccionada sea compatible con el rango de números.
+   *
+   * Flujo de ejecución:
+   * 1. Extrae min y max del rango seleccionado
+   * 2. Calcula el tamaño del rango (números disponibles)
+   * 3. Verifica que la cantidad no exceda el rango
+   * 4. Verifica que la cantidad esté entre 3 y 12
+   *
+   * @returns boolean - true si la configuración es válida, false si no
+   *
+   * @example
    */
   const validateInputs = (): boolean => {
     const [min, max] = numberRange.split('-').map(Number);
@@ -101,7 +160,19 @@ export default function EditGame2() {
   };
 
   /**
-   * Guarda la configuración en el backend.
+   * Resumen funcional:
+   * Guarda la configuración validada en el backend y vuelve al perfil.
+   *
+   * Flujo de ejecución:
+   * 1. Valida la configuración con `validateInputs()`
+   * 2. Construye objeto GameConfig con los valores actuales
+   * 3. Envía la configuración al backend mediante API
+   * 4. Redirige al perfil del estudiante
+   *
+   * @returns Promise<void> que resuelve cuando se guarda la configuración
+   *
+   * @example
+   * await handleSave();
    */
   const handleSave = async () => {
     if (!validateInputs()) {
@@ -136,7 +207,13 @@ export default function EditGame2() {
   };
 
   /**
-   * Cierra todos los modales
+   * Resumen funcional:
+   * Cierra todos los modales de selección.
+   *
+   * @returns void
+   *
+   * @example
+   * closeAllModals();
    */
   const closeAllModals = () => {
     setShowQuantityModal(false);
@@ -145,7 +222,13 @@ export default function EditGame2() {
   };
 
   /**
-   * Obtiene el label del rango seleccionado
+   * Resumen funcional:
+   * Obtiene el label descriptivo del rango de números seleccionado.
+   *
+   * @returns string - Label del rango (ej: "De 0 a 10") o el valor del rango si no se encuentra
+   *
+   * @example
+   * getSelectedRangeLabel(); // "De 0 a 10"
    */
   const getSelectedRangeLabel = () => {
     return RANGE_OPTIONS.find(opt => opt.value === numberRange)?.label || numberRange;
