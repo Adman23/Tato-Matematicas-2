@@ -44,6 +44,8 @@ const PICTOGRAMS = [
   { id: 'elefante', name: 'Elefante', image: '/assets/pictograms/elefante.png' },
 ];
 
+const MIN_USERNAME_LENGTH = 3;                // mínimo de longitud para el nombre de usuario
+
 const MIN_GRAPHICAL_PASSWORD_LENGTH = 3;      // mínimo de longitud para contraseña gráfica
 const MAX_GRAPHICAL_PASSWORD_LENGTH = 5;      // máximo de longitud para contraseña gráfica
 const MIN_PIN_PASSWORD_LENGTH = 4;            // mínimo de longitud para PIN
@@ -130,7 +132,6 @@ export default function StudentEditProfile() {
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
 
   const isAvatarSelected = selectedAvatar !== '';
-  //const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
 
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -140,7 +141,7 @@ export default function StudentEditProfile() {
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const usernameCheckIdRef = useRef(0);
 
-  const isUserNameLong = userName.trim().length >= 3;
+  const isUserNameLong = userName.trim().length >= MIN_USERNAME_LENGTH;
   const isUserNameSpaceless = !userName.includes(' ');
   const isUsernameValid = isUserNameLong && isUserNameSpaceless && isUsernameAvailable === true;
 
@@ -191,8 +192,7 @@ export default function StudentEditProfile() {
         setStudentUser(user);
         setUserName(user.username || '');
         setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
-        setSelectedAvatar(user.photo_url ? 'custom' : '');
-        //setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
+        setSelectedAvatar(user.photo_url || '');
         setPasswordType(data.password_type || 'graphical');
 
         if (data.password_type === 'graphical') {
@@ -223,7 +223,7 @@ export default function StudentEditProfile() {
 
     const trimmed = userName.trim();
 
-    if (trimmed.length < 3 || trimmed.includes(' ')) {
+    if (trimmed.length < MIN_USERNAME_LENGTH || trimmed.includes(' ')) {
       setIsUsernameAvailable(false);
       return;
     }
@@ -256,15 +256,23 @@ export default function StudentEditProfile() {
   
   useEffect(() => {
 
+    if (!userName) return;
+
     const loadAvatars = async () => {
 
       try {
+        const sanitize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
         const imagesMap = await getImages();
-        const options = Object.entries(imagesMap).map(([filename, url]) => ({
-          id: filename,
-          name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
-          imageUrl: url as string,
-        }));
+        const options = Object.entries(imagesMap).map(([filename, url]) => {
+          const firstWord = filename.replace(/\.[^/.]+$/, '').replace(/_/g, ' ').split(' ')[0];
+          return {
+            id: filename,
+            name: sanitize(firstWord) === sanitize(userName)
+                  ? `Avatar personalizado de ${firstWord}`
+                  : firstWord,
+            imageUrl: url as string
+          };
+      });
         setAvatarOptions(options);
       } catch (err) {
         console.error('Error al cargar avatares:', err);
@@ -279,7 +287,7 @@ export default function StudentEditProfile() {
 
     loadAvatars();
 
-  }, []);
+  }, [userName]);
 
 
   // Reseteamos los campos de contraseña y el estado al cambiar el tipo de contraseña
@@ -386,28 +394,28 @@ export default function StudentEditProfile() {
 
   const getPasswordRulesMessage = (passwordType: 'graphical' | 'pin' | 'alphanumeric'): string[] => {
 
-    const rules: string[] = [];
+    const passwordRules: string[] = [];
 
     switch(passwordType) {
 
       case 'graphical':
-        rules.push(`La contraseña gráfica debe tener entre ${MIN_GRAPHICAL_PASSWORD_LENGTH} y ${MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas.`);
+        passwordRules.push(`La contraseña gráfica debe tener entre ${MIN_GRAPHICAL_PASSWORD_LENGTH} y ${MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas.`);
         break;
 
       case 'pin':
-        rules.push(`El PIN debe tener entre ${MIN_PIN_PASSWORD_LENGTH} y ${MAX_PIN_PASSWORD_LENGTH} números.`);
-        rules.push('Solo puede contener números.');
+        passwordRules.push(`El PIN debe tener entre ${MIN_PIN_PASSWORD_LENGTH} y ${MAX_PIN_PASSWORD_LENGTH} números.`);
+        passwordRules.push('Solo puede contener números.');
         break;
 
       case 'alphanumeric':
-        rules.push(`La contraseña alfanumérica debe tener entre ${MIN_ALPHANUMERIC_PASSWORD_LENGTH} y ${MAX_ALPHANUMERIC_PASSWORD_LENGTH} caracteres.`);
-        rules.push('Debe contener al menos una letra.');
-        rules.push('Debe contener al menos un número.');
+        passwordRules.push(`La contraseña alfanumérica debe tener entre ${MIN_ALPHANUMERIC_PASSWORD_LENGTH} y ${MAX_ALPHANUMERIC_PASSWORD_LENGTH} caracteres.`);
+        passwordRules.push('Debe contener al menos una letra.');
+        passwordRules.push('Debe contener al menos un número.');
         break;
       
     }
 
-    return rules;
+    return passwordRules;
 
   };
 
@@ -425,7 +433,7 @@ export default function StudentEditProfile() {
       errors.push('El nombre de usuario no puede contener espacios.');
 
     if (isUsernameAvailable === false) 
-      errors.push('El nombre de usuario ya está en uso.');
+      errors.push('El nombre de usuario ya está actualmente en uso por otra persona.');
 
     if (!isAvatarSelected) 
       errors.push('Debes seleccionar una imagen de perfil.');
@@ -620,7 +628,7 @@ export default function StudentEditProfile() {
     const targetRef = pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef.current : repeatPictoPickerRef.current;
     if (!targetRef || !formCardRef.current) return;
     const cardRect = formCardRef.current.getBoundingClientRect();
-    const modalWidth = 300;   // ancho fijo del targetRef
+    const modalWidth = 300;
     const modalHeight = Math.min(cardRect.height, 460);
     const spacing = 20;
     let top = cardRect.top + window.scrollY + (cardRect.height - modalHeight) / 2;
@@ -679,16 +687,19 @@ export default function StudentEditProfile() {
 
 
   const getAvatarDisplayName = () => {
-    const predefined = avatarOptions.find(a => a.id === selectedAvatar);
-    if (predefined) {
-      return predefined.name;
+    
+    const avatar = avatarOptions.find(a => (a.id === selectedAvatar) || (a.imageUrl === selectedAvatar));
+
+    if (avatar) {
+      return avatar.name;
     }
-    if (selectedAvatar === 'custom') 
-      return 'Avatar actual personalizado';
-    if (selectedAvatar && !selectedAvatar.includes('http')) {
-      return selectedAvatar;
+
+    if (fileInputRef.current?.files?.[0]) {
+      return `Avatar personalizado de ${userName}`;
     }
+
     return 'Seleccionar imagen...';
+
   };
 
 
