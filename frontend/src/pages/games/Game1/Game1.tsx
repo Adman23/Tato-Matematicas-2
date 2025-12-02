@@ -86,6 +86,8 @@ const Game1: React.FC = () => {
 
     // Main states
     const [loading, setLoading] = useState(true);
+    const [loadingGame, setLoadingGame] = useState(true);
+    const [loadingMessages, setLoadingMessages] = useState(true);
     const [config, setConfig] = useState<GameConfig | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
 
@@ -222,7 +224,7 @@ const Game1: React.FC = () => {
             };
 
             setConfig(validatedConfig);
-            setLoading(false);
+            setLoadingGame(false);
         } catch (error) {
             console.error('Error loading game config:', error);
 
@@ -239,7 +241,7 @@ const Game1: React.FC = () => {
             };
 
             setConfig(defaultConfig);
-            setLoading(false);
+            setLoadingGame(false);
         }
     };
 
@@ -257,7 +259,7 @@ const Game1: React.FC = () => {
             }
 
             setMessages(data);
-            setLoading(false);
+            setLoadingMessages(false);
 
         } catch (error) {
             console.error('Error loading positive messages:', error);
@@ -266,7 +268,7 @@ const Game1: React.FC = () => {
                 { id: "1", type: 'reinforcement', text_message: '¡Inténtalo de nuevo!' }
             ];
             setMessages(defaultMessages);
-            setLoading(false);
+            setLoadingMessages(false);
         }
     };
 
@@ -762,7 +764,7 @@ const Game1: React.FC = () => {
     }
 
     // Game loading screen
-    if (loading) {
+    if (loadingGame || loadingMessages) {
         return (
             <IonPage>
                 <IonContent>
@@ -777,7 +779,6 @@ const Game1: React.FC = () => {
         );
     }
 
-    /*
     // If the game is finished, show message
     if (gameFinished) {
         return (
@@ -794,9 +795,6 @@ const Game1: React.FC = () => {
             </IonPage>
         );
     }
-    */
-
-
 
     // Show feedback screen after checking answer
     if (showFeedbackScreen) {

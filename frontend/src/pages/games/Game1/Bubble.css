@@ -163,9 +163,21 @@
         font-size: clamp(2rem, 8vw, 4em);
     }
 
+    .nm-number-circle .nm-number-value {
+        font-size: clamp(2rem, 4vw, 4em);
+    }
+
     .nm-number-circle:focus,
     .nm-number-circle.selected {
-        border-width: 5px;
+        border-width: 4px;
+    }
+
+    .nm-number-circle.selected {
+        transform: scale(1.1);
+    }
+
+    .nm-number-circle:focus {
+        transform: scale(1.3);
     }
 
 }
