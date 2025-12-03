@@ -18,11 +18,16 @@ import {
   IonToast,
   IonImg,
   IonText,
-  useIonViewWillEnter,
+  useIonViewWillEnter,  // para detectar cuando se entre
+  useIonViewDidLeave,   // para detectar cuando se salga
   IonSpinner,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
 } from '@ionic/react';
 
-import { personOutline, addOutline, closeOutline, checkmarkOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
+import { personOutline, addOutline, closeOutline, checkmarkOutline, eyeOutline, eyeOffOutline, checkmarkCircle } from 'ionicons/icons';
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useManager } from '../../../contexts/ManagerContext';
@@ -137,6 +142,8 @@ export default function StudentEditProfile() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
 
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState(false); 
+
   const isUserNameFilled = userName.trim().length > 0;
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const usernameCheckIdRef = useRef(0);
@@ -174,7 +181,8 @@ export default function StudentEditProfile() {
 
       try {
 
-        if (!id) return;
+        if (!id) throw new Error('Falta el ID del estudiante.');
+        if (!name) throw new Error('Falta el nombre del estudiante.');
         
         let userEntry = users.get(id);
 
@@ -183,9 +191,16 @@ export default function StudentEditProfile() {
           userEntry = users.get(id);
         }
 
-        if (!userEntry || !userEntry.data) 
-          throw new Error("No se han podido cargar los datos del estudiante.");
-
+        if (!userEntry || !userEntry.data) {
+          throw new Error('Datos del estudiante no disponibles.');
+        }
+        if (userEntry.user.username !== name) {
+          throw new Error('El nombre del estudiante no coincide.');
+        }
+        if (userEntry.user.role !== 'student') {
+          throw new Error('El usuario no es un estudiante.');
+        }
+        
         const user = userEntry.user;
         const data = userEntry.data;
       
@@ -207,6 +222,7 @@ export default function StudentEditProfile() {
 
       } catch (err) {
         console.error(err);
+        history.replace('/teacher-profile');
         setToastMessage('No se han podido cargar los datos del estudiante.');
         setToastColor('danger');
         setIsToastOpen(true);
@@ -219,11 +235,29 @@ export default function StudentEditProfile() {
   });
 
 
+  useIonViewDidLeave(() => {
+
+    setIsUpdateSuccess(false); 
+
+    if (passwordType === 'graphical') {
+      setNewPassword([]);
+      setRepeatNewPassword([]);
+    } else {
+      setNewPassword('');
+      setRepeatNewPassword('');
+    }
+      
+    setShowAvatarModal(false);
+    setPictoModalState({ visible: false, target: null });
+    
+  });
+
+
   useEffect(() => {
 
     const trimmed = userName.trim();
 
-    if (trimmed.length < MIN_USERNAME_LENGTH || trimmed.includes(' ')) {
+    if (!isUserNameLong || !isUserNameSpaceless) {
       setIsUsernameAvailable(false);
       return;
     }
@@ -287,7 +321,7 @@ export default function StudentEditProfile() {
 
     loadAvatars();
 
-  }, [userName]);
+  }, [studentUser?.username]);
 
 
   // Reseteamos los campos de contraseña y el estado al cambiar el tipo de contraseña
@@ -432,8 +466,8 @@ export default function StudentEditProfile() {
     if (!isUserNameSpaceless) 
       errors.push('El nombre de usuario no puede contener espacios.');
 
-    if (isUsernameAvailable === false) 
-      errors.push('El nombre de usuario ya está actualmente en uso por otra persona.');
+    if (isUsernameAvailable === false && isUserNameLong && isUserNameSpaceless) 
+      errors.push('Este nombre de usuario ya está actualmente en uso por otra persona.');
 
     if (!isAvatarSelected) 
       errors.push('Debes seleccionar una imagen de perfil.');
@@ -487,14 +521,8 @@ export default function StudentEditProfile() {
 
       // Refrescamos el usuario en ManagerContext
       await retrieveUser(id);
-      
-      setToastMessage('Perfil de estudiante actualizado correctamente.');
-      setToastColor('success');
-      setIsToastOpen(true);
-      
-      setTimeout(() => {
-        history.push('/register/confirmation/alumnos'); 
-      }, 2000);
+
+      setIsUpdateSuccess(true);
 
     } catch (err) {
       console.error(err);
@@ -506,8 +534,26 @@ export default function StudentEditProfile() {
   };
 
 
+  const handleSuccessAccept = () => {
+    
+    const updatedName = userName;
+    window.location.href = `/student-edit-menu/${id}/${updatedName}`;
+    
+  };
+
+
   const handleCancel = () => {
+
+    if (passwordType === 'graphical') {
+      setNewPassword([]);
+      setRepeatNewPassword([]);
+    } else {
+      setNewPassword('');
+      setRepeatNewPassword('');
+    }
+      
     history.goBack();
+
   };
 
 
@@ -569,7 +615,6 @@ export default function StudentEditProfile() {
       );
     }
   };
-
 
 
   // === AVATARES PREDETERMINADOS O IMÁGENES SUBIDAS PARA FOTO DE PERFIL ===
@@ -716,7 +761,7 @@ export default function StudentEditProfile() {
     return (
       <IonPage>
         <IonContent className="ion-text-center">
-          <div className="teacher-edit-profile-spinner">
+          <div className="studentEditProfile-spinner">
             <IonSpinner name="crescent" />
           </div>
         </IonContent>
@@ -731,247 +776,280 @@ export default function StudentEditProfile() {
 
       <SimpleHeaderEdit studentName={name} Editing={"Datos del alumno"} />
 
-      <div className="studentEditProfile-main-container">
-        <div className="studentEditProfile-form-card" ref={formCardRef}>
-          <h2>Editar datos</h2>
-          <p className="studentEditProfile-subtitle">
-            Aquí puede actualizar los datos que desee del alumno <span className="studentEditProfile-name">{name}</span>.
-          </p>
-          
-          <div className="studentEditProfile-horizontal-row">
+      <div className={
+        isUpdateSuccess 
+          ? "studentEditProfile-confirmation-main-container" 
+          : "studentEditProfile-edit-main-container"
+      }>
 
-            {/* Columna izquierda de edición de datos: avatar y nombre de usuario */}
-            <div className="studentEditProfile-column studentEditProfile-column--left">
+        {isUpdateSuccess ? (
 
-              {/* Avatar */}
-              <div className="studentEditProfile-avatar-section">
-                <div className="studentEditProfile-avatar-preview"
-                  onClick={openAvatarModal}
-                >
-                  {avatarPreview ? (
-                    <img
-                      src={avatarPreview}
-                      alt="Avatar"
-                      className="studentEditProfile-avatar-image"
-                    />
-                  ) : (
-                    <IonIcon icon={personOutline} className="studentEditProfile-avatar-icon" />
-                  )}
+          <IonCard className="studentEditProfile-confirmation-card">
+
+            <IonCardHeader className="studentEditProfile-confirmation-header">
+              <div className="studentEditProfile-confirmation-icon-container">
+                <IonIcon icon={checkmarkCircle} className="studentEditProfile-confirmation-icon" />
+              </div>
+              <IonCardTitle className="studentEditProfile-confirmation-title">Perfil actualizado</IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent className="studentEditProfile-confirmation-message">
+              Los datos del estudiante <strong>{name}</strong> han sido actualizados correctamente.
+            </IonCardContent>
+            <div className="studentEditProfile-confirmation-button-container">
+              <IonButton expand="block" className="studentEditProfile-confirmation-button" onClick={handleSuccessAccept}>
+                Aceptar
+              </IonButton>
+            </div>
+
+          </IonCard>
+
+        ) : (
+
+          <div className="studentEditProfile-form-card" ref={formCardRef}>
+            
+            <h2>Editar datos</h2>
+            <p className="studentEditProfile-subtitle">
+              Aquí puede actualizar los datos que desee del alumno <span className="studentEditProfile-name">{name}</span>.
+            </p>
+            
+            <div className="studentEditProfile-horizontal-row">
+
+              {/* Columna izquierda de edición de datos: avatar y nombre de usuario */}
+              <div className="studentEditProfile-column studentEditProfile-column--left">
+
+                {/* Avatar */}
+                <div className="studentEditProfile-avatar-section">
+                  <div className="studentEditProfile-avatar-preview"
+                    onClick={openAvatarModal}
+                  >
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Avatar"
+                        className="studentEditProfile-avatar-image"
+                      />
+                    ) : (
+                      <IonIcon icon={personOutline} className="studentEditProfile-avatar-icon" />
+                    )}
+                  </div>
+                  <div className="studentEditProfile-field-wrapper">
+                    <div className="studentEditProfile-field-label">
+                      Cambiar avatar <span className="required-star">*</span>
+                    </div>
+                    <div className="studentEditProfile-avatar-select-field" onClick={openAvatarModal}>
+                      <IonText>{avatarDisplayName}</IonText>
+                    </div>
+                  </div>
                 </div>
+                
+                {/* Username */}
                 <div className="studentEditProfile-field-wrapper">
                   <div className="studentEditProfile-field-label">
-                    Cambiar avatar <span className="required-star">*</span>
+                    Cambiar nombre de usuario <span className="required-star">*</span>
                   </div>
-                  <div className="studentEditProfile-avatar-select-field" onClick={openAvatarModal}>
-                    <IonText>{avatarDisplayName}</IonText>
+                  <div className="studentEditProfile-input-with-icon">
+                    <IonInput
+                      className="studentEditProfile-input-item"
+                      placeholder="Escribir aquí..."
+                      value={userName}
+                      onIonInput={(e) => setUserName(e.detail.value || '')}
+                    />
+                    <IonIcon
+                      icon={isUsernameValid ? checkmarkOutline : closeOutline}
+                      className={
+                        "studentEditProfile-input-status-icon " +
+                        (isUsernameValid ? "success" : "error")
+                      }
+                    />
                   </div>
                 </div>
-              </div>
-              
-              {/* Username */}
-              <div className="studentEditProfile-field-wrapper">
-                <div className="studentEditProfile-field-label">
-                  Cambiar nombre de usuario <span className="required-star">*</span>
-                </div>
-                <div className="studentEditProfile-input-with-icon">
-                  <IonInput
-                    className="studentEditProfile-input-item"
-                    placeholder="Escribir aquí..."
-                    value={userName}
-                    onIonInput={(e) => setUserName(e.detail.value || '')}
-                  />
-                  <IonIcon
-                    icon={isUsernameValid ? checkmarkOutline : closeOutline}
-                    className={
-                      "studentEditProfile-input-status-icon " +
-                      (isUsernameValid ? "success" : "error")
-                    }
-                  />
-                </div>
-              </div>
 
-            </div> {/* Cierra columna izquierda */}
-          
-            {/* Columna derecha de edición de datos: contraseña */}
-            <div className="studentEditProfile-column studentEditProfile-column--right">
+              </div> {/* Cierra columna izquierda */}
+            
+              {/* Columna derecha de edición de datos: contraseña */}
+              <div className="studentEditProfile-column studentEditProfile-column--right">
 
-              {/* Password type */}
-              <div className="studentEditProfile-field-wrapper">
-                <div className="studentEditProfile-field-label">Cambiar contraseña</div>
-                <div className="studentEditProfile-password-select-wrapper">
-                  {/* Campo que se ve */}
-                  <div 
-                    className={`studentEditProfile-password-type-select ${dropdownOpen ? 'open' : ''}`}
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                  >
-                    {passwordType === 'graphical' && 'Contraseña gráfica'}
-                    {passwordType === 'pin' && 'PIN'}
-                    {passwordType === 'alphanumeric' && 'Contraseña alfanumérica'}
-                  </div>
-                  {/* Dropdown fijo debajo */}
-                  {dropdownOpen && (
-                    <div className="studentEditProfile-password-dropdown">
-                      <div
-                        className={`dropdown-option ${passwordType === 'graphical' ? 'selected' : ''}`}
-                        onClick={() => { setPasswordType('graphical'); setDropdownOpen(false); }}
-                      >
-                        Contraseña gráfica
-                      </div>
-                      <div
-                        className={`dropdown-option ${passwordType === 'pin' ? 'selected' : ''}`}
-                        onClick={() => { setPasswordType('pin'); setDropdownOpen(false); }}
-                      >
-                        PIN
-                      </div>
-                      <div
-                        className={`dropdown-option ${passwordType === 'alphanumeric' ? 'selected' : ''}`}
-                        onClick={() => { setPasswordType('alphanumeric'); setDropdownOpen(false); }}
-                      >
-                        Contraseña alfanumérica
-                      </div>
+                {/* Password type */}
+                <div className="studentEditProfile-field-wrapper">
+                  <div className="studentEditProfile-field-label">Cambiar contraseña</div>
+                  <div className="studentEditProfile-password-select-wrapper">
+                    {/* Campo que se ve */}
+                    <div 
+                      className={`studentEditProfile-password-type-select ${dropdownOpen ? 'open' : ''}`}
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                    >
+                      {passwordType === 'graphical' && 'Contraseña gráfica'}
+                      {passwordType === 'pin' && 'PIN'}
+                      {passwordType === 'alphanumeric' && 'Contraseña alfanumérica'}
                     </div>
-                  )}
+                    {/* Dropdown fijo debajo */}
+                    {dropdownOpen && (
+                      <div className="studentEditProfile-password-dropdown">
+                        <div
+                          className={`dropdown-option ${passwordType === 'graphical' ? 'selected' : ''}`}
+                          onClick={() => { setPasswordType('graphical'); setDropdownOpen(false); }}
+                        >
+                          Contraseña gráfica
+                        </div>
+                        <div
+                          className={`dropdown-option ${passwordType === 'pin' ? 'selected' : ''}`}
+                          onClick={() => { setPasswordType('pin'); setDropdownOpen(false); }}
+                        >
+                          PIN
+                        </div>
+                        <div
+                          className={`dropdown-option ${passwordType === 'alphanumeric' ? 'selected' : ''}`}
+                          onClick={() => { setPasswordType('alphanumeric'); setDropdownOpen(false); }}
+                        >
+                          Contraseña alfanumérica
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+                  
+                {/* New password */}
                 
-              {/* New password */}
-              
-              {(passwordType === 'alphanumeric' || passwordType === 'pin') && (
-                <>
-                  <div className="studentEditProfile-field-wrapper">
-                    <div className="studentEditProfile-subfield-label">Nueva contraseña</div>
-                    <div className="studentEditProfile-input-with-icon">
-                      <IonInput
-                        type={showNewPassword ? 'text' : 'password'}
-                        value={typeof newPassword === 'string' ? newPassword : ''}
-                        className="studentEditProfile-input-item"
-                        placeholder="Escribir contraseña..."
-                        onIonInput={e => setNewPassword(e.detail.value || '')}
-                      />
-                      {/* Indicador de validación de reglas */}
-                      {newPassword && newPassword.length > 0 && (
-                        <IonIcon
-                          icon={validatePassword(newPassword, passwordType).length === 0 ? checkmarkOutline : closeOutline}
-                          className={
-                            "studentEditProfile-input-status-icon " +
-                            (validatePassword(newPassword, passwordType).length === 0 ? "success" : "error")
-                          }
+                {(passwordType === 'alphanumeric' || passwordType === 'pin') && (
+                  <>
+                    <div className="studentEditProfile-field-wrapper">
+                      <div className="studentEditProfile-subfield-label">Nueva contraseña</div>
+                      <div className="studentEditProfile-input-with-icon">
+                        <IonInput
+                          type={showNewPassword ? 'text' : 'password'}
+                          value={typeof newPassword === 'string' ? newPassword : ''}
+                          className="studentEditProfile-input-item"
+                          placeholder="Escribir contraseña..."
+                          onIonInput={e => setNewPassword(e.detail.value || '')}
                         />
-                      )}
-                      <IonIcon
-                        icon={showNewPassword ? eyeOffOutline : eyeOutline}
-                        onClick={() => setShowNewPassword(prev => !prev)}
-                        className="studentEditProfile-input-eye-icon"
-                      />
-                    </div>
-                    {/* Mensaje de reglas */}
-                    <ul className="studentEditProfile-password-rules">
-                      {getPasswordRulesMessage(passwordType).map((rule, index) => (
-                        <li key={index}>{rule}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="studentEditProfile-field-wrapper">
-                    <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
-                    <div className="studentEditProfile-input-with-icon">
-                      <IonInput
-                        type={showRepeatNewPassword ? 'text' : 'password'}
-                        value={typeof repeatNewPassword === 'string' ? repeatNewPassword : ''}
-                        className="studentEditProfile-input-item"
-                        placeholder="Repetir contraseña..."
-                        onIonInput={e => setRepeatNewPassword(e.detail.value || '')}
-                      />
-                      {isPasswordMatch !== null && (
+                        {/* Indicador de validación de reglas */}
+                        {newPassword && newPassword.length > 0 && (
+                          <IonIcon
+                            icon={validatePassword(newPassword, passwordType).length === 0 ? checkmarkOutline : closeOutline}
+                            className={
+                              "studentEditProfile-input-status-icon " +
+                              (validatePassword(newPassword, passwordType).length === 0 ? "success" : "error")
+                            }
+                          />
+                        )}
                         <IonIcon
-                          icon={isPasswordMatch ? checkmarkOutline : closeOutline}
-                          className={
-                            "studentEditProfile-input-status-icon " +
-                            (isPasswordMatch ? "success" : "error")
-                          }
+                          icon={showNewPassword ? eyeOffOutline : eyeOutline}
+                          onClick={() => setShowNewPassword(prev => !prev)}
+                          className="studentEditProfile-input-eye-icon"
                         />
-                      )}
-                      <IonIcon
-                        icon={showRepeatNewPassword ? eyeOffOutline : eyeOutline}
-                        onClick={() => setShowRepeatNewPassword(prev => !prev)}
-                        className="studentEditProfile-input-eye-icon"
-                      />
+                      </div>
+                      {/* Mensaje de reglas */}
+                      <ul className="studentEditProfile-password-rules">
+                        {getPasswordRulesMessage(passwordType).map((rule, index) => (
+                          <li key={index}>{rule}</li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-                </>
-              )}
 
-              {passwordType === 'graphical' && (
-                <>
-                  <div className="studentEditProfile-field-wrapper">
-                    <div className="studentEditProfile-subfield-label">Nueva contraseña</div>
-                    <div className="studentEditProfile-pictogram-container">
-                      {(Array.isArray(newPassword) ? newPassword : []).map((pictoId, index) => {
-                        const picto = PICTOGRAMS.find(p => p.id === pictoId);
-                        return (
-                          <div key={index} className="studentEditProfile-pictogram-box" onClick={() => removePictogram(index, 'newGraphicalPassword')}>
-                            <IonImg src={picto?.image} alt={picto?.name} />
-                            <IonIcon icon={closeOutline} className="studentEditProfile-pictogram-remove" />
-                          </div>
-                        );
-                      })}
-                      <div 
-                        className={`studentEditProfile-pictogram-add ${Array.isArray(newPassword) && newPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
-                        onClick={() => handleAddPictogram('newGraphicalPassword')}
-                      >
-                        <IonIcon icon={addOutline} />
+                    <div className="studentEditProfile-field-wrapper">
+                      <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
+                      <div className="studentEditProfile-input-with-icon">
+                        <IonInput
+                          type={showRepeatNewPassword ? 'text' : 'password'}
+                          value={typeof repeatNewPassword === 'string' ? repeatNewPassword : ''}
+                          className="studentEditProfile-input-item"
+                          placeholder="Repetir contraseña..."
+                          onIonInput={e => setRepeatNewPassword(e.detail.value || '')}
+                        />
+                        {isPasswordMatch !== null && (
+                          <IonIcon
+                            icon={isPasswordMatch ? checkmarkOutline : closeOutline}
+                            className={
+                              "studentEditProfile-input-status-icon " +
+                              (isPasswordMatch ? "success" : "error")
+                            }
+                          />
+                        )}
+                        <IonIcon
+                          icon={showRepeatNewPassword ? eyeOffOutline : eyeOutline}
+                          onClick={() => setShowRepeatNewPassword(prev => !prev)}
+                          className="studentEditProfile-input-eye-icon"
+                        />
                       </div>
                     </div>
-                    {/* Mensaje de reglas */}
-                    <ul className="studentEditProfile-password-rules">
-                      {getPasswordRulesMessage(passwordType).map((rule, index) => (
-                        <li key={index}>{rule}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  </>
+                )}
 
-                  <div className="studentEditProfile-field-wrapper">
-                    <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
-                    <div className="studentEditProfile-pictogram-container">
-                      {(Array.isArray(repeatNewPassword) ? repeatNewPassword : []).map((pictoId, index) => {
-                        const picto = PICTOGRAMS.find(p => p.id === pictoId);
-                        return (
-                          <div key={index} className="studentEditProfile-pictogram-box" onClick={() => removePictogram(index, 'repeatNewGraphicalPassword')}>
-                            <IonImg src={picto?.image} alt={picto?.name} />
-                            <IonIcon icon={closeOutline} className="studentEditProfile-pictogram-remove" />
-                          </div>
-                        );
-                      })}
-                      <div 
-                        className={`studentEditProfile-pictogram-add ${Array.isArray(repeatNewPassword) && repeatNewPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
-                        onClick={() => handleAddPictogram('repeatNewGraphicalPassword')}
-                      >
-                        <IonIcon icon={addOutline} />
+                {passwordType === 'graphical' && (
+                  <>
+                    <div className="studentEditProfile-field-wrapper">
+                      <div className="studentEditProfile-subfield-label">Nueva contraseña</div>
+                      <div className="studentEditProfile-pictogram-container">
+                        {(Array.isArray(newPassword) ? newPassword : []).map((pictoId, index) => {
+                          const picto = PICTOGRAMS.find(p => p.id === pictoId);
+                          return (
+                            <div key={index} className="studentEditProfile-pictogram-box" onClick={() => removePictogram(index, 'newGraphicalPassword')}>
+                              <IonImg src={picto?.image} alt={picto?.name} />
+                              <IonIcon icon={closeOutline} className="studentEditProfile-pictogram-remove" />
+                            </div>
+                          );
+                        })}
+                        <div 
+                          className={`studentEditProfile-pictogram-add ${Array.isArray(newPassword) && newPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
+                          onClick={() => handleAddPictogram('newGraphicalPassword')}
+                        >
+                          <IonIcon icon={addOutline} />
+                        </div>
+                      </div>
+                      {/* Mensaje de reglas */}
+                      <ul className="studentEditProfile-password-rules">
+                        {getPasswordRulesMessage(passwordType).map((rule, index) => (
+                          <li key={index}>{rule}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="studentEditProfile-field-wrapper">
+                      <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
+                      <div className="studentEditProfile-pictogram-container">
+                        {(Array.isArray(repeatNewPassword) ? repeatNewPassword : []).map((pictoId, index) => {
+                          const picto = PICTOGRAMS.find(p => p.id === pictoId);
+                          return (
+                            <div key={index} className="studentEditProfile-pictogram-box" onClick={() => removePictogram(index, 'repeatNewGraphicalPassword')}>
+                              <IonImg src={picto?.image} alt={picto?.name} />
+                              <IonIcon icon={closeOutline} className="studentEditProfile-pictogram-remove" />
+                            </div>
+                          );
+                        })}
+                        <div 
+                          className={`studentEditProfile-pictogram-add ${Array.isArray(repeatNewPassword) && repeatNewPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
+                          onClick={() => handleAddPictogram('repeatNewGraphicalPassword')}
+                        >
+                          <IonIcon icon={addOutline} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
 
+              </div>
             </div>
+            
+            {/* Botones de confirmar y cancelar */}
+            <div className="studentEditProfile-field-wrapper-buttons">
+              <IonButton 
+                expand="block"
+                className={`studentEditProfile-confirm-button ${
+                  !isFormReadyForSubmit ? 'studentEditProfile-confirm-button--disabled' : ''
+                }`}
+                disabled={!isFormReadyForSubmit}
+                onClick={handleConfirmClick}
+              >
+                Guardar cambios
+              </IonButton>
+              <IonButton expand="block" className="studentEditProfile-cancel-button" onClick={handleCancel}>
+                Cancelar
+              </IonButton>
+            </div>
+
           </div>
-          
-          {/* Botones de confirmar y cancelar */}
-          <div className="studentEditProfile-field-wrapper-buttons">
-            <IonButton 
-              expand="block"
-              className={`studentEditProfile-confirm-button ${
-                !isFormReadyForSubmit ? 'studentEditProfile-confirm-button--disabled' : ''
-              }`}
-              onClick={handleConfirmClick}
-            >
-              Guardar cambios
-            </IonButton>
-            <IonButton expand="block" className="studentEditProfile-cancel-button" onClick={handleCancel}>
-              Cancelar
-            </IonButton>
-          </div>
-        </div>
+
+        )}
 
         {/* Input file oculto */}
         <input

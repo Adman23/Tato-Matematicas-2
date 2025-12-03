@@ -8,7 +8,7 @@
    ESTILOS GENERALES DE LA PÁGINA StudentEditProfile
    ========================================================================== */
 
-.studentEditProfile-main-container {
+.studentEditProfile-edit-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,6 +19,21 @@
   position: relative;
   transform: scale(1.22);
   transform-origin: top center;
+}
+.studentEditProfile-confirmation-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  background-color: #ffffff;
+  flex-grow: 1;
+  height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  padding: clamp(1rem, 5vh, 2rem) 1rem;
+  box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .studentEditProfile-main-container h1 {
@@ -541,6 +556,18 @@
 
 
 /* =============================================================================
+   SPINNER DE CARGA
+   ========================================================================== */
+
+.studentEditProfile-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+
+/* =============================================================================
    SELECTOR DE TIPO DE CONTRASEÑA
    ========================================================================== */
 
@@ -712,6 +739,7 @@
 /* =================================================================================================================
    FILA HORIZONTAL PARA ALINEAR COLUMNAS IZQUIERDA (AVATAR Y NOMBRE DE USUARIO) / DERECHA (CONTRASEÑA)
    ================================================================================================================= */
+
 .studentEditProfile-horizontal-row {
   display: flex;
   flex-direction: row;
@@ -774,4 +802,103 @@
   align-items: stretch;
   flex-wrap: wrap;
   margin: 0 auto;
+}
+
+
+/* =============================================================================
+   TARJETA DE CONFIRMACIÓN TRAS GUARDAR CAMBIOS
+   ========================================================================== */
+
+.studentEditProfile-confirmation-card {
+  width: 320px;
+  max-width: 90vw;
+  border-radius: 50px;
+  background-color: var(--ion-color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  margin: auto;
+}
+
+.studentEditProfile-confirmation-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  text-align: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.studentEditProfile-confirmation-icon-container {
+  background-color: var(--ion-color-primary);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.studentEditProfile-confirmation-icon {
+  font-size: 100px; 
+  color: var(--tatomaths-text-primary);
+}
+
+.studentEditProfile-confirmation-title {
+  font-size: 1.4rem;
+  color: var(--tatomaths-text-primary);
+  margin: 0;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-weight: bold;
+}
+
+.studentEditProfile-confirmation-message {
+  color: var(--tatomaths-text-primary);
+  font-size: 1rem;
+  margin: 16px 0 28px 0;
+  line-height: 1.5;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  padding: 0;
+}
+
+.studentEditProfile-confirmation-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.studentEditProfile-confirmation-button {
+  --background: white;
+  --color: var(--ion-color-primary);
+  --border-radius: 24px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  --box-shadow: none !important; 
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 10px;
+  width: 95%;
+  max-width: 280px;
+  min-height: 56px;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  transition: transform 0.2s ease;
+}
+
+.studentEditProfile-confirmation-button:hover {
+  transform: translateY(2px);
+}
+
+.studentEditProfile-confirmation-button::part(native) {
+  border-radius: 100px;
+  font-family: 'Atkinson Hyperlegible', sans-serif !important;
 }
