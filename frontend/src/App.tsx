@@ -62,6 +62,7 @@ import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
 import EditColor from './pages/teacherProfile/EditStudent/EditColors';
 import Prueba from './pages/teacherProfile/EditStudent/prueba';
 import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
+import EditColorsStudent from './pages/student/EditColorsStudent';
 
 
 /**
@@ -114,6 +115,8 @@ export default function App() {
                 exact component={StudentProfile} />
               <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
                 exact component={EditGame2} />
+              <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
+                exact component={EditColorsStudent} />
               <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]} 
                 exact component={TutorDashboard} />
               <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]} 
