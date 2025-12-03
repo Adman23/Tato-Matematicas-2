@@ -11,7 +11,6 @@ import './StudentEditProfile.css';
 
 import {
   IonPage,
-  IonContent,
   IonInput,
   IonButton,
   IonIcon,
@@ -20,16 +19,16 @@ import {
   IonText,
   useIonViewWillEnter,  // para detectar cuando se entre
   useIonViewDidLeave,   // para detectar cuando se salga
-  IonSpinner,
   IonCard,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
+  useIonRouter,
 } from '@ionic/react';
 
 import { personOutline, addOutline, closeOutline, checkmarkOutline, eyeOutline, eyeOffOutline, checkmarkCircle } from 'ionicons/icons';
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 import { useManager } from '../../../contexts/ManagerContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { authAPI, uploadImage, getImages, userAPI} from '../../../lib/api';
@@ -72,18 +71,18 @@ const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
  * Execution flow.
  *
  * - Displays a spinner while data is loading and a toast for notifications.
- * - If there is no `user`, redirects to `/teacher-profile`.
+ * - If there is no `user`, redirects to `/login`.
  * - Loads student data using `useParams` (`id` and `username`).
  * - Allows updating the avatar via `uploadImage`.
  * - Allows changing the password and configuring the password type.
- * - Renders `SimpleHeaderEdit` with the student's name, the current editing action, and a button to go to the dashboard.
+ * - Renders `SimpleHeaderEdit` with the student's name, the current editing action, and a button to go to the `/student-edit-menu/${id}/${name}`.
  *
  * @component
  * @returns {JSX.Element} View for editing a student's profile.
  *
  * @example
  * ```tsx
- * <Route path="/student-edit-profile/:id/:username" component={StudentEditProfile} />
+ * <Route path="/student-edit-profile/:id/:name" component={StudentEditProfile} />
  * ```
  */
 export default function StudentEditProfile() {
@@ -172,6 +171,11 @@ export default function StudentEditProfile() {
     isUserNameFilled &&
     isAvatarSelected &&
     (!isPasswordChanged ? true : !isEmptyPassword(repeatNewPassword));
+
+  const router = useIonRouter();
+  const handleHome = () => {
+    router.push(`/student-edit-menu/${id}/${name}`);
+  }
 
 
   // Cargamos los datos actuales del estudiante
@@ -756,17 +760,9 @@ export default function StudentEditProfile() {
   };
 
 
-  // Si user no está cargado, no renderizamos (deja que el router o AuthProvider maneje loading)
+  // Redirect if there is no authenticated user
   if (!user) {
-    return (
-      <IonPage>
-        <IonContent className="ion-text-center">
-          <div className="studentEditProfile-spinner">
-            <IonSpinner name="crescent" />
-          </div>
-        </IonContent>
-      </IonPage>
-    );
+    return <Redirect to="/login" />;
   }
 
 
@@ -774,7 +770,7 @@ export default function StudentEditProfile() {
 
     <IonPage>
 
-      <SimpleHeaderEdit studentName={name} Editing={"Datos del alumno"} />
+      <SimpleHeaderEdit studentName={name} Editing={"Datos del alumno"} onHome={handleHome}/>
 
       <div className={
         isUpdateSuccess 
