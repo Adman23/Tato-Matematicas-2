@@ -52,13 +52,11 @@
   height: 100%;
   width: 100%;
   border-radius: 12px;
-  background: linear-gradient(
-    to left,
-    color-mix(in srgb, var(--bubble-selected-bg) 70%, black) 0%,
-    color-mix(in srgb, var(--bubble-selected-bg) 85%, black) 8%,
-    color-mix(in srgb, var(--bubble-selected-bg) 85%, black) 92%,
-    color-mix(in srgb, var(--bubble-selected-bg) 70%, black) 100%
-  );
+  background: linear-gradient(to left,
+      color-mix(in srgb, var(--bubble-selected-bg) 70%, black) 0%,
+      color-mix(in srgb, var(--bubble-selected-bg) 85%, black) 8%,
+      color-mix(in srgb, var(--bubble-selected-bg) 85%, black) 92%,
+      color-mix(in srgb, var(--bubble-selected-bg) 70%, black) 100%);
 }
 
 .front-home {
@@ -215,59 +213,4 @@
   .game-header-pictograms img:last-child {
     display: none;
   }
-}
-
-.game-header-exit-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 1rem;
-  box-sizing: border-box;
-}
-
-.game-header-exit-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
-  max-width: 360px;
-  width: 100%;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-  text-align: center;
-}
-
-.game-header-exit-text {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.1rem;
-  color: #1f2937;
-}
-
-.game-header-exit-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.exit-btn {
-  border: none;
-  background: transparent;
-  padding: 0.35rem;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.15s ease;
-}
-
-.exit-btn img {
-  width: clamp(48px, 16vw, 72px);
-  height: clamp(48px, 16vw, 72px);
-  object-fit: contain;
-}
-
-.exit-btn:hover,
-.exit-btn:focus-visible {
-  transform: scale(1.05);
-  background-color: rgba(0, 0, 0, 0.04);
 }
