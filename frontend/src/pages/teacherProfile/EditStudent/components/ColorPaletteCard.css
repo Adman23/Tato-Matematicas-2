@@ -8,12 +8,18 @@
     
 }
 
-.ColorPaletteCard-studentEditColor-IonCard:hover{
+.ColorPaletteCard-studentEditColor-IonCard:hover,
+.ColorPaletteCard-studentEditColor-IonCard:focus,
+.ColorPaletteCard-studentEditColor-IonCard:focus-visible{
 
+    outline: none !important;
+    box-shadow: none !important;
     transform: scale(1.03);
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
     transition: 0.2s ease;
     cursor: pointer;
+    border-width: clamp(2px, 1.2vw, 4px);
+    border-color: var(--ion-color-primary);
 }
 
 /*=====================================
@@ -37,6 +43,7 @@
 
     height: 50px;
     width: 55px;
+    pointer-events: none;
 }
 
 /*=====================================

@@ -45,14 +45,23 @@ const ColorPaletteCard: React.FC<Props> = ({
 
     return(
         
-        <IonCard  button onClick={() => onClick?.(palette)}
+        <IonCard   onClick={() => onClick?.(palette)} tabIndex={0} 
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    onClick?.(palette);
+                }
+            }}
             className={isSelected ? "ColorPaletteCard-studentEditColor-IonCardSelected" : "ColorPaletteCard-studentEditColor-IonCard"}>
             <IonCardHeader className='ColorPaletteCard-studentEditColor-IonCardHeader'
             style={{
                 background: headerBg,
                 color: headerText
             }}>Título
-            <Button3Dtext className='Boton-header_ColorPaletteCard' color={buttonBg}><span></span></Button3Dtext>
+            <Button3Dtext className='Boton-header_ColorPaletteCard' 
+            color={buttonBg}
+            tabIndex={-1}
+            ><span></span></Button3Dtext>
+            
             </IonCardHeader>
             <IonCardContent className='ColorPaletteCard-studentEditColor-IonCardContent'
             style={{
