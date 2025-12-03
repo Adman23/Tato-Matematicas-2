@@ -15,8 +15,7 @@
 import React, { useState } from 'react';
 import { IonText } from '@ionic/react';
 import './GameHeader.css';
-import iconCorrect from '/assets/juegosImg/correct.png';
-import iconIncorrect from '/assets/juegosImg/incorrecto.png';
+import ExitScreen from './ExitScreen';
 
 /**
  * Props del componente GameHeader.
@@ -135,19 +134,9 @@ const GameHeader: React.FC<GameHeaderProps> = ({
       </div>
 
       {showExitConfirm && (
-        <div className="game-header-exit-overlay" role="dialog" aria-modal="true" aria-label="Confirmar salida">
-          <div className="game-header-exit-card">
-            <p className="game-header-exit-text">¿Seguro que quieres salir?</p>
-            <div className="game-header-exit-actions">
-              <button className="exit-btn" onClick={confirmExit} aria-label="Sí, salir">
-                <img src={iconCorrect} alt="Confirmar" />
-              </button>
-              <button className="exit-btn" onClick={cancelExit} aria-label="No, continuar">
-                <img src={iconIncorrect} alt="Cancelar" />
-              </button>
-            </div>
-          </div>
-        </div>
+        <ExitScreen
+          confirmExit={confirmExit}
+          cancelExit={cancelExit} />
       )}
     </>
   );
