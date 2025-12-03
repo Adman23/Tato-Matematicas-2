@@ -11,8 +11,8 @@
 
 // Imports--------------------------------------------------------------
 import {
-    IonPage, 
-    IonContent, 
+    IonPage,
+    IonContent,
     IonSpinner,
     useIonRouter,
     IonGrid,
@@ -21,7 +21,7 @@ import {
 } from '@ionic/react';
 
 import { useAuth } from '../../contexts/AuthContext';
-import { useUserData } from "../../contexts/UserContext" 
+import { useUserData } from "../../contexts/UserContext"
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import { Button3Dtext } from '../global_components/PushableButtons';
@@ -48,7 +48,7 @@ export default function StudentProfile() {
      *               group_id?: string;
      *               group_alias?: string;
      *           }  
-     */ 
+     */
     const { user, logout } = useAuth();
     const { loadingUser, refreshUserData } = useUserData();
     const router = useIonRouter();
@@ -60,13 +60,13 @@ export default function StudentProfile() {
     const handleDirection = (url: string) => {
         router.push(url);
     }
-    
+
     /**
      * @brief Its used by the logout button
      */
     const handleLogout = async () => {
         await logout();
-        router.push('/student/login',"none","replace");
+        router.push('/student/login', "none", "replace");
     }
 
     /**
@@ -80,7 +80,7 @@ export default function StudentProfile() {
     if (loadingUser) {
         return (
             <IonPage>
-                <IonContent className="ion-padding ion-text-center" 
+                <IonContent className="ion-padding ion-text-center"
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <IonSpinner name="crescent" />
                 </IonContent>
@@ -92,8 +92,8 @@ export default function StudentProfile() {
     return (
         <IonPage>
             {/* Header */}
-            <SimpleHeaderUser userName={user?.username || "username"} 
-                    photoUrl={user?.photo_url} url="/student/dashboard" />
+            <SimpleHeaderUser userName={user?.username || "username"}
+                photoUrl={user?.photo_url} url="/student/dashboard" />
 
             {/* Main Content */}
             <IonContent className="ion-padding">
@@ -105,29 +105,29 @@ export default function StudentProfile() {
                                 {/* Edit colors */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/colores.png"
-                                    alt="Ir a editar colores"
-                                    className="btn-icon"
+                                        src="/assets/pictograms/colores.png"
+                                        alt="Ir a editar colores"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">COLORES</span>
                                 </Button3Dtext>
-                                
+
                                 {/* Edit game_1 */}
-                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
+                                <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/edit-game1")}>
                                     <img
-                                    src="/assets/juegosImg/juego1.png"
-                                    alt="Ir a editar juego uno"
-                                    className="btn-icon"
+                                        src="/assets/juegosImg/juego1.png"
+                                        alt="Ir a editar juego uno"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">JUEGO 1</span>
                                 </Button3Dtext>
-                                
+
                                 {/* Edit game_2 */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/edit-game2")}>
                                     <img
-                                    src="/assets/juegosImg/juego2.png"
-                                    alt="Ir a editar Juego dos"
-                                    className="btn-icon"
+                                        src="/assets/juegosImg/juego2.png"
+                                        alt="Ir a editar Juego dos"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">JUEGO 2</span>
                                 </Button3Dtext>
@@ -135,9 +135,9 @@ export default function StudentProfile() {
                                 {/* Edit sound */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/pictograms/escucha.png"
-                                    alt="Ir a editar sonido"
-                                    className="btn-icon"
+                                        src="/assets/pictograms/escucha.png"
+                                        alt="Ir a editar sonido"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">SONIDO</span>
                                 </Button3Dtext>
@@ -145,9 +145,9 @@ export default function StudentProfile() {
                                 {/* Edit game_3 */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/juego3.png"
-                                    alt="Ir a editar juego tres"
-                                    className="btn-icon"
+                                        src="/assets/juegosImg/juego3.png"
+                                        alt="Ir a editar juego tres"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">JUEGO 3</span>
                                 </Button3Dtext>
@@ -155,9 +155,9 @@ export default function StudentProfile() {
                                 {/* Edit game_4 */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding" className="big-button vertical-card" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/juego4.png"
-                                    alt="Ir a editar juego cuatro"
-                                    className="btn-icon"
+                                        src="/assets/juegosImg/juego4.png"
+                                        alt="Ir a editar juego cuatro"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">JUEGO 4</span>
                                 </Button3Dtext>
@@ -169,22 +169,22 @@ export default function StudentProfile() {
                             <div className="button-section">
                                 {/* Refresh button */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding"
-                                        className="small-button vertical-card" onClick={handleRefresh}>
+                                    className="small-button vertical-card" onClick={handleRefresh}>
                                     <img
-                                    src="/assets/pictograms/recargar.png"
-                                    alt="Recargar los estilos"
-                                    className="btn-icon"
+                                        src="/assets/pictograms/recargar.png"
+                                        alt="Recargar los estilos"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">RECARGA</span>
-                                </Button3Dtext>  
-                                
+                                </Button3Dtext>
+
                                 {/* Exit button */}
                                 <Button3Dtext color='#3b82f6' frontClassName="small-padding"
-                                        className="small-button vertical-card" onClick={handleLogout}>
+                                    className="small-button vertical-card" onClick={handleLogout}>
                                     <img
-                                    src="/assets/pictograms/salir.png"
-                                    alt="Cerrar sesión"
-                                    className="btn-icon"
+                                        src="/assets/pictograms/salir.png"
+                                        alt="Cerrar sesión"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">SALIR</span>
                                 </Button3Dtext>
@@ -193,7 +193,7 @@ export default function StudentProfile() {
                     </IonRow>
                 </IonGrid>
             </IonContent>
-        </IonPage> 
-    ); 
+        </IonPage>
+    );
     // End of component--------------------------------------------
 }
