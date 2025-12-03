@@ -61,6 +61,7 @@ import StudentProfile from './pages/student/StudentProfile';
 import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
 import EditColor from './pages/teacherProfile/EditStudent/EditColors';
 import Prueba from './pages/teacherProfile/EditStudent/prueba';
+import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
 import EditColorsStudent from './pages/student/EditColorsStudent';
 
 
@@ -143,7 +144,9 @@ export default function App() {
               <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]} 
                 exact component={EditColor} />
               <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
-              
+              <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]} 
+                exact component={StudentEditProfile} />
+
               {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
               <Redirect to="/student/login" />
             </IonRouterOutlet>

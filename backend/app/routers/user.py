@@ -94,10 +94,11 @@ async def get_user_data(user_id: str):
 
 	Uses the id passed to return the basic info of a user, this includes:
 	user:{
-		id:       "string_with_the_id",         not null
-		username: "email without the @",        not null
-		role:     "student, admin or teacher",  not null
-		photo_url:"url of the photo associated, can be null"
+		id:       		"string_with_the_id",         		not null
+		username: 		"email without the @",        		not null
+		role:     		"student, admin or teacher",  		not null
+		photo_url:		"url of the photo associated", 		can be null
+		password_type:	"graphical, pin, or alphanumeric",	not null
 		user_profile
 		game_configurations
 		reinforcemente_messages
@@ -122,7 +123,7 @@ async def get_user_data(user_id: str):
 		# Fetch all the extra info of the user
 		# Fetch user's direct relations (keep it simple to avoid complex nested selects)
 		resp = supabase_admin.table("users") \
-				.select("group_id,\
+				.select("group_id, password_type,\
 						user_profiles!user_id(\
 							id,\
 							visual_preferences,\
@@ -172,6 +173,7 @@ async def get_user_data(user_id: str):
 						username=user.username,
 						role=user.role,
 						photo_url=user.photo_url or DEFAULT_AVATAR,
+                  password_type = resp.data.get("password_type"),
 						group_id=resp.data.get("group_id") or None,
 						user_profile=resp.data.get("user_profiles"),
 						game_configurations=resp.data.get("game_configurations"),
@@ -239,10 +241,13 @@ async def update_user(
                     raise HTTPException(status_code=400, detail="El nombre de usuario ya está en uso.")
                 raise e
 
-        # 3. ACTUALIZAR DB PÚBLICA (Solo Foto, sin group_id)
+        # 3. ACTUALIZAR DB PÚBLICA (Solo foto y tipo de contraseña, sin group_id)
         public_updates = {}
         if payload.photo_url:
             public_updates["photo_url"] = payload.photo_url
+         
+        if payload.password_type:
+           public_updates["password_type"] = payload.password_type
             
         if public_updates:
             supabase_admin.table("users")\
@@ -252,7 +257,7 @@ async def update_user(
 
         # 4. CONSTRUIR RESPUESTA
         resp = supabase_admin.table("users") \
-                .select("id, role, photo_url, group_id, \
+                .select("id, role, photo_url, group_id, password_type, \
                         user_profiles!user_id(*), \
                         game_configurations!user_id(*)") \
                 .eq("id", target_user_id) \
@@ -288,6 +293,7 @@ async def update_user(
             username=final_username,
             role=user_data_db["role"],
             photo_url=user_data_db.get("photo_url"),
+            password_type = user_data_db.get("password_type"),
             group_id=user_data_db.get("group_id"),
             user_profile=u_profile,
             game_configurations=user_data_db.get("game_configurations") or [],
