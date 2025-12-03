@@ -30,6 +30,7 @@ import {
     IonButton,
     IonIcon,
     IonToast,
+    useIonRouter,
 } from '@ionic/react';
 import {
     checkmarkOutline,
@@ -37,14 +38,13 @@ import {
 
 } from 'ionicons/icons';
 import { useState, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { authAPI } from '../../lib/api';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
 
 export default function GroupRegister() {
-    const history = useHistory();
+    const router = useIonRouter();
     const formCardRef = useRef<HTMLDivElement>(null);
 
     const [groupName, setGroupName] = useState('');
@@ -138,7 +138,7 @@ export default function GroupRegister() {
             setIsToastOpen(true);
 
             setTimeout(() => {
-                history.push('/register-confirmation/grupos');
+                router.push('/register-confirmation/grupos');
             }, 2000);
         } catch (err: any) {
             console.error('Error en el registro:', err);
@@ -178,7 +178,7 @@ export default function GroupRegister() {
 
     const handleCancel = () => {
         setGroupName('');
-        history.replace('/admin/dashboard/groups-management');
+        router.push('/admin/dashboard/groups-management',"back","pop");
     };
 
     /**

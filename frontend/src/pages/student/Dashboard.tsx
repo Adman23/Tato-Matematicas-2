@@ -4,9 +4,9 @@ import {
   IonPage,
   IonContent,
   IonButton,
-  IonSpinner
+  IonSpinner,
+  useIonRouter
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
@@ -15,18 +15,13 @@ import { useUserData } from '../../contexts/UserContext';
 
 
 /**
- * 
- * !! EDITED
- *  -> Now there is no "student" only user
- * Componente funcional que representa el panel del estudiante.
- *
  * Permite al alumno autenticado:
  * - Ver su nombre y foto (o inicial si no tiene imagen).
  * - Acceder a las secciones de juegos y progreso.
  * - Cerrar sesión y volver a la página principal.
  *
  * Muestra un *spinner* mientras se carga el estado de autenticación
- * y redirige a `/student-login` si no hay sesión activa.
+ * y redirige a `/student/login` si no hay sesión activa.
  *
  * @returns {JSX.Element} Interfaz del panel principal del estudiante.
  *
@@ -40,7 +35,7 @@ import { useUserData } from '../../contexts/UserContext';
 export default function StudentDashboard() {
   const { user } = useAuth();
   const { loadingUser } = useUserData();
-  const history = useHistory();
+  const router = useIonRouter();
 
 
   /*
@@ -50,6 +45,8 @@ export default function StudentDashboard() {
     return <Redirect to="/student/login" />;
   }
   */
+
+  
 
   return (
     <IonPage>
@@ -76,10 +73,10 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game1')}
+              onClick={() => router.push('/game/game1')}
             >
               <div className="game-button-content">
-                <img src="/assets/juegosImg/juego2.png" alt="Juego 1" className="game-image" />
+                <img src="/assets/juegosImg/juego1.png" alt="Juego 1" className="game-image" />
                 <div className="game-title">Toca el numero que suena</div>
               </div>
             </IonButton>
@@ -88,10 +85,10 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game2')}
+              onClick={() => router.push('/game/game2')}
             >
               <div className="game-button-content">
-                <img src="/assets/juegosImg/juegoX.png" alt="Juego 2" className="game-image" />
+                <img src="/assets/juegosImg/juego2.png" alt="Juego 2" className="game-image" />
                 <div className="game-title">Ordena la secuencia</div>
               </div>
             </IonButton>
@@ -100,11 +97,11 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game3')}
+              onClick={() => router.push('/game/game3')}
             >
               <div className="game-button-content">
-                <img src="/assets/juegosImg/repartir.png" alt="Juego 3" className="game-image" />
-                <div className="game-title">Juego de repartir</div>
+                <img src="/assets/juegosImg/juego3.png" alt="Juego 3" className="game-image" />
+                <div className="game-title">Repartir los números</div>
               </div>
             </IonButton>
           </div>
@@ -112,11 +109,11 @@ export default function StudentDashboard() {
           <div className="game-button-wrapper">
             <IonButton
               className="game-button"
-              onClick={() => history.push('/game/game4')}
+              onClick={() => router.push('/game/game4')}
             >
               <div className="game-button-content">
-                <img src="/assets/juegosImg/meter.png" alt="Juego 4" className="game-image" />
-                <div className="game-title">Igualar recipientes</div>
+                <img src="/assets/juegosImg/juego4.png" alt="Juego 4" className="game-image" />
+                <div className="game-title">Igualar los recipientes</div>
               </div>
             </IonButton>
           </div>

@@ -5,6 +5,7 @@
   min-height: 100dvh;
 }
 
+/* Estilos antiguos (mantener para compatibilidad) */
 .results-screen {
   display: flex;
   flex-direction: column;
@@ -114,5 +115,442 @@
 
   .results-card {
     min-height: 100px;
+  }
+}
+
+/* Nuevos estilos para el diseño actualizado */
+.results-screen-new {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(1rem, 3vw, 2rem);
+  padding-bottom: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  flex: 1;
+  background: white;
+  position: relative;
+}
+
+.results-title-new {
+  margin: 0 0 clamp(1.5rem, 4vw, 2.5rem) 0;
+  font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+}
+
+.results-content {
+  display: flex;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.tato-container {
+  flex-shrink: 0;
+}
+
+.tato-image {
+  width: clamp(150px, 25vw, 250px);
+  height: auto;
+  object-fit: contain;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  flex: 1;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+.stat-icon {
+  font-size: clamp(2rem, 5vw, 3rem);
+  flex-shrink: 0;
+}
+
+.stat-icon-green {
+  color: #22c55e;
+}
+
+.stat-icon-red {
+  color: #ef4444;
+}
+
+.stat-icon-blue {
+  color: #3b82f6;
+}
+
+.stat-icon-img {
+  width: clamp(2rem, 5vw, 3rem);
+  height: clamp(2rem, 5vw, 3rem);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: #000;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #000;
+  margin-left: auto;
+}
+
+.stars-container {
+  display: flex;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.star {
+  font-size: clamp(60px, 12vw, 100px);
+  transition: all 0.3s ease;
+}
+
+.star-active {
+  color: #fbbf24;
+  opacity: 1;
+}
+
+.star-inactive {
+  color: #d1d5db;
+  opacity: 0.5;
+}
+
+.accept-button-container {
+  position: absolute;
+  bottom: clamp(1.5rem, 4vw, 2.5rem);
+  right: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+/* Botón 3D Pushable para Aceptar */
+.pushable-accept-button {
+  position: relative;
+  background: transparent;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  width: clamp(180px, 28vw, 280px);
+  height: clamp(70px, 11vw, 110px);
+}
+
+.shadow-accept {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  transform: translateY(4px);
+  filter: blur(4px);
+  transition: transform 100ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.edge-accept {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--bubble-selected-bg) 70%, black) 0%,
+    color-mix(in srgb, var(--bubble-selected-bg) 85%, black) 8%,
+    color-mix(in srgb, var(--bubble-selected-bg) 85%, black) 92%,
+    color-mix(in srgb, var(--bubble-selected-bg) 70%, black) 100%
+  );
+}
+
+.front-accept {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 12px;
+  background: var(--bubble-selected-bg);
+  padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2.5vw, 18px);
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  transform: translateY(-4px);
+  transition: transform 100ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.accept-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+.pushable-accept-button:hover {
+  filter: brightness(1.05);
+}
+
+.pushable-accept-button:hover .front-accept {
+  transform: translateY(-6px);
+}
+
+.pushable-accept-button:active .front-accept {
+  transform: translateY(-2px);
+}
+
+.pushable-accept-button:active .shadow-accept {
+  transform: translateY(2px);
+  filter: blur(2px);
+}
+
+/* Pantallas medianas (tablets y móviles horizontales) */
+@media (max-width: 768px) {
+  .results-title-new {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .results-content {
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .tato-image {
+    width: clamp(130px, 22vw, 200px);
+  }
+
+  .stats-container {
+    gap: clamp(0.8rem, 2.5vw, 1.2rem);
+  }
+
+  .stat-row {
+    font-size: clamp(1rem, 2.8vw, 1.3rem);
+  }
+
+  .stat-icon {
+    font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+  }
+
+  .stat-icon-img {
+    width: clamp(1.8rem, 4.5vw, 2.5rem);
+    height: clamp(1.8rem, 4.5vw, 2.5rem);
+  }
+
+  .star {
+    font-size: clamp(50px, 10vw, 80px);
+  }
+
+  .stars-container {
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .pushable-accept-button {
+    width: clamp(160px, 25vw, 240px);
+    height: clamp(80px, 12.5vw, 120px);
+  }
+}
+
+/* Pantallas pequeñas (móviles en vertical) */
+@media (max-width: 640px) {
+  .results-screen-new {
+    padding: clamp(0.8rem, 2.5vw, 1.5rem);
+  }
+
+  .results-title-new {
+    font-size: clamp(1.3rem, 3.8vw, 1.8rem);
+    margin-bottom: clamp(0.8rem, 2.5vw, 1.2rem);
+  }
+
+  .results-content {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: clamp(1.2rem, 3vw, 2rem);
+  }
+
+  .tato-image {
+    width: clamp(100px, 30vw, 150px);
+  }
+
+  .stats-container {
+    width: 100%;
+    gap: clamp(0.6rem, 2vw, 1rem);
+  }
+
+  .stat-row {
+    font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+  }
+
+  .stat-icon {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .stat-icon-img {
+    width: clamp(1.5rem, 4vw, 2rem);
+    height: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .star {
+    font-size: clamp(45px, 10vw, 70px);
+  }
+
+  .stars-container {
+    gap: clamp(0.4rem, 1.5vw, 0.8rem);
+    margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .accept-button-container {
+    position: static;
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .pushable-accept-button {
+    width: clamp(120px, 28vw, 180px);
+    height: clamp(60px, 14vw, 90px);
+  }
+}
+
+/* Pantallas muy pequeñas o con poca altura */
+@media (max-width: 480px) or (max-height: 700px) {
+  .results-screen-new {
+    padding: clamp(0.6rem, 2vw, 1rem);
+  }
+
+  .results-title-new {
+    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+    margin-bottom: clamp(0.6rem, 2vw, 1rem);
+  }
+
+  .results-content {
+    gap: 0.8rem;
+    margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .tato-image {
+    width: clamp(80px, 25vw, 120px);
+  }
+
+  .stats-container {
+    gap: clamp(0.5rem, 1.8vw, 0.8rem);
+  }
+
+  .stat-row {
+    font-size: clamp(0.85rem, 2.3vw, 1rem);
+    gap: clamp(0.5rem, 1.5vw, 0.8rem);
+  }
+
+  .stat-icon {
+    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+  }
+
+  .stat-icon-img {
+    width: clamp(1.3rem, 3.5vw, 1.8rem);
+    height: clamp(1.3rem, 3.5vw, 1.8rem);
+  }
+
+  .star {
+    font-size: clamp(35px, 9vw, 60px);
+  }
+
+  .stars-container {
+    gap: clamp(0.3rem, 1.2vw, 0.6rem);
+    margin-bottom: clamp(0.8rem, 2vw, 1.2rem);
+  }
+
+  .pushable-accept-button {
+    width: clamp(100px, 25vw, 150px);
+    height: clamp(50px, 12.5vw, 75px);
+  }
+}
+
+/* Pantallas extremadamente pequeñas */
+@media (max-width: 360px) or (max-height: 600px) {
+  .results-screen-new {
+    padding: clamp(0.5rem, 1.8vw, 0.8rem);
+  }
+
+  .results-title-new {
+    font-size: clamp(1.1rem, 3.2vw, 1.4rem);
+    margin-bottom: clamp(0.5rem, 1.8vw, 0.8rem);
+  }
+
+  .results-content {
+    gap: 0.6rem;
+    margin-bottom: clamp(0.8rem, 2vw, 1.2rem);
+  }
+
+  .tato-image {
+    width: clamp(70px, 22vw, 100px);
+  }
+
+  .stats-container {
+    gap: clamp(0.4rem, 1.5vw, 0.6rem);
+  }
+
+  .stat-row {
+    font-size: clamp(0.8rem, 2.1vw, 0.95rem);
+    gap: clamp(0.4rem, 1.2vw, 0.6rem);
+  }
+
+  .stat-icon {
+    font-size: clamp(1.2rem, 3.2vw, 1.6rem);
+  }
+
+  .stat-icon-img {
+    width: clamp(1.2rem, 3.2vw, 1.6rem);
+    height: clamp(1.2rem, 3.2vw, 1.6rem);
+  }
+
+  .star {
+    font-size: clamp(30px, 8vw, 50px);
+  }
+
+  .stars-container {
+    gap: clamp(0.25rem, 1vw, 0.5rem);
+    margin-bottom: clamp(0.6rem, 1.8vw, 1rem);
+  }
+
+  .pushable-accept-button {
+    width: clamp(90px, 23vw, 130px);
+    height: clamp(45px, 11.5vw, 65px);
+  }
+
+  .accept-button-container {
+    bottom: clamp(0.8rem, 2vw, 1.5rem);
+    right: clamp(0.8rem, 2vw, 1.5rem);
+  }
+}
+
+/* Ajustes específicos para altura muy pequeña */
+@media (max-height: 500px) {
+  .results-screen-new {
+    justify-content: space-evenly;
+  }
+
+  .results-title-new {
+    margin-bottom: 0.4rem;
+  }
+
+  .results-content {
+    margin-bottom: 0.6rem;
+  }
+
+  .stars-container {
+    margin-bottom: 0.5rem;
   }
 }

@@ -1,8 +1,28 @@
 /**
- * Juego 2: Ordena la Secuencia
+ * @file Game2.tsx
+ * @description Juego 2: Ordena la Secuencia
  *
- * El estudiante debe ordenar números de forma ascendente o descendente
- * arrastrándolos desde la zona superior a la zona de ordenamiento.
+ * Juego educativo que presenta números desordenados que el usuario debe
+ * ordenar arrastrándolos a sus posiciones correctas (ascendente o descendente).
+ *
+ * Flujo del juego:
+ * 1. Carga configuración personalizada del usuario (rango, cantidad, orden)
+ * 2. Crea sesión de juego en backend para tracking
+ * 3. Por cada ronda (5 totales):
+ *    - Genera números aleatorios según configuración
+ *    - Usuario arrastra números a posiciones correctas
+ *    - Valida en tiempo real y guarda resultado
+ * 4. Finaliza sesión y muestra pantalla de resultados
+ *
+ * Características:
+ * - Drag & drop nativo HTML5 + soporte táctil
+ * - Slots vacíos persistentes
+ * - Pictogramas visuales para rango 0-10
+ * - Sistema de pistas (Tato)
+ * - Video tutorial integrado
+ * - Tracking completo (tiempo, intentos, errores)
+ *
+ * @returns Componente React con UI completa del juego
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -29,7 +49,7 @@ import './Game2.css';
 // Importar imágenes para el header
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgTato from '/assets/Tato/TatoPista.jpeg';
+import imgTato from '/assets/Tato/TatoPista.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
@@ -56,44 +76,34 @@ const PICTOGRAM_IMAGES: { [key: number]: string } = {
 const TOTAL_ROUNDS = 5;
 
 /**
- * 
- * !! EDITED
- *  -> Now there is no student only user
- *  -> If differenciation is needed, use the role
  * Componente principal del Juego 2: Ordena la Secuencia.
  *
- * Este juego educativo presenta números desordenados que el usuario (estudiante o profesor)
- * debe ordenar arrastrándolos a sus posiciones correctas (ascendente o descendente).
- * Incluye números de ayuda pre-colocados y bloqueados para facilitar la tarea.
+ * Resumen funcional:
+ * Juego educativo de ordenamiento de números mediante drag & drop. El usuario
+ * debe colocar números desordenados en el orden correcto (ascendente o descendente)
+ * arrastrándolos uno por uno a los slots disponibles.
  *
- * Características principales:
- * - Disponible para estudiantes y profesores con las mismas características
- * - 5 rondas con números aleatorios diferentes
- * - Drag & drop nativo HTML5 para mover números
- * - Números de ayuda (40% del total) pre-colocados en verde
- * - Slots vacíos persistentes que permiten devolver números
- * - Pictogramas visuales para el rango 0-10
- * - Validación con feedback inmediato (check/cruz)
- * - Tracking completo en backend (tiempo, intentos, resultados)
+ * Flujo de ejecución:
+ * 1. Carga configuración personalizada (`loadGameConfig`)
+ * 2. Crea sesión en backend (`createGameSession`)
+ * 3. Genera 5 rondas con números aleatorios (`generateRound`)
+ * 4. Valida cada colocación en tiempo real (`tryPlaceNumber`)
+ * 5. Guarda resultados de cada ronda (`saveRoundResults`)
+ * 6. Finaliza sesión y muestra resultados (`finishGame`)
  *
- * Flujo del juego:
- * 1. Carga configuración personalizada del usuario
- * 2. Crea sesión de juego en BD
- * 3. Por cada ronda:
- *    - Genera números aleatorios según config
- *    - Coloca algunos como ayuda (bloqueados)
- *    - Usuario arrastra números a posiciones correctas
- *    - Valida y guarda resultado
- * 4. Tras 5 rondas, finaliza sesión y redirige al dashboard correspondiente
+ * Contrato mínimo:
+ * - Entradas: configuración del juego (rango, cantidad, orden) y acciones del usuario
+ * - Salidas: llamadas API para crear sesión, guardar rondas y finalizar sesión
+ * - Modos de error: manejo de errores de red y configuración por defecto
  *
- * @returns Componente React con UI completa del juego
+ * @returns Componente React que renderiza la UI completa del juego
  *
  * @example
  * // Usado en el routing de la app:
  * <Route path="/game/game2" component={Game2} />
  */
 const Game2: React.FC = () => {
-  
+
   const location = useLocation();
   const router = useIonRouter();
   const { user, loadingAuth: authLoading } = useAuth();
@@ -362,16 +372,19 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Carga los mensajes personalizados desde el UserContext.
+   * Resumen funcional:
+   * Carga los mensajes personalizados de feedback desde el UserContext.
    *
    * Flujo de ejecución:
    * 1. Espera a que el UserContext termine de cargar
-   * 2. Obtiene los mensajes normalizados desde getAllMessages()
+   * 2. Obtiene los mensajes normalizados desde `getAllMessages()`
    * 3. Si no hay mensajes, refresca los datos del usuario
    * 4. Actualiza el estado con los mensajes personalizados
-   * 5. Si falla, usa mensajes por defecto
    *
-   * @returns Promesa que resuelve cuando se cargan los mensajes
+   * @returns Promise<void> que resuelve cuando se cargan los mensajes
+   *
+   * @example
+   * await loadPositiveMessages();
    */
   const loadPositiveMessages = async () => {
     try {
@@ -400,8 +413,21 @@ const Game2: React.FC = () => {
   };
 
   /**
+   * Resumen funcional:
    * Genera los números y configuración para una nueva ronda del juego.
-   * Nueva lógica: Arriba todos los números mezclados, abajo una casilla vacía a la vez.
+   *
+   * Flujo de ejecución:
+   * 1. Extrae y valida el rango de números de la configuración
+   * 2. Genera números únicos aleatorios según la cantidad configurada
+   * 3. Ordena los números según configuración (ascendente/descendente)
+   * 4. Mezcla los números para mostrar en zona superior
+   * 5. Crea array vacío para zona de ordenamiento
+   * 6. Reinicia contadores y estados de la ronda
+   *
+   * @returns void - Actualiza estados: currentNumber, availableNumbers, correctOrder, etc.
+   *
+   * @example
+   * generateRound();
    */
   const generateRound = () => {
     if (!config) return;
@@ -475,13 +501,31 @@ const Game2: React.FC = () => {
 
 
   /**
-   * Intenta colocar un número arrastrado en el slot especificado.
-   * Valida inmediatamente si es correcto o no.
+   * Resumen funcional:
+   * Intenta colocar un número arrastrado en el primer slot vacío disponible
+   * y valida si es correcto en tiempo real.
+   *
+   * Flujo de ejecución:
+   * 1. Verifica que el slot objetivo es el primer slot vacío
+   * 2. Comprueba si el número es correcto para esa posición
+   * 3. Si es incorrecto, muestra feedback de error e incrementa contador
+   * 4. Si es correcto, coloca el número y lo quita de availableNumbers
+   * 5. Si todos los números están colocados, guarda resultados de la ronda
+   *
+   * @param draggedNumber - Número que se está intentando colocar
+   * @param targetIndex - Índice del slot objetivo
    * @param currentHints - Valor actual de hints para evitar problemas de estado asíncrono
    * @param isHint - Si true, no muestra feedback (es una pista automática)
+   * @returns void
+   *
+   * @example
+   * tryPlaceNumber(5, 0);
    */
   const tryPlaceNumber = (draggedNumber: number, targetIndex: number, currentHints?: number, isHint: boolean = false) => {
     if (showFeedback) return;
+
+    // Asegurar que draggedNumber es un número (no string)
+    const numericDragged = typeof draggedNumber === 'number' ? draggedNumber : Number(draggedNumber);
 
     // Buscar el primer slot vacío
     const firstEmptyIndex = orderedNumbers.findIndex(n => n === undefined);
@@ -490,7 +534,7 @@ const Game2: React.FC = () => {
     if (targetIndex !== firstEmptyIndex) return;
 
     // Verificar si el número es correcto para esta posición
-    const isCorrect = draggedNumber === correctOrder[firstEmptyIndex];
+    const isCorrect = numericDragged === correctOrder[firstEmptyIndex];
 
     if (!isCorrect) {
       // Mostrar pantalla de feedback con error
@@ -502,33 +546,30 @@ const Game2: React.FC = () => {
 
     // Es correcto: colocar el número y quitarlo de availableNumbers
     const newOrdered = [...orderedNumbers];
-    newOrdered[firstEmptyIndex] = draggedNumber;
+    newOrdered[firstEmptyIndex] = numericDragged;
     setOrderedNumbers(newOrdered);
 
     // Reemplazar el número con undefined en availableNumbers (mantener posición fija)
-    const newAvailable = availableNumbers.map(n => n === draggedNumber ? undefined : n);
+    // Usar comparación estricta de tipos para asegurar que funciona con 0
+    const newAvailable = availableNumbers.map(n => {
+      if (typeof n === 'number' && typeof numericDragged === 'number') {
+        return n === numericDragged ? undefined : n;
+      }
+      return n;
+    });
     setAvailableNumbers(newAvailable);
 
     // Verificar si todos los números fueron colocados (todos son undefined)
-    if (newAvailable.every(n => n === undefined)) {
+    const allPlaced = newAvailable.every(n => n === undefined);
+
+    if (allPlaced) {
       // Todos los números colocados: guardar resultados
       saveRoundResults(currentHints);
       setIsRoundCompleted(true);
 
-      // Si NO es una pista, mostrar feedback
-      if (!isHint) {
-        setFeedbackType('correct');
-        setShowFeedbackScreen(true);
-      } else {
-        // Si es una pista y es el último número, avanzar automáticamente con un pequeño delay
-        setTimeout(() => {
-          if (currentRound < TOTAL_ROUNDS) {
-            setCurrentRound(prev => prev + 1);
-          } else {
-            finishGame();
-          }
-        }, 800); // Pequeño delay para que el usuario vea que se colocó el número
-      }
+      // Siempre mostrar feedback al completar la ronda (ya sea manual o con pista)
+      setFeedbackType('correct');
+      setShowFeedbackScreen(true);
     } else {
       // Aún quedan números: solo mostrar feedback si NO es una pista
       if (!isHint) {
@@ -539,8 +580,19 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Guarda los resultados de la ronda actual.
-   * @param currentHints - Valor actual de hints (opcional, usa hintsCount del estado si no se proporciona)
+   * Resumen funcional:
+   * Guarda los resultados de la ronda actual en el backend y acumula métricas.
+   *
+   * Flujo de ejecución:
+   * 1. Calcula el tiempo transcurrido desde el inicio de la ronda
+   * 2. Acumula métricas (pistas, errores, tiempo, aciertos)
+   * 3. Envía resultado de la ronda al backend mediante API
+   *
+   * @param currentHints - Valor actual de hints (opcional, usa hintsCount si no se proporciona)
+   * @returns Promise<void> que resuelve cuando se guardan los resultados
+   *
+   * @example
+   * await saveRoundResults(2);
    */
   const saveRoundResults = async (currentHints?: number) => {
     const timeSeconds = (Date.now() - roundStartTime) / 1000;
@@ -574,7 +626,18 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Cierra la pantalla de feedback y continúa según corresponda.
+   * Resumen funcional:
+   * Cierra la pantalla de feedback y avanza a la siguiente ronda si corresponde.
+   *
+   * Flujo de ejecución:
+   * 1. Guarda el estado de completitud de la ronda actual
+   * 2. Cierra pantalla de feedback
+   * 3. Si la ronda está completa y fue correcta, avanza a la siguiente ronda
+   *
+   * @returns void
+   *
+   * @example
+   * closeFeedbackScreen();
    */
   const closeFeedbackScreen = () => {
     const wasCompleted = isRoundCompleted;
@@ -591,8 +654,17 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Avanza a la siguiente ronda o finaliza el juego.
-   * Se llama cuando el usuario pulsa el botón de continuar.
+   * Resumen funcional:
+   * Avanza a la siguiente ronda o finaliza el juego si es la última ronda.
+   *
+   * Flujo de ejecución:
+   * 1. Si quedan rondas, incrementa el contador de ronda
+   * 2. Si era la última ronda, llama a `finishGame()`
+   *
+   * @returns void
+   *
+   * @example
+   * advanceToNextRound();
    */
   const advanceToNextRound = () => {
     if (currentRound < TOTAL_ROUNDS) {
@@ -603,14 +675,27 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Proporciona una pista colocando automáticamente el número correcto.
-   * No muestra feedback para no recompensar el uso de pistas.
+   * Resumen funcional:
+   * Proporciona una pista colocando automáticamente el número correcto en el
+   * primer slot vacío. No muestra feedback para no recompensar el uso de pistas.
+   *
+   * Flujo de ejecución:
+   * 1. Verifica que no haya feedback activo y que haya números disponibles
+   * 2. Incrementa el contador de pistas
+   * 3. Encuentra el primer slot vacío y el número correcto
+   * 4. Coloca automáticamente el número sin mostrar feedback
+   *
+   * @returns void
+   *
+   * @example
+   * useHint();
    */
   const useHint = () => {
     // No permitir usar pista durante feedback o si no hay números disponibles
     if (showFeedback) return;
 
-    const hasAvailableNumbers = availableNumbers.some(n => n !== undefined);
+    // Verificación correcta: buscar cualquier número válido (incluyendo 0)
+    const hasAvailableNumbers = availableNumbers.some(n => typeof n === 'number');
     if (!hasAvailableNumbers) return;
 
     // Calcular el nuevo valor de hints
@@ -662,7 +747,13 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Salir al dashboard desde cualquier estado sin recrear sesión.
+   * Resumen funcional:
+   * Redirige al dashboard correspondiente según el rol del usuario.
+   *
+   * @returns void
+   *
+   * @example
+   * exitToDashboard();
    */
   const exitToDashboard = () => {
     setExiting(true);
@@ -671,7 +762,19 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja la salida anticipada del juego (botón home).
+   * Resumen funcional:
+   * Maneja la salida anticipada del juego (botón home) guardando el progreso actual.
+   *
+   * Flujo de ejecución:
+   * 1. Cierra pantallas de feedback activas
+   * 2. Si hay números colocados, guarda la ronda incompleta con omisiones
+   * 3. Finaliza la sesión en el backend
+   * 4. Redirige al dashboard correspondiente
+   *
+   * @returns Promise<void>
+   *
+   * @example
+   * await handleEarlyExit();
    */
   const handleEarlyExit = async () => {
     setExiting(true);
@@ -719,12 +822,26 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el drag start para HTML5 drag and drop.
+   * Resumen funcional:
+   * Maneja el inicio del arrastre mediante HTML5 drag and drop.
+   *
+   * Flujo de ejecución:
+   * 1. Configura los datos de transferencia del drag
+   * 2. Crea una imagen personalizada para el preview del drag
+   * 3. Actualiza el estado con el número que se está arrastrando
+   *
+   * @param e - Evento de drag de React
+   * @param number - Número que se está arrastrando
+   * @returns void
+   *
+   * @example
+   * handleDragStart(event, 5);
    */
   const handleDragStart = (e: React.DragEvent, number: number) => {
     if (showFeedback) return;
+
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', number.toString());
+    e.dataTransfer.setData('text/plain', String(number));
 
     // Deseleccionar cualquier número previamente seleccionado
     setSelectedNumber(null);
@@ -732,6 +849,14 @@ const Game2: React.FC = () => {
     // Crear imagen personalizada para drag
     const dragElement = e.currentTarget as HTMLElement;
     const clone = dragElement.cloneNode(true) as HTMLElement;
+
+    // Asegurar que todas las imágenes dentro del clon no sean draggables
+    const cloneImages = clone.querySelectorAll('img');
+    cloneImages.forEach(img => {
+      img.draggable = false;
+      img.setAttribute('draggable', 'false');
+      (img as HTMLElement).style.pointerEvents = 'none';
+    });
 
     // Mantener colores actuales del tema usando las mismas clases
     clone.classList.add('number-card-selected', 'drag-preview');
@@ -745,21 +870,36 @@ const Game2: React.FC = () => {
     e.dataTransfer.setDragImage(clone, 55, 55);
 
     setTimeout(() => {
-      document.body.removeChild(clone);
+      if (clone.parentNode) {
+        clone.parentNode.removeChild(clone);
+      }
     }, 0);
 
     setDraggingNumber(number);
   };
 
   /**
-   * Maneja el drag end para limpiar el estado.
+   * Resumen funcional:
+   * Maneja el fin del arrastre HTML5 limpiando el estado.
+   *
+   * @returns void
+   *
+   * @example
+   * handleDragEnd();
    */
   const handleDragEnd = () => {
     setDraggingNumber(null);
   };
 
   /**
-   * Maneja el click en un número para seleccionarlo (rojo).
+   * Resumen funcional:
+   * Maneja el click en un número para seleccionarlo/deseleccionarlo visualmente.
+   *
+   * @param number - Número clickeado
+   * @returns void
+   *
+   * @example
+   * handleNumberClick(5);
    */
   const handleNumberClick = (number: number) => {
     if (showFeedback) return;
@@ -767,10 +907,26 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el inicio del touch en un número (dispositivos móviles/tablets).
+   * Resumen funcional:
+   * Maneja el inicio del touch en un número para dispositivos móviles/tablets.
+   *
+   * Flujo de ejecución:
+   * 1. Previene el comportamiento por defecto para evitar scroll
+   * 2. Guarda el número que se está arrastrando
+   * 3. Crea un clon visual del elemento para seguir el toque
+   *
+   * @param e - Evento touch de React
+   * @param number - Número que se está arrastrando
+   * @returns void
+   *
+   * @example
+   * handleTouchStart(event, 5);
    */
   const handleTouchStart = (e: React.TouchEvent, number: number) => {
     if (showFeedback) return;
+
+    // Prevenir comportamiento por defecto para evitar scroll
+    e.preventDefault();
 
     const touch = e.touches[0];
     //setTouchStartPos({ x: touch.clientX, y: touch.clientY });
@@ -792,15 +948,23 @@ const Game2: React.FC = () => {
     clone.style.top = `${touch.clientY - rect.height / 2}px`;
     clone.id = 'touch-drag-clone';
 
-    document.body.appendChild(clone);
-    setDraggedElement(clone);
+   document.body.appendChild(clone);
+   setDraggedElement(clone);
   };
 
   /**
-   * Maneja el movimiento del touch mientras arrastra un número.
+   * Resumen funcional:
+   * Maneja el movimiento del touch actualizando la posición visual del elemento arrastrado.
+   *
+   * @param e - Evento touch de React
+   * @returns void
+   *
+   * @example
+   * handleTouchMove(event);
    */
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!draggingNumber || !draggedElement) return;
+    // Permitir arrastrar el número 0 usando comprobación explícita de null
+    if (draggingNumber === null || !draggedElement) return;
 
     e.preventDefault(); // Prevenir scroll mientras arrastra
 
@@ -811,22 +975,67 @@ const Game2: React.FC = () => {
   };
 
   /**
-   * Maneja el fin del touch cuando suelta el número.
+   * Resumen funcional:
+   * Limpia el estado de arrastre eliminando elementos visuales y reseteando estados.
+   * Reutilizable para touchEnd y touchCancel.
+   *
+   * @returns void
+   *
+   * @example
+   * cleanupTouchDrag();
    */
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!draggingNumber) return;
-
-    const touch = e.changedTouches[0];
-
+  const cleanupTouchDrag = () => {
     // Limpiar elemento visual
     if (draggedElement && draggedElement.parentNode) {
       draggedElement.parentNode.removeChild(draggedElement);
     }
     setDraggedElement(null);
 
+    // Limpiar cualquier clon huérfano
+    const orphanClone = document.getElementById('touch-drag-clone');
+    if (orphanClone && orphanClone.parentNode) {
+      orphanClone.parentNode.removeChild(orphanClone);
+    }
+
+    // Resetear estados
+    setDraggingNumber(null);
+  };
+
+  /**
+   * Resumen funcional:
+   * Maneja el fin del touch detectando dónde se soltó el número y colocándolo si es válido.
+   *
+   * Flujo de ejecución:
+   * 1. Verifica que hay un número siendo arrastrado
+   * 2. Limpia elementos visuales del drag
+   * 3. Detecta en qué slot se soltó el número
+   * 4. Si es un slot válido, intenta colocar el número
+   *
+   * @param e - Evento touch de React
+   * @returns void
+   *
+   * @example
+   * handleTouchEnd(event);
+   */
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    // Prevenir comportamiento por defecto
+    e.preventDefault();
+
+    // CRÍTICO: Verificar typeof number para que funcione con 0
+    if (typeof draggingNumber !== 'number') {
+      cleanupTouchDrag();
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const currentDragging = draggingNumber;
+
+    // Limpiar elementos visuales primero
+    cleanupTouchDrag();
+
     // Encontrar el slot donde se soltó el número
     const dropZone = document.getElementById('drop-zone-container');
-    if (dropZone) {
+    if (dropZone && touch) {
       const slots = dropZone.querySelectorAll('.droppable-slot');
       let targetIndex = -1;
 
@@ -842,13 +1051,25 @@ const Game2: React.FC = () => {
         }
       });
 
-      if (targetIndex !== -1) {
-        tryPlaceNumber(draggingNumber, targetIndex);
+      if (targetIndex !== -1 && typeof currentDragging === 'number') {
+        tryPlaceNumber(currentDragging, targetIndex);
       }
     }
+  };
 
-    setDraggingNumber(null);
-    //setTouchStartPos(null);
+  /**
+   * Resumen funcional:
+   * Maneja la cancelación del touch limpiando el estado cuando el sistema interrumpe el gesto.
+   *
+   * @param e - Evento touch de React
+   * @returns void
+   *
+   * @example
+   * handleTouchCancel(event);
+   */
+  const handleTouchCancel = (e: React.TouchEvent) => {
+    e.preventDefault();
+    cleanupTouchDrag();
   };
 
   /**
@@ -882,7 +1103,9 @@ const Game2: React.FC = () => {
    */
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
-    const draggedNumber = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    const dataStr = e.dataTransfer.getData('text/plain');
+    const draggedNumber = parseInt(dataStr, 10);
+
     if (!isNaN(draggedNumber)) {
       tryPlaceNumber(draggedNumber, targetIndex);
     }
@@ -943,43 +1166,24 @@ const Game2: React.FC = () => {
     );
   }
   */
-  
+
 
   return (
     <IonPage>
       <IonContent className="game2-content" scrollY={false}>
-          {gameFinished ? (
-            <ResultsScreen
-              totalRounds={TOTAL_ROUNDS}
-              completedRounds={roundTimes.length}
-              totalHints={totalHintsUsed}
-              totalErrors={totalErrorsMade}
-              totalNumbersCorrect={totalNumbersCorrect}
-              totalNumbersRequired={totalNumbersRequired}
-              onHomeClick={exitToDashboard}
-              headerTitle="Ordenar Nº"
-              headerPictogram1={imgOrdenar}
-              headerPictogramArrow={imgFlecha}
-              headerPictogram2={imgJuego}
-            />
-          ) : (
-          <>
-        {/* Mostrar pantalla de feedback después de colocar un número */}
-        {showFeedbackScreen ? (
-          <FeedbackScreen
-            isCorrect={feedbackType === 'correct'}
-            currentRound={currentRound}
+        {gameFinished ? (
+          <ResultsScreen
             totalRounds={TOTAL_ROUNDS}
+            totalHints={totalHintsUsed}
+            totalErrors={totalErrorsMade}
+            totalNumbersCorrect={totalNumbersCorrect}
+            totalNumbersRequired={totalNumbersRequired}
+            onHomeClick={exitToDashboard}
             headerTitle="Ordenar Nº"
             headerPictogram1={imgOrdenar}
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
-            imgTatoFeliz={imgTatoFeliz}
-            imgTatoTriste={imgTatoTriste}
-            imgSiguiente={imgSiguiente}
-            messages={Messages}
-            onNext={closeFeedbackScreen}
-            onHomeClick={handleEarlyExit}
+            elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
           />
         ) : (
           <>
@@ -994,13 +1198,13 @@ const Game2: React.FC = () => {
               onHomeClick={handleEarlyExit}
             />
 
+        {/* Wrapper principal */}
+        <div className="game2-main-wrapper">
+          {/* Zona de juego */}
+          <div className="game2-container">
 
-
-        {/* Zona de juego */}
-        <div className="game2-container">
-
-          {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
-          <div className="available-numbers-top" id="available-zone">
+            {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
+            <div className="available-numbers-top" id="available-zone">
             {availableNumbers.map((num, index) => {
               if (num === undefined) {
                 // Hueco vacío - círculo gris con borde punteado negro
@@ -1012,7 +1216,8 @@ const Game2: React.FC = () => {
                 );
               }
 
-              const pictogramImg = usePictograms && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
+              // Verificar explícitamente que num está en el rango válido de pictogramas (0-10)
+              const pictogramImg = usePictograms && num >= 0 && num <= 10 ? PICTOGRAM_IMAGES[num] : null;
               const isBeingDragged = draggingNumber === num;
               const isSelected = selectedNumber === num;
 
@@ -1034,8 +1239,16 @@ const Game2: React.FC = () => {
                   onTouchStart={(e) => handleTouchStart(e, num)}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchCancel}
                   onClick={() => handleNumberClick(num)}
                   style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
+                  onDragStartCapture={(e) => {
+                    // Prevenir drag de elementos hijos en fase de captura
+                    if (e.target !== e.currentTarget) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+                  }}
                 >
                   {pictogramImg ? (
                     <img
@@ -1044,6 +1257,11 @@ const Game2: React.FC = () => {
                       className="pictogram-image"
                       loading="eager"
                       decoding="sync"
+                      draggable={false}
+                      onDragStart={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     />
                   ) : (
                     <span className="number-value">{num}</span>
@@ -1069,37 +1287,47 @@ const Game2: React.FC = () => {
           </div>
         </div>
 
-        {/* Botones de control */}
-        <div className="check-button-container">
-          {/* Botón de pistas (Tato) */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button game2-hint-button"
-            onClick={useHint}
-            disabled={availableNumbers.every(n => n === undefined)}
-          >
-            <img
-              src={imgTato}
-              alt="Pista"
-              className="game2-check-button-image"
-            />
-          </IonButton>
+          {/* Botones de control */}
+          <div className="check-button-container">
+            {/* Botón de pistas (Tato) */}
+            <IonButton
+              fill="clear"
+              className="game2-check-button game2-hint-button"
+              onClick={useHint}
+              disabled={availableNumbers.every(n => n === undefined)}
+            >
+              <img
+                src={imgTato}
+                alt="Pista"
+                className="game2-check-button-image"
+              />
+            </IonButton>
 
-          {/* Botón de instrucciones/tutorial */}
-          <IonButton
-            fill="clear"
-            className="game2-check-button"
-            onClick={openVideoModal}
-          >
-            <img
-              src={imgInstrucciones}
-              alt="Video de ayuda"
-              className="game2-check-button-image"
-            />
-          </IonButton>
+            {/* Indicador de orden */}
+            <div className="order-indicator">
+              <span className="order-icon">
+                {config?.settings.order === 'ascending' ? '↑' : '↓'}
+              </span>
+              <span className="order-text">
+                {config?.settings.order === 'ascending' ? 'Ascendente' : 'Descendente'}
+              </span>
+            </div>
+
+            {/* Botón de instrucciones/tutorial */}
+            <IonButton
+              fill="clear"
+              className="game2-check-button"
+              onClick={openVideoModal}
+            >
+              <img
+                src={imgInstrucciones}
+                alt="Video de ayuda"
+                className="game2-check-button-image"
+              />
+            </IonButton>
+          </div>
         </div>
-        </>
-        )}
+
         {/* Video Modal */}
         {showVideoModal && (
           <div className="game2-video-modal-overlay" onClick={closeVideoModal}>
@@ -1119,7 +1347,30 @@ const Game2: React.FC = () => {
             </div>
           </div>
         )}
-          </>
+
+        {/* Feedback Screen */}
+        {showFeedbackScreen && feedbackType && (
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1000 }}>
+            <FeedbackScreen
+              isCorrect={feedbackType === 'correct'}
+              currentRound={currentRound}
+              totalRounds={TOTAL_ROUNDS}
+              headerTitle="Ordenar Nº"
+              headerPictogram1={imgOrdenar}
+              headerPictogramArrow={imgFlecha}
+              headerPictogram2={imgJuego}
+              imgTatoFeliz={imgTatoFeliz}
+              imgTatoTriste={imgTatoTriste}
+              imgSiguiente={imgSiguiente}
+              messages={Messages}
+              onNext={closeFeedbackScreen}
+              onHomeClick={handleEarlyExit}
+              onRepeat={feedbackType === 'incorrect' ? closeFeedbackScreen : undefined}
+              hideNextOnError={true}
+            />
+          </div>
+        )}
+        </>
         )}
       </IonContent>
     </IonPage>

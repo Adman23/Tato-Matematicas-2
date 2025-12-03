@@ -25,11 +25,18 @@
     height: 90px;
     width: 250px;
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
 
     font-size: 25px;
     font-weight: bold;
+}
+
+.Boton-header_ColorPaletteCard{
+
+    height: 50px;
+    width: 55px;
 }
 
 /*=====================================

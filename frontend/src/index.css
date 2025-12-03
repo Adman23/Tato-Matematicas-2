@@ -15,7 +15,7 @@
 /* ========== TEMA TATOMATHS ========== */
 :root {
   /* Colores primarios */
-  --ion-color-primary: #50BFE6;
+  --ion-color-primary: #1863A3;
   --ion-color-primary-rgb: 56, 128, 255;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
@@ -81,6 +81,7 @@
   --tatomaths-background: #FFFFFF;
   --tatomaths-text: #000000;
   --tatomaths-text-primary: #FFFFFF;
+  --button-profile-bg: #A9DAF3;
   --bubble-bg: #A9DAF3;
   --bubble-selected-bg: #FFB7FA;
   --bubble-correct-bg: #34D399;

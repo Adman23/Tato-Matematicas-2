@@ -19,6 +19,8 @@
 
     text-align: left;
     margin-bottom: 18px;
+    font-weight: bold;
+    font-size: 22px;
 }
 
 /*======================================
@@ -44,9 +46,10 @@
 
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   align-content: center;
   align-items: center;
+  width: auto;
 }
 
 /*==============================================
@@ -59,4 +62,56 @@
   flex-direction: column;
   align-items: center;
 
+}
+
+@media (max-width: 768px) {
+
+  .studenEditColors-personalizacionAvanzada{
+
+    flex-direction: column;
+  }
+
+  .EditColor-IonCol {
+    width: 100% !important;  /* fuerza que cada columna ocupe todo el ancho */
+    margin-bottom: 16px;      /* separa verticalmente cada columna */
+  }
+
+  .EditColor-label {
+    font-size: 14px;          /* tamaño de texto más cómodo para móvil */
+  }
+
+  /* Ajuste opcional del PopoverPicker si necesita ocupar todo el ancho */
+  .EditColor-IonCol > .popover-picker {
+    width: 100%;
+  }
+
+  .editColorsButtons{
+
+    flex-direction: column;
+    gap: 8px
+  }
+}
+
+.Modal-EditColors-toolbar{
+
+  background-color: var(--ion-color-primary);
+  height: 90px;
+}
+
+.ModalColorEditContent{
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.SuccessEditColor{
+
+  margin-top: 10px; 
+  text-align: center;
+  color: var(--ion-color-success);
+  font-size: 25px;
+  font-weight: bold;
 }

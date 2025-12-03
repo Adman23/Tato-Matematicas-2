@@ -40,14 +40,15 @@ import {
     IonList,
     IonTitle,
     IonButton,
-    IonSearchbar
+    IonSearchbar,
+    useIonRouter,
 
 } from '@ionic/react';
 import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
 
 import './LinkProfiles.css';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
@@ -93,7 +94,7 @@ export default function LinkProfiles() {
     const [_error, setError] = useState('');
     const [studentQuery, setStudentQuery] = useState<string>('');
     const [teacherQuery, setTeacherQuery] = useState<string>('');
-    const history = useHistory();
+    const router = useIonRouter();
 
 
 
@@ -404,7 +405,7 @@ export default function LinkProfiles() {
                         <div className='LinkProfiles-searchbar'>
                             <IonTitle className='LinkProfiles-title'>Alumnos</IonTitle>
                             <IonSearchbar
-                                placeholder="Buscar alumno"
+                                placeholder="Buscar"
                                 value={studentQuery}
                                 onIonInput={(e) => setStudentQuery(e.detail.value ?? '')}
                                 onIonClear={() => setStudentQuery('')}
@@ -445,7 +446,7 @@ export default function LinkProfiles() {
                         <div className='LinkProfiles-searchbar'>
                             <IonTitle className='LinkProfiles-title'>Profesores</IonTitle>
                             <IonSearchbar
-                                placeholder="Buscar profesor"
+                                placeholder="Buscar"
                                 value={teacherQuery}
                                 onIonInput={(e) => setTeacherQuery(e.detail.value ?? '')}
                                 onIonClear={() => setTeacherQuery('')}
@@ -519,7 +520,7 @@ export default function LinkProfiles() {
                         expand="block"
                         type="submit"
                         className='LinkProfiles-button'
-                        onClick={() => history.push('/admin/dashboard')}
+                        onClick={() => router.push('/admin/dashboard', "forward", "pop")}
                     >
                         Cancelar
                     </IonButton>

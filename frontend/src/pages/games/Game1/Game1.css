@@ -105,8 +105,8 @@
 .game1-check-button {
     --padding-start: 0;
     --padding-end: 0;
-    width: clamp(70px, 10vw, 120px);
-    height: clamp(70px, 10vw, 120px);
+    width: clamp(70px, 11vw, 130px);
+    height: clamp(70px, 11vw, 130px);
     margin: 0;
     flex-shrink: 0;
 }
@@ -136,114 +136,152 @@
     opacity: 0.4;
 }
 
+
 /* ========================================
-    Responsive Design
+    Responsive Adjustments
    ======================================== */
-@media (min-width: 768px) and (max-width: 1024px) {
-    .game1-grid-container {
-        grid-template-columns: minmax(100px, 25%) 1fr;
-        gap: clamp(0.3rem, 0.6vw, 0.8rem);
-    }
-
-    .game1-tato-container {
-        max-width: min(95%, 500px);
-        max-height: min(70vh, 500px);
-    }
-
-    .game1-game-column {
-        gap: clamp(0.3rem, 0.6vh, 0.8rem);
-    }
-
-    .game1-check-button {
-        width: clamp(100px, 11vw, 180px);
-        height: clamp(100px, 11vw, 180px);
-    }
-
-}
-
-@media (min-width:480px) and (max-width: 768px) {
+@media (max-width: 540px) and (min-height: 720px) and (max-height: 1180px) {
     .game1-grid-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0;
+        row-gap: 10px;
         padding: 0;
         height: 100%;
-        justify-content: space-between;
-    }
-
-    .game1-tato-column {
-        width: 100%;
-        flex-shrink: 0;
-        padding-top: 1rem;
-        display: flex;
         justify-content: center;
-        align-items: flex-start;
     }
 
     .game1-tato-container {
-        max-width: 150px;
-        max-height: 150px;
-        margin: 0;
-    }
-
-    .game1-game-column {
-        width: 100%;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 0rem;
+        max-width: 170px;
+        max-height: 170px;
+        margin-top: 10px;
     }
 
     .game1-check-button {
-        width: clamp(50px, 15vw, 180px);
-        height: clamp(50px, 15vw, 180px);
+        width: clamp(50px, 24vw, 150px);
+        height: clamp(50px, 24vw, 150px);
+    }
+
+    .game1-game-column {
+        display: contents;
+        width: 100%;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 540px) and (max-height: 719px) {
     .game1-grid-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0;
+        row-gap: 10px;
         padding: 0;
         height: 100%;
-        justify-content: space-between;
-    }
-
-    .game1-tato-column {
-        width: 100%;
-        flex-shrink: 0;
-        padding-top: 1rem;
-        display: flex;
         justify-content: center;
-        align-items: flex-start;
     }
 
     .game1-tato-container {
-        max-width: 150px;
-        max-height: 150px;
-        margin: 0;
-    }
-
-    .game1-game-column {
-        width: 100%;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 0rem;
+        max-width: 170px;
+        max-height: 170px;
+        margin-top: 10px;
     }
 
     .game1-check-button {
-        width: clamp(50px, 20vw, 180px);
-        height: clamp(50px, 20vw, 180px);
+        width: clamp(50px, 24vw, 150px);
+        height: clamp(50px, 24vw, 150px);
+    }
+
+    .game1-game-column {
+        display: contents;
+        width: 100%;
     }
 }
+
+
+@media (min-width: 768px) and (max-width: 820px) and (max-height: 1180px) {
+    .game1-grid-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 0;
+        padding: 0;
+        height: 100%;
+        justify-content: center;
+    }
+
+    .game1-tato-container {
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 10px;
+    }
+
+    .game1-check-button {
+        width: clamp(50px, 24vw, 150px);
+        height: clamp(50px, 24vw, 150px);
+    }
+
+    .game1-game-column {
+        display: contents;
+        width: 100%;
+    }
+}
+
+@media (min-width: 821px) and (max-width: 1024px) and (min-height: 1181px) and (max-height: 1368px) {
+    .game1-grid-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 1;
+        padding: 0;
+        height: 100%;
+        justify-content: center;
+    }
+
+    .game1-tato-container {
+        max-width: 300px;
+        max-height: 300px;
+        margin-top: 10px;
+    }
+
+    .game1-check-button {
+        width: clamp(50px, 24vw, 150px);
+        height: clamp(50px, 24vw, 150px);
+    }
+
+    .game1-game-column {
+        display: contents;
+        width: 100%;
+    }
+}
+
+@media (min-width: 541px) and (max-width: 767px) and (max-height: 1180px) {
+    .game1-grid-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 0;
+        padding: 0;
+        height: 100%;
+        justify-content: center;
+    }
+
+    .game1-tato-container {
+        max-width: 170px;
+        max-height: 170px;
+        margin-top: 10px;
+    }
+
+    .game1-check-button {
+        width: clamp(50px, 15vw, 150px);
+        height: clamp(50px, 15vw, 150px);
+    }
+
+    .game1-game-column {
+        display: contents;
+        width: 100%;
+    }
+
+}
+
 
 /* ========================================
     Video Modal
@@ -332,20 +370,4 @@
     max-width: 90vw;
     max-height: 90vh;
     display: block;
-}
-
-/* Responsive adjustments for video modal */
-@media (max-width: 768px) {
-    .game1-video-modal-content {
-        max-width: 95vw;
-        max-height: 80vh;
-    }
-
-    .game1-video-close-button {
-        width: 35px;
-        height: 35px;
-        font-size: 20px;
-        top: 5px;
-        right: 5px;
-    }
 }

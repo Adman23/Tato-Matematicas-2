@@ -9,7 +9,7 @@ export const AccessibilityDashboard: React.FC<AccessibilityDashboardProps> = ({ 
   return (
     <div className="accessibility-dashboard">
       <div>
-        <span>Texto sobre principal: </span>
+        <span>Texto sobre color principal: </span>
         <AccessibilityIndicator status={report.textOnPrimary} />
       </div>
       <div>
@@ -17,17 +17,31 @@ export const AccessibilityDashboard: React.FC<AccessibilityDashboardProps> = ({ 
         <AccessibilityIndicator status={report.textOnBackground} />
       </div>
       <div>
-        <span>Primario sobre fondo: </span>
-        <AccessibilityIndicator status={report.primaryOnBackground} />
+        <span>Color principal sobre fondo: </span>
+        <AccessibilityIndicator status={report.PrimaryOnBackgroud} />
       </div>
       <div>
-        <span>Feedback Correcto sobre fondo: </span>
-        <AccessibilityIndicator status={report.feedbackOnBackground} />
+        <span>Color del botón sobre el color principal: </span>
+        <AccessibilityIndicator status={report.buttonOnPrimary} />
       </div>
       <div>
-        <span>Feedback Incorrecto sobre fondo: </span>
-        <AccessibilityIndicator status={report.feedbackIncOnBackground} />
+        <span>Texto sobre burbujas: </span>
+        <AccessibilityIndicator status={report.textOnBubble} />
       </div>
+      <div>
+        <span>Texto sobre burbujas seleccionadas: </span>
+        <AccessibilityIndicator status={report.textOnBubbleSelected} />
+      </div>
+
+      <div>
+        <span>Burbujas sobre fondo: </span>
+        <AccessibilityIndicator status={report.bubbleOnBackground} />
+      </div>
+      <div>
+        <span>Burbujas seleccionadas sobre fondo: </span>
+        <AccessibilityIndicator status={report.selectedBubbleOnBackground} />
+      </div>
+
     </div>
   );
 };

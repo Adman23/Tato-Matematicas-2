@@ -2,8 +2,7 @@ import { setupIonicReact } from '@ionic/react'
 
 setupIonicReact();
 
-import { IonPage, IonContent, IonSpinner, IonList, IonSearchbar } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
+import { IonPage, IonContent, IonSpinner, IonList, IonSearchbar, useIonRouter } from '@ionic/react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
 import './teacherProfilePage.css';
@@ -15,7 +14,7 @@ import { useManager } from '../../contexts/ManagerContext';
 
 export default function TeacherProfilePage() {
   const { user } = useAuth();
-  const history = useHistory();
+  const router = useIonRouter();
   const { logout } = useAuth();
   
   const [studentQuery, setStudentQuery] = useState<string>('');
@@ -24,10 +23,9 @@ export default function TeacherProfilePage() {
   const { loadingUser } = useUserData();
   const { users: students, loadingUsers } = useManager();
 
-
   const handleLogout = async () => {
     await logout();
-    history.replace('/');
+    router.push('/student/login',"none","replace");
   };
 
   return (
@@ -71,7 +69,7 @@ export default function TeacherProfilePage() {
                     studentAvatar={entry.user.photo_url || "no image"}
                     studentName={entry.user.username}
                     studentClass={entry.user.group_alias || "no group alias"}
-                    onEditClick={() => history.push(`/student-edit-menu/${entry.user.id}/${entry.user.username}`)}
+                    onEditClick={() => router.push(`/student-edit-menu/${entry.user.id}/${entry.user.username}`)}
                   />
                 ))}
               </IonList>

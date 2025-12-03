@@ -251,6 +251,7 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
         root.style.setProperty('--bubble-selected-bg', colorPrefs.bubble_selected);
         root.style.setProperty('--tatomaths-text', colorPrefs.text_on_bg);
         root.style.setProperty('--tatomaths-text-primary', colorPrefs.text_on_primary);
+        root.style.setProperty('--button-profile-bg', colorPrefs.button);
 
         console.log("Styles applied");
     }

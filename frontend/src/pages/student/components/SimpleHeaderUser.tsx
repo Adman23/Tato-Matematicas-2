@@ -2,13 +2,14 @@ import {
   IonToolbar,
   IonHeader,
   IonButtons,
+  useIonRouter
 } from '@ionic/react';
 import './SimpleHeaderUser.css';
-import { useHistory } from 'react-router-dom';
 import { setupIonicReact } from '@ionic/react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 import { Button3Dtext } from '../../global_components/PushableButtons';
+
 
 setupIonicReact();
 
@@ -24,18 +25,19 @@ const SimpleHeaderUser: React.FC<Props> = ({
   photoUrl,
   url
 }) => {
-  const history = useHistory();
+  const router = useIonRouter();
   const { user } = useAuth();
 
   const handleProfile = () => {
     if (url != null) {
-      history.replace(url);
+      router.push(url, "back", "pop");
     } else if (user?.role === "teacher") {
-      history.replace('/teacher/profile');
+      router.push('/teacher/profile');
     } else {
-      history.replace('/student/profile');
+      router.push('/student/profile');
     }
   }
+
 
   return (
     <IonHeader className="ion-no-border">
@@ -52,14 +54,14 @@ const SimpleHeaderUser: React.FC<Props> = ({
         </IonButtons>
 
         <IonButtons slot="end">
-          <Button3Dtext onClick={handleProfile}>  
+          <Button3Dtext onClick={handleProfile}>
             {url != null ? (
               <>
                 <span className="btn-text">JUEGOS</span>
                 <img
                   src="/assets/pictograms/juegos.png"
                   alt="Ir al dashboard"
-                  className="btn-icon"
+                  className="btn-icon-header-user"
                 />
               </>
             ) : (
@@ -68,7 +70,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"
-                  className="btn-icon"
+                  className="btn-icon-header-user"
                 />
               </>
             )}

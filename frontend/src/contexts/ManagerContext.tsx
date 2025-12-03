@@ -102,7 +102,7 @@ export const ManagerProvider: React.FC<{ children: ReactNode, manager_id: string
    */
   useEffect(() => {
     const fetchData = async () => {
-      console.log("USEeFFECT MANAGER");
+      console.log("USE EFFECT MANAGER");
       const savedUsers = localStorage.getItem(`user_list_${manager_id}`);
       if (savedUsers){
         try {
@@ -114,9 +114,9 @@ export const ManagerProvider: React.FC<{ children: ReactNode, manager_id: string
         }
       }
 
+
       if (!savedUsers) {
         const fetchedUsers = await fetchUsers();
-
         // Create the map with the fetched users
         const userMap = new Map<string, ManagerUserEntry>(
           fetchedUsers.map(user => [

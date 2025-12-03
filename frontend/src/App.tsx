@@ -27,12 +27,12 @@ import { PrivateRoute, PublicRoute} from './routes/AppRoutes';
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
 import StudentRegister from './pages/auth/StudentRegister';
-import StudentLoginStep1 from './pages/auth/StudentLoginStep1';
-import StudentLoginStep3 from './pages/auth/StudentLoginStep3';
+import StudentLogin from './pages/auth/StudentLogin';
 
 
 // === Páginas de estudiante ===
 import StudentDashboard from './pages/student/Dashboard';
+import EditGame2 from './pages/student/EditGame2';
 
 // === Juegos ===
 import Game1 from './pages/games/Game1/Game1';
@@ -40,7 +40,7 @@ import Game2 from './pages/games/Game2/Game2';
 
 // == Paginas de tutor ====
 
-import TutorDashboard from './pages/tutor/Dashboard';
+import TutorDashboard from './pages/teacherProfile/teacherDashboard';
 
 // === Páginas de admin ===
 import LinkProfiles from './pages/admin/LinkProfiles';
@@ -97,10 +97,9 @@ export default function App() {
               <PublicRoute path="/login" exact component={Login} />
 
               {/* Rutas del login de estudiante en 3 pasos */}
-              <PublicRoute path="/student/login" exact component={StudentLoginStep1} />
+              <PublicRoute path="/student/login" exact component={StudentLogin} />
               {/* Ruta específica (Alumnos) - NECESARIA para que el botón 'Atrás' funcione */}
-              <PublicRoute exact path="/student/login/step2/:groupId" component={StudentLoginStep1} />
-              <PublicRoute path="/student/login/step3/:groupId/:username" exact component={StudentLoginStep3} />
+              <PublicRoute exact path="/student/login/step2/:groupId" component={StudentLogin} />
 
               {/* Game Routes */}
               <PrivateRoute path="/game/game1" allowedRoles={["student", "teacher"]}
@@ -111,8 +110,10 @@ export default function App() {
               {/* Users Routes (except admin) */}
               <PrivateRoute path="/student/dashboard" allowedRoles={["student"]}  
                 exact component={StudentDashboard} />
-              <PrivateRoute path="/student/profile" allowedRoles={["student"]} 
+              <PrivateRoute path="/student/profile" allowedRoles={["student"]}
                 exact component={StudentProfile} />
+              <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
+                exact component={EditGame2} />
               <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]} 
                 exact component={TutorDashboard} />
               <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]} 

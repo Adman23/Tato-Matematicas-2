@@ -20,18 +20,15 @@
  */
 
 import {
-    IonTitle,
     IonToolbar,
     IonButton,
     IonHeader,
     IonButtons,
-    IonIcon,
-    IonLabel
+    IonIcon    
 } from '@ionic/react';
 
 import './SimpleHeaderEdit.css';
 import { homeOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
 import { setupIonicReact } from '@ionic/react';
 
 setupIonicReact();
@@ -45,6 +42,7 @@ setupIonicReact();
 interface Props {
     studentName: String;
     Editing: String;
+    onHome?: () => void;
 }
 
 /**
@@ -53,10 +51,11 @@ interface Props {
  */
 const SimpleHeaderEdit: React.FC<Props> = ({
     studentName,
-    Editing
+    Editing,
+    onHome
 }) => {
 
-    const history = useHistory();
+    
 
     /**
      * Functional Summary.
@@ -71,23 +70,21 @@ const SimpleHeaderEdit: React.FC<Props> = ({
      * handleHome();
      * ```
      */
-    const handleHome = () => {
-        history.replace('/teacher-profile');
-    }
+
 
     return (
         <IonHeader className='header-editStudentProfile'>
             <IonToolbar className="toolbar-header-editStudentProfile">
 
                 <IonButtons slot='start'>
-                    <IonButton className='homeButton-header-editStudentProfile' onClick={handleHome} >
+                    <IonButton className='homeButton-header-editStudentProfile' onClick={onHome} >
                         <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
                     </IonButton>
                 </IonButtons>
 
                 <div className='container-info-editStudentProfile'>
-                    <IonTitle className='title-header-editStudentProfile'>{studentName}</IonTitle>
-                    <IonLabel className='label-header-editStudentProfile'>{Editing}</IonLabel>
+                    <div className='title-header-editStudentProfile'>{studentName}</div>
+                    <div className='label-header-editStudentProfile'>{Editing}</div>
                 </div>
 
                 <IonButtons slot="end">

@@ -13,10 +13,9 @@
  */
 
 import React, { useState } from 'react';
-import { IonText, IonButton } from '@ionic/react';
+import { IonText } from '@ionic/react';
 import './GameHeader.css';
-import iconCorrect from '/assets/juegosImg/correct.png';
-import iconIncorrect from '/assets/juegosImg/incorrecto.png';
+import ExitScreen from './ExitScreen';
 
 /**
  * Props del componente GameHeader.
@@ -86,19 +85,23 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   return (
     <>
       <div className="game-header-component">
-        {/* Botón Home a la izquierda */}
+        {/* Botón Home a la izquierda - Estilo 3D Pushable */}
         <div className="game-header-left">
-          <IonButton
-            className="game-header-home-button"
+          <button
+            className="pushable-home-button"
             onClick={handleHomeClick}
-            fill="clear"
             aria-label="Salir del juego"
           >
-            <img
-              src="/assets/pictograms/home.png"
-              alt="Home"
-            />
-          </IonButton>
+            <span className="shadow-home"></span>
+            <span className="edge-home"></span>
+            <span className="front-home">
+              <img
+                src="/assets/pictograms/home.png"
+                alt="Home"
+                className="home-icon"
+              />
+            </span>
+          </button>
         </div>
 
         <div className="game-header-center">
@@ -131,19 +134,9 @@ const GameHeader: React.FC<GameHeaderProps> = ({
       </div>
 
       {showExitConfirm && (
-        <div className="game-header-exit-overlay" role="dialog" aria-modal="true" aria-label="Confirmar salida">
-          <div className="game-header-exit-card">
-            <p className="game-header-exit-text">¿Seguro que quieres salir?</p>
-            <div className="game-header-exit-actions">
-              <button className="exit-btn" onClick={confirmExit} aria-label="Sí, salir">
-                <img src={iconCorrect} alt="Confirmar" />
-              </button>
-              <button className="exit-btn" onClick={cancelExit} aria-label="No, continuar">
-                <img src={iconIncorrect} alt="Cancelar" />
-              </button>
-            </div>
-          </div>
-        </div>
+        <ExitScreen
+          confirmExit={confirmExit}
+          cancelExit={cancelExit} />
       )}
     </>
   );

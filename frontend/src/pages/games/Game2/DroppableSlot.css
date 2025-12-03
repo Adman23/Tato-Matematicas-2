@@ -47,6 +47,43 @@
   cursor: pointer;
 }
 
+/* Asegurar que SOLO el slot target se vea en móvil */
+@media (max-width: 768px), (pointer: coarse) {
+  .droppable-slot {
+    /* Reducir espacio de slots vacíos que no son target */
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .empty-slot {
+    /* Slots vacíos no-target completamente invisibles y sin espacio en móvil */
+    width: 0;
+    height: 0;
+    background: transparent !important;
+    border-color: transparent !important;
+    opacity: 0;
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  .droppable-slot-target {
+    /* Restaurar tamaño para el slot target */
+    min-width: var(--size-card);
+    min-height: var(--size-card);
+  }
+
+  .droppable-slot-target .empty-slot {
+    /* Solo el slot target visible con tamaño completo */
+    width: var(--size-card);
+    height: var(--size-card);
+    visibility: visible;
+    opacity: 1;
+    background: var(--bubble-bg, #d1d5db) !important;
+    border: 3px dashed var(--bubble-selected-bg, #9ca3af) !important;
+  }
+}
+
 .droppable-slot-hover .empty-slot {
   background: #a5a5a5;
   border-color: #a5a5a5;

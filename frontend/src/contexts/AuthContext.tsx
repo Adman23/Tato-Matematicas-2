@@ -121,11 +121,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
    */
   const logout = async () => {
     setUser(null);
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('student_id');
-    localStorage.removeItem('student');
-    localStorage.removeItem('user_data'); // Added to clear UserContext
+    localStorage.clear();
     
     try {
       await authAPI.logout();

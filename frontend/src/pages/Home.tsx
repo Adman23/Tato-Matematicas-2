@@ -6,15 +6,14 @@
  *
  * Utiliza:
  * - **Ionic React** (`IonPage`, `IonContent`) para la estructura visual.
- * - **React Router** (`useHistory`) para navegación programática.
  * - Estilos definidos en `Home.css` para diseño y personalización.
  */
 
 import {
   IonPage,
-  IonContent
+  IonContent,
+  useIonRouter
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
 // import { useAuth } from '../contexts/AuthContext';
 import './Home.css';
 
@@ -35,7 +34,7 @@ import './Home.css';
  * ```
  */
 export default function Home() {
-  const history = useHistory();
+  const router = useIonRouter();
   // const {user, loadingAuth} = useAuth();
 
   /*
@@ -81,7 +80,7 @@ export default function Home() {
           <div className="home-buttons">
             <button
               className=" tatomaths-button"
-              onClick={() => history.push('/login')}
+              onClick={() => router.push('/login')}
               aria-label="Acceso para tutores y administradores"
             >
               <div className="home-button-content">
@@ -96,7 +95,7 @@ export default function Home() {
 
             <button
               className=" tatomaths-button "
-              onClick={() => history.push('/student/login')}
+              onClick={() => router.push('/student/login')}
               aria-label="Acceso para estudiantes"
             >
               <div className="home-button-content">

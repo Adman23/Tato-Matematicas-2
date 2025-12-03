@@ -74,3 +74,14 @@ ion-button.StudentItem_perfilProfesor_Button {
   border-radius: 10px;
   box-shadow: none;
 }
+
+/*======================================
+  Móviles
+  ======================================*/
+  @media (max-width: 480px) {
+
+    .student-item__class{
+
+      display: none;
+    }
+  }

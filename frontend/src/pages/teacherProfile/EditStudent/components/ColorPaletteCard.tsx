@@ -3,6 +3,7 @@ import './ColorPaletteCard.css';
 import { IonCard, IonCardContent, IonCardHeader } from '@ionic/react';
 import { type Palette } from "../types/palette.ts";
 import BubbleDemo from './BubbleDemo';
+import { Button3Dtext } from '../../../global_components/PushableButtons.tsx';
 
 /**
  * Props for the ColorCard component.
@@ -36,13 +37,11 @@ const ColorPaletteCard: React.FC<Props> = ({
 }) => {
 
     //Definition of the colors we are going to use in the example card
-    const [headerBg, headerText, contentBg, contentText, 
-        bubbleBg, bubbleSelected, bubbleCorrect,bubbleIncorrect, 
-        bubbleCorrectFeed, bubbleIncorrectFeed] = palette.colors;
+    const [headerBg, headerText, contentBg, contentText, buttonBg,
+        bubbleBg, bubbleSelected] = palette.colors;
 
     //Definition of the colors from the bubbles examples
-    const bubbleColors = [bubbleBg, bubbleSelected, bubbleCorrect,bubbleIncorrect, 
-        bubbleCorrectFeed, bubbleIncorrectFeed];
+    const bubbleColors = [bubbleBg, bubbleSelected];
 
     return(
         
@@ -52,7 +51,9 @@ const ColorPaletteCard: React.FC<Props> = ({
             style={{
                 background: headerBg,
                 color: headerText
-            }}>Título</IonCardHeader>
+            }}>Título
+            <Button3Dtext className='Boton-header_ColorPaletteCard' color={buttonBg}><span></span></Button3Dtext>
+            </IonCardHeader>
             <IonCardContent className='ColorPaletteCard-studentEditColor-IonCardContent'
             style={{
                 background: contentBg,
