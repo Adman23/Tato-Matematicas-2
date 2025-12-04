@@ -843,24 +843,6 @@ const Game1: React.FC = () => {
 
                         {/* Game area with grid layout */}
                         <div className="game1-grid-container">
-                            {/* Left column: Tato */}
-                            <div className="game1-tato-column">
-                                <div className="game1-tato-container">
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button"
-                                        onClick={useHint}
-                                    >
-                                        <img
-                                            src={imgTato}
-                                            alt="Pista"
-                                            className="game1-check-button-image"
-                                        />
-                                    </IonButton>
-                                </div>
-                            </div>
-
-                            {/* Right column: Numbers and buttons */}
                             <div className="game1-game-column">
                                 {/* Available numbers */}
                                 <BubblesZone
@@ -876,7 +858,6 @@ const Game1: React.FC = () => {
 
                                 {/* Control buttons */}
                                 <div className="game1-buttons-container">
-
                                     {/* Listen button */}
                                     <IonButton
                                         fill="clear"
@@ -900,6 +881,19 @@ const Game1: React.FC = () => {
                                         <img
                                             src={imgInstrucciones}
                                             alt="Video de ayuda"
+                                            className="game1-check-button-image"
+                                        />
+                                    </IonButton>
+
+                                    {/* Hint button */}
+                                    <IonButton
+                                        fill="clear"
+                                        className="game1-check-button"
+                                        onClick={useHint}
+                                    >
+                                        <img
+                                            src={imgTato}
+                                            alt="Pista"
                                             className="game1-check-button-image"
                                         />
                                     </IonButton>
