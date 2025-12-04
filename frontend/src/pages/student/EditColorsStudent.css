@@ -202,11 +202,11 @@
 
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
 
   .AdvancedConfiguration-PrimaryColors_example{
 
-    margin-top: 30px;
+    margin-top: 0px;
 
   }
 
