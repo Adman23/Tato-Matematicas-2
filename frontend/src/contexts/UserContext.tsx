@@ -23,7 +23,7 @@
         "audio_preferences":{
 
         },
-        "visual_preferences":{
+        "text_preferences":{
             "active_palette_idx": 0,
             "font_idx": 1,
             "font-size": 10,
@@ -226,7 +226,7 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
   /*useEffect(() => {
       if (userData){
           const root = document.documentElement;
-          const userVisual = userData.user_profile.visual_preferences;
+          const userVisual = userData.user_profile.text_preferences;
 
           // console.log(userData.user_profile);
           // Apply the color palette

@@ -126,7 +126,7 @@ async def get_user_data(user_id: str):
 				.select("group_id, password_type,\
 						user_profiles!user_id(\
 							id,\
-							visual_preferences,\
+							text_preferences,\
 							audio_preferences,\
 							accessibility_settings,\
             				color_preferences\

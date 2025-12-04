@@ -80,7 +80,7 @@ const Game1: React.FC = () => {
     const router = useIonRouter();
 
     const currentUser = user;
-    const { getAllMessages, refreshUserData, loadingUser } = useUserData();
+    const { getAllMessages, loadingUser } = useUserData();
 
     // Flag to prevent duplicate session creation (React 18 StrictMode)
     const sessionCreatedRef = useRef(false);

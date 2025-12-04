@@ -253,7 +253,7 @@ export interface Student {
   role: string;
   photo_url?: string;
   notes?: string;
-  visual_preferences?: any;
+  text_preferences?: any;
   audio_preferences?: any;
   accessibility_settings?: any;
   game_preferences?: any;
