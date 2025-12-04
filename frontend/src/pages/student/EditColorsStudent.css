@@ -201,3 +201,14 @@
   }
 
 }
+
+@media (max-width: 1080px) {
+
+  .AdvancedConfiguration-PrimaryColors_example{
+
+    margin-top: 30px;
+
+  }
+
+
+}
