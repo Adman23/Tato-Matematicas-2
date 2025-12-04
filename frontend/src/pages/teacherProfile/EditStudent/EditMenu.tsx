@@ -51,6 +51,7 @@ export default function EditMenu() {
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
 
+    
     // Show spinner while loading
     /*if (loading) {
         return (
