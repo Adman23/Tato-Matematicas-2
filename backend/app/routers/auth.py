@@ -6,10 +6,6 @@ Auth router
 Endpoints: /auth/register, /auth/login, /auth/me
 """
 from fastapi import APIRouter, HTTPException, status, Depends
-from datetime import datetime, timedelta, timezone
-import jwt
-from ..config import settings
-from supabase import create_client
 from ..schemas.auth import (
     RegisterRequest,
     LoginRequest,
@@ -26,7 +22,6 @@ from ..schemas.auth import (
 from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
 from ..dependencies import is_auth_current_user, is_admin_current_user
-from ..config import settings
 
 # Config router 
 router = APIRouter()
@@ -59,8 +54,8 @@ async def register( data: RegisterRequest,
 
         # Determine password_type based on role
         if data.role == "student":
-            password_type = "graphical"      # by default, the password is graphical when registering a student; the teacher can change it in the corresponding student's profile edit
-        else:
+            password_type = "graphical"      # by default, the password is graphical when registering a student; 
+        else:                                # the teacher can change it in the corresponding student's profile edit
             password_type = "alphanumeric"   # the password is always alphanumeric for admin and teachers
         
         new_user = supabase_admin.auth.admin.create_user({
@@ -84,9 +79,16 @@ async def register( data: RegisterRequest,
             password_type=password_type
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         # Parse known Supabase errors (duplicate email, etc.)
         error_message = str(e)
+        print(f"Registration error: {error_message}")  # Log for debugging
+        print(f"Error type: {type(e).__name__}")
+        
+        import traceback
+        traceback.print_exc()  # Print full stack trace
 
         if "duplicate key value violates unique constraint" in error_message or "User already registered" in error_message or "already exists" in error_message:
             raise HTTPException(

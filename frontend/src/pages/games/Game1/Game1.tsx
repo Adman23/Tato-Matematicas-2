@@ -244,11 +244,13 @@ const Game1: React.FC = () => {
             let data = getAllMessages?.() || [];
             console.log('Loaded messages from context:', data);
 
+            /* THIS GENERATES A LOOP
             // If there are no messages in the context yet, try refreshing user data once
             if ((!data || data.length === 0) && refreshUserData) {
                 await refreshUserData();
                 data = getAllMessages?.() || [];
             }
+            */
 
             setMessages(data);
             setLoadingMessages(false);
