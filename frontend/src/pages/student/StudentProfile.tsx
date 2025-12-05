@@ -97,7 +97,7 @@ export default function StudentProfile() {
                     photoUrl={user?.photo_url} url="/student/dashboard" />
 
             {/* Main Content */}
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding" style={{ '--background': 'var(--ion-color-primary-contrast)' }}>
                 <IonGrid className="main-container">
                     <IonRow className="ion-align-items-stretch" style={{ height: '100%' }}>
                         {/* Edit section - 80% en desktop, 100% en móvil */}

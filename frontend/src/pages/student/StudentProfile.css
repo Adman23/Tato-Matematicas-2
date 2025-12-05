@@ -1,7 +1,6 @@
-
 /* --- MAIN STYLE --- */
 .main-container {
-    --background: var(--ion-color-primary-contrast);
+    background: var(--ion-color-primary-contrast);
     height: 100%;
     padding: 0;
 }
