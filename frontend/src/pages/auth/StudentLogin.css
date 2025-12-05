@@ -289,9 +289,6 @@
     flex: 0 0 auto;
     justify-content: center;
     flex-wrap: nowrap;
-    background: #e5e7eb;
-    padding: 15px 20px;
-    border-radius: 16px;
 }
 .st-pass-slot {
     flex: 0 0 auto;
@@ -312,7 +309,6 @@
 @media (max-width: 440px), (max-height: 700px) {
   .st-pass-slots {
     gap: 8px;
-    padding: 12px 15px;
   }
   .st-pass-slot {
     width: clamp(50px, 22vw, 90px);
@@ -328,7 +324,6 @@
   }
   .st-pass-slots {
     gap: 6px;
-    padding: 10px 12px;
   }
 }
 .st-pass-slot.filled { 

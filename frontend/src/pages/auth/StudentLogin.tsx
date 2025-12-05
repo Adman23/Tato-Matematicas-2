@@ -342,7 +342,7 @@ export default function StudentLoginUnified() {
                 {currentPhase !== 'PASSWORD' ? (
                     /* MODO GRID (GRUPOS O ALUMNOS) */
                     <div 
-                        className={`st-card-wrapper ${layout.cssClass}`}
+                        className={`st-card-wrapper st-anim-pop-in ${layout.cssClass}`}
                         onTouchStart={onTouchStart}
                         onTouchMove={onTouchMove}
                         onTouchEnd={onTouchEnd}
@@ -408,7 +408,7 @@ export default function StudentLoginUnified() {
                 ) : (
                     /* MODO PASSWORD */
                     <div className="st-pass-layout">
-                         <div className="st-card-wrapper pass-mode">
+                         <div className="st-card-wrapper pass-mode st-anim-pop-in">
                             {error && <div className="st-error-toast" role="alert">{error}</div>}
                             <div className="st-pass-grid">
                                 {PICTOGRAMS.map((picto) => (
