@@ -3,7 +3,6 @@ import {
   IonContent,
   IonSpinner,
   useIonRouter,
-  IonIcon
 } from '@ionic/react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -11,8 +10,6 @@ import SimpleHeaderUser from './components/SimpleHeaderUser';
 import { SimpleButton } from '../global_components/SimpleButton';
 import './Dashboard.css';
 import { useUserData } from '../../contexts/UserContext';
-import { Button3Dtext } from '../global_components/PushableButtons';
-import { arrowBack } from 'ionicons/icons';
 
 
 /**

@@ -46,7 +46,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
 
         {!hidden && (
           <IonButtons slot="end">
-            <Button3Dtext color="var(--button-profile-bg)" onClick={()=>router.push('/student/profile', "back", "pop")}>
+            <Button3Dtext color="var(--button-profile-bg)" onClick={()=>router.push('/student/profile')}>
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"

@@ -103,7 +103,6 @@ export default function StudentProfile() {
             <IonContent className="ion-padding" style={{ '--background': 'var(--ion-color-primary-contrast)' }}>
                 {/* Back button and main grid container */}
                 <Button3Dtext 
-                    color="var(--ion-color-primary)" 
                     onClick={() => handleDirection('/student/dashboard')} 
                     aria-label="Volver atrás">
                     <IonIcon icon={arrowBack} />
