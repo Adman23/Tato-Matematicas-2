@@ -48,12 +48,14 @@
   justify-content: center;
 }
 
-/* Asegurar que IonIcon y IonSpinner tengan el mismo tamaño */
+/* Asegurar que IonIcon, IonSpinner e imágenes tengan el mismo tamaño */
 .st-button-scale ion-icon,
-.st-button-scale ion-spinner {
+.st-button-scale ion-spinner,
+.st-button-scale img {
   font-size: 24px;
   width: 24px;
   height: 24px;
+  object-fit: contain;
 }
 
 /* AJUSTE PARA MÓVILES (pantallas estrechas) */
@@ -159,8 +161,20 @@
   position: relative; overflow: hidden; cursor: pointer;
   width: 100%; aspect-ratio: 1 / 1;
   display: flex; align-items: center; justify-content: center;
+  outline: none;
+}
+.st-grid-btn:focus-visible {
+  outline: 5px solid #FFD700;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 8px rgba(255, 215, 0, 0.4);
+  z-index: 5;
 }
 .st-grid-btn.selected { border-color: var(--ion-color-success); background: #f0fff4; box-shadow: inset 0 0 0 3px var(--ion-color-success); }
+.st-grid-btn.selected:focus-visible {
+  outline: 5px solid #FFD700;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 8px rgba(255, 215, 0, 0.5), inset 0 0 0 3px var(--ion-color-success);
+}
 .st-grid-btn.ghost { opacity: 1; pointer-events: none; background: rgba(255, 255, 255, 0.3); border: 3px dashed rgba(255, 255, 255, 0.6); box-shadow: none; transform: none !important; }
 .st-grid-btn.ghost.loading { animation: ghostPulse 1.5s infinite ease-in-out; border-style: solid; }
 
@@ -238,6 +252,14 @@
     cursor: pointer; 
     box-shadow: 0 4px 0 rgba(0,0,0,0.2); 
     transition: transform 0.1s;
+    outline: none;
+}
+
+.st-pass-key:focus-visible {
+    outline: 5px solid #FFD700;
+    outline-offset: 4px;
+    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0.5), 0 4px 0 rgba(0,0,0,0.2);
+    z-index: 5;
 }
 
 .st-pass-key:active { 
@@ -276,8 +298,13 @@
     border-style: solid; 
     border-color: var(--ion-color-success); 
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     position: relative;
+}
+.st-pass-slot.filled:hover {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3);
+    transform: scale(1.05);
 }
 .st-pass-slot.filled:active {
     transform: scale(0.95);
@@ -303,6 +330,11 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     pointer-events: none;
     z-index: 10;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.st-pass-slot.filled:hover .st-slot-delete {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6);
 }
 .st-slot-delete ion-icon {
     font-size: 1.3rem;

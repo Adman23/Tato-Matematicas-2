@@ -49,6 +49,13 @@ export default function StudentLoginUnified() {
   const [selectedPictos, setSelectedPictos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Touch/swipe state
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
    
   const getLayoutConfig = () => {
     const w = window.innerWidth;
@@ -226,6 +233,31 @@ export default function StudentLoginUnified() {
       setGridPage(index);
     }
   };
+  
+  // Touch handlers para swipe
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe && gridPage < totalPages - 1) {
+      setGridPage(prev => prev + 1);
+    }
+    if (isRightSwipe && gridPage > 0) {
+      setGridPage(prev => prev - 1);
+    }
+  };
 
   const getLetterFromAlias = (alias?: string) => {
     if (!alias) return '?'; 
@@ -279,7 +311,7 @@ export default function StudentLoginUnified() {
                                 disabled={loading || selectedPictos.filter(p => p !== '').length !== REQUIRED_LENGTH}
                                 aria-label="Confirmar contraseña"
                             >
-                                {loading ? <IonSpinner name="dots" /> : <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" style={{width: '24px', height: '24px'}} />}
+                                {loading ? <IonSpinner name="dots" /> : <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" />}
                             </Button3Dtext>
                         ) : (
                             <Button3Dtext 
@@ -288,7 +320,7 @@ export default function StudentLoginUnified() {
                                 disabled={loading || !selectedGridItem}
                                 aria-label="Confirmar selección"
                             >
-                                <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" style={{width: '24px', height: '24px'}} />
+                                <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" />
                             </Button3Dtext>
                         )}
                     </div>
@@ -309,7 +341,12 @@ export default function StudentLoginUnified() {
                 
                 {currentPhase !== 'PASSWORD' ? (
                     /* MODO GRID (GRUPOS O ALUMNOS) */
-                    <div className={`st-card-wrapper st-anim-pop-in ${layout.cssClass}`}>
+                    <div 
+                        className={`st-card-wrapper st-anim-pop-in ${layout.cssClass}`}
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                    >
                         
                         {loading ? (
                              <div className={`st-grid-inner ${layout.cssClass}`}>
@@ -397,6 +434,12 @@ export default function StudentLoginUnified() {
                                         key={index} 
                                         className={`st-pass-slot ${picto ? 'filled' : ''}`}
                                         onClick={() => picto && removePictoAtIndex(index)}
+                                        onKeyDown={(e) => {
+                                            if (picto && (e.key === 'Enter' || e.key === ' ')) {
+                                                e.preventDefault();
+                                                removePictoAtIndex(index);
+                                            }
+                                        }}
                                         role="button"
                                         aria-label={picto ? `Eliminar pictograma ${picto.name}` : `Espacio vacío ${index + 1}`}
                                         tabIndex={0}
