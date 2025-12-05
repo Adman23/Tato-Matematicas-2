@@ -67,6 +67,15 @@
   .st-button-scale {
     transform: scale(1.5);
   }
+  
+  /* Ajustar wrapper para móviles estrechos */
+  .st-card-wrapper.pass-mode {
+    width: min(85vw, 45vh);
+    padding: 12px;
+  }
+  .st-pass-grid {
+    gap: 10px;
+  }
 }
 
 /* AJUSTE PARA PANTALLAS MEDIANAS HORIZONTALES (ej: 720x540) */
@@ -279,11 +288,15 @@
     gap: 10px; 
     flex: 0 0 auto;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    background: #e5e7eb;
+    padding: 15px 20px;
+    border-radius: 16px;
 }
 .st-pass-slot {
-    width: calc((min(45vh, 500px) - 30px - 24px) / 3);
-    height: calc((min(45vh, 500px) - 30px - 24px) / 3);
+    flex: 0 0 auto;
+    width: 100px;
+    height: 100px;
     background: white; 
     border: 3px dashed var(--ion-color-primary);
     border-radius: 12px; 
@@ -293,6 +306,30 @@
     font-size: 1.5rem; 
     color: #aaa; 
     position: relative;
+}
+
+/* Encoger slots en pantallas menores a 440px o con poca altura */
+@media (max-width: 440px), (max-height: 700px) {
+  .st-pass-slots {
+    gap: 8px;
+    padding: 12px 15px;
+  }
+  .st-pass-slot {
+    width: clamp(50px, 22vw, 90px);
+    height: clamp(50px, 22vw, 90px);
+  }
+}
+
+/* Para pantallas muy pequeñas en altura */
+@media (max-height: 550px) {
+  .st-pass-slot {
+    width: clamp(45px, 20vw, 75px);
+    height: clamp(45px, 20vw, 75px);
+  }
+  .st-pass-slots {
+    gap: 6px;
+    padding: 10px 12px;
+  }
 }
 .st-pass-slot.filled { 
     border-style: solid; 
@@ -372,10 +409,6 @@
         max-width: 500px;
         max-height: 55vh;
         gap: clamp(8px, 2vh, 18px);
-    }
-    .st-pass-slot {
-        width: calc((min(45vh, 500px) - 30px - 2 * clamp(8px, 2vh, 18px)) / 3);
-        height: calc((min(45vh, 500px) - 30px - 2 * clamp(8px, 2vh, 18px)) / 3);
     }
 }
 
