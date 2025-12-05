@@ -2,7 +2,8 @@ import {
   IonPage,
   IonContent,
   IonSpinner,
-  useIonRouter
+  useIonRouter,
+  IonIcon
 } from '@ionic/react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -10,6 +11,8 @@ import SimpleHeaderUser from './components/SimpleHeaderUser';
 import { SimpleButton } from '../global_components/SimpleButton';
 import './Dashboard.css';
 import { useUserData } from '../../contexts/UserContext';
+import { Button3Dtext } from '../global_components/PushableButtons';
+import { arrowBack } from 'ionicons/icons';
 
 
 /**
@@ -36,15 +39,6 @@ export default function StudentDashboard() {
   const router = useIonRouter();
 
 
-  /*
-  // Redirigir si no hay estudiante autenticado
-  if (!user) {
-    console.log("Redirect to login because ther is no user");
-    return <Redirect to="/student/login" />;
-  }
-  */
-
-  
 
   return (
     <IonPage>
