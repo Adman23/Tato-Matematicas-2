@@ -54,24 +54,24 @@ const SimpleHeaderUser: React.FC<Props> = ({
         </IonButtons>
 
         <IonButtons slot="end">
-          <Button3Dtext onClick={handleProfile}>
+          <Button3Dtext color="var(--button-profile-bg)" onClick={handleProfile}>
             {url != null ? (
               <>
-                <span className="btn-text">JUEGOS</span>
                 <img
                   src="/assets/pictograms/juegos.png"
                   alt="Ir al dashboard"
                   className="btn-icon-header-user"
                 />
+                <span className="btn-text">JUEGOS</span>
               </>
             ) : (
               <>
-                <span className="btn-text">MI PERFIL</span>
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"
                   className="btn-icon-header-user"
                 />
+                <span className="btn-text">MI PERFIL</span>
               </>
             )}
           </Button3Dtext>

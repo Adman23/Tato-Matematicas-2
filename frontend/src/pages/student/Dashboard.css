@@ -25,82 +25,6 @@
     align-items: stretch;
 }
 
-/* Wrapper de cada botón de juego */
-.game-button-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-/* ========================================
-   BOTONES DE JUEGOS
-   ======================================== */
-   
-/* Botón del juego */
-.game-button {
-    --background: transparent;
-    --border-width: clamp(4px, 1.2vw, 8px);
-    --border-style: solid;
-    --border-radius: clamp(8px, 1vw, 16px);
-    --padding-start: 0;
-    --padding-end: 0;
-    --padding-top: 0;
-    --padding-bottom: 0;
-
-    width: 100%;
-    height: 100%;
-    max-height: 250px;
-    min-height: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    --border-color: transparent;
-}
-
-.game-button:hover,
-.game-button:focus,
-.game-button:focus-visible {
-    --border-color: var(--ion-color-primary);
-}
-
-.game-button-content {
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(3px, 0.5vw, 8px);
-    padding: clamp(4px, 1vw, 12px);
-}
-
-/* Imagen del juego dentro del botón */
-.game-image {
-    width: 100%;
-    max-height: 70%;
-    object-fit: contain;
-    border-radius: clamp(3px, 0.5vw, 8px);
-}
-
-/* Texto debajo de la imagen */
-.game-title {
-    font-size: clamp(0.7rem, 2vw, 1.2rem);
-    font-weight: 600;
-    color: var(--tatomaths-text);
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-}
-
 /* ========================================
    MEDIA QUERIES PARA RESPONSIVIDAD
    ======================================== */
@@ -113,21 +37,6 @@
         width: 95vw;
         margin: 0.5rem auto;
     }
-
-    .game-button {
-        --border-width: 3px;
-        min-height: 110px;
-        max-height: 160px;
-    }
-
-    .game-title {
-        font-size: 0.65rem;
-    }
-
-    .game-button-content {
-        gap: 2px;
-        padding: 4px;
-    }
 }
 
 /* Móviles estándar */
@@ -138,21 +47,6 @@
         width: 90vw;
         margin: 1rem auto;
     }
-
-    .game-button {
-        --border-width: 4px;
-        min-height: 130px;
-        max-height: 190px;
-    }
-
-    .game-title {
-        font-size: 0.8rem;
-    }
-
-    .game-button-content {
-        gap: 4px;
-        padding: 6px;
-    }
 }
 
 /* Tablets en portrait */
@@ -161,16 +55,6 @@
         gap: 1rem;
         padding: 1rem;
         width: 85vw;
-    }
-
-    .game-button {
-        --border-width: 5px;
-        min-height: 160px;
-        max-height: 220px;
-    }
-
-    .game-title {
-        font-size: 1rem;
     }
 }
 
@@ -182,16 +66,6 @@
         width: 80vw;
         max-width: 700px;
     }
-
-    .game-button {
-        --border-width: 6px;
-        min-height: 180px;
-        max-height: 240px;
-    }
-
-    .game-title {
-        font-size: 1.1rem;
-    }
 }
 
 /* Pantallas grandes (desktop) */
@@ -202,16 +76,6 @@
         width: 70vw;
         max-width: 800px;
     }
-
-    .game-button {
-        --border-width: 8px;
-        min-height: 180px;
-        max-height: 250px;
-    }
-
-    .game-title {
-        font-size: 1.2rem;
-    }
 }
 
 /* Altura pequeña (landscape en móviles) */
@@ -220,21 +84,6 @@
         margin: 0.5rem auto;
         gap: 0.5rem;
         padding: 0.5rem;
-    }
-
-    .game-button {
-        --border-width: 3px;
-        min-height: 100px;
-        max-height: 140px;
-    }
-
-    .game-title {
-        font-size: 0.7rem;
-    }
-
-    .game-button-content {
-        gap: 2px;
-        padding: 4px;
     }
 }
 
@@ -247,10 +96,6 @@
     .games-container {
         width: 92vw;
     }
-
-    .game-image {
-        max-height: 65%;
-    }
 }
 
 /* Optimización específica para móviles en landscape */
@@ -259,24 +104,5 @@
         margin: 0.25rem auto;
         gap: 0.5rem;
         padding: 0.5rem;
-    }
-
-    .game-button {
-        --border-width: 3px;
-        min-height: 90px;
-        max-height: 120px;
-    }
-
-    .game-title {
-        font-size: 0.65rem;
-    }
-
-    .game-button-content {
-        gap: 2px;
-        padding: 3px;
-    }
-
-    .game-image {
-        max-height: 60%;
     }
 }
