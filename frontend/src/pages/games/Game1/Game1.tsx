@@ -11,7 +11,6 @@ import {
     IonPage,
     IonSpinner,
     IonText,
-    IonButton,
     useIonRouter
 } from '@ionic/react';
 import { Redirect } from 'react-router-dom'
@@ -26,8 +25,8 @@ import './Game1.css';
 
 
 // Importar imágenes para el header
-import imgAceptar from '/assets/juegosImg/aceptar.png';
-import imgSonido from '/assets/juegosImg/game1/sonido.png';
+import imgAceptar from '/assets/pictograms/correctoS.png';
+import imgSonido from '/assets/pictograms/escucha.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
@@ -41,6 +40,7 @@ import imgTato from '/assets/Tato/TatoPista.png';
 import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
 import ResultsScreen from '../components/ResultsScreen';
+import { GameControlButton } from '../../global_components/GameControlButton';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -846,17 +846,16 @@ const Game1: React.FC = () => {
                             {/* Left column: Tato */}
                             <div className="game1-tato-column">
                                 <div className="game1-tato-container">
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button"
+                                    <GameControlButton
+                                        noBorder
                                         onClick={useHint}
                                     >
-                                        <img
+                                        <img                             
                                             src={imgTato}
                                             alt="Pista"
-                                            className="game1-check-button-image"
+                                            className="game-control-button-image"
                                         />
-                                    </IonButton>
+                                    </GameControlButton>
                                 </div>
                             </div>
 
@@ -878,45 +877,49 @@ const Game1: React.FC = () => {
                                 <div className="game1-buttons-container">
 
                                     {/* Listen button */}
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button"
+                                    <GameControlButton
                                         disabled={listeningAudio}
                                         onClick={() => speakNumber(currentNumber)}
                                     >
                                         <img
-                                            src={imgSonidoConTexto}
+                                            src={imgSonido}
                                             alt="Escuchar"
-                                            className="game1-check-button-image"
+                                            className="game-control-button-image"
                                         />
-                                    </IonButton>
+                                        <span className="game-control-button-text">
+                                            ESCUCHAR
+                                        </span>
+                                    </GameControlButton>
 
                                     {/* Video button - always visible on the left */}
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button game1"
+                                    <GameControlButton
+                                        className="game1"
                                         onClick={openVideoModal}
                                     >
                                         <img
                                             src={imgInstrucciones}
                                             alt="Video de ayuda"
-                                            className="game1-check-button-image"
+                                            className="game-control-button-image"
                                         />
-                                    </IonButton>
+                                        <span className="game-control-button-text">
+                                            INSTRUCCIONES
+                                        </span>
+                                    </GameControlButton>
 
                                     {/* Accept/Check button */}
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button"
+                                    <GameControlButton
                                         onClick={checkAnswer}
                                         disabled={selectedNumber === null}
                                     >
                                         <img
                                             src={imgAceptar}
                                             alt="Comprobar"
-                                            className="game1-check-button-image"
+                                            className="game-control-button-image"
                                         />
-                                    </IonButton>
+                                        <span className="game-control-button-text">
+                                            ACEPTAR
+                                        </span>
+                                    </GameControlButton>
 
                                 </div>
                             </div>

@@ -45,6 +45,7 @@ import GameHeader from '../components/GameHeader';
 import FeedbackScreen from '../components/FeedbackScreen';
 import ResultsScreen from '../components/ResultsScreen';
 import './Game2.css';
+import { GameControlButton } from '../../global_components/GameControlButton';
 
 // Importar imágenes para el header
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
@@ -394,11 +395,13 @@ const Game2: React.FC = () => {
       let data = getAllMessages?.() || [];
       console.log('Loaded messages from context:', data);
 
+      /*
       // Si no hay mensajes en el contexto, recarga los datos del usuario
       if ((!data || data.length === 0) && refreshUserData) {
         await refreshUserData();
         data = getAllMessages?.() || [];
       }
+      */
 
       setMessages(data);
     } catch (error) {
@@ -1267,7 +1270,7 @@ const Game2: React.FC = () => {
                     <span className="number-value">{num}</span>
                   )}
                 </div>
-              );
+            );
             })}
           </div>
 
@@ -1290,18 +1293,17 @@ const Game2: React.FC = () => {
           {/* Botones de control */}
           <div className="check-button-container">
             {/* Botón de pistas (Tato) */}
-            <IonButton
-              fill="clear"
-              className="game2-check-button game2-hint-button"
+            <GameControlButton
+              noBorder
               onClick={useHint}
               disabled={availableNumbers.every(n => n === undefined)}
             >
               <img
                 src={imgTato}
                 alt="Pista"
-                className="game2-check-button-image"
+                className="game-control-button-image"
               />
-            </IonButton>
+            </GameControlButton>
 
             {/* Indicador de orden */}
             <div className="order-indicator">
@@ -1314,17 +1316,18 @@ const Game2: React.FC = () => {
             </div>
 
             {/* Botón de instrucciones/tutorial */}
-            <IonButton
-              fill="clear"
-              className="game2-check-button"
+            <GameControlButton
               onClick={openVideoModal}
             >
               <img
                 src={imgInstrucciones}
                 alt="Video de ayuda"
-                className="game2-check-button-image"
+                className="game-control-button-image"
               />
-            </IonButton>
+              <span className="game-control-button-text">
+                INSTRUCCIONES
+              </span>
+            </GameControlButton>
           </div>
         </div>
 
