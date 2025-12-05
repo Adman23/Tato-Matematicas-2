@@ -6,14 +6,13 @@ import {
   useIonRouter,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { arrowBack, arrowForward, person, checkmark, trash } from 'ionicons/icons';
+import { arrowBack, arrowForward, person, close } from 'ionicons/icons';
 import { useState, useEffect, type KeyboardEvent } from 'react'; 
 import { authAPI } from '../../lib/api'; 
 import type { Group, User } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext'; 
 // --- IMPORTACIONES ---
 import { Button3Dtext } from '../global_components/PushableButtons'; 
-import { Background } from '../global_components/Background'; 
 
 import './StudentLogin.css';
 
@@ -23,6 +22,10 @@ const PICTOGRAMS = [
   { id: 'tortuga', name: 'Tortuga', image: '/assets/pictograms/tortuga.png' },
   { id: 'león', name: 'León', image: '/assets/pictograms/león.png' },
   { id: 'elefante', name: 'Elefante', image: '/assets/pictograms/elefante.png' },
+  { id: 'pez', name: 'Pez', image: '/assets/pictograms/pez.png' },
+  { id: 'pinguino', name: 'Pinguino', image: '/assets/pictograms/pinguino.png' },
+  { id: 'flamenco', name: 'Flamenco', image: '/assets/pictograms/flamenco.png' },
+  { id: 'caballo', name: 'Caballo', image: '/assets/pictograms/caballo.png' },
 ];
 
 const REQUIRED_LENGTH = 3;
@@ -41,7 +44,6 @@ export default function StudentLoginUnified() {
 
   const [items, setItems] = useState<GridItem[]>([]);
   const [selectedGridItem, setSelectedGridItem] = useState<GridItem | null>(null);
-  const [confirmPendingId, setConfirmPendingId] = useState<string | null>(null);
   const [gridPage, setGridPage] = useState(0);
    
   const [selectedPictos, setSelectedPictos] = useState<string[]>([]);
@@ -107,7 +109,7 @@ export default function StudentLoginUnified() {
     try {
       const groups = await authAPI.getGroups();
       setItems(groups);
-      setGridPage(0); setConfirmPendingId(null); setSelectedGridItem(null);
+      setGridPage(0); setSelectedGridItem(null);
     } catch (err) { console.error(err); setError('Error cargando grupos'); } 
     finally { setLoading(false); }
   };
@@ -118,31 +120,44 @@ export default function StudentLoginUnified() {
     try {
       const students = await authAPI.getStudentsByGroup(groupId);
       setItems(students);
-      setGridPage(0); setConfirmPendingId(null); setSelectedGridItem(null);
+      setGridPage(0); setSelectedGridItem(null);
     } catch (err) { console.error(err); setError('Error cargando estudiantes'); } 
     finally { setLoading(false); }
   };
 
   const handleTileClick = (item: GridItem) => {
     if (loading) return;
-    if (selectedGridItem?.id === item.id && confirmPendingId === String(item.id)) {
-      handleAdvance();
-      return;
-    }
     setSelectedGridItem(item);
-    setConfirmPendingId(String(item.id));
     setError('');
   };
 
   const addPicto = (pictogramId: string) => {
-    if (loading) return; 
-    setSelectedPictos(prev => prev.length >= MAX_LENGTH ? prev : [...prev, pictogramId]);
+    if (loading) return;
+    setSelectedPictos(prev => {
+      // Buscar primera posición vacía
+      const firstEmptyIndex = prev.findIndex(p => !p);
+      if (firstEmptyIndex !== -1) {
+        // Hay una posición vacía, llenarla
+        const newArray = [...prev];
+        newArray[firstEmptyIndex] = pictogramId;
+        return newArray;
+      } else if (prev.length < MAX_LENGTH) {
+        // No hay vacías pero aún hay espacio, añadir al final
+        return [...prev, pictogramId];
+      }
+      // Ya está lleno
+      return prev;
+    });
     setError('');
   };
 
   const removePictoAtIndex = (indexToRemove: number) => {
     if (loading) return; 
-    setSelectedPictos(prev => prev.filter((_, index) => index !== indexToRemove));
+    setSelectedPictos(prev => {
+      const newArray = [...prev];
+      newArray[indexToRemove] = ''; // Limpiar esa posición sin mover otros elementos
+      return newArray;
+    });
     setError('');
   };
 
@@ -164,7 +179,8 @@ export default function StudentLoginUnified() {
       setSelectedPictos([]); 
     }
     else if (currentPhase === 'PASSWORD') {
-        if (selectedPictos.length < REQUIRED_LENGTH) {
+        const filledPictos = selectedPictos.filter(p => p !== '');
+        if (filledPictos.length < REQUIRED_LENGTH) {
             setError('Faltan imágenes'); return;
         }
         await submitLogin();
@@ -175,10 +191,11 @@ export default function StudentLoginUnified() {
     if (!selectedStudent || !selectedGroup || loading) return;
     setLoading(true);
     try {
+        const password = selectedPictos.filter(p => p !== '').join('-');
         await login({
             group_id: String(selectedGroup.id),
             username: selectedStudent.username,
-            password: selectedPictos.join('-')
+            password: password
         });
         setSelectedPictos([]);
         router.push('/student/dashboard', 'root');
@@ -232,17 +249,13 @@ export default function StudentLoginUnified() {
          preventivamente si es solo visual.
       */}
       <IonContent className="st-login-content" scrollY={false}>
-        
-        <div aria-hidden="true">
-            <Background color="var(--ion-color-primary)" />
-        </div>
 
         <div className="st-login-layout">
              
             {/* HEADER */}
             <header className="st-login-header">
                 <div className="st-header-side">
-                    <div style={{ transform: 'scale(1.2)' }}>
+                    <div className="st-button-scale">
                         {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Back) */}
                         <Button3Dtext 
                             color="var(--ion-color-primary)" 
@@ -258,15 +271,15 @@ export default function StudentLoginUnified() {
                     <img src="/assets/Tato/Tatitulo.png" alt="Logo de Tato" className="st-login-logo" />
                 </div>
                 <div className="st-header-side">
-                    <div style={{ transform: 'scale(1.2)' }}>
+                    <div className="st-button-scale">
                         {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Check/Confirm) */}
                         {currentPhase === 'PASSWORD' ? (
                             <Button3Dtext 
                                 onClick={handleAdvance} 
-                                disabled={loading || selectedPictos.length !== REQUIRED_LENGTH}
+                                disabled={loading || selectedPictos.filter(p => p !== '').length !== REQUIRED_LENGTH}
                                 aria-label="Confirmar contraseña"
                             >
-                                {loading ? <IonSpinner name="dots" /> : <IonIcon icon={checkmark} aria-hidden="true" />}
+                                {loading ? <IonSpinner name="dots" /> : <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" style={{width: '24px', height: '24px'}} />}
                             </Button3Dtext>
                         ) : (
                             <Button3Dtext 
@@ -275,14 +288,14 @@ export default function StudentLoginUnified() {
                                 disabled={loading || !selectedGridItem}
                                 aria-label="Confirmar selección"
                             >
-                                <IonIcon icon={checkmark} aria-hidden="true" />
+                                <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" style={{width: '24px', height: '24px'}} />
                             </Button3Dtext>
                         )}
                     </div>
                 </div>
             </header>
 
-            <div className="st-login-subtitle-area">
+            <div className={`st-login-subtitle-area ${currentPhase === 'PASSWORD' ? 'password-mode' : ''}`}>
                 {/* ERROR 2 FIXED: Changed h2 to h1 for First Level Heading */}
                 <h1 className="st-login-subtitle">
                     {currentPhase === 'GROUPS' && "Selecciona tu clase"}
@@ -341,7 +354,7 @@ export default function StudentLoginUnified() {
                                                 </div>
                                             )}
                                             
-                                            {confirmPendingId === String(item.id) && (
+                                            {isSelected && (
                                                 <div className="st-btn-overlay">
                                                     <img src="/assets/pictograms/si.png" alt="Confirmar" className="st-overlay-icon" />
                                                 </div>
@@ -358,6 +371,23 @@ export default function StudentLoginUnified() {
                 ) : (
                     /* MODO PASSWORD */
                     <div className="st-pass-layout">
+                         <div className="st-card-wrapper pass-mode st-anim-pop-in">
+                            {error && <div className="st-error-toast" role="alert">{error}</div>}
+                            <div className="st-pass-grid">
+                                {PICTOGRAMS.map((picto) => (
+                                    <button
+                                        key={picto.id}
+                                        className="st-pass-key"
+                                        onClick={() => addPicto(picto.id)}
+                                        disabled={loading || selectedPictos.filter(p => p !== '').length >= MAX_LENGTH}
+                                        aria-label={`Añadir pictograma ${picto.name}`}
+                                    >
+                                        <img src={picto.image} alt="" aria-hidden="true" />
+                                    </button>
+                                ))}
+                            </div>
+                         </div>
+
                          <div className="st-pass-slots">
                             {Array.from({ length: REQUIRED_LENGTH }, (_, index) => {
                                 const pid = selectedPictos[index];
@@ -374,7 +404,7 @@ export default function StudentLoginUnified() {
                                         {picto ? (
                                             <>
                                                 <img src={picto.image} alt={picto.name} />
-                                                <div className="st-slot-delete"><IonIcon icon={trash} aria-hidden="true" /></div>
+                                                <div className="st-slot-delete"><IonIcon icon={close} aria-hidden="true" /></div>
                                             </>
                                         ) : (
                                             <span aria-hidden="true">?</span>
@@ -382,22 +412,6 @@ export default function StudentLoginUnified() {
                                     </div>
                                 );
                             })}
-                         </div>
-
-                         <div className="st-card-wrapper pass-mode st-anim-pop-in">
-                            <div className="st-pass-grid">
-                                {PICTOGRAMS.map((picto) => (
-                                    <button
-                                        key={picto.id}
-                                        className="st-pass-key"
-                                        onClick={() => addPicto(picto.id)}
-                                        disabled={loading || selectedPictos.length >= MAX_LENGTH}
-                                        aria-label={`Añadir pictograma ${picto.name}`}
-                                    >
-                                        <img src={picto.image} alt="" aria-hidden="true" />
-                                    </button>
-                                ))}
-                            </div>
                          </div>
                     </div>
                 )}
@@ -445,8 +459,6 @@ export default function StudentLoginUnified() {
                     </>
                 )}
             </div>
-
-            {error && <div className="st-error-toast" role="alert">{error}</div>}
 
         </div>
       </IonContent>

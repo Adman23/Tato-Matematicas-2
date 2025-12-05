@@ -30,21 +30,83 @@
 /* HEADER - Flexible con vh */
 .st-login-header {
   flex: 0 0 auto; 
-  height: 12vh; min-height: 50px; max-height: 100px;
+  height: 20vh; min-height: 100px; max-height: 180px;
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 5px; width: 100%;
 }
-.st-header-side { width: 80px; display: flex; justify-content: center; }
+.st-header-side { width: 150px; display: flex; justify-content: center; }
 .st-header-center { flex: 1; height: 100%; display: flex; justify-content: center; align-items: center; }
 .st-login-logo { height: 100%; width: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
 
+/* ESCALA DE BOTONES - Responsivo */
+.st-button-scale {
+  transform: scale(2.2);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Asegurar que IonIcon y IonSpinner tengan el mismo tamaño */
+.st-button-scale ion-icon,
+.st-button-scale ion-spinner {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* AJUSTE PARA MÓVILES (pantallas estrechas) */
+@media (max-width: 600px) {
+  .st-login-header {
+    height: 16vh; min-height: 85px; max-height: 130px;
+  }
+  .st-header-side { width: 100px; }
+  .st-button-scale {
+    transform: scale(1.5);
+  }
+}
+
+/* AJUSTE PARA PANTALLAS MEDIANAS HORIZONTALES (ej: 720x540) */
+@media (min-height: 451px) and (max-height: 600px) and (orientation: landscape) {
+  .st-login-header {
+    height: 14vh; min-height: 75px; max-height: 110px;
+  }
+  .st-button-scale {
+    transform: scale(1.6);
+  }
+  .st-login-subtitle { 
+    font-size: clamp(1.1rem, 3.2vh, 1.7rem); 
+    padding: 7px 30px; 
+  }
+  .st-login-subtitle-area.password-mode { margin-bottom: clamp(10px, 2vh, 20px); }
+  .st-card-wrapper.pass-mode {
+    width: min(42vh, 60vw);
+    max-height: 68vh;
+  }
+  .st-pass-layout { gap: 1vh; }
+  .st-pass-slot { 
+    width: calc((min(42vh, 60vw) - 30px - 24px) / 3);
+    height: calc((min(42vh, 60vw) - 30px - 24px) / 3);
+  }
+}
+
 /* SUBTÍTULO */
 .st-login-subtitle-area { flex: 0 0 auto; text-align: center; margin-bottom: 5px; }
+.st-login-subtitle-area.password-mode { margin-bottom: clamp(15px, 3vh, 30px); }
 .st-login-subtitle {
-  background: white; color: var(--ion-color-primary);
-  padding: 4px 20px; border-radius: 50px;
-  font-weight: 800; font-size: clamp(0.9rem, 2.2vh, 1.2rem);
+  background: var(--ion-color-primary); color: white;
+  padding: 10px 40px; border-radius: 50px;
+  font-weight: 800; font-size: clamp(1.4rem, 4vh, 2.2rem);
   box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; margin: 0;
+}
+
+/* AJUSTE SUBTÍTULO PARA MÓVILES */
+@media (max-width: 600px) {
+  .st-login-subtitle {
+    font-size: clamp(1.1rem, 3vh, 1.6rem);
+    padding: 7px 25px;
+  }
 }
 
 /* AREA PRINCIPAL */
@@ -66,6 +128,25 @@
 .st-card-wrapper.grid-landscape-2 { width: min(55vh, 600px); }
 .st-card-wrapper.grid-standard-4 { width: min(55vh, 600px); }
 
+/* MÓVILES EN HORIZONTAL - Maximizar espacio para grids */
+@media (orientation: landscape) and (max-height: 600px) {
+  .st-card-wrapper.grid-portrait-2 { 
+    width: min(50vh, 70vw);
+    height: auto;
+    max-height: 85vh;
+  }
+  .st-card-wrapper.grid-landscape-2 { 
+    width: min(70vh, 80vw);
+    height: auto;
+    max-height: 85vh;
+  }
+  .st-card-wrapper.grid-standard-4 { 
+    width: min(70vh, 80vw);
+    height: auto;
+    max-height: 85vh;
+  }
+}
+
 /* GRID INTERNO (CLASES/ALUMNOS) */
 .st-grid-inner { display: grid; width: 100%; gap: 12px; }
 .grid-portrait-2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
@@ -78,10 +159,7 @@
   position: relative; overflow: hidden; cursor: pointer;
   width: 100%; aspect-ratio: 1 / 1;
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s ease;
 }
-.st-grid-btn:hover:not(.ghost) { transform: scale(1.05); box-shadow: 0 8px 15px rgba(0,0,0,0.15); z-index: 5; }
-.st-grid-btn:active:not(.ghost) { transform: scale(0.95); background-color: #f5f5f5; box-shadow: none; }
 .st-grid-btn.selected { border-color: var(--ion-color-success); background: #f0fff4; box-shadow: inset 0 0 0 3px var(--ion-color-success); }
 .st-grid-btn.ghost { opacity: 1; pointer-events: none; background: rgba(255, 255, 255, 0.3); border: 3px dashed rgba(255, 255, 255, 0.6); box-shadow: none; transform: none !important; }
 .st-grid-btn.ghost.loading { animation: ghostPulse 1.5s infinite ease-in-out; border-style: solid; }
@@ -112,82 +190,132 @@
 .st-dot.active { background: var(--ion-color-primary); transform: scale(1.3); }
 
 /* =========================================================
-   PASSWORD SECTION (HARD-CODED 3x2 SCALABLE)
+   PASSWORD SECTION (3x3 GRID + 5 SLOTS)
    ========================================================= */
 
 /* CONTENEDOR ESPECÍFICO */
 .st-card-wrapper.pass-mode { 
-    width: min(95vw, 600px); 
-    overflow: hidden; /* IMPORTANTE: Previene scroll */
-    padding: 10px;    /* Reducimos padding para ganar espacio */
+    width: min(45vh, 500px);
+    height: auto;
+    max-height: 90vh;
+    overflow: visible;
+    padding: 15px;
     display: flex; flex-direction: column; justify-content: center;
+    position: relative;
 }
 
 .st-pass-layout { 
   display: flex; flex-direction: column; 
   align-items: center; 
-  justify-content: center; /* Centrar verticalmente */
-  width: 100%; height: 100%; 
-  gap: 1vh; /* Espacio flexible pequeño entre slots y grid */
+  justify-content: center;
+  width: 100%; 
+  max-height: 100%;
+  gap: 2vh;
+  overflow: visible;
 }
 
-/* SLOTS (???) */
-.st-pass-slots { 
-    display: flex; gap: 10px; flex: 0 0 auto; 
-}
-.st-pass-slot {
-    /* Tamaño basado en la altura de pantalla (vh) para que no coman mucho espacio */
-    width: 12vh; height: 12vh;
-    min-width: 45px; min-height: 45px; /* Mínimo para que sea pulsable */
-    max-width: 80px; max-height: 80px; /* Máximo para que no sea gigante */
-    
-    background: white; border: 3px dashed var(--ion-color-primary);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; color: #aaa; position: relative;
-}
-.st-pass-slot.filled { border-style: solid; border-color: var(--ion-color-success); cursor: pointer; }
-.st-pass-slot img { width: 80%; height: 80%; object-fit: contain; }
-.st-slot-delete { position: absolute; inset: 0; background: rgba(200,0,0,0.8); display: flex; align-items: center; justify-content: center; color: white; opacity: 0; transition: 0.2s; border-radius: 10px; }
-.st-pass-slot.filled:hover .st-slot-delete { opacity: 1; }
-
-/* GRID DE BOTONES */
+/* GRID DE PICTOGRAMAS 3x3 */
 .st-pass-grid { 
-  display: flex; 
-  flex-wrap: wrap; 
-  justify-content: center; 
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 12px;
   width: 100%;
-  gap: 10px; /* Espacio fijo entre botones */
+  aspect-ratio: 1/1;
 }
 
-/* BOTONES INDIVIDUALES */
+/* BOTONES DE PICTOGRAMAS */
 .st-pass-key {
-    /* LÓGICA 3 ARRIBA / 2 ABAJO:
-       En pantallas pequeñas (< 700px), usamos 31% width.
-       31% + 31% + 31% + gaps > 100%, así que caben 3.
-       El 4º baja.
-    */
-    flex: 0 0 31%; 
-    aspect-ratio: 1/1; /* Siempre cuadrado */
-    
-    /* LIMITADOR DE ALTURA: CRÍTICO PARA NO HACER SCROLL */
-    /* El botón nunca será más alto que el 18% de la pantalla */
-    max-height: 18vh; 
-    /* Y su ancho tampoco, para mantener el cuadrado */
-    max-width: 18vh;
-
-    background: white; border: 3px solid black; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.2); 
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    background: white; 
+    border: 3px solid black; 
+    border-radius: 12px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    cursor: pointer; 
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2); 
     transition: transform 0.1s;
 }
 
-.st-pass-key:active { transform: translateY(4px); box-shadow: none; background-color: #f5f5f5; }
-.st-pass-key img { width: 70%; height: 70%; object-fit: contain; }
+.st-pass-key:active { 
+    transform: translateY(4px); 
+    box-shadow: none; 
+    background-color: #f5f5f5; 
+}
+.st-pass-key img { 
+    width: 70%; 
+    height: 70%; 
+    object-fit: contain; 
+}
+
+/* SLOTS DE CONTRASEÑA (3 ESPACIOS) */
+.st-pass-slots { 
+    display: flex; 
+    gap: 10px; 
+    flex: 0 0 auto;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.st-pass-slot {
+    width: calc((min(45vh, 500px) - 30px - 24px) / 3);
+    height: calc((min(45vh, 500px) - 30px - 24px) / 3);
+    background: white; 
+    border: 3px dashed var(--ion-color-primary);
+    border-radius: 12px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 1.5rem; 
+    color: #aaa; 
+    position: relative;
+}
+.st-pass-slot.filled { 
+    border-style: solid; 
+    border-color: var(--ion-color-success); 
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.st-pass-slot.filled:active {
+    transform: scale(0.95);
+}
+.st-pass-slot img { 
+    width: 80%; 
+    height: 80%; 
+    object-fit: contain; 
+}
+.st-slot-delete { 
+    position: absolute; 
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    background: #dc2626;
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    pointer-events: none;
+    z-index: 10;
+}
+.st-slot-delete ion-icon {
+    font-size: 1.3rem;
+    width: 1.3rem;
+    height: 1.3rem;
+}
 
 /* --- NUEVO TOAST CENTRADO CON ANIMACIÓN SHAKE --- */
-.st-error-toast {
+.st-card-wrapper.pass-mode .st-error-toast {
   position: absolute;
-  top: 50%; left: 50%; /* Centrado */
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
   
   background: #ff4d4d; color: white; 
   padding: 15px 30px; 
@@ -199,26 +327,52 @@
 }
 
 /* --- PANTALLAS GRANDES (TABLETS/DESKTOP) --- */
-/* Aquí sí permitimos los 5 en línea porque hay espacio de sobra */
 @media (min-width: 768px) and (min-height: 600px) {
-    .st-pass-key {
-        flex: 0 0 18%; /* Caben 5: 18*5 = 90% */
-        max-width: 110px; max-height: 110px; /* Tamaño máximo fijo */
+    .st-login-header {
+        height: 22vh; min-height: 120px; max-height: 220px;
+    }
+    .st-header-side { width: 180px; }
+    .st-login-subtitle {
+        font-size: clamp(1.6rem, 4.5vh, 2.6rem);
+        padding: 12px 50px;
+    }
+    .st-pass-grid {
+        max-width: 500px;
+        max-height: 55vh;
+        gap: clamp(8px, 2vh, 18px);
     }
     .st-pass-slot {
-        width: 90px; height: 90px;
-        max-width: none; max-height: none;
+        width: calc((min(45vh, 500px) - 30px - 2 * clamp(8px, 2vh, 18px)) / 3);
+        height: calc((min(45vh, 500px) - 30px - 2 * clamp(8px, 2vh, 18px)) / 3);
     }
 }
 
-/* --- AJUSTE EXTREMO PARA MÓVILES APAISADOS (como la foto) --- */
+/* --- AJUSTE EXTREMO PARA MÓVILES APAISADOS --- */
 @media (max-height: 450px) {
-    .st-login-header { height: 45px; min-height: 0; margin-bottom: 2px; }
-    .st-login-footer { height: 40px; }
-    .st-pass-slots { margin-bottom: 5px; gap: 8px; }
-    .st-pass-grid { gap: 6px; }
-    
-    /* Forzamos que sean pequeños para caber */
+    .st-login-header { height: 70px; min-height: 0; margin-bottom: 2px; }
+    .st-header-side { width: 110px; }
+    .st-button-scale {
+        transform: scale(1.2);
+    }
+    .st-login-subtitle { font-size: clamp(0.9rem, 2.5vh, 1.3rem); padding: 5px 20px; }
+    .st-login-subtitle-area { margin-bottom: 3px; }
+    .st-login-subtitle-area.password-mode { margin-bottom: 5px; }
+    .st-login-footer { height: 35px; }
+    .st-card-wrapper.pass-mode {
+        width: min(40vh, 55vw);
+        height: auto;
+        max-height: 60vh;
+        padding: 6px;
+    }
+    .st-pass-layout { gap: 8px; }
+    .st-pass-grid { 
+        gap: clamp(3px, 0.8vh, 6px);
+    }
+    .st-pass-slots { gap: 4px; }
+    .st-pass-slot { 
+        width: calc((min(40vh, 55vw) - 12px - 2 * clamp(3px, 0.8vh, 6px)) / 3);
+        height: calc((min(40vh, 55vw) - 12px - 2 * clamp(3px, 0.8vh, 6px)) / 3);
+        border-width: 2px; 
+    }
     .st-pass-key { border-width: 2px; border-radius: 8px; }
-    .st-pass-slot { border-width: 2px; }
 }
