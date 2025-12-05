@@ -61,7 +61,7 @@ export default function StudentProfile() {
      * @param url the objetive url
      */
     const handleDirection = (url: string) => {
-        router.push(url, 'back', 'pop');
+        router.push(url);
     }
     
     /**
@@ -103,7 +103,7 @@ export default function StudentProfile() {
             <IonContent className="ion-padding" style={{ '--background': 'var(--ion-color-primary-contrast)' }}>
                 {/* Back button and main grid container */}
                 <Button3Dtext 
-                    onClick={() => handleDirection('/student/dashboard')} 
+                    onClick={() => router.push('/student/dashboard', "back", "pop")} 
                     aria-label="Volver atrás">
                     <IonIcon icon={arrowBack} />
                 </Button3Dtext>

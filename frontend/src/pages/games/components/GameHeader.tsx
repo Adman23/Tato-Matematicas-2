@@ -13,9 +13,11 @@
  */
 
 import React, { useState } from 'react';
-import { IonText } from '@ionic/react';
+import { IonIcon, IonText } from '@ionic/react';
 import './GameHeader.css';
 import ExitScreen from './ExitScreen';
+import { Button3Dtext } from '../../global_components/PushableButtons';
+import { arrowBack } from 'ionicons/icons';
 
 /**
  * Props del componente GameHeader.
@@ -82,28 +84,15 @@ const GameHeader: React.FC<GameHeaderProps> = ({
     setShowExitConfirm(false);
   };
 
+
   return (
     <>
       <div className="game-header-component">
-        {/* Botón Home a la izquierda - Estilo 3D Pushable */}
-        <div className="game-header-left">
-          <button
-            className="pushable-home-button"
-            onClick={handleHomeClick}
-            aria-label="Salir del juego"
-          >
-            <span className="shadow-home"></span>
-            <span className="edge-home"></span>
-            <span className="front-home">
-              <img
-                src="/assets/pictograms/home.png"
-                alt="Home"
-                className="home-icon"
-              />
-            </span>
-          </button>
-        </div>
-
+        <Button3Dtext 
+            onClick={handleHomeClick} 
+            aria-label="Salir del juego">
+            <IonIcon icon={arrowBack} />
+        </Button3Dtext>
         <div className="game-header-center">
           <IonText>
             <h2 className="game-header-title">{title}</h2>
