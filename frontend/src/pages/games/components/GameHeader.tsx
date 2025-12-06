@@ -12,10 +12,11 @@
  *
  */
 
-import React, { useState } from 'react';
-import { IonText } from '@ionic/react';
+import React from 'react';
+import { IonIcon, IonText } from '@ionic/react';
 import './GameHeader.css';
-import ExitScreen from './ExitScreen';
+import { Button3Dtext } from '../../global_components/PushableButtons';
+import { arrowBack } from 'ionicons/icons';
 
 /**
  * Props del componente GameHeader.
@@ -27,7 +28,7 @@ import ExitScreen from './ExitScreen';
  * @property {string} pictogram2 - URL o ruta del tercer pictograma (imagen derecha)
  * @property {number} currentRound - Número de ronda actual (1-based, ej: 1, 2, 3...)
  * @property {number} totalRounds - Total de rondas del juego (ej: 5 para "1/5")
- * @property {() => void} [onHomeClick] - Callback opcional al confirmar salida con el botón home
+ * @property {() => void} [onBackClick] - Callback al pulsar el botón de volver atrás
  */
 interface GameHeaderProps {
   title: string;
@@ -36,7 +37,7 @@ interface GameHeaderProps {
   pictogram2: string;
   currentRound: number;
   totalRounds: number;
-  onHomeClick?: () => void;
+  onBackClick?: () => void;
 }
 
 /**
@@ -65,45 +66,17 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   pictogram2,
   currentRound,
   totalRounds,
-  onHomeClick
+  onBackClick
 }) => {
-  const [showExitConfirm, setShowExitConfirm] = useState(false);
-
-  const handleHomeClick = () => {
-    setShowExitConfirm(true);
-  };
-
-  const confirmExit = () => {
-    setShowExitConfirm(false);
-    onHomeClick?.();
-  };
-
-  const cancelExit = () => {
-    setShowExitConfirm(false);
-  };
 
   return (
     <>
       <div className="game-header-component">
-        {/* Botón Home a la izquierda - Estilo 3D Pushable */}
-        <div className="game-header-left">
-          <button
-            className="pushable-home-button"
-            onClick={handleHomeClick}
-            aria-label="Salir del juego"
-          >
-            <span className="shadow-home"></span>
-            <span className="edge-home"></span>
-            <span className="front-home">
-              <img
-                src="/assets/pictograms/home.png"
-                alt="Home"
-                className="home-icon"
-              />
-            </span>
-          </button>
-        </div>
-
+        <Button3Dtext
+          onClick={onBackClick}
+          aria-label="Salir del juego">
+          <IonIcon icon={arrowBack} />
+        </Button3Dtext>
         <div className="game-header-center">
           <IonText>
             <h2 className="game-header-title">{title}</h2>
@@ -132,14 +105,9 @@ const GameHeader: React.FC<GameHeaderProps> = ({
           <p>{currentRound}/{totalRounds}</p>
         </IonText>
       </div>
-
-      {showExitConfirm && (
-        <ExitScreen
-          confirmExit={confirmExit}
-          cancelExit={cancelExit} />
-      )}
     </>
   );
+
 };
 
 export default GameHeader;

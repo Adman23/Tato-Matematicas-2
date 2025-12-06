@@ -17,7 +17,8 @@ import {
     useIonRouter,
     IonGrid,
     IonRow,
-    IonCol
+    IonCol,
+    IonIcon
 } from '@ionic/react';
 
 import { useAuth } from '../../contexts/AuthContext';
@@ -28,6 +29,7 @@ import { Button3Dtext } from '../global_components/PushableButtons';
 import { SimpleButton } from '../global_components/SimpleButton';
 
 import './StudentProfile.css';
+import { arrowBack } from 'ionicons/icons';
 // End of Imports-------------------------------------------------------
 
 /**
@@ -94,10 +96,17 @@ export default function StudentProfile() {
         <IonPage>
             {/* Header */}
             <SimpleHeaderUser userName={user?.username || "username"} 
-                    photoUrl={user?.photo_url} url="/student/dashboard" />
+                    photoUrl={user?.photo_url} hidden={true} />
+            
 
             {/* Main Content */}
             <IonContent className="ion-padding" style={{ '--background': 'var(--ion-color-primary-contrast)' }}>
+                {/* Back button and main grid container */}
+                <Button3Dtext 
+                    onClick={() => router.push('/student/dashboard', "back", "pop")} 
+                    aria-label="Volver atrás">
+                    <IonIcon icon={arrowBack} />
+                </Button3Dtext>
                 <IonGrid className="main-container">
                     <IonRow className="ion-align-items-stretch" style={{ height: '100%' }}>
                         {/* Edit section - 80% en desktop, 100% en móvil */}
