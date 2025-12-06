@@ -426,6 +426,9 @@ export default function StudentRegister() {
           </div>
 
           <div className="student-register-field-wrapper-buttons">
+            <IonButton className="student-register-cancel-button" onClick={handleCancel}>
+              Cancelar
+            </IonButton>
             <IonButton
               className={`student-register-confirm-button ${
                 !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected 
@@ -435,9 +438,6 @@ export default function StudentRegister() {
               onClick={handleConfirmClick}
             >
               Confirmar
-            </IonButton>
-            <IonButton className="student-register-cancel-button" onClick={handleCancel}>
-              Cancelar
             </IonButton>
           </div>
         </div>
