@@ -25,19 +25,19 @@ import FeedbackScreen from '../components/FeedbackScreen';
 import './Game1.css';
 
 
-// Importar imágenes para el header
+// Importar imágenes
 import imgAceptar from '/assets/juegosImg/aceptar.png';
 import imgSonido from '/assets/juegosImg/game1/sonido.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
+import imgPista from '/assets/juegosImg/lupa.png';
+import imgTato from '/assets/Tato/Tato.png';
 
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
 
-// Importar imagen de Tato
-import imgTato from '/assets/Tato/TatoPista.png';
 import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
 import ResultsScreen from '../components/ResultsScreen';
@@ -843,6 +843,9 @@ const Game1: React.FC = () => {
 
                         {/* Game area with grid layout */}
                         <div className="game1-grid-container">
+                            <div className='game1-tato-column'>
+                                <img src={imgTato} alt="Tato" className="game1-tato-image" />
+                            </div>
                             <div className="game1-game-column">
                                 {/* Available numbers */}
                                 <BubblesZone
@@ -892,7 +895,7 @@ const Game1: React.FC = () => {
                                         onClick={useHint}
                                     >
                                         <img
-                                            src={imgTato}
+                                            src={imgPista}
                                             alt="Pista"
                                             className="game1-check-button-image"
                                         />
