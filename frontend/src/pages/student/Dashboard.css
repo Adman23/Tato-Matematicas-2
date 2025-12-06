@@ -1,8 +1,8 @@
 /* ========================================
-   CONTAINERS PRINCIPALES
+    MAIN CONTAINERS
    ======================================== */
 
-/* Container principal del dashboard del estudiante */
+/* Main container for student dashboard */
 .student-dashboard-content {
     --background: var(--ion-color-primary-contrast);
     height: 100%;
@@ -12,7 +12,7 @@
     align-items: center;
 }
 
-/* Container de los juegos - Grid responsivo con valores adaptativos */
+/* Games container - Responsive grid with adaptive values */
 .games-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -25,11 +25,43 @@
     align-items: stretch;
 }
 
+
+
 /* ========================================
-   MEDIA QUERIES PARA RESPONSIVIDAD
+    DASHBOARD SECTION
+    ======================================== */
+
+.dashboard-section {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.dashboard-section::before {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: -2vw;
+    width: clamp(20vw, 30vw, 40vw);
+    height: clamp(20vw, 30vw, 40vw);
+    background-image: url('/assets/Tato/Tathola.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.games-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========================================
+    MEDIA QUERIES FOR RESPONSIVENESS
    ======================================== */
 
-/* Pantallas muy pequeñas (móviles pequeños) */
+/* Very small screens (small mobiles) */
 @media (max-width: 360px) {
     .games-container {
         gap: 0.5rem;
@@ -39,7 +71,7 @@
     }
 }
 
-/* Móviles estándar */
+/* Standard mobiles */
 @media (min-width: 361px) and (max-width: 600px) {
     .games-container {
         gap: 0.75rem;
@@ -49,7 +81,7 @@
     }
 }
 
-/* Tablets en portrait */
+/* Tablets in portrait */
 @media (min-width: 601px) and (max-width: 768px) {
     .games-container {
         gap: 1rem;
@@ -58,7 +90,7 @@
     }
 }
 
-/* Tablets en landscape y pantallas medianas */
+/* Tablets in landscape and medium screens */
 @media (min-width: 769px) and (max-width: 1024px) {
     .games-container {
         gap: 1.25rem;
@@ -68,7 +100,7 @@
     }
 }
 
-/* Pantallas grandes (desktop) */
+/* Large screens (desktop) */
 @media (min-width: 1025px) {
     .games-container {
         gap: 1.5rem;
@@ -76,9 +108,14 @@
         width: 70vw;
         max-width: 800px;
     }
+
+    .dashboard-section::before {
+        width: clamp(15vw, 22vw, 30vw);
+        height: clamp(15vw, 22vw, 30vw);
+    }
 }
 
-/* Altura pequeña (landscape en móviles) */
+/* Small height (landscape on mobiles) */
 @media (max-height: 600px) {
     .games-container {
         margin: 0.5rem auto;
@@ -87,7 +124,7 @@
     }
 }
 
-/* Optimización específica para móviles en portrait */
+/* Specific optimization for mobiles in portrait */
 @media (max-width: 600px) and (orientation: portrait) {
     .student-dashboard-content {
         padding: 0;
@@ -98,7 +135,7 @@
     }
 }
 
-/* Optimización específica para móviles en landscape */
+/* Specific optimization for mobiles in landscape */
 @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
     .games-container {
         margin: 0.25rem auto;

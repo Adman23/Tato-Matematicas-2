@@ -22,7 +22,9 @@ import {
   IonPage,
   IonContent,
   IonGrid,
-  IonCol
+  IonCol,
+  useIonRouter,
+  IonIcon,
 } from '@ionic/react';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -34,6 +36,7 @@ import { saveColorPalette } from '../../lib/api';
 import PaletteSelector from '../teacherProfile/EditStudent/components/PaletteSelector';
 import imgAceptar from '/assets/juegosImg/aceptar.png';
 import { useUserData } from '../../contexts/UserContext';
+import { arrowBack } from 'ionicons/icons';
 
 /**
  * Principal component of the color configuration.
@@ -63,6 +66,7 @@ export default function EditColorsStudent(){
 
   //aria labels for aria-live
   const [ariaMessage, setAriaMessage] = useState('');
+  const router = useIonRouter();
 
 
 
@@ -159,9 +163,15 @@ export default function EditColorsStudent(){
             <SimpleHeaderUser
               userName={user?.username || "username"}
               photoUrl={user?.photo_url}
+              hidden={true}
             />
 
             <IonContent className="ion-padding EditColorsStudent-Content">
+                <Button3Dtext 
+                    onClick={() => router.push('/student/profile', 'back', 'pop')} 
+                    aria-label="Volver atrás">
+                    <IonIcon icon={arrowBack} />
+                </Button3Dtext>
 
                 <div className='EditColor-Container'>
 
