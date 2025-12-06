@@ -132,6 +132,8 @@ export default function UserManagement() {
                   key={user.id}
                   teacherAvatar={user.photo_url}
                   teacherName={user.username}
+                  userId={user.id}
+                  tipo={tipo}
                 />
               ))}
             </IonList>

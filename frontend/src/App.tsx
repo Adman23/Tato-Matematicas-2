@@ -121,6 +121,8 @@ export default function App() {
                 exact component={TutorDashboard} />
               <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]} 
                 exact component={TeacherProfilePage} />
+              <PrivateRoute path="/teacher/edit-profile/:userId" allowedRoles={["admin"]} 
+                exact component={TeacherEditProfile} />
               <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]} 
                 exact component={TeacherEditProfile} />
               <PrivateRoute path="/teacher/register" allowedRoles={["admin"]} 

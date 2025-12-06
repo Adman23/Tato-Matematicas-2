@@ -1,0 +1,336 @@
+/* =============================================================================
+   CONFIRMATION MODAL - Componente Reutilizable
+   ========================================================================== */
+
+.confirmation-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* =============================================================================
+   LOADING STATE
+   ========================================================================== */
+
+.confirmation-modal-loading-container {
+  background-color: var(--ion-color-primary);
+  border-radius: 24px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  min-width: 200px;
+  animation: confirmationModalFadeIn 300ms ease-out;
+}
+
+.confirmation-modal-loading-spinner {
+  --color: white;
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+}
+
+.confirmation-modal-loading-message {
+  color: white;
+  font-size: 1rem;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  margin: 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* =============================================================================
+   SUCCESS STATE
+   ========================================================================== */
+
+.confirmation-modal-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 24px;
+  background-color: var(--ion-color-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  margin: 0;
+  animation: confirmationModalFadeIn 300ms ease-out;
+}
+
+@keyframes confirmationModalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.confirmation-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  text-align: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.confirmation-modal-icon-container {
+  background-color: var(--ion-color-primary);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+}
+
+.confirmation-modal-icon {
+  font-size: 100px;
+  color: white;
+}
+
+.confirmation-modal-title {
+  font-size: 1.3rem;
+  color: white;
+  margin: 0;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-weight: bold;
+}
+
+.confirmation-modal-message {
+  color: white;
+  font-size: 0.95rem;
+  margin: 1rem 0 1.5rem 0;
+  line-height: 1.5;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  padding: 0 !important;
+}
+
+.confirmation-modal-button {
+  --background: white;
+  --color: var(--ion-color-primary);
+  --border-radius: 100px;
+  --padding-top: 0.8rem;
+  --padding-bottom: 0.8rem;
+  --padding-start: 1.5rem;
+  --padding-end: 1.5rem;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  width: 100%;
+  max-width: 280px;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+
+.confirmation-modal-button::part(native) {
+  border-radius: 100px;
+  font-family: 'Atkinson Hyperlegible', sans-serif !important;
+}
+
+/* =============================================================================
+   RESPONSIVE - TABLET
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  .confirmation-modal-card {
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 32px;
+  }
+
+  .confirmation-modal-icon-container {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1.5rem;
+  }
+
+  .confirmation-modal-icon {
+    font-size: 120px;
+  }
+
+  .confirmation-modal-title {
+    font-size: 1.6rem;
+  }
+
+  .confirmation-modal-message {
+    font-size: 1.1rem;
+    margin: 1.2rem 0 2rem 0;
+  }
+
+  .confirmation-modal-button {
+    font-size: 1.1rem;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    --padding-start: 2rem;
+    --padding-end: 2rem;
+    max-width: 320px;
+  }
+
+  .confirmation-modal-loading-container {
+    padding: 2.5rem;
+    border-radius: 32px;
+    min-width: 250px;
+  }
+
+  .confirmation-modal-loading-spinner {
+    font-size: 3.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .confirmation-modal-loading-message {
+    font-size: 1.1rem;
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE - DESKTOP
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  .confirmation-modal-card {
+    max-width: 550px;
+    padding: 2.5rem;
+  }
+
+  .confirmation-modal-icon-container {
+    width: 110px;
+    height: 110px;
+  }
+
+  .confirmation-modal-icon {
+    font-size: 130px;
+  }
+
+  .confirmation-modal-title {
+    font-size: 1.8rem;
+  }
+
+  .confirmation-modal-message {
+    font-size: 1.15rem;
+  }
+
+  .confirmation-modal-button {
+    font-size: 1.15rem;
+  }
+
+  .confirmation-modal-loading-container {
+    padding: 3rem;
+    min-width: 280px;
+  }
+
+  .confirmation-modal-loading-spinner {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .confirmation-modal-loading-message {
+    font-size: 1.2rem;
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE - LANDSCAPE MOBILE
+   ========================================================================== */
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .confirmation-modal-card {
+    padding: 1rem;
+    max-width: 500px;
+  }
+
+  .confirmation-modal-icon-container {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0.5rem;
+  }
+
+  .confirmation-modal-icon {
+    font-size: 70px;
+  }
+
+  .confirmation-modal-title {
+    font-size: 1.1rem;
+  }
+
+  .confirmation-modal-message {
+    font-size: 0.85rem;
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  .confirmation-modal-button {
+    font-size: 0.9rem;
+    --padding-top: 0.6rem;
+    --padding-bottom: 0.6rem;
+    max-width: 200px;
+  }
+
+  .confirmation-modal-loading-container {
+    padding: 1.5rem;
+    min-width: 180px;
+  }
+
+  .confirmation-modal-loading-spinner {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .confirmation-modal-loading-message {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .confirmation-modal-card {
+    padding: 0.8rem;
+  }
+
+  .confirmation-modal-icon-container {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0.3rem;
+  }
+
+  .confirmation-modal-icon {
+    font-size: 60px;
+  }
+
+  .confirmation-modal-title {
+    font-size: 1rem;
+  }
+
+  .confirmation-modal-message {
+    font-size: 0.8rem;
+    margin: 0.4rem 0 0.8rem 0;
+  }
+
+  .confirmation-modal-button {
+    font-size: 0.85rem;
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
+  }
+}
