@@ -310,19 +310,7 @@ export default function TeacherEditProfile() {
     }
   }, [showAvatarModal, updateModalPos]);
 
-  if (loadingTeacher) {
-    return (
-      <IonPage>
-        <IonContent className="ion-text-center">
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <IonSpinner name="crescent" />
-          </div>
-        </IonContent>
-      </IonPage>
-    );
-  }
-
-  if (!user && !teacherData) {
+  if (!user) {
     return (
       <IonPage>
         <IonContent className="ion-text-center">
@@ -333,7 +321,6 @@ export default function TeacherEditProfile() {
   }
 
   const displayUser = targetUser || user;
-  if (!displayUser) return null;
 
   return (
     <IonPage style={{ backgroundColor: '#f4f5f8' }}>
@@ -347,8 +334,17 @@ export default function TeacherEditProfile() {
         />
       )}
 
-      <IonContent className="teacher-edit-profile-content">
-        <div className="teacher-edit-profile-main-container">
+      <IonContent className="teacher-edit-profile-content" scrollY={!loadingTeacher}>
+        {loadingTeacher ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', position: 'fixed', top: 0, left: 0 }}>
+            <IonSpinner name="crescent" />
+          </div>
+        ) : !displayUser ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', position: 'fixed', top: 0, left: 0 }}>
+            <IonSpinner name="crescent" />
+          </div>
+        ) : (
+          <div className="teacher-edit-profile-main-container">
           
           {isUpdateSuccess ? (
             <IonCard className="teacher-edit-profile-confirmation-card">
@@ -441,12 +437,13 @@ export default function TeacherEditProfile() {
                   className={`teacher-edit-profile-confirm-button ${!canSubmit ? 'teacher-edit-profile-confirm-button--disabled' : ''}`}
                   onClick={handleSubmit}
                 >
-                  Guardar cambios
+                  Confirmar
                 </IonButton>
               </div>
             </div>
           )}
-        </div>
+          </div>
+        )}
 
         <input type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} style={{ display: 'none' }} />
         <IonToast isOpen={showToast} message={toastMessage} color={toastColor} duration={3000} onDidDismiss={() => setShowToast(false)} className="teacher-edit-profile-toast" />

@@ -73,18 +73,6 @@ export default function GroupsManagement() {
         return filtered;
     })();
 
-    if (authLoading || loading) {
-        return (
-            <IonPage>
-                <IonContent className="ion-text-center">
-                    <div className='group-management-spinner'>
-                        <IonSpinner name='crescent' />
-                    </div>
-                </IonContent>
-            </IonPage>
-        );
-    }
-
     /* 
     !! DEPRECATED
         -> The route managers already do this shit
@@ -97,57 +85,63 @@ export default function GroupsManagement() {
     return (
         <IonPage>
             <SimpleHeaderAdmin adminName={user?.username || "username"} />
-            <IonContent>
-                <div className="groupManagement-MainContainer">
-                    <div className="groupManagement-TextAddButton">
-                        <IonLabel className="groupManagement-Text">
-                            <h2>{'Grupos'}</h2>
-                        </IonLabel>
-                        <IonSearchbar
-                            placeholder="Buscar grupo"
-                            value={groupQuery}
-                            onIonInput={(e) => setGroupQuery(e.detail.value ?? '')}
-                            onIonClear={() => setGroupQuery('')}
-                            onIonCancel={() => setGroupQuery('')}
-                            className='groupManagement-Searchbar'
-                        />
-                        <IonButton
-                            className="groupManagement-AddButoon"
-                            onClick={() =>
-
-                                router.push('/admin/group/register')
-
-                            }
-                        >
-                            Añadir nuevo grupo
-                        </IonButton>
+            <IonContent scrollY={!(authLoading || loading)}>
+                {(authLoading || loading) ? (
+                    <div className='group-management-spinner'>
+                        <IonSpinner name='crescent' />
                     </div>
-                    <div className="groupManagement-Table">
-                        <IonList>
-                            {displayedGroups.map((group) => (
-                                <GroupItem
-                                    key={group.id}
-                                    id={group.id}
-                                    groupName={group.name}
-                                    onDelete={async (id) => {
-                                        try {
-                                            setGroups(prev => prev.filter(g => String(g.id) !== String(id)));
-                                            await deleteGroup(Number(id));
-                                        } catch (err) {
-                                            console.error('Error eliminando grupo:', err);
+                ) : (
+                    <div className="groupManagement-MainContainer">
+                        <div className="groupManagement-TextAddButton">
+                            <IonLabel className="groupManagement-Text">
+                                <h2>{'Grupos'}</h2>
+                            </IonLabel>
+                            <IonSearchbar
+                                placeholder="Buscar grupo"
+                                value={groupQuery}
+                                onIonInput={(e) => setGroupQuery(e.detail.value ?? '')}
+                                onIonClear={() => setGroupQuery('')}
+                                onIonCancel={() => setGroupQuery('')}
+                                className='groupManagement-Searchbar'
+                            />
+                            <IonButton
+                                className="groupManagement-AddButoon"
+                                onClick={() =>
+
+                                    router.push('/admin/group/register')
+
+                                }
+                            >
+                                Añadir nuevo grupo
+                            </IonButton>
+                        </div>
+                        <div className="groupManagement-Table">
+                            <IonList>
+                                {displayedGroups.map((group) => (
+                                    <GroupItem
+                                        key={group.id}
+                                        id={group.id}
+                                        groupName={group.name}
+                                        onDelete={async (id) => {
                                             try {
-                                                const refreshed = await fetchGroups();
-                                                setGroups(refreshed);
-                                            } catch (err2) {
-                                                console.error('Error recargando grupos tras fallo:', err2);
+                                                setGroups(prev => prev.filter(g => String(g.id) !== String(id)));
+                                                await deleteGroup(Number(id));
+                                            } catch (err) {
+                                                console.error('Error eliminando grupo:', err);
+                                                try {
+                                                    const refreshed = await fetchGroups();
+                                                    setGroups(refreshed);
+                                                } catch (err2) {
+                                                    console.error('Error recargando grupos tras fallo:', err2);
+                                                }
                                             }
-                                        }
-                                    }}
-                                />
-                            ))}
-                        </IonList>
+                                        }}
+                                    />
+                                ))}
+                            </IonList>
+                        </div>
                     </div>
-                </div>
+                )}
             </IonContent>
         </IonPage>
     );

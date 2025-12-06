@@ -88,18 +88,6 @@ export default function UserManagement() {
     loadData();
   }, [tipo]);
 
-  if (authLoading || loading) {
-    return (
-      <IonPage>
-        <IonContent className="ion-text-center">
-          <div className='user-management-spinner'>
-            <IonSpinner name='crescent' />
-          </div>
-        </IonContent>
-      </IonPage>
-    );
-  }
-
   // Redirige si no está autenticado 
   if (!user || user.role !== 'admin') {
     return <Redirect to="/login" />;
@@ -108,37 +96,43 @@ export default function UserManagement() {
   return (
     <IonPage>
       <SimpleHeaderAdmin adminName={user.username} />
-      <IonContent>
-        <div className="teacherManagement-MainContainer">
-          <div className="teacherManagement-TextAddButton">
-            <IonLabel className="teacherManagement-TextTeacher">
-              <h2>{tipo === 'profesores' ? 'Profesores' : 'Alumnos'}</h2>
-            </IonLabel>
-            <IonButton
-              className="teacherManagement-AddButoon"
-              onClick={() =>
-                tipo === 'profesores'
-                  ? router.push('/teacher/register')
-                  : router.push('/student/register')
-              }
-            >
-              Añadir nuevo {tipo === 'profesores' ? 'profesor' : 'alumno'}
-            </IonButton>
+      <IonContent scrollY={!(authLoading || loading)}>
+        {(authLoading || loading) ? (
+          <div className='user-management-spinner'>
+            <IonSpinner name='crescent' />
           </div>
-          <div className="teacherManagement-teacherTable">
-            <IonList>
-              {users.map((user) => (
-                <TeacherManagementItem
-                  key={user.id}
-                  teacherAvatar={user.photo_url}
-                  teacherName={user.username}
-                  userId={user.id}
-                  tipo={tipo}
-                />
-              ))}
-            </IonList>
+        ) : (
+          <div className="teacherManagement-MainContainer">
+            <div className="teacherManagement-TextAddButton">
+              <IonLabel className="teacherManagement-TextTeacher">
+                <h2>{tipo === 'profesores' ? 'Profesores' : 'Alumnos'}</h2>
+              </IonLabel>
+              <IonButton
+                className="teacherManagement-AddButoon"
+                onClick={() =>
+                  tipo === 'profesores'
+                    ? router.push('/teacher/register')
+                    : router.push('/student/register')
+                }
+              >
+                Añadir nuevo {tipo === 'profesores' ? 'profesor' : 'alumno'}
+              </IonButton>
+            </div>
+            <div className="teacherManagement-teacherTable">
+              <IonList>
+                {users.map((user) => (
+                  <TeacherManagementItem
+                    key={user.id}
+                    teacherAvatar={user.photo_url}
+                    teacherName={user.username}
+                    userId={user.id}
+                    tipo={tipo}
+                  />
+                ))}
+              </IonList>
+            </div>
           </div>
-        </div>
+        )}
       </IonContent>
     </IonPage>
   );

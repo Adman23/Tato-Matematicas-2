@@ -92,7 +92,7 @@ export default function App() {
         <ManagerDataWrapper>
           <IonReactRouter>
 
-            <IonRouterOutlet>
+            <IonRouterOutlet animated={false}>
 
               <PublicRoute path="/home" exact component={Home} />
               <PublicRoute path="/login" exact component={Login} />

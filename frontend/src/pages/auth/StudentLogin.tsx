@@ -290,7 +290,6 @@ export default function StudentLoginUnified() {
                     <div className="st-button-scale">
                         {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Back) */}
                         <Button3Dtext 
-                            color="var(--ion-color-primary)" 
                             onClick={handleBack} 
                             disabled={loading}
                             aria-label="Volver atrás"
@@ -315,10 +314,9 @@ export default function StudentLoginUnified() {
                             </Button3Dtext>
                         ) : (
                             <Button3Dtext 
-                                color="var(--ion-color-primary)" 
                                 onClick={handleAdvance} 
                                 disabled={loading || !selectedGridItem}
-                                aria-label="Confirmar selección"
+                                aria-label="Continuar"
                             >
                                 <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" />
                             </Button3Dtext>
@@ -466,7 +464,6 @@ export default function StudentLoginUnified() {
                     <>
                         {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Previous Page) */}
                         <Button3Dtext 
-                            color="var(--ion-color-primary)" 
                             onClick={() => setGridPage(p => p-1)} 
                             disabled={gridPage === 0}
                             aria-label="Página anterior"
@@ -492,7 +489,6 @@ export default function StudentLoginUnified() {
 
                         {/* ERROR 1 FIXED: Added aria-label to Button3Dtext (Next Page) */}
                         <Button3Dtext 
-                            color="var(--ion-color-primary)" 
                             onClick={() => setGridPage(p => p+1)} 
                             disabled={gridPage >= totalPages - 1}
                             aria-label="Página siguiente"
