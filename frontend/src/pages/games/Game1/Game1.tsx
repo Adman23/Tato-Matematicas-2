@@ -700,7 +700,7 @@ const Game1: React.FC = () => {
             return files;
         };
 
-        // Play files sequentially using AudioManager
+        // Play files sequentially using AudioManager with medium volume (essential for gameplay)
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
@@ -709,7 +709,9 @@ const Game1: React.FC = () => {
             try {
                 const base = useWomanVoice ? '/assets/sounds/woman/' : '/assets/sounds/man/';
                 const paths = files.map(f => `${base}${f}`);
-                await audioManager.playSequential(paths);
+                // Always use medium volume (0.6) for number pronunciation, regardless of user preferences
+                // This is essential for gameplay in the "Asociar Números" game
+                await audioManager.playSequentialWithVolume(paths, 0.6);
             } finally {
                 setListeningAudio(false);
             }
