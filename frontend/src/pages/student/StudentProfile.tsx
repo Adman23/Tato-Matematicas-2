@@ -143,7 +143,7 @@ export default function StudentProfile() {
                                 </SimpleButton>
 
                                 {/* Edit sound */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
+                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-noise")}>
                                     <img
                                     src="/assets/pictograms/escucha.png"
                                     alt="Ir a editar sonido"
