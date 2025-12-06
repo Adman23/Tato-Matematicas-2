@@ -25,7 +25,8 @@ import {
   IonPage,
   IonContent,
   IonSpinner,
-  useIonRouter
+  useIonRouter,
+  IonIcon
 } from '@ionic/react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -35,6 +36,7 @@ import SimpleHeaderUser from './components/SimpleHeaderUser';
 import { Button3Dtext } from '../global_components/PushableButtons';
 import './EditGame2.css';
 import '../games/components/GameHeader.css';
+import { arrowBack } from 'ionicons/icons';
 
 // Opciones de rango (de acuerdo a la DB)
 const RANGE_OPTIONS = [
@@ -251,10 +253,16 @@ export default function EditGame2() {
       <SimpleHeaderUser
         userName={user?.username || "username"}
         photoUrl={user?.photo_url}
-        url="/student/profile"
+        hidden={true}
       />
 
       <IonContent className="edit-game2-content" fullscreen scrollY={false}>
+
+        <Button3Dtext 
+            onClick={() => router.push('/student/profile', 'back', 'pop')} 
+            aria-label="Volver atrás">
+            <IonIcon icon={arrowBack} />
+        </Button3Dtext>
         <div className="edit-game2-main-container">
           {/* Cabecera compacta con volver + título */}
           <div className="edit-game2-header-row">

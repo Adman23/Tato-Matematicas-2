@@ -16,27 +16,18 @@ setupIonicReact();
 interface Props {
   userName: string;
   photoUrl?: string;
-  url?: string;
+  hidden?: boolean;
 }
 
 
 const SimpleHeaderUser: React.FC<Props> = ({
   userName,
   photoUrl,
-  url
+  hidden = false,
 }) => {
   const router = useIonRouter();
-  const { user } = useAuth();
+  const { } = useAuth();
 
-  const handleProfile = () => {
-    if (url != null) {
-      router.push(url, "back", "pop");
-    } else if (user?.role === "teacher") {
-      router.push('/teacher/profile');
-    } else {
-      router.push('/student/profile');
-    }
-  }
 
 
   return (
@@ -53,29 +44,18 @@ const SimpleHeaderUser: React.FC<Props> = ({
           <div className="header-text">{userName}</div>
         </IonButtons>
 
-        <IonButtons slot="end">
-          <Button3Dtext color="var(--button-profile-bg)" onClick={handleProfile}>
-            {url != null ? (
-              <>
-                <img
-                  src="/assets/pictograms/juegos.png"
-                  alt="Ir al dashboard"
-                  className="btn-icon-header-user"
-                />
-                <span className="btn-text">JUEGOS</span>
-              </>
-            ) : (
-              <>
+        {!hidden && (
+          <IonButtons slot="end">
+            <Button3Dtext color="var(--button-profile-bg)" onClick={()=>router.push('/student/profile')}>
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"
                   className="btn-icon-header-user"
                 />
                 <span className="btn-text">MI PERFIL</span>
-              </>
-            )}
-          </Button3Dtext>
-        </IonButtons>
+            </Button3Dtext>
+          </IonButtons>
+        )}
 
       </IonToolbar>
     </IonHeader>
