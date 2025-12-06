@@ -41,6 +41,7 @@ import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
 import ResultsScreen from '../components/ResultsScreen';
 import { GameControlButton } from '../../global_components/GameControlButton';
+import { getAudioPreferences, type AudioPreferences } from '../../../lib/api';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -90,6 +91,7 @@ const Game1: React.FC = () => {
     const [loadingMessages, setLoadingMessages] = useState(true);
     const [config, setConfig] = useState<GameConfig | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
+    const [audioPreferences, setAudioPreferences] = useState<AudioPreferences | undefined>();
 
     // Game states
     const [currentRound, setCurrentRound] = useState(1);
@@ -219,6 +221,16 @@ const Game1: React.FC = () => {
             };
 
             setConfig(validatedConfig);
+            
+            // Load audio preferences
+            try {
+                const audioPrefs = await getAudioPreferences(currentUser.id);
+                setAudioPreferences(audioPrefs);
+            } catch (err) {
+                console.error('Error loading audio preferences:', err);
+                // Use defaults if error
+            }
+            
             setLoadingGame(false);
         } catch (error) {
             console.error('Error loading game config:', error);
@@ -810,6 +822,7 @@ const Game1: React.FC = () => {
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}
                 onRepeat={repeatExercise}
+                audioPreferences={audioPreferences}
             />
         );
     }
@@ -830,6 +843,7 @@ const Game1: React.FC = () => {
                         headerPictogramArrow={imgFlecha}
                         headerPictogram2={imgJuego}
                         elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
+                        audioPreferences={audioPreferences}
                     />
                 ) : showExitConfirm ? (
                     <ExitScreen

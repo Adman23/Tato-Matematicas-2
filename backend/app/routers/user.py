@@ -349,4 +349,56 @@ async def get_color_preferences(user_id: str):
         return resp.data["color_preferences"]
 
     except Exception as e:
-        raise HTTPException(500, f"Error fetching color preferences: {e}")
+        raise HTTPException(500, f"Error fetching color preferences: {e}")# Endpoints para audio_preferences
+# Agregar estos endpoints al final de user.py
+
+@router.post("/{user_id}/update_audio_preferences")
+async def update_audio_preferences(user_id: str, audio_preferences: dict):
+    """
+    Actualiza las preferencias de audio de un usuario (tema y volumen).
+    """
+    try:
+        update = supabase_admin.table("user_profiles")\
+            .update({"audio_preferences": audio_preferences})\
+            .eq("user_id", user_id)\
+            .execute()
+
+        print("Audio preferences guardadas:", update.data)
+        return {"message": "Audio preferences updated", "saved": audio_preferences}
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating audio preferences: {str(e)}"
+        )
+
+
+@router.get("/{user_id}/audio_preferences")
+async def get_audio_preferences(user_id: str):
+    """
+    Obtiene las preferencias de audio de un usuario.
+    """
+    try:
+        resp = supabase_admin.table("user_profiles")\
+            .select("audio_preferences")\
+            .eq("user_id", user_id)\
+            .single()\
+            .execute()
+
+        if not resp.data:
+            raise HTTPException(404, "User not found")
+
+        # Devolver preferencias por defecto si no existen
+        audio_prefs = resp.data.get("audio_preferences")
+        if not audio_prefs:
+            return {"theme": "classic", "volume": "medio"}
+        
+        return audio_prefs
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving audio preferences: {str(e)}"
+        )

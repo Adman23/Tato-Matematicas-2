@@ -19,6 +19,7 @@
  */
 class AudioManager {
     private audio: HTMLAudioElement | null = null;
+    private volume: number = 0.6; // Default volume (60%)
 
     /**
      * Waits for any active speech synthesis (screen reader) to finish.
@@ -93,6 +94,7 @@ class AudioManager {
 
             const audio = new Audio(path);
             this.audio = audio;
+            audio.volume = this.volume; // Apply current volume setting
 
             const finish = () => {
                 try {
@@ -138,6 +140,21 @@ class AudioManager {
                 this.audio.currentTime = 0;
             } catch (e) { /* ignore */ }
             this.audio = null;
+        }
+    }
+
+    /**
+     * Sets the volume for audio playback (0.0 to 1.0)
+     *
+     * @param volume - Volume level between 0.0 (mute) and 1.0 (full volume)
+     * @returns void
+     * @example
+     * audioManager.setVolume(0.5); // 50% volume
+     */
+    setVolume(volume: number) {
+        this.volume = Math.max(0, Math.min(1, volume)); // Clamp between 0 and 1
+        if (this.audio) {
+            this.audio.volume = this.volume;
         }
     }
 

@@ -38,7 +38,7 @@ import { Redirect, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../../../contexts/AuthContext';
 import { useUserData } from '../../../contexts/UserContext';
-import { gamesAPI } from '../../../lib/api';
+import { gamesAPI, getAudioPreferences, type AudioPreferences } from '../../../lib/api';
 import type { GameConfig, StudentMessage } from '../../../lib/api';
 import DropZone from './DropZone';
 import GameHeader from '../components/GameHeader';
@@ -121,6 +121,7 @@ const Game2: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [audioPreferences, setAudioPreferences] = useState<AudioPreferences | undefined>();
 
   // Estados del juego
   const [currentRound, setCurrentRound] = useState(1);
@@ -329,6 +330,14 @@ const Game2: React.FC = () => {
 
       setConfig(validatedConfig);
       setLoading(false);
+
+      // Cargar preferencias de audio del usuario
+      try {
+        const audioPrefs = await getAudioPreferences(currentUser.id);
+        setAudioPreferences(audioPrefs);
+      } catch (err) {
+        console.error('Error loading audio preferences:', err);
+      }
     } catch (error) {
       console.error('Error loading game config:', error);
 
@@ -1191,6 +1200,7 @@ const Game2: React.FC = () => {
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
             elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
+            audioPreferences={audioPreferences}
           />
         ) : showExitConfirm ? (
           <ExitScreen
@@ -1377,6 +1387,7 @@ const Game2: React.FC = () => {
                   messages={Messages}
                   onNext={closeFeedbackScreen}
                   onHomeClick={handleEarlyExit}
+                  audioPreferences={audioPreferences}
                   onRepeat={feedbackType === 'incorrect' ? closeFeedbackScreen : undefined}
                   hideNextOnError={true}
                 />

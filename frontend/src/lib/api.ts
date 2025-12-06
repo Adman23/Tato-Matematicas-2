@@ -640,6 +640,22 @@ export async function getColorPreferences(userId: string) {
   return res.data;
 }
 
+// === AUDIO PREFERENCES ===
+
+export interface AudioPreferences {
+  theme: 'classic' | 'digital' | 'zen' | 'juego';
+  volume: 'silencio' | 'bajito' | 'medio' | 'alto';
+}
+
+export async function saveAudioPreferences(user_id: string, preferences: AudioPreferences): Promise<void> {
+  await api.post(`/user/${user_id}/update_audio_preferences`, preferences);
+}
+
+export async function getAudioPreferences(userId: string): Promise<AudioPreferences> {
+  const res = await api.get(`/user/${userId}/audio_preferences`);
+  return res.data;
+}
+
 // === ENDPOINTS DE JUEGOS ===
 
 /**

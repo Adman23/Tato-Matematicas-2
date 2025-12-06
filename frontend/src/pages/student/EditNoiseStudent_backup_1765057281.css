@@ -8,7 +8,7 @@
   text-align: center;
   background-color: #fff;
   height: auto;
-  max-height: calc(100vh - 60px);
+  max-height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -18,7 +18,7 @@
 .main-title {
   font-size: min(2.5vh, 1.8rem);
   font-weight: 500;
-  margin: min(1vh, 10px) 0;
+  margin: min(1vh, 0.625rem) 0;
   padding: 0;
   color: #000;
   flex-shrink: 0;
@@ -73,14 +73,14 @@
 }
 
 .theme-label {
-  margin-bottom: min(0.5vh, 5px);
+  margin-bottom: min(0.5vh, 0.3125rem);
   font-size: min(1.8vh, 1rem);
   color: #333;
 }
 
 .icon-circle {
-  width: min(10vh, 80px);
-  height: min(10vh, 80px);
+  width: min(10vh, 5rem);
+  height: min(10vh, 5rem);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -102,7 +102,7 @@
 /* --- Sub-iconos de Feedback --- */
 .feedback-icons {
   display: flex;
-  gap: min(1vh, 10px);
+  gap: min(1vh, 0.625rem);
   justify-content: center;
 }
 
@@ -113,8 +113,8 @@
 }
 
 .feedback-button {
-  width: min(5vh, 45px);
-  height: min(5vh, 45px);
+  width: min(5vh, 2.8125rem);
+  height: min(5vh, 2.8125rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -170,7 +170,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: min(1vh, 10px) min(1vw, 15px);
+  padding: min(1vh, 0.625rem) min(1vw, 0.9375rem);
   width: 100%;
   flex-shrink: 0;
   gap: min(2vw, 15px);
@@ -202,16 +202,16 @@
 }
 
 .volume-label {
-  margin-bottom: min(1.5vh, 10px);
+  margin-bottom: min(1.5vh, 0.625rem);
   font-size: min(2vh, 1rem);
   color: #333;
 }
 
 .volume-button {
-  width: min(8vh, 60px);
-  height: min(8vh, 60px);
-  min-width: 50px;
-  min-height: 50px;
+  width: min(8vh, 3.75rem);
+  height: min(8vh, 3.75rem);
+  min-width: 3.125rem;
+  min-height: 3.125rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,16 +260,16 @@
 .Accept-button-container-editColorsStudent {
   flex-shrink: 0;
   position: fixed;
-  bottom: min(1vh, 10px);
-  right: min(2vw, 20px);
+  bottom: min(1vh, 0.625rem);
+  right: min(2vw, 1.25rem);
   z-index: 11;
 }
 
 .Accept-Button-image {
-  height: min(10vh, 90px);
-  width: min(10vh, 90px);
-  min-height: 70px;
-  min-width: 70px;
+  height: min(10vh, 5.625rem);
+  width: min(10vh, 5.625rem);
+  min-height: 4.375rem;
+  min-width: 4.375rem;
 }
 
 /* Pantallas muy pequeñas */

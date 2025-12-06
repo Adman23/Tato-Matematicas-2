@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { checkmarkCircle, time, star, closeCircle } from 'ionicons/icons';
 import './ResultsScreen.css';
@@ -6,6 +6,8 @@ import GameHeader from './GameHeader';
 import iconHint from '/assets/Tato/TatoPista.png';
 import tatoImage from '/assets/Tato/Tato.png';
 import acceptButton from '/assets/juegosImg/aceptar.png';
+import audioManager from '../../../lib/AudioManager';
+import type { AudioPreferences } from '../../../lib/api';
 
 interface ResultsScreenProps {
   totalRounds: number;
@@ -19,6 +21,7 @@ interface ResultsScreenProps {
   headerPictogramArrow: string;
   headerPictogram2: string;
   elapsedTime?: number; // tiempo en segundos
+  audioPreferences?: AudioPreferences; // Preferencias de audio del usuario
 }
 
 const ResultsScreen: React.FC<ResultsScreenProps> = ({
@@ -32,7 +35,8 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   headerPictogram1,
   headerPictogramArrow,
   headerPictogram2,
-  elapsedTime = 0
+  elapsedTime = 0,
+  audioPreferences
 }) => {
   const netCorrect = Math.max(totalNumbersCorrect - totalHints, 0);
 
@@ -52,6 +56,38 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   };
 
   const stars = calculateStars();
+
+  // Reproducir sonido de trofeo temático después de que la pantalla esté completamente cargada
+  useEffect(() => {
+    const getVolumeLevel = (volume: string) => {
+      switch (volume) {
+        case 'silencio': return 0;
+        case 'bajito': return 0.3;
+        case 'medio': return 0.6;
+        case 'alto': return 1.0;
+        default: return 0.6;
+      }
+    };
+
+    // Esperar a que la pantalla se renderice completamente antes de reproducir el sonido
+    const timer = setTimeout(() => {
+      const soundPath = audioPreferences?.theme
+        ? `/assets/sounds/trophy_${audioPreferences.theme}.mp3`
+        : '/assets/sounds/trophy_classic.mp3';
+
+      const volumeLevel = audioPreferences?.volume ? getVolumeLevel(audioPreferences.volume) : 0.6;
+
+      audioManager.setVolume(volumeLevel);
+      void audioManager.play(soundPath);
+    }, 300); // Delay de 300ms para asegurar que la pantalla esté completamente renderizada
+
+    return () => {
+      clearTimeout(timer);
+      try {
+        audioManager.stop();
+      } catch (e) { /* ignore */ }
+    };
+  }, [audioPreferences]);
 
   return (
     <div className="results-wrapper">

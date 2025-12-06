@@ -52,6 +52,7 @@ import './FeedbackScreen.css';
 import GameHeader from './GameHeader';
 import ExitScreen from './ExitScreen';
 import audioManager from '../../../lib/AudioManager';
+import type { AudioPreferences } from '../../../lib/api';
 
 import imgSiguienteDefault from '/assets/juegosImg/siguiente.png';
 import imgRepetirDefault from '/assets/juegosImg/volver.png';
@@ -98,6 +99,7 @@ interface FeedbackScreenProps {
     onHomeClick: () => void;
     onRepeat?: () => void;
     hideNextOnError?: boolean; // Si es true, oculta el botón "Siguiente" cuando hay error
+    audioPreferences?: AudioPreferences; // Preferencias de audio del usuario
 }
 
 /**
@@ -125,7 +127,8 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     onNext,
     onHomeClick,
     onRepeat,
-    hideNextOnError = false
+    hideNextOnError = false,
+    audioPreferences
 }) => {
     // Estado para mostrar la pantalla de confirmación de salida
     const [showExitConfirm, setShowExitConfirm] = useState(false);
@@ -256,12 +259,34 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
         }
     };
 
-    // Play selected message sound (if present) or fallback to default correct/incorrect sound
+    // Play themed sound based on user preferences
     useEffect(() => {
-        const soundPath = selectedMessage && selectedMessage.sound_url
-            ? "/assets/sounds/" + selectedMessage.sound_url
-            : (isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3');
-
+        let soundPath: string;
+        
+        if (audioPreferences?.theme) {
+            // Use themed sound based on user preferences
+            const soundType = isCorrect ? 'correct' : 'incorrect';
+            soundPath = `/assets/sounds/${soundType}_${audioPreferences.theme}.mp3`;
+        } else {
+            // Fallback to default sounds
+            soundPath = isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3';
+        }
+        
+        // Apply volume from preferences
+        const getVolumeLevel = (volume: string) => {
+            switch (volume) {
+                case 'silencio': return 0;
+                case 'bajito': return 0.3;
+                case 'medio': return 0.6;
+                case 'alto': return 1.0;
+                default: return 0.6;
+            }
+        };
+        
+        const volumeLevel = audioPreferences?.volume ? getVolumeLevel(audioPreferences.volume) : 0.6;
+        
+        // Set volume and play
+        audioManager.setVolume(volumeLevel);
         void audioManager.play(soundPath);
 
         return () => {
@@ -269,7 +294,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                 audioManager.stop();
             } catch (e) { /* ignore */ }
         };
-    }, [selectedMessage?.sound_url, isCorrect]);
+    }, [isCorrect, audioPreferences]);
 
     // Si se muestra la confirmación de salida, renderizar ExitScreen
     if (showExitConfirm) {
