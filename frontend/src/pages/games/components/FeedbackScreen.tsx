@@ -40,7 +40,7 @@
  * />
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     IonContent,
     IonPage,
@@ -50,6 +50,7 @@ import {
 import './FeedbackScreen.css';
 
 import GameHeader from './GameHeader';
+import ExitScreen from './ExitScreen';
 import audioManager from '../../../lib/AudioManager';
 
 import imgSiguienteDefault from '/assets/juegosImg/siguiente.png';
@@ -126,6 +127,8 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     onRepeat,
     hideNextOnError = false
 }) => {
+    // Estado para mostrar la pantalla de confirmación de salida
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
 
 
     /**
@@ -268,6 +271,16 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
         };
     }, [selectedMessage?.sound_url, isCorrect]);
 
+    // Si se muestra la confirmación de salida, renderizar ExitScreen
+    if (showExitConfirm) {
+        return (
+            <ExitScreen
+                confirmExit={onHomeClick}
+                cancelExit={() => setShowExitConfirm(false)}
+            />
+        );
+    }
+
     return (
         <IonPage>
             <IonContent className="feedback-content">
@@ -279,7 +292,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     pictogram2={headerPictogram2}
                     currentRound={currentRound}
                     totalRounds={totalRounds}
-                    onHomeClick={onHomeClick}
+                    onBackClick={() => setShowExitConfirm(true)}
                 />
 
                 {/* Feedback screen */}

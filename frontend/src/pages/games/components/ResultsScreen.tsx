@@ -62,7 +62,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
         pictogram2={headerPictogram2}
         currentRound={totalRounds}
         totalRounds={totalRounds}
-        onHomeClick={onHomeClick}
+        onBackClick={onHomeClick}
       />
 
       <div className="results-screen-new" role="region" aria-label="Resumen de la partida">
