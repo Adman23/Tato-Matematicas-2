@@ -23,7 +23,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
   children, 
   className = '', 
   frontClassName = '',
-  color = 'var(--button-profile-bg)',
+  color = 'var(--bubble-bg)',
   ...props // 2. Capturamos el resto de props (incluyendo aria-label, disabled, onClick)
 }) => {
 
@@ -85,7 +85,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           display: block;
           position: relative;
           border-radius: 12px;
-          padding: 12px 20px;
+          padding: clamp(8px, 1.5vh, 16px) clamp(12px, 2vw, 20px);
           color: white;
           width: 100%;
           height: 100%;
@@ -104,33 +104,34 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
 
         .pushable-button .button-content {
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 10px;
+          gap: clamp(4px, 1vh, 10px);
+          height: 100%;
         }
 
         /* Clases utilitarias internas */
         .btn-text {
-          font-size: 1.2rem;
-          font-weight: bold;
-          white-space: nowrap;
           color: #000000;
-          border: 2px solid #1e3a8a;
-          padding: 4px 12px;
-          border-radius: 6px;
-          background-color: rgba(255, 255, 255, 0.9);
-          max-width: 95%;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: clip;
-          font-size: clamp(12px, 1.7vw, 20px);
+          font-weight: bold;
+          text-align: center;
+          font-size: clamp(10px, 2vw, 24px);
           line-height: 1.2;
-          flex-shrink: 0;
+          word-break: break-word;
+          flex-shrink: 1;
         }
 
         .btn-icon {
           font-size: 1.8rem;
           display: block;
+        }
+
+        /* Iconos de Ionicons dentro del botón */
+        .pushable-button ion-icon {
+          color: #000000;
+          font-size: 1.5rem;
+          --ionicon-stroke-width: 64px;
         }
 
         @media (hover: hover) {

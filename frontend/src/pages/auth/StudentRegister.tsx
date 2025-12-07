@@ -4,12 +4,12 @@ import './StudentRegister.css';
 
 import {
   IonPage,
+  IonContent,
   IonInput,
   IonButton,
   IonIcon,
   IonToast,
   IonImg,
-  IonText,
   useIonRouter
 } from '@ionic/react';
 import { personOutline, addOutline, closeOutline, checkmarkOutline } from 'ionicons/icons';
@@ -19,6 +19,7 @@ import { authAPI, uploadImage, getImages } from '../../lib/api';
 import { setupIonicReact } from '@ionic/react';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { createPortal } from 'react-dom';
+import ConfirmationModal from '../global_components/ConfirmationModal';
 
 setupIonicReact();
 
@@ -28,6 +29,10 @@ const PICTOGRAMS = [
   { id: 'tortuga', name: 'Tortuga', image: '/assets/pictograms/tortuga.png' },
   { id: 'león', name: 'León', image: '/assets/pictograms/león.png' },
   { id: 'elefante', name: 'Elefante', image: '/assets/pictograms/elefante.png' },
+  { id: 'pez', name: 'Pez', image: '/assets/pictograms/pez.png' },
+  { id: 'pinguino', name: 'Pinguino', image: '/assets/pictograms/pinguino.png' },
+  { id: 'flamenco', name: 'Flamenco', image: '/assets/pictograms/flamenco.png' },
+  { id: 'caballo', name: 'Caballo', image: '/assets/pictograms/caballo.png' },
 ];
 
 const MAX_PICTOGRAMS = 3;
@@ -56,6 +61,8 @@ export default function StudentRegister() {
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { user } = useAuth();
 
@@ -103,11 +110,13 @@ export default function StudentRegister() {
     const loadAvatars = async () => {
       try {
         const imagesMap = await getImages();
-        const options = Object.entries(imagesMap).map(([filename, url]) => ({
-          id: filename,
-          name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
-          imageUrl: url as string,
-        }));
+        const options = Object.entries(imagesMap)
+          .filter(([filename]) => filename.toLowerCase().includes('default'))
+          .map(([filename, url]) => ({
+            id: filename,
+            name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
+            imageUrl: url as string,
+          }));
         setAvatarOptions(options);
       } catch (err) {
         console.error('Error al cargar avatares:', err);
@@ -154,6 +163,7 @@ export default function StudentRegister() {
     }
 
     try {
+      setIsLoading(true);
       const password = pictograms.join('-');
       let photoUrl = DEFAULT_AVATAR;
 
@@ -172,14 +182,10 @@ export default function StudentRegister() {
         photo_url: photoUrl, 
       });
 
-      setToastMessage('Estudiante registrado correctamente 🎉');
-      setToastColor('success');
-      setIsToastOpen(true);
-
-      setTimeout(() => {
-        router.push('/register/confirmation/alumnos',"none","replace"); 
-      }, 2000); 
+      setIsLoading(false);
+      setShowConfirmationModal(true); 
     } catch (err: any) {
+      setIsLoading(false);
       console.error('Error en el registro:', err);
       const message =
         err.response?.data?.detail ||
@@ -199,7 +205,7 @@ export default function StudentRegister() {
     setPictograms([]);
     if (showPictoModal) closePictoModal();
     if (showAvatarModal) closeAvatarModal();
-    router.push('/admin/alumnos',"back","pop");
+    router.push('/admin/dashboard/alumnos', 'none');
   };
 
   // === PICTOGRAMAS ===
@@ -283,22 +289,24 @@ export default function StudentRegister() {
 
   // === POSICIONAMIENTO MODALES ===
   const updatePictoModalPosition = useCallback(() => {
-    if (showPictoModal && formCardRef.current && pictoPickerRef.current) {
-      const cardRect = formCardRef.current.getBoundingClientRect();
-      const modal = pictoPickerRef.current;
-      const modalHeight = Math.min(cardRect.height, 460);
-      modal.style.position = 'fixed';
-      modal.style.left = `${cardRect.left + window.scrollX}px`;
-      modal.style.top = `${cardRect.top + window.scrollY}px`;
-      modal.style.width = `${cardRect.width}px`;
-      modal.style.height = `${modalHeight}px`;
-      modal.style.zIndex = '1001';
+    if (pictoPickerRef.current && formCardRef.current) {
+      const rect = formCardRef.current.getBoundingClientRect();
+      const modalHeight = rect.height * 0.6;
+      pictoPickerRef.current.style.position = 'fixed';
+      pictoPickerRef.current.style.top = `${rect.top}px`;
+      pictoPickerRef.current.style.left = `${rect.left}px`;
+      pictoPickerRef.current.style.width = `${rect.width}px`;
+      pictoPickerRef.current.style.height = `${modalHeight}px`;
+      pictoPickerRef.current.style.maxHeight = `${modalHeight}px`;
     }
-  }, [showPictoModal]);
+  }, []);
 
   useLayoutEffect(() => {
     if (showPictoModal) {
-      const id = requestAnimationFrame(updatePictoModalPosition);
+      updatePictoModalPosition();
+      const id = requestAnimationFrame(() => {
+        updatePictoModalPosition();
+      });
       const handleResize = () => updatePictoModalPosition();
       window.addEventListener('resize', handleResize);
       return () => {
@@ -333,17 +341,6 @@ export default function StudentRegister() {
     }
   }, [showAvatarModal, updateAvatarModalPosition]);
 
-  const getAvatarDisplayName = () => {
-    const predefined = avatarOptions.find(a => a.id === selectedAvatar);
-    if (predefined) {
-      return predefined.name;
-    }
-    if (selectedAvatar && !selectedAvatar.includes('http')) {
-      return selectedAvatar;
-    }
-    return 'Seleccionar imagen...';
-  };
-
   const handleConfirmClick = () => {
     let errorMsg = '';
 
@@ -369,32 +366,25 @@ export default function StudentRegister() {
     handleSubmit({ preventDefault: () => {} } as React.FormEvent);
   };
 
-  const avatarDisplayName = getAvatarDisplayName();
-
   return (
     <IonPage>
-      {user && user.role === 'admin' && (
-        <SimpleHeaderAdmin adminName={user.username} />
-      )}
+      <IonContent className="student-register-ion-content">
+        {user && user.role === 'admin' && (
+          <SimpleHeaderAdmin adminName={user.username} />
+        )}
 
-      <div className="student-register-main-container">
+        {!showConfirmationModal && !isLoading && (
+        <div className="student-register-main-container">
         <div className="student-register-form-card" ref={formCardRef}>
           <h2>Registro Alumno</h2>
 
           <div className="student-register-avatar-section">
-            <div className="student-register-avatar-preview">
+            <div className="student-register-avatar-preview" onClick={openAvatarModal}>
               {avatarPreview ? (
                 <img src={avatarPreview} alt="Avatar" className="student-register-avatar-image" />
               ) : (
                 <IonIcon icon={personOutline} className="student-register-avatar-icon" />
               )}
-            </div>
-
-            <div className="student-register-field-wrapper">
-              <div className="student-register-field-label">Avatar *</div>
-              <div className="student-register-avatar-select-field" onClick={openAvatarModal}>
-                <IonText>{avatarDisplayName}</IonText>
-              </div>
             </div>
           </div>
 
@@ -436,8 +426,10 @@ export default function StudentRegister() {
           </div>
 
           <div className="student-register-field-wrapper-buttons">
-            <IonButton 
-              expand="block" 
+            <IonButton className="student-register-cancel-button" onClick={handleCancel}>
+              Cancelar
+            </IonButton>
+            <IonButton
               className={`student-register-confirm-button ${
                 !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected 
                   ? 'student-register-confirm-button--disabled' 
@@ -446,9 +438,6 @@ export default function StudentRegister() {
               onClick={handleConfirmClick}
             >
               Confirmar
-            </IonButton>
-            <IonButton expand="block" className="student-register-cancel-button" onClick={handleCancel}>
-              Cancelar
             </IonButton>
           </div>
         </div>
@@ -471,9 +460,10 @@ export default function StudentRegister() {
           />
         </div>
       </div>
+        )}
 
       {/* Modales */}
-      {showPictoModal &&
+      {!showConfirmationModal && !isLoading && showPictoModal &&
         createPortal(
           <div className="student-register-picto-picker-overlay" onClick={closePictoModal}>
             <div
@@ -484,7 +474,7 @@ export default function StudentRegister() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="student-register-picto-picker-header">
-                <h3>Selecciona un pictograma</h3>
+                <h3>Selecciona 3 pictogramas</h3>
                 <IonButton fill="clear" size="small" onClick={closePictoModal}>
                   Cerrar
                 </IonButton>
@@ -496,7 +486,9 @@ export default function StudentRegister() {
                     className="student-register-picto-option"
                     onClick={() => selectPictogram(picto.id)}
                   >
-                    <IonImg src={picto.image} alt={picto.name} />
+                    <div className="student-register-picto-image-container">
+                      <IonImg src={picto.image} alt={picto.name} />
+                    </div>
                     <span>{picto.name}</span>
                   </div>
                 ))}
@@ -506,7 +498,7 @@ export default function StudentRegister() {
           document.getElementById('modal-root')!
         )}
 
-      {showAvatarModal &&
+      {!showConfirmationModal && !isLoading && showAvatarModal &&
         createPortal(
           <div className="student-register-avatar-picker-overlay" onClick={closeAvatarModal}>
             <div
@@ -549,6 +541,17 @@ export default function StudentRegister() {
           </div>,
           document.getElementById('modal-root')!
         )}
+
+      {(showConfirmationModal || isLoading) && (
+        <ConfirmationModal
+          title="Alumno registrado"
+          message="Alumno registrado con éxito."
+          redirectPath="/admin/dashboard/alumnos"
+          isLoading={isLoading}
+          loadingMessage="Registrando alumno..."
+        />
+      )}
+      </IonContent>
     </IonPage>
   );
 }

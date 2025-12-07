@@ -2,24 +2,27 @@
    Header adaptativo (Original + Ajuste de altura)
    ======================================== */
 ion-header {
-  height: clamp(64px, 14vh, 140px);
+  height: clamp(80px, 16vh, 160px);
   background: var(--ion-color-primary);
   /* Aseguramos que los elementos 3D no se corten */
   z-index: 10;
+  padding-top: 8px;
+  overflow: visible;
 }
 
 /* Toolbar */
 ion-toolbar.toolbar-header-user {
   --background: var(--ion-color-primary);
   --border-width: 0;
-  --padding-top: 0;
-  --padding-bottom: 0;
+  --padding-top: 12px;
+  --padding-bottom: 8px;
   --padding-start: clamp(8px, 2vw, 16px);
   --padding-end: clamp(8px, 2vw, 16px);
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  overflow: visible;
 }
 
 /* Slot izquierdo */
@@ -40,6 +43,13 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
   flex: 0 0 auto;
   justify-content: flex-end;
   gap: clamp(10px, 2vw, 20px);
+  overflow: visible;
+}
+
+/* Button container in header */
+ion-toolbar.toolbar-header-user ion-buttons[slot="end"] .pushable-button {
+  width: clamp(100px, 15vw, 180px);
+  height: clamp(60px, 12vh, 120px);
 }
 
 /* ========================================
@@ -72,7 +82,7 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
     BOTONES
    ======================================== */
 .btn-icon-header-user {
-  height: clamp(28px, 7vh, 60px);
+  height: clamp(32px, 8vh, 70px);
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.2));
@@ -80,18 +90,57 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
 }
 
 .btn-text {
-  font-size: clamp(0.85rem, 2.6vmin, 1.6rem);
+  font-size: clamp(0.75rem, 2.2vw, 1.4rem);
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  ion-header {
+    height: 80px;
+  }
+
+  ion-toolbar.toolbar-header-user {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+
+  ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
+    gap: 12px;
+    flex: 1 1 auto;
+  }
+
+  ion-toolbar.toolbar-header-user ion-buttons[slot="end"] .pushable-button {
+    width: 110px;
+    height: 65px;
+  }
+
+  .user-dashborad-img {
+    height: 50px;
+  }
+
+  .header-text {
+    font-size: 1.1rem;
+  }
+
+  .btn-text {
+    font-size: 0.85rem;
+  }
+
+  .btn-icon-header-user {
+    height: 36px;
+  }
 }
 
 @media (max-width: 600px) {
   ion-header {
-    height: 72px;
+    height: 76px;
+    padding-top: 10px;
   }
 
   ion-toolbar.toolbar-header-user {
     --padding-start: 10px;
     --padding-end: 10px;
+    --padding-top: 12px;
   }
 
   ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
@@ -99,8 +148,13 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
     flex: 1 1 auto;
   }
 
+  ion-toolbar.toolbar-header-user ion-buttons[slot="end"] .pushable-button {
+    width: 95px;
+    height: 58px;
+  }
+
   .user-dashborad-img {
-    height: 48px;
+    height: 46px;
   }
 
   .header-text {
@@ -108,42 +162,49 @@ ion-toolbar.toolbar-header-user ion-buttons[slot="end"] {
   }
 
   .btn-text {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
   }
 
   .btn-icon-header-user {
-    height: 34px;
+    height: 32px;
   }
 }
 
 @media (max-width: 420px) {
   ion-header {
-    height: 68px;
+    height: 70px;
+    padding-top: 10px;
   }
 
   ion-toolbar.toolbar-header-user {
     --padding-start: 8px;
     --padding-end: 8px;
+    --padding-top: 12px;
   }
 
   ion-toolbar.toolbar-header-user ion-buttons[slot="start"] {
     gap: 8px;
   }
 
+  ion-toolbar.toolbar-header-user ion-buttons[slot="end"] .pushable-button {
+    width: 85px;
+    height: 52px;
+  }
+
   .user-dashborad-img {
-    height: 42px;
+    height: 40px;
   }
 
   .header-text {
-    font-size: 0.95rem;
-  }
-
-  .btn-text {
     font-size: 0.9rem;
   }
 
+  .btn-text {
+    font-size: 0.75rem;
+  }
+
   .btn-icon-header-user {
-    height: 30px;
+    height: 28px;
   }
 }
 

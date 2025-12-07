@@ -11,7 +11,6 @@ import {
     IonPage,
     IonSpinner,
     IonText,
-    IonButton,
     useIonRouter
 } from '@ionic/react';
 import { Redirect } from 'react-router-dom'
@@ -22,24 +21,26 @@ import type { GameConfig, StudentMessage } from '../../../lib/api';
 
 import GameHeader from '../components/GameHeader';
 import FeedbackScreen from '../components/FeedbackScreen';
+import ExitScreen from '../components/ExitScreen';
 import './Game1.css';
 
 
-// Importar imágenes para el header
-import imgAceptar from '/assets/juegosImg/aceptar.png';
-import imgSonido from '/assets/juegosImg/game1/sonido.png';
+// Importar imágenes
+import imgAceptar from '/assets/pictograms/correctoS.png';
+import imgSonido from '/assets/pictograms/escucha.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgSonidoConTexto from '/assets/juegosImg/game1/sonido_con_texto.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
+import imgPista from '/assets/juegosImg/lupa.png';
+import imgTato from '/assets/Tato/Tato.png';
 
 
 // Flecha desde assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
 
-// Importar imagen de Tato
-import imgTato from '/assets/Tato/TatoPista.png';
 import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
+import ResultsScreen from '../components/ResultsScreen';
+import { GameControlButton } from '../../global_components/GameControlButton';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -79,7 +80,7 @@ const Game1: React.FC = () => {
     const router = useIonRouter();
 
     const currentUser = user;
-    const { getAllMessages, refreshUserData, loadingUser } = useUserData();
+    const { getAllMessages, loadingUser } = useUserData();
 
     // Flag to prevent duplicate session creation (React 18 StrictMode)
     const sessionCreatedRef = useRef(false);
@@ -121,6 +122,15 @@ const Game1: React.FC = () => {
 
     // Result states
     const [gameFinished, setGameFinished] = useState(false);
+
+    // Exit confirmation state
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+    //Contadores de resultados
+    const [totalNumbersCorrect, setTotalNumbersCorrect] = useState(0);
+    const [totalHintsUsed, setTotalHintsUsed] = useState(0);
+    const [totalErrorsMade, setTotalErrorsMade] = useState(0);
+    const [roundTimes, setRoundTimes] = useState<number[]>([]); // Tiempos por ronda
 
 
     // Determine if pictograms should be used (only for range 0-10)
@@ -174,20 +184,6 @@ const Game1: React.FC = () => {
         }
 
     }, [config, currentRound, sessionId]);
-
-    // Effect to redirect when the game finishes
-    useEffect(() => {
-        if (gameFinished) {
-            const timer = setTimeout(() => {
-                // Redirect to the appropriate dashboard based on user type
-                const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/tutor/dashboard';
-                router.push(dashboardRoute, 'back', 'pop')
-            }, 2000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [gameFinished, user]);
-
 
     /**
      * Functional Summary.
@@ -251,11 +247,13 @@ const Game1: React.FC = () => {
             let data = getAllMessages?.() || [];
             console.log('Loaded messages from context:', data);
 
+            /* THIS GENERATES A LOOP
             // If there are no messages in the context yet, try refreshing user data once
             if ((!data || data.length === 0) && refreshUserData) {
                 await refreshUserData();
                 data = getAllMessages?.() || [];
             }
+            */
 
             setMessages(data);
             setLoadingMessages(false);
@@ -380,6 +378,7 @@ const Game1: React.FC = () => {
         setHintsUsed([]);
         setHintsCount(0);
         setSelectedNumber(null);
+        setListeningAudio(false);
     };
 
 
@@ -422,7 +421,7 @@ const Game1: React.FC = () => {
         // Mark the number as used in hints
         setHintsUsed(prev => [...prev, hintNumber]);
         setHintsCount(prev => prev + 1);
-
+        setTotalHintsUsed(prev => prev + 1);
         console.log(`Pista usada: se ha deshabilitado el número ${hintNumber}`);
     };
 
@@ -448,8 +447,6 @@ const Game1: React.FC = () => {
             return;
         }
 
-        const timeSeconds = (Date.now() - roundStartTime) / 1000;
-
         // Compare the selected number with the correct one
         const correct = selectedNumber === currentNumber;
 
@@ -459,6 +456,9 @@ const Game1: React.FC = () => {
 
         // Save in the backend
         if (sessionId && correct) {
+            const timeSeconds = (Date.now() - roundStartTime) / 1000;
+            setRoundTimes(prev => [...prev, timeSeconds]);
+            setTotalNumbersCorrect(prev => prev + 1);
             try {
                 await gamesAPI.saveRoundResultGame1(sessionId, {
                     round: currentRound,
@@ -515,6 +515,7 @@ const Game1: React.FC = () => {
 
         // Compare the selected number with the correct one
         const correct = selectedNumber === currentNumber;
+        const timeSeconds = (Date.now() - roundStartTime) / 1000;
 
         if (selectedNumber === null) {
             return;
@@ -522,7 +523,7 @@ const Game1: React.FC = () => {
 
         if (sessionId && !correct) {
             try {
-                const timeSeconds = (Date.now() - roundStartTime) / 1000;
+
 
                 await gamesAPI.saveRoundResultGame1(sessionId, {
                     round: currentRound,
@@ -538,6 +539,9 @@ const Game1: React.FC = () => {
             } catch (error) {
                 console.error('Error saving final attempt:', error);
             }
+
+            setTotalErrorsMade(prev => prev + 1);
+            setRoundTimes(prev => [...prev, timeSeconds]);
         }
 
         // Hide feedback screen
@@ -715,9 +719,24 @@ const Game1: React.FC = () => {
         return () => {
             try {
                 audioManager.stop();
+                setListeningAudio(false);
             } catch (e) { /* ignore */ }
         };
     }, []);
+
+    /**
+  * Resumen funcional:
+  * Redirige al dashboard correspondiente según el rol del usuario.
+  *
+  * @returns void
+  *
+  * @example
+  * exitToDashboard();
+  */
+    const exitToDashboard = () => {
+        const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/teacher/dashboard';
+        router.push(dashboardRoute, "root", "push");
+    };
 
     /**
      * Opens the video modal with instructions.
@@ -778,23 +797,6 @@ const Game1: React.FC = () => {
         );
     }
 
-    // If the game is finished, show message
-    if (gameFinished) {
-        return (
-            <IonPage>
-                <IonContent className="ion-padding ion-text-center">
-                    <div style={{ marginTop: '50%' }}>
-                        <IonText color="success">
-                            <h1>¡Juego completado!</h1>
-                            <h1>¡AQUÍ PODRIA IR EL MENSAJE DE FEEDBACK! ??</h1>
-                            <p>Volviendo al inicio...</p>
-                        </IonText>
-                    </div>
-                </IonContent>
-            </IonPage>
-        );
-    }
-
     // Show feedback screen after checking answer
     if (showFeedbackScreen) {
         return (
@@ -818,16 +820,24 @@ const Game1: React.FC = () => {
         <IonPage>
             <IonContent className="game1-content">
                 {gameFinished ? (
-                    // --- VISTA DE ÉXITO ---
-                    <div className="ion-padding ion-text-center" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                        <IonText color="success">
-                            <h1>¡Juego completado!</h1>
-                            {/* Puedes usar tus mensajes positivos aquí */}
-                            <p>{Messages.find(m => m.type === 'positive')?.text_message || "¡Lo has hecho genial!"}</p>
-                            <p>Volviendo al inicio...</p>
-                        </IonText>
-                        <IonSpinner name="dots" style={{ marginTop: '20px' }} />
-                    </div>
+                    <ResultsScreen
+                        totalRounds={TOTAL_ROUNDS}
+                        totalHints={totalHintsUsed}
+                        totalErrors={totalErrorsMade}
+                        totalNumbersCorrect={totalNumbersCorrect}
+                        totalNumbersRequired={5}
+                        onHomeClick={exitToDashboard}
+                        headerTitle="Asociar Nº"
+                        headerPictogram1={imgSonido}
+                        headerPictogramArrow={imgFlecha}
+                        headerPictogram2={imgJuego}
+                        elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
+                    />
+                ) : showExitConfirm ? (
+                    <ExitScreen
+                        confirmExit={handleEarlyExit}
+                        cancelExit={() => setShowExitConfirm(false)}
+                    />
                 ) : (
                     <>
                         {/* Header */}
@@ -838,89 +848,91 @@ const Game1: React.FC = () => {
                             pictogram2={imgJuego}
                             currentRound={currentRound}
                             totalRounds={TOTAL_ROUNDS}
-                            onHomeClick={handleEarlyExit}
+                            onBackClick={() => setShowExitConfirm(true)}
                         />
 
                         {/* Game area with grid layout */}
-                        <div className="game1-grid-container">
-                            {/* Left column: Tato */}
-                            <div className="game1-tato-column">
-                                <div className="game1-tato-container">
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button"
-                                        onClick={useHint}
-                                    >
-                                        <img
-                                            src={imgTato}
-                                            alt="Pista"
-                                            className="game1-check-button-image"
-                                        />
-                                    </IonButton>
-                                </div>
-                            </div>
-
-                            {/* Right column: Numbers and buttons */}
-                            <div className="game1-game-column">
-                                {/* Available numbers */}
-                                <BubblesZone
-                                    availableNumbers={availableNumbers}
-                                    selectedNumber={selectedNumber}
-                                    setSelectedNumber={setSelectedNumber}
-                                    showFeedback={showFeedback}
-                                    currentNumber={currentNumber}
-                                    usePictograms={usePictograms}
-                                    hintsUsed={hintsUsed}
-                                />
+                        {/* <div className="game1-grid-container">
+                            {/* <div className='game1-tato-column'>
+                                <img src={imgTato} alt="Tato" className="game1-tato-image" />
+                            </div> */}
+                        <div className="game1-game-column">
+                            {/* Available numbers */}
+                            <BubblesZone
+                                availableNumbers={availableNumbers}
+                                selectedNumber={selectedNumber}
+                                setSelectedNumber={setSelectedNumber}
+                                showFeedback={showFeedback}
+                                currentNumber={currentNumber}
+                                usePictograms={usePictograms}
+                                hintsUsed={hintsUsed}
+                            />
 
 
-                                {/* Control buttons */}
-                                <div className="game1-buttons-container">
+                            {/* Control buttons */}
+                            <div className="game1-buttons-container">
+                                {/* Listen button */}
+                                <GameControlButton
+                                    disabled={listeningAudio}
+                                    onClick={() => speakNumber(currentNumber)}
+                                >
+                                    <img
+                                        src={imgSonido}
+                                        alt="Escuchar"
+                                        className="game-control-button-image"
+                                    />
+                                    <span className="game-control-button-text">
+                                        ESCUCHAR
+                                    </span>
+                                </GameControlButton>
 
-                                    {/* Listen button */}
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button"
-                                        disabled={listeningAudio}
-                                        onClick={() => speakNumber(currentNumber)}
-                                    >
-                                        <img
-                                            src={imgSonidoConTexto}
-                                            alt="Escuchar"
-                                            className="game1-check-button-image"
-                                        />
-                                    </IonButton>
+                                {/* Video button - always visible on the left */}
+                                <GameControlButton
+                                    onClick={openVideoModal}
+                                >
+                                    <img
+                                        src={imgInstrucciones}
+                                        alt="Video de ayuda"
+                                        className="game-control-button-image"
+                                    />
+                                    <span className="game-control-button-text">
+                                        INSTRUCCIONES
+                                    </span>
+                                </GameControlButton>
 
-                                    {/* Video button - always visible on the left */}
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button game1"
-                                        onClick={openVideoModal}
-                                    >
-                                        <img
-                                            src={imgInstrucciones}
-                                            alt="Video de ayuda"
-                                            className="game1-check-button-image"
-                                        />
-                                    </IonButton>
+                                {/* Hint button */}
+                                <GameControlButton
+                                    onClick={useHint}
+                                    disabled={hintsUsed.length >= availableNumbers.length - 1}
+                                >
+                                    <img
+                                        src={imgPista}
+                                        alt="Pista"
+                                        className="game-control-button-image"
+                                    />
+                                    <span className="game-control-button-text">
+                                        PISTA
+                                    </span>
+                                </GameControlButton>
 
-                                    {/* Accept/Check button */}
-                                    <IonButton
-                                        fill="clear"
-                                        className="game1-check-button"
-                                        onClick={checkAnswer}
-                                        disabled={selectedNumber === null}
-                                    >
-                                        <img
-                                            src={imgAceptar}
-                                            alt="Comprobar"
-                                            className="game1-check-button-image"
-                                        />
-                                    </IonButton>
+                                {/* Accept/Check button */}
+                                <GameControlButton
+                                    onClick={checkAnswer}
+                                    disabled={selectedNumber === null}
+                                >
+                                    <img
+                                        src={imgAceptar}
+                                        alt="Comprobar"
+                                        className="game-control-button-image"
+                                    />
+                                    <span className="game-control-button-text">
+                                        ACEPTAR
+                                    </span>
+                                </GameControlButton>
 
-                                </div>
                             </div>
                         </div>
+                        {/* </div> */}
                         {/* End grid container */}
                     </>
                 )}

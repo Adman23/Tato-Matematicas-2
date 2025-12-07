@@ -62,6 +62,8 @@ import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
 import EditColor from './pages/teacherProfile/EditStudent/EditColors';
 import Prueba from './pages/teacherProfile/EditStudent/prueba';
 import EditGame1 from './pages/teacherProfile/EditStudent/EditGame1';
+import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
+import EditColorsStudent from './pages/student/EditColorsStudent';
 
 
 /**
@@ -91,7 +93,7 @@ export default function App() {
           <ManagerDataWrapper>
             <IonReactRouter>
 
-              <IonRouterOutlet>
+              <IonRouterOutlet animated={false}>
 
                 <PublicRoute path="/home" exact component={Home} />
                 <PublicRoute path="/login" exact component={Login} />
@@ -116,10 +118,14 @@ export default function App() {
                   exact component={EditGame1} />
                 <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
                   exact component={EditGame2} />
+                <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
+                  exact component={EditColorsStudent} />
                 <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]}
                   exact component={TutorDashboard} />
                 <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]}
                   exact component={TeacherProfilePage} />
+                <PrivateRoute path="/teacher/edit-profile/:userId" allowedRoles={["admin"]}
+                  exact component={TeacherEditProfile} />
                 <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]}
                   exact component={TeacherEditProfile} />
                 <PrivateRoute path="/teacher/register" allowedRoles={["admin"]}
@@ -143,6 +149,8 @@ export default function App() {
                 <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]}
                   exact component={EditColor} />
                 <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
+                <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]}
+                  exact component={StudentEditProfile} />
 
                 {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
                 <Redirect to="/student/login" />

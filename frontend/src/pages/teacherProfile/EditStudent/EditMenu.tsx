@@ -51,6 +51,7 @@ export default function EditMenu() {
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
 
+    
     // Show spinner while loading
     /*if (loading) {
         return (
@@ -81,10 +82,10 @@ export default function EditMenu() {
                             <div className='studentEditProfile-dashboard-main-container'>
 
                                 <IonButton
+                                    className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     type="submit"
-                                    className='studentEditProfile-dashboard-button'
-                                    onClick={() => router.push('/admin/dashboard/profesores')}
+                                    onClick={() => router.push(`/student-edit-profile/${id}/${name}`)}
                                 >
                                     Datos del alumno
                                 </IonButton>

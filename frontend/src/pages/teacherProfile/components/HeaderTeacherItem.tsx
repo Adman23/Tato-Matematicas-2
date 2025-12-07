@@ -17,6 +17,7 @@ interface Props {
   onLogoutClick?: () => void;
 }
 
+
 const HeaderItem: React.FC<Props> = ({
   teacherName,
   teacherAvatar,

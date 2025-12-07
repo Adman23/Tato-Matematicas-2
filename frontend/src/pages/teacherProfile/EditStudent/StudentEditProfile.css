@@ -1,0 +1,892 @@
+/* =============================================================================
+   CSS Styles for StudentEditProfile page
+   ========================================================================== */
+
+
+
+/* =============================================================================
+   ESTILOS GENERALES DE LA PÁGINA StudentEditProfile
+   ========================================================================== */
+
+.studentEditProfile-edit-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  background-color: #ffffff;
+  min-height: 100vh;
+  position: relative;
+  transform: scale(1.22);
+  transform-origin: top center;
+}
+.studentEditProfile-confirmation-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  background-color: #ffffff;
+  flex-grow: 1;
+  height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  padding: clamp(1rem, 5vh, 2rem) 1rem;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.studentEditProfile-main-container h1 {
+  color: #000000;
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .studentEditProfile-main-container h1 {
+    font-size: 2rem;
+  }
+}
+
+
+/* =============================================================================
+   TARJETA DEL FORMULARIO
+   ========================================================================== */
+
+.studentEditProfile-form-card {
+  width: 95%;
+  max-width: 1000px;
+  background-color: var(--ion-color-primary);
+  border-radius: 20px;
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.studentEditProfile-form-card h2 {
+  margin: 0;
+  text-align: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.studentEditProfile-subtitle {
+  margin-top: 0;        /* pegado completamente al h2 */
+  margin-bottom: 18px;  /* hueco hacia lo siguiente */
+  font-size: 1rem;
+  color: white;
+  text-align: center;
+}
+
+.studentEditProfile-name {
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .studentEditProfile-form-card {
+    padding: 2rem;
+  }
+  .studentEditProfile-form-card h2 {
+    font-size: 1.5rem;
+  }
+}
+
+
+/* =============================================================================
+   SECCIÓN DE AVATAR
+   ========================================================================== */
+
+.studentEditProfile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0.6rem;
+}
+
+.studentEditProfile-avatar-preview {
+  width: 6rem;
+  height: 6rem;
+  border: 2px solid black;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  margin: 0 auto 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.studentEditProfile-avatar-preview:hover {
+  transform: scale(1.25);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25), 0 0 15px var(--tatomaths-text-primary);
+  filter: brightness(1.2) saturate(1.3);
+  border-color: var(--ion-color-primary);
+}
+
+.studentEditProfile-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.studentEditProfile-avatar-icon {
+  font-size: 2.5rem;
+  color: white;
+}
+
+
+/* =============================================================================
+   CAMPOS COMUNES
+   ========================================================================== */
+
+.studentEditProfile-field-wrapper {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.studentEditProfile-field-wrapper-buttons {
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  margin-top: 0.75rem;
+}
+
+.studentEditProfile-field-label {
+  color: var(--tatomaths-text-primary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.studentEditProfile-subfield-label {
+  color: var(--tatomaths-text-primary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.required-star {
+  font-weight: bold;
+  color: var(--ion-color-danger);
+}
+
+.studentEditProfile-avatar-select-field {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 100px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.studentEditProfile-avatar-select-field:hover {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.studentEditProfile-input-item {
+  --background: white;
+  --border-radius: 100px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  width: 100%;
+  border: none;
+  margin: 0;
+  min-height: 45px;
+}
+
+.studentEditProfile-input-item ion-input::part(native) {
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin: 0;
+}
+
+
+/* =============================================================================
+   PICTOGRAMAS (vista previa)
+   ========================================================================== */
+
+.studentEditProfile-pictogram-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: white;
+  border-radius: 200px;
+  padding: 0.5rem 1rem;
+  height: 72px;
+  width: 400px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.studentEditProfile-pictogram-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.studentEditProfile-pictogram-box ion-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.studentEditProfile-pictogram-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 14px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.studentEditProfile-pictogram-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--ion-color-primary);
+  border-radius: 8px;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.studentEditProfile-pictogram-add:hover {
+  background-color: rgb(212, 212, 212);
+  color: var(--ion-color-primary);
+}
+
+.studentEditProfile-pictogram-add.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =============================================================================
+   BOTÓN
+   ========================================================================== */
+
+.studentEditProfile-confirm-button {
+  --background: white;
+  --color: var(--ion-color-primary);
+  --border-radius: 20px;
+  --padding: 0.8rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.studentEditProfile-confirm-button::part(native) {
+  border-radius: 20px;
+  border: none;
+  background: white;
+  box-shadow:
+    0 3px 5px white,
+    inset 0 1px 2px rgba(255,255,255,0.25);
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.studentEditProfile-confirm-button:not(.studentEditProfile-confirm-button--disabled):hover::part(native) {
+  box-shadow:
+    0 4px 8px white,
+    inset 0 1px 2px rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+}
+
+.studentEditProfile-confirm-button--disabled {
+  opacity: 0.8;
+}
+
+.studentEditProfile-confirm-button--disabled::part(native) {
+  cursor: not-allowed !important;
+}
+
+.studentEditProfile-cancel-button {
+  --background: white;
+  --color: var(--ion-color-primary);
+  --border-radius: 20px;
+  --padding: 0.8rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+  transition: transform 0.2s ease;
+}
+
+.studentEditProfile-cancel-button:hover {
+  transform: translateY(-1px);
+}
+
+
+.studentEditProfile-cancel-button::part(native) {
+  box-shadow: none;
+}
+
+
+/* =============================================================================
+   TOAST
+   ========================================================================== */
+
+.studentEditProfile-toast ion-toast {
+  --background: #f44336;
+  --color: white;
+}
+
+
+/* =============================================================================
+   MODAL DE PICTOGRAMAS
+   ========================================================================== */
+
+.studentEditProfile-picto-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: env(safe-area-inset-top);
+  z-index: 1000;
+}
+
+.studentEditProfile-picto-picker-custom {
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.studentEditProfile-picto-picker-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+/* =============================================================================
+   MODAL DE AVATAR
+   ========================================================================== */
+
+.studentEditProfile-avatar-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.studentEditProfile-avatar-picker {
+  background: white;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.studentEditProfile-avatar-picker-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+/* =============================================================================
+   ESTILOS COMPARTIDOS POR AMBOS MODALES
+   ========================================================================== */
+
+.studentEditProfile-picto-picker-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.studentEditProfile-picto-picker-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.studentEditProfile-picto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+  place-items: center;
+}
+
+.studentEditProfile-picto-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+}
+
+.studentEditProfile-picto-option ion-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
+.studentEditProfile-picto-option span {
+  font-size: 12px;
+  color: #333;
+}
+
+
+/* =============================================================================
+   AJUSTE ESPECÍFICO PARA EL MODAL DE PICTOGRAMAS
+   ========================================================================== */
+
+.studentEditProfile-picto-picker-custom .studentEditProfile-picto-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.studentEditProfile-picto-picker-custom .studentEditProfile-picto-option {
+  width: 60px;
+  flex-shrink: 0;
+}
+
+
+/* =============================================================================
+   ESTILO PARA EL BOTÓN DE SUBIR IMAGEN EN MODAL DE AVATAR
+   ========================================================================== */
+
+.studentEditProfile-upload-avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  border: 2px dashed var(--ion-color-medium);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ion-color-light);
+}
+
+.studentEditProfile-upload-icon {
+  font-size: 24px;
+  color: var(--ion-color-medium);
+}
+
+.studentEditProfile-input-with-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.studentEditProfile-input-with-icon ion-icon:last-child {
+  position: absolute;
+  right: 12px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.studentEditProfile-input-with-icon ion-icon:first-child {
+  padding-left: 12px;
+  font-size: 1.4rem;
+  color: var(--ion-color-medium);
+}
+
+
+/* =============================================================================
+   SELECTOR DE TIPO DE CONTRASEÑA
+   ========================================================================== */
+
+.studentEditProfile-password-select-wrapper {
+  position: relative;          /* para posicionar dropdown */
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+
+.studentEditProfile-password-type-select {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #222;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid rgba(0,0,0,0.25);
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.studentEditProfile-password-type-select.open {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+/* Triángulo del desplegable */
+.studentEditProfile-password-type-select::after {
+  content: '';
+  width: 0; 
+  height: 0; 
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #222;
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+}
+
+/* Dropdown fijo debajo */
+.studentEditProfile-password-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  border: 2px solid rgba(0,0,0,0.2);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  z-index: 100;
+  padding: 0.5rem 0;
+  box-sizing: border-box;
+}
+
+/* Para cada opción */
+.studentEditProfile-password-dropdown .dropdown-option {
+  padding: 0.5rem 1rem;
+  margin: 0.25rem 0.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, border-color 0.2s;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid rgba(0,0,0,0.25);
+  color: #222;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.studentEditProfile-password-dropdown .dropdown-option:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0,0,0,0.4);
+  font-weight: bold;
+  transform: translateX(2px);
+  color: #111;
+}
+
+/* Opción seleccionada */
+.studentEditProfile-password-dropdown .dropdown-option.selected {
+  border-color: var(--ion-color-primary);
+  background: rgba(255, 255, 255, 0.85);
+  color: #222;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.studentEditProfile-password-dropdown .dropdown-option.selected:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateX(2px);
+  color: #111;
+  font-weight: bold;
+  border-color: var(--ion-color-primary);
+}
+
+
+/* =============================================================================
+   ICONO TICK / CROSS
+   ========================================================================== */
+
+.studentEditProfile-input-status-icon {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3rem;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.studentEditProfile-input-status-icon.success {
+  color: var(--ion-color-success);
+}
+
+.studentEditProfile-input-status-icon.error {
+  color: var(--ion-color-danger);
+}
+
+
+/* =============================================================================
+   ICONO OJITO ABIERTO / OJITO CERRADO
+   ========================================================================== */
+
+.studentEditProfile-input-eye-icon {
+  position: absolute;
+  right: 12px; /* siempre al borde derecho */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #555;
+  z-index: 12;
+}
+
+
+/* =============================================================================
+   MENSAJITO DE REGLAS PARA LA CONTRASEÑA
+   ========================================================================== */
+
+.studentEditProfile-password-rules {
+  font-size: 0.75rem;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.75);
+  padding: 8px 12px;
+  border-radius: 7px;
+  margin: 3px auto 0 auto;
+  padding-left: 30px;
+  max-width: 280px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+.studentEditProfile-password-rules li {
+  margin-bottom: 2px;
+  transition: font-weight 0.2s ease;
+}
+
+.studentEditProfile-password-rules li:last-child {
+  margin-bottom: 0;
+}
+
+.studentEditProfile-password-rules li:hover {
+  font-weight: bold;
+  cursor: default;
+}
+
+
+/* =================================================================================================================
+   FILA HORIZONTAL PARA ALINEAR COLUMNAS IZQUIERDA (AVATAR Y NOMBRE DE USUARIO) / DERECHA (CONTRASEÑA)
+   ================================================================================================================= */
+
+.studentEditProfile-horizontal-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1000px;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin: 0 auto;
+}
+
+
+/* ==================================================================================================================
+   COLUMNAS IZQUIERDA (AVATAR Y NOMBRE DE USUARIO) Y DERECHA (CONTRASEÑA) DE LA EDICIÓN DE DATOS
+   ================================================================================================================== */
+  
+.studentEditProfile-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 350px;
+  gap: 1rem;
+}
+
+.studentEditProfile-column--left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-right: 2rem;
+}
+
+.studentEditProfile-column--left::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  background-color: var(--tatomaths-text-primary);
+  opacity: 0.2;
+}
+
+.studentEditProfile-column--right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+.studentEditProfile-horizontal-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin: 0 auto;
+}
+
+
+/* =============================================================================
+   TARJETA DE CONFIRMACIÓN TRAS GUARDAR CAMBIOS
+   ========================================================================== */
+
+.studentEditProfile-confirmation-card {
+  width: 320px;
+  max-width: 90vw;
+  border-radius: 50px;
+  background-color: var(--ion-color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  margin: auto;
+}
+
+.studentEditProfile-confirmation-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  text-align: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.studentEditProfile-confirmation-icon-container {
+  background-color: var(--ion-color-primary);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.studentEditProfile-confirmation-icon {
+  font-size: 100px; 
+  color: var(--tatomaths-text-primary);
+}
+
+.studentEditProfile-confirmation-title {
+  font-size: 1.4rem;
+  color: var(--tatomaths-text-primary);
+  margin: 0;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-weight: bold;
+}
+
+.studentEditProfile-confirmation-message {
+  color: var(--tatomaths-text-primary);
+  font-size: 1rem;
+  margin: 16px 0 28px 0;
+  line-height: 1.5;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  padding: 0;
+}
+
+.studentEditProfile-confirmation-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.studentEditProfile-confirmation-button {
+  --background: white;
+  --color: var(--ion-color-primary);
+  --border-radius: 24px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  --box-shadow: none !important; 
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 10px;
+  width: 95%;
+  max-width: 280px;
+  min-height: 56px;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  transition: transform 0.2s ease;
+}
+
+.studentEditProfile-confirmation-button:hover {
+  transform: translateY(2px);
+}
+
+.studentEditProfile-confirmation-button::part(native) {
+  border-radius: 100px;
+  font-family: 'Atkinson Hyperlegible', sans-serif !important;
+}

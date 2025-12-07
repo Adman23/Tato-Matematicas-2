@@ -121,6 +121,7 @@ async def get_student(student_id: str):
             - username (str): Username derived from email prefix.
             - photo_url (str): Public photo URL (or default avatar if missing).
             - group_id (str | None): ID of the group the student belongs to.
+            - password_type (str): Type of password for the student.
             - role (str): Always "student".
             - user_profile (dict): One-to-one relation data from `user_profiles`.
             - game_configuration (dict): One-to-one relation data from `game_configurations`.
@@ -138,8 +139,9 @@ async def get_student(student_id: str):
         resp = supabase_admin.table("users") \
                 .select("""
                         id, 
-                        photo_url, 
+                        photo_url,
                         group_id,
+                        password_type,
                         user_profiles!user_id(
                             id,
                         ),
@@ -174,6 +176,7 @@ async def get_student(student_id: str):
                 "photo_url": supabase_admin.storage.from_("user_photo")
                                 .get_public_url(resp.data[0].get("photo_url")) or DEFAULT_AVATAR,
                 "group_id": resp.data[0].get("group_id"),
+                "password_type": resp.data[0].get("password_type"),
                 "role": "student",
                 "user_profile": resp.data[0].get("user_profiles")[0] ,
                 "game_configuration": resp.data[0].get("game_configurations")[0] ,

@@ -4,6 +4,7 @@ import './TeacherRegister.css';
 
 import {
   IonPage,
+  IonContent,
   IonInput,
   IonButton,
   IonIcon,
@@ -24,6 +25,7 @@ import { authAPI, uploadImage, getImages } from '../../lib/api';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 import { createPortal } from 'react-dom';
+import ConfirmationModal from '../global_components/ConfirmationModal';
 
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
@@ -47,6 +49,8 @@ export default function TeacherRegister() {
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const usernameCheckIdRef = useRef(0);
@@ -69,11 +73,13 @@ export default function TeacherRegister() {
     const loadAvatars = async () => {
       try {
         const imagesMap = await getImages();
-        const options = Object.entries(imagesMap).map(([filename, url]) => ({
-          id: filename,
-          name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
-          imageUrl: url as string,
-        }));
+        const options = Object.entries(imagesMap)
+          .filter(([filename]) => filename.toLowerCase().includes('default'))
+          .map(([filename, url]) => ({
+            id: filename,
+            name: filename.replace('.png', '').replace(/_/g, ' ').split(' ')[0],
+            imageUrl: url as string,
+          }));
         setAvatarOptions(options);
       } catch (err) {
         console.error('Error al cargar avatares:', err);
@@ -143,6 +149,7 @@ export default function TeacherRegister() {
     }
 
     try {
+      setIsLoading(true);
       let photoUrl = DEFAULT_AVATAR;
 
       // Si se seleccionó un avatar del modal, usamos su URL completa
@@ -161,14 +168,10 @@ export default function TeacherRegister() {
         photo_url: photoUrl,
       });
 
-      setToastMessage('Registro completado correctamente 🎉');
-      setToastColor('success');
-      setIsToastOpen(true);
-
-      setTimeout(() => {
-        router.push('/register-confirmation/profesores');
-      }, 2000);
+      setIsLoading(false);
+      setShowConfirmationModal(true);
     } catch (err: any) {
+      setIsLoading(false);
       console.error('Error en el registro:', err);
       const message =
         err.response?.data?.detail ||
@@ -201,7 +204,7 @@ export default function TeacherRegister() {
     // Guardamos tanto el ID como la URL completa
     setSelectedAvatar(avatarId);
     setAvatarPreview(selected?.imageUrl || DEFAULT_AVATAR);
-    setSelectedAvatarUrl(selected?.name || DEFAULT_AVATAR);
+    setSelectedAvatarUrl(selected?.id || DEFAULT_AVATAR);
     closeAvatarModal();
   };
 
@@ -255,15 +258,17 @@ export default function TeacherRegister() {
     setSelectedAvatar('');
     setAvatarPreview(DEFAULT_AVATAR);
     if (showAvatarModal) closeAvatarModal();
-    router.push('/admin/profesores',"back","pop");
+    router.push('/admin/dashboard/profesores', 'none');
   };
 
   return (
     <IonPage>
-      {user && user.role === 'admin' && (
-        <SimpleHeaderAdmin adminName={user.username} />
-      )}
-      <div className="teacher-register-main-container">
+      <IonContent className="teacher-register-ion-content">
+        {user && user.role === 'admin' && (
+          <SimpleHeaderAdmin adminName={user.username} />
+        )}
+        {!showConfirmationModal && !isLoading && (
+        <div className="teacher-register-main-container">
         <div className="teacher-register-form-card" ref={formCardRef}>
           <div className="teacher-register-form-container-header">
             <h2>Registro</h2>
@@ -374,9 +379,11 @@ export default function TeacherRegister() {
           className="teacher-register-toast"
         />
       </div>
+        )}
+      </IonContent>
 
       {/* Modal de selección de avatar */}
-      {showAvatarModal &&
+      {!isLoading && showAvatarModal &&
         createPortal(
           <div className="teacher-register-avatar-picker-overlay" onClick={closeAvatarModal}>
             <div
@@ -418,6 +425,16 @@ export default function TeacherRegister() {
           </div>,
           document.getElementById('modal-root')!
         )}
+
+      {(showConfirmationModal || isLoading) && (
+        <ConfirmationModal
+          title="Profesor registrado"
+          message="Profesor registrado con éxito."
+          redirectPath="/admin/dashboard/profesores"
+          isLoading={isLoading}
+          loadingMessage="Registrando profesor..."
+        />
+      )}
     </IonPage>
   );
 }

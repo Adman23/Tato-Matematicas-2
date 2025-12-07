@@ -3,7 +3,7 @@
         "audio_preferences":{
 
         },
-        "visual_preferences":{
+        "text_preferences":{
             "active_palette_idx": 0,
             "font_idx": 1,
             "font-size": 10,

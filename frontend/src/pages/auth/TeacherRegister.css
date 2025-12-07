@@ -2,17 +2,27 @@
    ESTILOS GENERALES DE LA PÁGINA - TeacherRegister
    ========================================================================== */
 
+.teacher-register-ion-content {
+  --background: #ffffff;
+}
+
+.teacher-register-ion-content::part(scroll) {
+  display: flex;
+  flex-direction: column;
+}
+
 .teacher-register-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   font-family: 'Atkinson Hyperlegible', sans-serif;
   background-color: #ffffff;
-  min-height: 100vh;
+  flex: 1;
   width: 100%;
-  padding: 1.5rem;
-  transform: scale(1.5);
-  transform-origin: top center;
+  padding: 1rem;
+  box-sizing: border-box;
+  min-height: 0;
 }
 
 /* =============================================================================
@@ -20,42 +30,78 @@
    ========================================================================== */
 
 .teacher-register-form-card {
-  width: 95%;
+  width: 100%;
   max-width: 600px;
   background-color: var(--ion-color-primary);
-  border-radius: 24px;
-  padding: 1.8rem 1.5rem;
+  border-radius: 16px;
+  padding: 1.2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
+  flex-shrink: 1;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .teacher-register-form-container-header {
   text-align: center;
+  flex-shrink: 0;
 }
 
 .teacher-register-form-container-header h2 {
   color: white;
-  font-size: 1.4rem;
-  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  margin: 0 0 0.3rem 0;
+  font-weight: bold;
 }
 
 .teacher-register-form-container-header p {
-  color: rgb(0, 0, 0);
-  font-size: 1rem;
+  color: white;
+  font-size: 0.85rem;
   margin: 0;
 }
 
+/* Tablet y Desktop */
 @media (min-width: 768px) {
   .teacher-register-form-card {
     padding: 2rem;
+    border-radius: 24px;
+    gap: 1.5rem;
+    max-height: calc(100vh - 6rem);
   }
 
   .teacher-register-form-container-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .teacher-register-form-container-header p {
+    font-size: 1.1rem;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-register-main-container {
+    padding: 2rem;
+  }
+
+  .teacher-register-form-card {
+    max-width: 700px;
+    padding: 2.5rem;
+    max-height: calc(100vh - 8rem);
+  }
+
+  .teacher-register-form-container-header h2 {
+    font-size: 2rem;
+  }
+
+  .teacher-register-form-container-header p {
+    font-size: 1.2rem;
   }
 }
 
@@ -65,8 +111,11 @@
 
 .teacher-register-grid-content {
   display: grid;
-  grid-template-columns: 2fr 2fr;
-  gap: 1.2rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  flex-shrink: 1;
+  min-height: 0;
 }
 
 .teacher-register-form-left,
@@ -74,6 +123,17 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 100%;
+  min-height: 0;
+  gap: 0.5rem;
+}
+
+.teacher-register-form-left {
+  order: 2;
+}
+
+.teacher-register-form-right {
+  order: 1;
 }
 
 .teacher-register-form-right .teacher-register-field-label {
@@ -92,14 +152,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 16px;
   background-color: var(--ion-color-primary);
   border: 2px solid white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   color: white;
-  font-size: 48px;
+  font-size: 40px;
   line-height: 1;
   margin: 0;
   padding: 0;
@@ -107,12 +167,58 @@
 }
 
 .teacher-register-selected-image {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   object-fit: cover;
   border-radius: 16px;
   border: 2px solid white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablet y Desktop o modo horizontal: orden original (campos izquierda, imagen derecha) */
+@media (min-width: 768px), (orientation: landscape) {
+  .teacher-register-grid-content {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+  }
+
+  .teacher-register-form-left {
+    order: 1;
+  }
+
+  .teacher-register-form-right {
+    order: 2;
+  }
+
+  .teacher-register-profile-placeholder {
+    width: 90px;
+    height: 90px;
+    font-size: 50px;
+  }
+
+  .teacher-register-selected-image {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-register-grid-content {
+    grid-template-columns: 2fr 1fr;
+    gap: 2.5rem;
+  }
+
+  .teacher-register-profile-placeholder {
+    width: 100px;
+    height: 100px;
+    font-size: 56px;
+  }
+
+  .teacher-register-selected-image {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 /* =============================================================================
@@ -121,48 +227,91 @@
 
 .teacher-register-field-wrapper {
   width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .teacher-register-field-label {
-  color: #000000;
-  font-size: 0.9rem;
-  margin: 0.4rem 0;
+  color: white;
+  font-size: 0.85rem;
+  margin: 0.3rem 0;
+  font-weight: 500;
+  flex-shrink: 0;
 }
 
 ion-input.teacher-register-input-item {
   --background: white;
-  --border-radius: 20px;
+  --border-radius: 100px;
   --padding-start: 1rem;
-  --padding-end: 1rem;
-  --padding-top: 0.5rem;
-  --padding-bottom: 0.5rem;
+  --padding-end: 2.5rem;
+  --padding-top: 0.6rem;
+  --padding-bottom: 0.6rem;
   width: 100%;
   border: none;
   margin: 0;
+  font-size: 0.9rem;
+  min-height: 40px;
+  flex-shrink: 0;
 }
 
 .teacher-register-input-with-icon {
   display: flex;
   align-items: center;
   position: relative;
+  flex-shrink: 0;
 }
 
 .teacher-register-input-with-icon ion-icon:last-child {
   position: absolute;
   right: 12px;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   cursor: pointer;
   z-index: 2;
+  flex-shrink: 0;
 }
 
 .teacher-register-input-with-icon ion-icon:first-child {
   padding-left: 12px;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   color: var(--ion-color-medium);
+  flex-shrink: 0;
+}
+
+/* Tablet y Desktop */
+@media (min-width: 768px) {
+  .teacher-register-field-label {
+    font-size: 1rem;
+    margin: 0.4rem 0;
+  }
+
+  ion-input.teacher-register-input-item {
+    --border-radius: 100px;
+    --padding-top: 0.7rem;
+    --padding-bottom: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .teacher-register-input-with-icon ion-icon:last-child {
+    font-size: 1.5rem;
+  }
+
+  .teacher-register-input-with-icon ion-icon:first-child {
+    font-size: 1.5rem;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-register-field-label {
+    font-size: 1.1rem;
+  }
+
+  ion-input.teacher-register-input-item {
+    font-size: 1.05rem;
+    --padding-top: 0.8rem;
+    --padding-bottom: 0.8rem;
+  }
 }
 
 /* =============================================================================
@@ -199,29 +348,40 @@ ion-input.teacher-register-input-item {
 
 .teacher-register-form-button-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+  flex-shrink: 0;
 }
 
 .teacher-register-confirm-button {
   --background: white;
   --color: var(--ion-color-primary);
-  --border-radius: 20px;
-  --padding: 0.8rem 1.5rem;
-  font-size: 1rem;
+  --border-radius: 100px;
+  --padding-top: 0.7rem;
+  --padding-bottom: 0.7rem;
+  font-size: 0.95rem;
   width: 100%;
-  max-width: 300px;
+  max-width: 100%;
+  font-weight: 600;
+  order: 2;
+  border: 2px solid var(--ion-color-primary);
 }
 
 .teacher-register-cancel-button {
-  --background: rgb(0, 110, 255);
-  --color: #ffffff;
-  --border-radius: 20px;
-  --padding: 0.8rem 1.5rem;
-  font-size: 1rem;
+  --background: white;
+  --color: var(--ion-color-primary);
+  --border-radius: 100px;
+  --padding-top: 0.7rem;
+  --padding-bottom: 0.7rem;
+  font-size: 0.95rem;
   width: 100%;
-  max-width: 300px;
+  max-width: 100%;
+  font-weight: 600;
+  order: 1;
+  border: 2px solid var(--ion-color-primary);
 }
 
 .teacher-register-confirm-button::part(native) {
@@ -230,16 +390,53 @@ ion-input.teacher-register-input-item {
   outline: none;
 }
 
+.teacher-register-cancel-button::part(native) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
 .teacher-register-confirm-button:hover::part(native) {
-  background-color: #f0f0f0;
+  opacity: 0.9;
+}
+
+.teacher-register-cancel-button:hover::part(native) {
+  background-color: #f5f5f5;
 }
 
 .teacher-register-confirm-button--disabled {
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 .teacher-register-confirm-button--disabled::part(native) {
   cursor: not-allowed !important;
+}
+
+/* Tablet y Desktop */
+@media (min-width: 768px) {
+  .teacher-register-form-button-container {
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .teacher-register-confirm-button,
+  .teacher-register-cancel-button {
+    --border-radius: 100px;
+    --padding-top: 0.9rem;
+    --padding-bottom: 0.9rem;
+    font-size: 1.1rem;
+    max-width: 250px;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-register-confirm-button,
+  .teacher-register-cancel-button {
+    font-size: 1.15rem;
+    max-width: 280px;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+  }
 }
 
 /* =============================================================================
@@ -261,16 +458,18 @@ ion-input.teacher-register-input-item {
   left: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1001;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .teacher-register-avatar-picker {
   background: white;
-  border-radius: 24px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -278,6 +477,7 @@ ion-input.teacher-register-input-item {
   opacity: 0;
   transform: scale(0.92);
   transition: opacity 200ms ease-out, transform 200ms ease-out;
+  /* Las dimensiones se establecen dinámicamente mediante JavaScript */
 }
 
 .teacher-register-avatar-picker-visible {
@@ -286,24 +486,26 @@ ion-input.teacher-register-input-item {
 }
 
 .teacher-register-picto-picker-header {
-  padding: 16px;
+  padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #eee;
+  flex-shrink: 0;
 }
 
 .teacher-register-picto-picker-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: #333;
+  font-weight: 600;
 }
 
 .teacher-register-picto-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 12px;
+  padding: 12px;
   overflow-y: auto;
   flex: 1;
   place-items: center;
@@ -315,23 +517,31 @@ ion-input.teacher-register-input-item {
   align-items: center;
   cursor: pointer;
   text-align: center;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.teacher-register-picto-option:hover {
+  background-color: #f5f5f5;
 }
 
 .teacher-register-picto-option ion-img {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
   margin-bottom: 4px;
 }
 
 .teacher-register-picto-option span {
-  font-size: 12px;
+  font-size: 11px;
   color: #333;
+  word-break: break-word;
 }
 
 .teacher-register-upload-avatar-placeholder {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border: 2px dashed var(--ion-color-medium);
   border-radius: 50%;
   display: flex;
@@ -341,24 +551,384 @@ ion-input.teacher-register-input-item {
 }
 
 .teacher-register-upload-icon {
-  font-size: 24px;
+  font-size: 20px;
   color: var(--ion-color-medium);
 }
 
-/* =============================================================================
-   RESPONSIVE
-   ========================================================================== */
+.teacher-register-avatar-loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 0.9rem;
+}
 
-@media (max-width: 768px) {
-  .teacher-register-grid-content {
-    grid-template-columns: 1fr;
+/* Pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .teacher-register-main-container {
+    padding: 0.5rem;
   }
 
-  .teacher-register-form-right {
-    margin-top: 1.2rem;
+  .teacher-register-form-card {
+    padding: 0.8rem;
+    border-radius: 12px;
+    gap: 0.7rem;
+  }
+
+  .teacher-register-form-container-header h2 {
+    font-size: 1rem;
+  }
+
+  .teacher-register-form-container-header p {
+    font-size: 0.75rem;
+  }
+
+  .teacher-register-grid-content {
+    gap: 0.8rem;
+  }
+
+  .teacher-register-field-label {
+    font-size: 0.8rem;
+    margin: 0.2rem 0;
+  }
+
+  ion-input.teacher-register-input-item {
+    font-size: 0.85rem;
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
+    --padding-start: 0.8rem;
+  }
+
+  .teacher-register-input-with-icon ion-icon:last-child {
+    font-size: 1.2rem;
+  }
+
+  .teacher-register-profile-placeholder,
+  .teacher-register-selected-image {
+    width: 65px;
+    height: 65px;
+  }
+
+  .teacher-register-profile-placeholder {
+    font-size: 38px;
+  }
+
+  .teacher-register-confirm-button,
+  .teacher-register-cancel-button {
+    font-size: 0.9rem;
+    --padding-top: 0.6rem;
+    --padding-bottom: 0.6rem;
   }
 
   .teacher-register-picto-grid {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .teacher-register-picto-option ion-img {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* Landscape móvil */
+@media (max-height: 600px) and (orientation: landscape) {
+  .teacher-register-main-container {
+    padding: 0.5rem 0.3rem;
+  }
+
+  .teacher-register-form-card {
+    padding: 0.6rem;
+    gap: 0.4rem;
+    max-height: calc(100vh - 3rem);
+    margin-top: 0.5rem;
+  }
+
+  .teacher-register-form-container-header {
+    margin-bottom: 0;
+  }
+
+  .teacher-register-form-container-header h2 {
+    font-size: 0.9rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .teacher-register-form-container-header p {
+    font-size: 0.7rem;
+  }
+
+  .teacher-register-grid-content {
+    gap: 0.5rem;
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+
+  .teacher-register-form-left {
+    gap: 0.3rem;
+  }
+
+  .teacher-register-form-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    height: 100%;
+  }
+
+  .teacher-register-form-right .teacher-register-field-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .teacher-register-form-right .teacher-register-field-label {
+    flex-shrink: 0;
+  }
+
+  .teacher-register-profile-image-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.2rem;
+  }
+
+  .teacher-register-field-wrapper {
+    margin-bottom: 0;
+  }
+
+  .teacher-register-field-label {
+    margin: 0.1rem 0;
+    font-size: 0.7rem;
+  }
+
+  ion-input.teacher-register-input-item {
+    --padding-top: 0.3rem;
+    --padding-bottom: 0.3rem;
+    --padding-start: 0.7rem;
+    --padding-end: 2rem;
+    --border-radius: 100px;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
+
+  .teacher-register-input-with-icon ion-icon:last-child {
+    font-size: 1rem;
+    right: 8px;
+  }
+
+  .teacher-register-profile-placeholder,
+  .teacher-register-selected-image {
+    width: 100%;
+    height: auto;
+    max-width: 90px;
+    max-height: 90px;
+    aspect-ratio: 1;
+  }
+
+  .teacher-register-profile-placeholder {
+    font-size: 45px;
+  }
+
+  .teacher-register-form-button-container {
+    gap: 0.3rem;
+    margin-top: 0.2rem;
+    justify-content: flex-start;
+  }
+
+  .teacher-register-cancel-button {
+    --padding-top: 0.4rem;
+    --padding-bottom: 0.4rem;
+    --border-radius: 100px;
+    font-size: 0.75rem;
+    min-height: 36px;
+    max-width: 48%;
+  }
+
+  .teacher-register-confirm-button {
+    --padding-top: 0.4rem;
+    --padding-bottom: 0.4rem;
+    --border-radius: 100px;
+    font-size: 0.75rem;
+    min-height: 36px;
+    max-width: 48%;
+  }
+
+  .teacher-register-avatar-picker {
+    max-height: 90vh;
+  }
+}
+
+/* Landscape móvil - pantallas muy cortas */
+@media (max-height: 500px) and (orientation: landscape) {
+  .teacher-register-main-container {
+    padding: 0.4rem 0.3rem;
+  }
+
+  .teacher-register-form-card {
+    padding: 0.5rem;
+    gap: 0.3rem;
+    max-height: calc(100vh - 2.5rem);
+    margin-top: 0.4rem;
+  }
+
+  .teacher-register-form-container-header h2 {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+  }
+
+  .teacher-register-form-container-header p {
+    font-size: 0.65rem;
+  }
+
+  .teacher-register-grid-content {
+    gap: 0.4rem;
+  }
+
+  .teacher-register-form-right {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .teacher-register-form-right .teacher-register-field-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .teacher-register-profile-image-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .teacher-register-profile-placeholder,
+  .teacher-register-selected-image {
+    width: 100%;
+    height: auto;
+    max-width: 75px;
+    max-height: 75px;
+    aspect-ratio: 1;
+  }
+
+  .teacher-register-profile-placeholder {
+    font-size: 38px;
+  }
+
+  .teacher-register-field-label {
+    font-size: 0.65rem;
+    margin: 0.05rem 0;
+  }
+
+  ion-input.teacher-register-input-item {
+    --padding-top: 0.25rem;
+    --padding-bottom: 0.25rem;
+    font-size: 0.75rem;
+    min-height: 28px;
+  }
+
+  .teacher-register-form-button-container {
+    justify-content: flex-start;
+  }
+
+  .teacher-register-cancel-button,
+  .teacher-register-confirm-button {
+    max-width: 48%;
+  }
+}
+
+/* Landscape tablet */
+@media (min-height: 601px) and (max-height: 800px) and (orientation: landscape) {
+  .teacher-register-main-container {
+    padding: 1rem;
+  }
+
+  .teacher-register-form-card {
+    max-height: calc(100vh - 4rem);
+    margin-top: 0.5rem;
+  }
+
+  .teacher-register-grid-content {
+    grid-template-columns: 1.5fr 1fr;
+  }
+}
+
+/* Resoluciones muy específicas como 667x375 */
+@media (max-height: 400px) and (orientation: landscape) {
+  .teacher-register-main-container {
+    padding: 0.3rem;
+  }
+
+  .teacher-register-form-card {
+    padding: 0.4rem;
+    gap: 0.25rem;
+    max-height: calc(100vh - 2rem);
+    margin-top: 0.3rem;
+  }
+
+  .teacher-register-form-container-header h2 {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  .teacher-register-form-container-header p {
+    font-size: 0.6rem;
+  }
+
+  .teacher-register-field-label {
+    font-size: 0.6rem;
+    margin: 0.05rem 0;
+  }
+
+  ion-input.teacher-register-input-item {
+    --padding-top: 0.2rem;
+    --padding-bottom: 0.2rem;
+    font-size: 0.7rem;
+    min-height: 26px;
+  }
+
+  .teacher-register-input-with-icon ion-icon:last-child {
+    font-size: 0.9rem;
+  }
+
+  .teacher-register-form-right {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .teacher-register-form-right .teacher-register-field-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .teacher-register-profile-image-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .teacher-register-profile-placeholder,
+  .teacher-register-selected-image {
+    width: 100%;
+    height: auto;
+    max-width: 65px;
+    max-height: 65px;
+    aspect-ratio: 1;
+  }
+
+  .teacher-register-profile-placeholder {
+    font-size: 32px;
+  }
+
+  .teacher-register-confirm-button,
+  .teacher-register-cancel-button {
+    --padding-top: 0.25rem;
+    --padding-bottom: 0.25rem;
+    font-size: 0.65rem;
+    min-height: 28px;
   }
 }

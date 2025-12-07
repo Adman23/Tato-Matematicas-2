@@ -78,18 +78,22 @@ export default function EditColor() {
     const examplePalette = [
         {
             id: 1,
+            name: "Paleta azul predeterminada",
             colors: ["#1863A3", "#ffffff", "#ffffff", "#000000", "#A9DAF3", "#4793AB", "#D76FBF"]
         },
         {
             id: 2,
+            name: "Paleta morada",
             colors: ["#6A1B9A", "#FFFFFF", "#f3e8f7ff", "#1A1A1A","#E8D6F3", "#AF65EB", "#0F8F8F"]
         },
         {
             id: 3,
-            colors: ["#579457", "#1A1A1A", "#effff0ff", "#1A1A1A","#DCEFDC", "#4E8F4E", "#B8653C"]
+            name: "Paleta verde",
+            colors: ["#006B33", "#FFFFFF", "#effff0ff", "#1A1A1A","#b1ecb1ff", "#4E8F4E", "#B8653C"]
         },
         {
             id: 4,
+            name: "Paleta turquesa y gris",
             colors: ["#005f73", "#FFFFFF", "#f0f0f0", "#0a0a0a","#9AF5F9", "#4E967F", "#e06200"]
         },
 
@@ -269,6 +273,7 @@ export default function EditColor() {
                             <ColorPaletteCard
                                 palette={{
                                     id: 999,
+                                    name: "Paleta personalizada",
                                     colors: [
                                         customPalette.primary,
                                         customPalette.text_on_primary,

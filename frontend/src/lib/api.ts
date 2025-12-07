@@ -125,6 +125,12 @@ api.interceptors.response.use(
 export type Role = 'admin' | 'teacher' | 'student';
 
 /**
+ * @brief Represents the type of password a user can have
+ */
+export type PasswordType = 'graphical' | 'pin' | 'alphanumeric';
+
+
+/**
  * @brief Represents a user.
  */
 export interface User {
@@ -142,6 +148,7 @@ export interface User {
  */
 export interface UserData {
   username: string;
+  password_type: PasswordType;
   user_profile: any;
   game_configurations: any;
   reinforcement_messages: any;
@@ -160,6 +167,7 @@ export interface UserComplete {
   role: Role;
   photo_url?: string;
   group_id?: string;
+  password_type: PasswordType;
   group_alias?: string;
   user_profile: any;
   game_configurations: any;
@@ -229,6 +237,7 @@ export interface UserUpdatePayload {
   username?: string;
   password?: string;
   photo_url?: string;
+  password_type?: PasswordType;
 }
 
 
@@ -244,7 +253,7 @@ export interface Student {
   role: string;
   photo_url?: string;
   notes?: string;
-  visual_preferences?: any;
+  text_preferences?: any;
   audio_preferences?: any;
   accessibility_settings?: any;
   game_preferences?: any;
@@ -410,7 +419,6 @@ export const authAPI = {
 };
 
 
-
 // === USER API ===
 /**
  * User endpoints.
@@ -464,6 +472,7 @@ export const teacherAPI = {
 
 
 // === OTHER ENDPOINTS ===
+
 /**
  * !! NEW
  *  -> Created for admins

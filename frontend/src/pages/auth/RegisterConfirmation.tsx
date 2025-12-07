@@ -39,6 +39,8 @@ const RegisterConfirmation = () => {
   const handleAccept = () => {
     if (isValidType && tipo === 'grupos') {
       window.location.href = '/admin-dashboard/groups-management';
+    } else if (isValidType && tipo === 'alumnos') {
+      window.location.href = '/admin/dashboard/alumnos';
     } else if (isValidType && tipo !== 'grupos') {
       window.location.href = `/admin-dashboard/${tipo}`;
     } else {
