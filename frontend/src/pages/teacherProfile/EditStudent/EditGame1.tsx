@@ -1,12 +1,13 @@
-import SimpleHeaderEdit from "./components/SimpleHeaderEdit";
-import { IonContent, IonIcon, IonPage, IonSpinner, useIonRouter } from "@ionic/react";
+import { IonContent, IonIcon, IonPage, useIonRouter } from "@ionic/react";
 import { useAuth } from '../../../contexts/AuthContext';
 import { Button3Dtext } from "../../global_components/PushableButtons";
-import { arrowBack, checkmark } from "ionicons/icons";
+import { arrowBack } from "ionicons/icons";
 import { useState, useEffect } from 'react';
 
 import './EditGame1.css';
 import { gamesAPI, type GameConfig } from "../../../lib/api";
+import SimpleHeaderUser from "../../student/components/SimpleHeaderUser";
+import LoadingSpinner from "../../global_components/LoadingSpinner";
 
 // Opciones de rango (de acuerdo a la DB)
 const RANGE_OPTIONS = [
@@ -24,7 +25,6 @@ export default function EditGame1() {
     const router = useIonRouter();
 
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
 
     // Estados de configuración
     const [voice, setVoice] = useState<'woman' | 'man'>('woman');
@@ -35,9 +35,6 @@ export default function EditGame1() {
     const [showQuantityModal, setShowQuantityModal] = useState(false);
     const [showRangeModal, setShowRangeModal] = useState(false);
     const [showVoiceModal, setShowVoiceModal] = useState(false);
-
-    // Estado de validación
-    const [error, setError] = useState<string>('');
 
     useEffect(() => {
         loadGameConfig();
@@ -93,7 +90,6 @@ export default function EditGame1() {
        */
     const handleSave = async () => {
 
-        setSaving(true);
         try {
             if (!user?.id) return;
 
@@ -114,9 +110,6 @@ export default function EditGame1() {
             router.push('/student/profile', 'back');
         } catch (error) {
             console.error('Error saving config:', error);
-            setError('Error al guardar la configuración');
-        } finally {
-            setSaving(false);
         }
     };
 
@@ -152,124 +145,122 @@ export default function EditGame1() {
     if (loading) {
         return (
             <IonPage>
-                <IonContent className="ion-padding ion-text-center"
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <IonSpinner name="crescent" />
+                <IonContent className="ion-padding ion-text-center">
+                    <LoadingSpinner message="Cargando configuración del juego 1" />
                 </IonContent>
-            </IonPage>
+            </IonPage >
         );
     }
 
     return (
-        <IonPage>
-            <SimpleHeaderEdit studentName={user!.username} Editing="Juego 1" />
+        <IonPage className="EditGame1-page">
+            <SimpleHeaderUser userName={user?.username || "username"}
+                photoUrl={user?.photo_url} hidden={true} />
             <IonContent className="EditGame1-content">
-                <div className="EditGame1-buttons">
-                    <Button3Dtext
-                        color="var(--ion-color-primary)"
-                        onClick={() => router.push('/student/profile', 'back')}
-                        aria-label="Volver atrás"
-                    >
-                        <IonIcon icon={arrowBack} aria-hidden="true" />
-                    </Button3Dtext>
-
-                    <Button3Dtext
-                        color="var(--ion-color-primary)"
-                        onClick={() => { handleSave() }}
-                        aria-label="Guardar cambios"
-                    >
-                        <IonIcon icon={checkmark} aria-hidden="true" />
-                    </Button3Dtext>
-                </div>
-
-                {/* 3 Botones principales */}
-                <div className="EditGame1-config-buttons">
-                    <div className="EditGame1-buttons-result">
-                        {/* Botón Cantidad */}
+                <div className="EditGame1-wrapper">
+                    <div className="EditGame1-back-button">
                         <Button3Dtext
-                            color="var(--ion-color-primary)"
-                            className="EditGame1-config-button-3d"
-                            onClick={() => { setShowQuantityModal(true) }}
-                        >
-                            <div className="EditGame1-config-button-content">
-                                <img
-                                    src="/assets/pictograms/cantidad.png"
-                                    alt="Cantidad"
-                                    className="EditGame1-config-button-image"
-                                />
-                                <span className="btn-text">CANTIDAD</span>
-                            </div>
+                            onClick={() => router.push('/student/dashboard', "back", "pop")}
+                            aria-label="Volver atrás">
+                            <IonIcon icon={arrowBack} />
                         </Button3Dtext>
-
-                        {/* Cantidad elegida */}
-                        <div className="EditGame1-config-button-value">
-                            {quantity <= 10 ? (
-                                <img
-                                    src={`/assets/numbers/${quantity}.png`}
-                                    alt={`Número ${quantity}`}
-                                    className="EditGame1-config-button-image"
-                                />
-                            ) : (
-                                <span className="modal-number-text">{quantity}</span>
-                            )}
-                        </div>
                     </div>
 
-                    <div className="EditGame1-buttons-result">
-                        {/* Botón Rango */}
-                        <Button3Dtext
-                            color="var(--ion-color-primary)"
-                            className="EditGame1-config-button-3d"
-                            onClick={() => { setShowRangeModal(true) }}
-                        >
-                            <div className="EditGame1-config-button-content">
-                                <img
-                                    src="/assets/pictograms/rango.png"
-                                    alt="Rango"
-                                    className="EditGame1-config-button-image"
-                                />
-                                <span className="btn-text">RANGO</span>
-                            </div>
-                        </Button3Dtext>
-
-                        {/* Rango elegido */}
-                        <div className="EditGame1-config-button-value">
-                            <div className="range-chosen">
-                                <span className="modal-range-text">{getSelectedRangeLabel()}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="EditGame1-buttons-result">
-                        {/* Botón Orden */}
-                        <Button3Dtext
-                            color="var(--ion-color-primary)"
-                            className="EditGame1-config-button-3d"
-                            onClick={() => { setShowVoiceModal(true) }}
-                        >
-                            <div className="EditGame1-config-button-content">
-                                <img
-                                    src={"/assets/pictograms/voz.png"}
-                                    alt="Voz"
-                                    className="EditGame1-config-button-image"
-                                />
-                                <span className="btn-text">VOZ</span>
-                            </div>
-                        </Button3Dtext>
-
-                        {/* Voz elegida */}
-                        <div className="EditGame1-config-button-value">
-                            <div className="voice-chosen">
+                    {/* 3 Botones principales */}
+                    <div className="EditGame1-config-buttons">
+                        <div className="EditGame1-buttons-result">
+                            {/* Voz elegida */}
+                            <div className="EditGame1-config-button-value">
                                 <img
                                     src={voice === 'woman' ? '/assets/pictograms/mujer.png' : '/assets/pictograms/hombre.png'}
                                     alt={voice === 'woman' ? 'Mujer' : 'Hombre'}
                                     className="EditGame1-config-button-image"
                                 />
-                                <span className="voice-label">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
+                                <span className="modal-range-text">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
                             </div>
+                            {/* Botón Voz */}
+                            <Button3Dtext
+                                className="EditGame1-config-button-3d"
+                                onClick={() => { setShowVoiceModal(true) }}
+                            >
+                                <div className="EditGame1-config-button-content">
+                                    <img
+                                        src={"/assets/pictograms/voz.png"}
+                                        alt="Voz"
+                                        className="EditGame1-config-button-image"
+                                    />
+                                    <span className="btn-text">VOZ</span>
+                                </div>
+                            </Button3Dtext>
+                        </div>
+
+                        <div className="EditGame1-buttons-result">
+                            {/* Cantidad elegida */}
+                            <div className="EditGame1-config-button-value">
+                                {quantity <= 10 ? (
+                                    <img
+                                        src={`/assets/numbers/${quantity}.png`}
+                                        alt={`Número ${quantity}`}
+                                        className="EditGame1-config-button-image"
+                                    />
+                                ) : (
+                                    <span className="modal-number-text">{quantity}</span>
+                                )}
+                            </div>
+
+                            {/* Botón Cantidad */}
+                            <Button3Dtext
+                                className="EditGame1-config-button-3d"
+                                onClick={() => { setShowQuantityModal(true) }}
+                            >
+                                <div className="EditGame1-config-button-content">
+                                    <img
+                                        src="/assets/pictograms/cantidad.png"
+                                        alt="Cantidad"
+                                        className="EditGame1-config-button-image"
+                                    />
+                                    <span className="btn-text">CANTIDAD</span>
+                                </div>
+                            </Button3Dtext>
+                        </div>
+
+                        <div className="EditGame1-buttons-result">
+                            {/* Rango elegido */}
+                            <div className="EditGame1-config-button-value">
+                                <div className="range-chosen">
+                                    <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                                </div>
+                            </div>
+                            {/* Botón Rango */}
+                            <Button3Dtext
+                                className="EditGame1-config-button-3d"
+                                onClick={() => { setShowRangeModal(true) }}
+                            >
+                                <div className="EditGame1-config-button-content">
+                                    <img
+                                        src="/assets/pictograms/rango.png"
+                                        alt="Rango"
+                                        className="EditGame1-config-button-image"
+                                    />
+                                    <span className="btn-text">RANGO</span>
+                                </div>
+                            </Button3Dtext>
                         </div>
                     </div>
-                </div>
+
+                    {/* Botón Guardar cambios */}
+                    <div className="EditGame1-save-button">
+                        <Button3Dtext onClick={handleSave}>
+                            <img
+                                src="/assets/pictograms/correctoS.png"
+                                alt="Guardar cambios"
+                                className="EditGame1-config-button-image"
+                            />
+                            <span className="btn-text">GUARDAR</span>
+                        </Button3Dtext>
+                    </div>
+                </div>{/* Cierre de EditGame1-wrapper */}
+
 
                 {/* MODAL: Cantidad */}
                 {showQuantityModal && (
@@ -285,7 +276,6 @@ export default function EditGame1() {
                                             className={`modal-option ${quantity === num ? 'selected' : ''}`}
                                             onClick={() => {
                                                 setQuantity(num);
-                                                setError('');
                                                 closeAllModals();
                                             }}
                                         >
@@ -314,7 +304,6 @@ export default function EditGame1() {
                                         className={`modal-option large ${numberRange === option.value ? 'selected' : ''}`}
                                         onClick={() => {
                                             setNumberRange(option.value);
-                                            setError('');
                                             closeAllModals();
                                         }}
                                     >
@@ -340,8 +329,12 @@ export default function EditGame1() {
                                     }}
                                 >
                                     <div className="order-content">
-                                        <img src="/assets/pictograms/mujer.png" alt="Mujer" />
-                                        <span className="order-label-large">Mujer</span>
+                                        <img
+                                            src="/assets/pictograms/mujer.png"
+                                            alt="woman"
+                                            className="EditGame1-config-button-image"
+                                        />
+                                        <span className="modal-range-text">Mujer</span>
                                     </div>
                                 </div>
                                 <div
@@ -352,8 +345,12 @@ export default function EditGame1() {
                                     }}
                                 >
                                     <div className="order-content">
-                                        <img src="/assets/pictograms/hombre.png" alt="Hombre" />
-                                        <span className="order-label-large">Hombre</span>
+                                        <img
+                                            src="/assets/pictograms/hombre.png"
+                                            alt="man"
+                                            className="EditGame1-config-button-image"
+                                        />
+                                        <span className="modal-range-text">Hombre</span>
                                     </div>
                                 </div>
                             </div>

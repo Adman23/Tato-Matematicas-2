@@ -123,7 +123,7 @@ export default function StudentProfile() {
                                 </SimpleButton>
 
                                 {/* Edit game_1 */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
+                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-game1")}>
                                     <img
                                         src="/assets/juegosImg/juego1.png"
                                         alt="Ir a editar juego uno"

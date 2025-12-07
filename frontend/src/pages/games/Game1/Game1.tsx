@@ -31,7 +31,6 @@ import imgSonido from '/assets/pictograms/escucha.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
 import imgPista from '/assets/juegosImg/lupa.png';
-import imgTato from '/assets/Tato/Tato.png';
 
 
 // Flecha desde assets
@@ -41,6 +40,7 @@ import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
 import ResultsScreen from '../components/ResultsScreen';
 import { GameControlButton } from '../../global_components/GameControlButton';
+import LoadingSpinner from '../../global_components/LoadingSpinner';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -770,7 +770,7 @@ const Game1: React.FC = () => {
             <IonPage>
                 <IonContent>
                     <div className='Game1-spinner'>
-                        <IonSpinner name="crescent" />
+                        <LoadingSpinner message="Cargando juego 1" />
                     </div>
                 </IonContent>
             </IonPage>
@@ -787,10 +787,7 @@ const Game1: React.FC = () => {
             <IonPage>
                 <IonContent>
                     <div className='Game1-spinner'>
-                        <IonSpinner name="crescent" />
-                        <IonText>
-                            <p>Cargando juego...</p>
-                        </IonText>
+                        <LoadingSpinner message="Cargando juego 1" />
                     </div>
                 </IonContent>
             </IonPage>

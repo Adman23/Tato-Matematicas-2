@@ -100,8 +100,8 @@
 }
 
 .game1-buttons-container .game-control-button {
-    width: clamp(100px, 12vw, 180px) !important;
-    height: clamp(100px, 12vw, 180px) !important;
+    width: clamp(100px, 15vw, 180px) !important;
+    height: clamp(100px, 15vw, 180px) !important;
     flex-shrink: 0;
 }
 
@@ -129,8 +129,8 @@
     }
 
     .game1-buttons-container .game-control-button {
-        width: clamp(75px, 17vw, 130px) !important;
-        height: clamp(75px, 17vw, 130px) !important;
+        width: clamp(75px, 18vw, 170px) !important;
+        height: clamp(75px, 18vw, 170px) !important;
     }
 }
 
@@ -152,8 +152,8 @@
     }
 
     .game1-buttons-container .game-control-button {
-        width: clamp(65px, 19vw, 110px) !important;
-        height: clamp(65px, 19vw, 110px) !important;
+        width: clamp(65px, 21vw, 110px) !important;
+        height: clamp(65px, 21vw, 110px) !important;
     }
 }
 
@@ -186,8 +186,8 @@
     }
 
     .game1-buttons-container .game-control-button {
-        width: clamp(60px, 11vh, 120px) !important;
-        height: clamp(60px, 11vh, 120px) !important;
+        width: clamp(60px, 17vh, 120px) !important;
+        height: clamp(60px, 17vh, 120px) !important;
     }
 }
 
