@@ -378,6 +378,7 @@ const Game1: React.FC = () => {
         setHintsUsed([]);
         setHintsCount(0);
         setSelectedNumber(null);
+        setListeningAudio(false);
     };
 
 
@@ -718,6 +719,7 @@ const Game1: React.FC = () => {
         return () => {
             try {
                 audioManager.stop();
+                setListeningAudio(false);
             } catch (e) { /* ignore */ }
         };
     }, []);
