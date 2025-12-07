@@ -1,11 +1,11 @@
 /**
  * ============================================================================
- * GAME 2 - ORDENAR NÚMEROS - ESTILOS PRINCIPALES (OPTIMIZADO RESPONSIVE)
+ * GAME 2 - SORT NUMBERS - MAIN STYLES (OPTIMIZED RESPONSIVE)
  * ============================================================================
  */
 
 /* ============================================================================
-   1. LAYOUT GENERAL - Sistema de variables CSS dinámicas
+   1. GENERAL LAYOUT - Dynamic CSS variables system
    ============================================================================ */
 
 .game2-content {
@@ -26,7 +26,7 @@
   overflow: hidden;
 }
 
-/* Wrapper principal que contiene todo el juego + botones */
+/* Main wrapper containing all game + buttons */
 .game2-main-wrapper {
   height: calc(100dvh - var(--header-height, 120px));
   display: flex;
@@ -50,7 +50,7 @@
 }
 
 /* ============================================================================
-   2. ZONA DE NÚMEROS DISPONIBLES (Arriba) - Grid automático
+   2. AVAILABLE NUMBERS ZONE (Top) - Automatic grid
    ============================================================================ */
 
 #available-zone {
@@ -82,7 +82,7 @@
 }
 
 /* ============================================================================
-   2.5 ZONA DE DROP (Abajo) - Contenedor
+   2.5 DROP ZONE (Bottom) - Container
    ============================================================================ */
 
 #drop-zone-container {
@@ -94,7 +94,7 @@
 }
 
 /* ============================================================================
-   3. TARJETAS DE NÚMEROS - Tamaño fijo y responsive
+   3. NUMBER CARDS - Fixed and responsive size
    ============================================================================ */
 
 .number-card-v2 {
@@ -130,20 +130,20 @@
   color: black;
 }
 
-/* Hover: Escala 1.2 */
+/* Hover: Scale 1.2 */
 .number-card-v2:hover {
   transform: scale(1.2);
   box-shadow: 0 6px 16px rgba(132, 172, 241, 0.4);
   z-index: 10;
 }
 
-/* Active (click): Escala 1.2 + cursor grabbing */
+/* Active (click): Scale 1.2 + cursor grabbing */
 .number-card-v2:active {
   transform: scale(1.2);
   cursor: grabbing;
 }
 
-/* Selected (clicked): Rojo con escala 1.2 */
+/* Selected (clicked): Red with scale 1.2 */
 .number-card-selected {
   transform: scale(1.2) !important;
   background: var(--bubble-selected-bg) !important;
@@ -152,7 +152,7 @@
   z-index: 10;
 }
 
-/* Dragging: Espacio vacío con borde punteado */
+/* Dragging: Empty space with dotted border */
 .number-card-dragging {
   background: var(--bubble-bg, #e5e7eb) !important;
   border: 2px dashed var(--bubble-selected-bg, #000000) !important;
@@ -167,7 +167,7 @@
   visibility: hidden !important;
 }
 
-/* Hueco vacío permanente */
+/* Permanent empty slot */
 .number-card-empty {
   background: var(--bubble-bg, #e5e7eb) !important;
   border: 2px dashed var(--bubble-selected-bg, #000000) !important;
@@ -184,7 +184,7 @@
 }
 
 /* ============================================================================
-   4. PICTOGRAMAS (0-10)
+   4. PICTOGRAMS (0-10)
    ============================================================================ */
 
 .pictogram-image {
@@ -195,7 +195,7 @@
 }
 
 /* ============================================================================
-   5. BOTONES DE CONTROL (Tato, Instrucciones)
+   5. CONTROL BUTTONS (Tato, Instructions)
    ============================================================================ */
 
 .check-button-container {
@@ -215,7 +215,7 @@
   z-index: 5;
 }
 
-/* Indicador de orden (entre botones) */
+/* Order indicator (between buttons) */
 .order-indicator {
   display: flex;
   flex-direction: column;
@@ -240,7 +240,7 @@
   white-space: nowrap;
 }
 
-/* Tamaños de botones optimizados */
+/* Optimized button sizes */
 .check-button-container .game-control-button {
   width: clamp(90px, 12vw, 180px) !important;
   height: clamp(90px, 12vw, 180px) !important;
@@ -250,7 +250,7 @@
   flex-shrink: 0;
 }
 
-/* Botón de Tato más grande */
+/* Larger Tato button */
 .check-button-container .game-control-button:first-child {
   width: clamp(110px, 15vw, 220px) !important;
   height: clamp(110px, 15vw, 220px) !important;
@@ -259,7 +259,7 @@
 }
 
 /* ============================================================================
-   6. ANIMACIONES Y EFECTOS
+   6. ANIMATIONS AND EFFECTS
    ============================================================================ */
 
 .droppable-slot-target .empty-slot {
@@ -383,7 +383,7 @@
 }
 
 /* ============================================================================
-   9. RESPONSIVE - Media queries optimizadas
+   9. RESPONSIVE - Optimized media queries
    ============================================================================ */
 
 /* Tablets Portrait */
@@ -407,7 +407,7 @@
   }
 }
 
-/* Móviles Portrait */
+/* Mobile Portrait */
 @media (max-width: 600px) and (orientation: portrait) {
   .game2-content {
     --size-card: clamp(45px, 13vw, 80px);
@@ -455,7 +455,7 @@
   }
 }
 
-/* MÓVILES OPTIMIZADOS PARA APROVECHAR ESPACIO VERTICAL */
+/* MOBILE OPTIMIZED TO USE VERTICAL SPACE */
 @media (max-width: 600px) and (orientation: portrait) {
   .game2-content {
     --size-card: clamp(70px, 18vw, 110px);
@@ -471,7 +471,7 @@
     gap: clamp(0.6rem, 2vh, 1.2rem);
   }
 
-  /* Grid con más columnas para aprovechar ancho */
+  /* Grid with more columns to use width */
   .available-numbers-top {
     grid-template-columns: repeat(3, minmax(var(--size-card), 1fr));
     padding: clamp(0.5rem, 1.2vw, 0.8rem);
@@ -515,7 +515,7 @@
   }
 }
 
-/* MÓVILES MUY PEQUEÑOS Portrait - Ajuste fino */
+/* VERY SMALL MOBILE Portrait - Fine adjustment */
 @media (max-width: 400px) and (orientation: portrait) {
   .game2-content {
     --size-card: clamp(65px, 17vw, 95px);
@@ -550,7 +550,7 @@
   }
 }
 
-/* MÓVILES GRANDES Portrait - Burbujas aún más grandes */
+/* LARGE MOBILE Portrait - Even larger bubbles */
 @media (min-width: 401px) and (max-width: 600px) and (orientation: portrait) and (min-height: 700px) {
   .game2-content {
     --size-card: clamp(75px, 19vw, 120px);
@@ -571,7 +571,7 @@
   }
 }
 
-/* Landscape - Burbujas más pequeñas, más columnas */
+/* Landscape - Smaller bubbles, more columns */
 @media (orientation: landscape) and (max-height: 600px) {
   .game2-content {
     --size-card: clamp(50px, 11vh, 95px);
@@ -623,7 +623,7 @@
   }
 }
 
-/* Desktop grande */
+/* Large desktop */
 @media (min-width: 1400px) {
   .game2-content {
     --size-card: clamp(80px, 10vw, 150px);
