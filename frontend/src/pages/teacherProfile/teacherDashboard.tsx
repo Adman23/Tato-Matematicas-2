@@ -37,7 +37,10 @@ export default function TutorDashboard() {
 
   return (
     <IonPage>
-      <SimpleHeaderUser userName={user?.username || "username"} photoUrl={user?.photo_url} />
+      <SimpleHeaderUser 
+        userName={user?.username || "username"} 
+        photoUrl={user?.photo_url}
+      />
 
       <IonContent className="student-dashboard-content">
         {loadingUser || loadingUsers ? (

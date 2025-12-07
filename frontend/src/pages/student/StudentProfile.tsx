@@ -95,8 +95,8 @@ export default function StudentProfile() {
     return (
         <IonPage>
             {/* Header */}
-            <SimpleHeaderUser userName={user?.username || "username"}
-                photoUrl={user?.photo_url} hidden={true} />
+            <SimpleHeaderUser title={"PERFIL"} title_image='/assets/pictograms/yo.png'
+            userName={user?.username || "username"} photoUrl={user?.photo_url} hidden={true} />
 
 
             {/* Main Content */}

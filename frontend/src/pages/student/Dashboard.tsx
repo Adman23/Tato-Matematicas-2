@@ -41,7 +41,8 @@ export default function StudentDashboard() {
     <IonPage>
 
       
-      <SimpleHeaderUser userName={user?.username || "username"} photoUrl={user?.photo_url} />
+      <SimpleHeaderUser title={"JUEGOS"} title_image='/assets/pictograms/juegos.png' 
+                        userName={user?.username || "username"} photoUrl={user?.photo_url} />
 
       <IonContent className="student-dashboard-content">
         {loadingUser ? (
