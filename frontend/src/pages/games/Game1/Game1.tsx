@@ -9,8 +9,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     IonContent,
     IonPage,
-    IonSpinner,
-    IonText,
     useIonRouter
 } from '@ionic/react';
 import { Redirect } from 'react-router-dom'
@@ -40,6 +38,7 @@ import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
 import ResultsScreen from '../components/ResultsScreen';
 import { GameControlButton } from '../../global_components/GameControlButton';
+import LoadingSpinner from '../../global_components/LoadingSpinner';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -769,7 +768,7 @@ const Game1: React.FC = () => {
             <IonPage>
                 <IonContent>
                     <div className='Game1-spinner'>
-                        <IonSpinner name="crescent" />
+                        <LoadingSpinner message="Cargando juego 1" />
                     </div>
                 </IonContent>
             </IonPage>
@@ -786,10 +785,7 @@ const Game1: React.FC = () => {
             <IonPage>
                 <IonContent>
                     <div className='Game1-spinner'>
-                        <IonSpinner name="crescent" />
-                        <IonText>
-                            <p>Cargando juego...</p>
-                        </IonText>
+                        <LoadingSpinner message="Cargando juego 1" />
                     </div>
                 </IonContent>
             </IonPage>

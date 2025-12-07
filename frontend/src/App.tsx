@@ -22,7 +22,7 @@ import { ManagerDataWrapper } from './contexts/ManagerContext';
 import Home from './pages/Home';
 
 // === Routes ===
-import { PrivateRoute, PublicRoute} from './routes/AppRoutes';
+import { PrivateRoute, PublicRoute } from './routes/AppRoutes';
 
 // === Páginas de autenticación ===
 import Login from './pages/auth/Login';
@@ -61,6 +61,7 @@ import StudentProfile from './pages/student/StudentProfile';
 import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
 import EditColor from './pages/teacherProfile/EditStudent/EditColors';
 import Prueba from './pages/teacherProfile/EditStudent/prueba';
+import EditGame1 from './pages/teacherProfile/EditStudent/EditGame1';
 import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
 import EditColorsStudent from './pages/student/EditColorsStudent';
 
@@ -89,71 +90,73 @@ export default function App() {
     <IonApp>
       <AuthProvider>
         <UserDataWrapper>
-        <ManagerDataWrapper>
-          <IonReactRouter>
+          <ManagerDataWrapper>
+            <IonReactRouter>
 
-            <IonRouterOutlet animated={false}>
+              <IonRouterOutlet animated={false}>
 
-              <PublicRoute path="/home" exact component={Home} />
-              <PublicRoute path="/login" exact component={Login} />
+                <PublicRoute path="/home" exact component={Home} />
+                <PublicRoute path="/login" exact component={Login} />
 
-              {/* Rutas del login de estudiante en 3 pasos */}
-              <PublicRoute path="/student/login" exact component={StudentLogin} />
-              {/* Ruta específica (Alumnos) - NECESARIA para que el botón 'Atrás' funcione */}
-              <PublicRoute exact path="/student/login/step2/:groupId" component={StudentLogin} />
+                {/* Rutas del login de estudiante en 3 pasos */}
+                <PublicRoute path="/student/login" exact component={StudentLogin} />
+                {/* Ruta específica (Alumnos) - NECESARIA para que el botón 'Atrás' funcione */}
+                <PublicRoute exact path="/student/login/step2/:groupId" component={StudentLogin} />
 
-              {/* Game Routes */}
-              <PrivateRoute path="/game/game1" allowedRoles={["student", "teacher"]}
-                exact component={Game1} />
-              <PrivateRoute path="/game/game2" allowedRoles={["student", "teacher"]}
-                exact component={Game2} />
+                {/* Game Routes */}
+                <PrivateRoute path="/game/game1" allowedRoles={["student", "teacher"]}
+                  exact component={Game1} />
+                <PrivateRoute path="/game/game2" allowedRoles={["student", "teacher"]}
+                  exact component={Game2} />
 
-              {/* Users Routes (except admin) */}
-              <PrivateRoute path="/student/dashboard" allowedRoles={["student"]}  
-                exact component={StudentDashboard} />
-              <PrivateRoute path="/student/profile" allowedRoles={["student"]}
-                exact component={StudentProfile} />
-              <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
-                exact component={EditGame2} />
-              <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
-                exact component={EditColorsStudent} />
-              <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]} 
-                exact component={TutorDashboard} />
-              <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]} 
-                exact component={TeacherProfilePage} />
-              <PrivateRoute path="/teacher/edit-profile/:userId" allowedRoles={["admin"]} 
-                exact component={TeacherEditProfile} />
-              <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]} 
-                exact component={TeacherEditProfile} />
-              <PrivateRoute path="/teacher/register" allowedRoles={["admin"]} 
-                exact component={TeacherRegister} />
-              <PrivateRoute path="/admin/group/register" allowedRoles={["admin"]} 
-                exact component={GroupRegister} />
-              <PrivateRoute path="/admin/dashboard" allowedRoles={["admin"]}
-                exact component={AdminDashboard} />
-              <PrivateRoute path="/student/register" allowedRoles={["admin"]}
-                exact component={StudentRegister} />
-              <PrivateRoute path="/admin/dashboard/:tipo" allowedRoles={["admin"]}
-                exact component={userManagement} />
-              <PrivateRoute path="/admin/dashboard/link-profiles" allowedRoles={["admin"]}
-                exact component={LinkProfiles} />
-              <PrivateRoute path="/admin/dashboard/groups-management" allowedRoles={["admin"]}
-                exact component={GroupsManagement} />
-              <PrivateRoute path="/admin/register-confirmation/:tipo" allowedRoles={["admin"]}
-                component={RegisterConfirmation} exact />       
-              <PrivateRoute path="/student-edit-menu/:id/:name" allowedRoles={["teacher"]}
-                exact component={EditMenu} />
-              <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]} 
-                exact component={EditColor} />
-              <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
-              <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]} 
-                exact component={StudentEditProfile} />
+                {/* Users Routes (except admin) */}
+                <PrivateRoute path="/student/dashboard" allowedRoles={["student"]}
+                  exact component={StudentDashboard} />
+                <PrivateRoute path="/student/profile" allowedRoles={["student"]}
+                  exact component={StudentProfile} />
+                <PrivateRoute path="/student/edit-game1" allowedRoles={["student"]}
+                  exact component={EditGame1} />
+                <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
+                  exact component={EditGame2} />
+                <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
+                  exact component={EditColorsStudent} />
+                <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]}
+                  exact component={TutorDashboard} />
+                <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]}
+                  exact component={TeacherProfilePage} />
+                <PrivateRoute path="/teacher/edit-profile/:userId" allowedRoles={["admin"]}
+                  exact component={TeacherEditProfile} />
+                <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]}
+                  exact component={TeacherEditProfile} />
+                <PrivateRoute path="/teacher/register" allowedRoles={["admin"]}
+                  exact component={TeacherRegister} />
+                <PrivateRoute path="/admin/group/register" allowedRoles={["admin"]}
+                  exact component={GroupRegister} />
+                <PrivateRoute path="/admin/dashboard" allowedRoles={["admin"]}
+                  exact component={AdminDashboard} />
+                <PrivateRoute path="/student/register" allowedRoles={["admin"]}
+                  exact component={StudentRegister} />
+                <PrivateRoute path="/admin/dashboard/:tipo" allowedRoles={["admin"]}
+                  exact component={userManagement} />
+                <PrivateRoute path="/admin/dashboard/link-profiles" allowedRoles={["admin"]}
+                  exact component={LinkProfiles} />
+                <PrivateRoute path="/admin/dashboard/groups-management" allowedRoles={["admin"]}
+                  exact component={GroupsManagement} />
+                <PrivateRoute path="/admin/register-confirmation/:tipo" allowedRoles={["admin"]}
+                  component={RegisterConfirmation} exact />
+                <PrivateRoute path="/student-edit-menu/:id/:name" allowedRoles={["teacher"]}
+                  exact component={EditMenu} />
+                <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]}
+                  exact component={EditColor} />
+                <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
+                <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]}
+                  exact component={StudentEditProfile} />
 
-              {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
-              <Redirect to="/student/login" />
-            </IonRouterOutlet>
-          </IonReactRouter>
-        </ManagerDataWrapper>
+                {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
+                <Redirect to="/student/login" />
+              </IonRouterOutlet>
+            </IonReactRouter>
+          </ManagerDataWrapper>
         </UserDataWrapper>
       </AuthProvider>
     </IonApp>
