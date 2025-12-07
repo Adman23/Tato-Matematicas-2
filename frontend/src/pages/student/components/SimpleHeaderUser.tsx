@@ -17,6 +17,7 @@ interface Props {
   userName: string;
   photoUrl?: string;
   hidden?: boolean;
+  url?: string;
 }
 
 
@@ -24,10 +25,22 @@ const SimpleHeaderUser: React.FC<Props> = ({
   userName,
   photoUrl,
   hidden = false,
+  url
+  
 }) => {
   const router = useIonRouter();
   const { } = useAuth();
+  const { user } = useAuth();
 
+  const handleProfile = () => {
+    if (url != null) {
+      router.push(url, "back", "pop");
+    } else if (user?.role === "teacher") {
+      router.push('/teacher/profile');
+    } else {
+      router.push('/student/profile');
+    }
+  }
 
 
   return (
@@ -46,7 +59,7 @@ const SimpleHeaderUser: React.FC<Props> = ({
 
         {!hidden && (
           <IonButtons slot="end">
-            <Button3Dtext color="var(--button-profile-bg)" onClick={()=>router.push('/student/profile')}>
+            <Button3Dtext color="var(--button-profile-bg)" onClick={handleProfile}>
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"
