@@ -28,7 +28,6 @@
     gap: 25px;
     flex-wrap: wrap;
     flex-shrink: 0;
-    /* Crecer para ocupar el espacio central y centrar verticalmente */
     flex-grow: 1;
     width: 100%;
 }
@@ -43,8 +42,8 @@
 .EditGame1-config-button-value {
     min-width: clamp(120px, 24vw, 160px);
     min-height: clamp(130px, 26vw, 180px);
-    width: clamp(120px, 24vw, 160px);
-    height: clamp(130px, 26vw, 180px);
+    width: clamp(120px, 22vw, 160px);
+    height: clamp(130px, 22vw, 180px);
 }
 
 .EditGame1-config-button-content {
@@ -189,6 +188,18 @@
     border-width: 6px;
     transform: scale(1.05);
     box-shadow: 0 6px 16px rgba(74, 222, 128, 0.5);
+}
+
+.modal-option.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.modal-option.disabled:hover {
+    transform: none;
+    border-color: #cbd5e1;
+    background: #f1f5f9;
 }
 
 .modal-option.large {
@@ -568,10 +579,10 @@
 
     .EditGame1-config-button-3d,
     .EditGame1-config-button-value {
-        min-width: clamp(180px, 15vw, 220px);
-        min-height: clamp(190px, 16vw, 240px);
-        width: clamp(180px, 15vw, 220px);
-        height: clamp(190px, 16vw, 240px);
+        min-width: clamp(180px, 15vw, 200px);
+        min-height: clamp(190px, 16vw, 200px);
+        width: clamp(180px, 15vw, 200px);
+        height: clamp(190px, 16vw, 200px);
     }
 
     .EditGame1-config-button-image {

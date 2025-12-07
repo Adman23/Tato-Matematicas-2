@@ -270,13 +270,17 @@ export default function EditGame1() {
                             <div className="modal-options-grid quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
+                                    // Deshabilitar opciones mayores a 10 si el rango es 0-10
+                                    const isDisabled = numberRange === '0-10' && num > 10;
                                     return (
                                         <div
                                             key={num}
-                                            className={`modal-option ${quantity === num ? 'selected' : ''}`}
+                                            className={`modal-option ${quantity === num ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                                             onClick={() => {
-                                                setQuantity(num);
-                                                closeAllModals();
+                                                if (!isDisabled) {
+                                                    setQuantity(num);
+                                                    closeAllModals();
+                                                }
                                             }}
                                         >
                                             {pictogram ? (
@@ -304,6 +308,10 @@ export default function EditGame1() {
                                         className={`modal-option large ${numberRange === option.value ? 'selected' : ''}`}
                                         onClick={() => {
                                             setNumberRange(option.value);
+                                            // Si el rango es 0-10 y la cantidad es mayor a 10, ajustar a 10
+                                            if (option.value === '0-10' && quantity > 10) {
+                                                setQuantity(10);
+                                            }
                                             closeAllModals();
                                         }}
                                     >
