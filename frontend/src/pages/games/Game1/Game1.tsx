@@ -9,8 +9,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     IonContent,
     IonPage,
-    IonSpinner,
-    IonText,
     useIonRouter
 } from '@ionic/react';
 import { Redirect } from 'react-router-dom'
