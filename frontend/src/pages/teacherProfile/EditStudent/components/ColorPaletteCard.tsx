@@ -43,9 +43,19 @@ const ColorPaletteCard: React.FC<Props> = ({
     //Definition of the colors from the bubbles examples
     const bubbleColors = [bubbleBg, bubbleSelected];
 
+    const paletteDescriptions: Record<number, string> = {
+        1: "Paleta azul",
+        2: "Paleta morada",
+        3: "Paleta verde",
+        4: "Paleta turquesa y gris"
+    };
+
     return(
         
         <IonCard   onClick={() => onClick?.(palette)} tabIndex={0} 
+            role='button'
+            aria-label={paletteDescriptions[palette.id]}
+            aria-pressed = {isSelected}
             onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                     onClick?.(palette);
@@ -53,17 +63,20 @@ const ColorPaletteCard: React.FC<Props> = ({
             }}
             className={isSelected ? "ColorPaletteCard-studentEditColor-IonCardSelected" : "ColorPaletteCard-studentEditColor-IonCard"}>
             <IonCardHeader className='ColorPaletteCard-studentEditColor-IonCardHeader'
+            aria-hidden = "true"
             style={{
                 background: headerBg,
                 color: headerText
             }}>Título
             <Button3Dtext className='Boton-header_ColorPaletteCard' 
+            aria-hidden = "true"
             color={buttonBg}
             tabIndex={-1}
             ><span></span></Button3Dtext>
             
             </IonCardHeader>
             <IonCardContent className='ColorPaletteCard-studentEditColor-IonCardContent'
+            aria-hidden = "true"
             style={{
                 background: contentBg,
                 color: contentText

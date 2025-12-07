@@ -1,0 +1,123 @@
+/* =============================================================================
+   LOADING SPINNER - Componente de Carga
+   ========================================================================== */
+
+.loading-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.loading-spinner-container {
+  background-color: var(--ion-color-primary);
+  border-radius: 24px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  min-width: 200px;
+  animation: loadingSpinnerFadeIn 300ms ease-out;
+}
+
+@keyframes loadingSpinnerFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loading-spinner-icon {
+  --color: white;
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+}
+
+.loading-spinner-message {
+  color: white;
+  font-size: 1rem;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  margin: 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* =============================================================================
+   RESPONSIVE - TABLET
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  .loading-spinner-container {
+    padding: 2.5rem;
+    border-radius: 32px;
+    min-width: 250px;
+  }
+
+  .loading-spinner-icon {
+    font-size: 3.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .loading-spinner-message {
+    font-size: 1.1rem;
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE - DESKTOP
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  .loading-spinner-container {
+    padding: 3rem;
+    min-width: 280px;
+  }
+
+  .loading-spinner-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .loading-spinner-message {
+    font-size: 1.2rem;
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE - LANDSCAPE MOBILE
+   ========================================================================== */
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .loading-spinner-container {
+    padding: 1.5rem;
+    min-width: 180px;
+  }
+
+  .loading-spinner-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .loading-spinner-message {
+    font-size: 0.9rem;
+  }
+}

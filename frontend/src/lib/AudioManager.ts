@@ -5,10 +5,11 @@
  * - Centralizes playback of a single HTMLAudioElement.
  * - Silently handles AbortError when pausing a pending playback.
  * - Allows playing sequences of files sequentially.
+ * - Waits for screen reader / speech synthesis to finish before playing audio.
  *
  * Execution flow.
- * 1. `play(path)` creates a new `HTMLAudioElement`, plays it, and resolves
- *    the promise when it ends or an error occurs.
+ * 1. `play(path)` waits for speech synthesis to finish, then creates a new 
+ *    `HTMLAudioElement`, plays it, and resolves the promise when it ends.
  * 2. `stop()` pauses and resets the current audio element if it exists.
  * 3. `playSequential(paths)` calls `play()` sequentially for each path.
  *
@@ -20,10 +21,52 @@ class AudioManager {
     private audio: HTMLAudioElement | null = null;
 
     /**
+     * Waits for any active speech synthesis (screen reader) to finish.
+     * Polls every 100ms until speechSynthesis is no longer speaking or pending.
+     * Times out after maxWaitMs to prevent infinite waiting.
+     * 
+     * @param maxWaitMs - Maximum time to wait in milliseconds (default: 5000)
+     * @returns Promise<void> that resolves when speech synthesis is idle or timeout
+     */
+    private waitForSpeechSynthesis(maxWaitMs: number = 5000): Promise<void> {
+        return new Promise((resolve) => {
+            // Check if speechSynthesis API is available
+            if (typeof window === 'undefined' || !window.speechSynthesis) {
+                resolve();
+                return;
+            }
+
+            const startTime = Date.now();
+
+            const checkSpeech = () => {
+                const elapsed = Date.now() - startTime;
+
+                // Timeout - don't wait forever
+                if (elapsed >= maxWaitMs) {
+                    resolve();
+                    return;
+                }
+
+                // Check if speech synthesis is active
+                if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+                    // Still speaking, check again in 100ms
+                    setTimeout(checkSpeech, 100);
+                } else {
+                    // Speech finished, resolve
+                    resolve();
+                }
+            };
+
+            checkSpeech();
+        });
+    }
+
+    /**
      * Plays an audio file and resolves when playback finishes
      * or an error occurs.
      *
      * Execution flow:
+     * - Waits for any active speech synthesis (screen reader) to finish.
      * - Stops any previous playback.
      * - Creates a new `HTMLAudioElement` and listens for `ended` and `error` events.
      * - Calls `resolve()` when it ends or if an error occurs.
@@ -34,7 +77,10 @@ class AudioManager {
      * @example
      * await audioManager.play('/assets/sounds/correct.mp3');
      */
-    play(path: string): Promise<void> {
+    async play(path: string): Promise<void> {
+        // Wait for screen reader / speech synthesis to finish before playing
+        await this.waitForSpeechSynthesis();
+
         return new Promise((resolve) => {
             // Stop previous audio if exists
             if (this.audio) {

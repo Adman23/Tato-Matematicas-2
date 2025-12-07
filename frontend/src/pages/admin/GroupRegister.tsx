@@ -41,6 +41,7 @@ import { useState, useRef, useEffect } from 'react';
 import { authAPI } from '../../lib/api';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
+import ConfirmationModal from '../global_components/ConfirmationModal';
 
 
 export default function GroupRegister() {
@@ -52,6 +53,8 @@ export default function GroupRegister() {
     const [isToastOpen, setIsToastOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [isGroupNameAvailable, setIsGroupNameAvailable] = useState<boolean | null>(null);
     const groupCheckIdRef = useRef(0);
@@ -128,19 +131,16 @@ export default function GroupRegister() {
         }
 
         try {
+            setIsLoading(true);
 
             await authAPI.register_group({
                 alias: groupName
             });
 
-            setToastMessage('Registro completado correctamente 🎉');
-            setToastColor('success');
-            setIsToastOpen(true);
-
-            setTimeout(() => {
-                router.push('/register-confirmation/grupos');
-            }, 2000);
+            setIsLoading(false);
+            setShowConfirmationModal(true);
         } catch (err: any) {
+            setIsLoading(false);
             console.error('Error en el registro:', err);
             const message =
                 err.response?.data?.detail ||
@@ -200,6 +200,7 @@ export default function GroupRegister() {
             {user && user.role === 'admin' && (
                 <SimpleHeaderAdmin adminName={user.username} />
             )}
+            {!showConfirmationModal && !isLoading && (
             <div className="group-register-main-container">
                 <div className="group-register-form-card" ref={formCardRef}>
                     <div className="group-register-form-container-header">
@@ -252,6 +253,17 @@ export default function GroupRegister() {
                     className="group-register-toast"
                 />
             </div>
+            )}
+
+            {(showConfirmationModal || isLoading) && (
+                <ConfirmationModal
+                    title="Grupo registrado"
+                    message="Grupo registrado con éxito."
+                    redirectPath="/admin/dashboard/groups-management"
+                    isLoading={isLoading}
+                    loadingMessage="Registrando grupo..."
+                />
+            )}
         </IonPage>
     );
 }

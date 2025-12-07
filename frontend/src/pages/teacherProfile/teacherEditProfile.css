@@ -6,93 +6,117 @@
   --background: #f4f5f8;
 }
 
+.teacher-edit-profile-content::part(scroll) {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Contenedor principal que centra todo */
 .teacher-edit-profile-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  /* Alineación superior como en register confirmation */
+  justify-content: center;
   font-family: 'Atkinson Hyperlegible', sans-serif;
-  background-color: transparent;
-  flex-grow: 1;
-  height: 100%;
+  background-color: #f4f5f8;
+  flex: 1;
   width: 100%;
-  max-width: 1200px;
-  padding: clamp(1rem, 5vh, 2rem) 1rem;
+  padding: 1rem;
   box-sizing: border-box;
-  margin: 0 auto;
+  min-height: 0;
 }
 
 /* =============================================================================
-   FORMULARIO DE EDICIÓN (Se mantiene igual)
+   FORMULARIO DE EDICIÓN
    ========================================================================== */
 
 .teacher-edit-profile-form-card {
   width: 100%;
-  max-width: 900px;
+  max-width: 600px;
   background-color: var(--ion-color-primary);
-  border-radius: 24px;
-  padding: clamp(1.2rem, 4vw, 3rem);
-  box-shadow: none;
+  border-radius: 16px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  gap: clamp(1rem, 2vw, 2rem);
+  gap: 1rem;
   position: relative;
   z-index: 1;
-  margin: 0 auto;
-  overflow: hidden;
+  box-sizing: border-box;
+  flex-shrink: 1;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .teacher-edit-profile-form-container-header {
   text-align: center;
-  margin-bottom: 0.5rem;
   flex-shrink: 0;
 }
 
 .teacher-edit-profile-form-container-header h2 {
   color: white;
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
-  margin: 0 0 0.2rem 0;
-  line-height: 1.2;
+  font-size: 1.2rem;
+  margin: 0 0 0.3rem 0;
+  font-weight: bold;
 }
 
 .teacher-edit-profile-form-container-header p {
-  color: rgb(0, 0, 0);
-  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: white;
+  font-size: 0.85rem;
   margin: 0;
 }
 
-/* GRID DE CONTENIDO */
+/* Tablet y Desktop */
+@media (min-width: 768px) {
+  .teacher-edit-profile-form-card {
+    padding: 2rem;
+    border-radius: 24px;
+    gap: 1.5rem;
+    max-height: calc(100vh - 6rem);
+  }
+
+  .teacher-edit-profile-form-container-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .teacher-edit-profile-form-container-header p {
+    font-size: 1.1rem;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-edit-profile-main-container {
+    padding: 2rem;
+  }
+
+  .teacher-edit-profile-form-card {
+    max-width: 700px;
+    padding: 2.5rem;
+    max-height: calc(100vh - 8rem);
+  }
+
+  .teacher-edit-profile-form-container-header h2 {
+    font-size: 2rem;
+  }
+
+  .teacher-edit-profile-form-container-header p {
+    font-size: 1.2rem;
+  }
+}
+
+/* =============================================================================
+   GRID DE CONTENIDO
+   ========================================================================== */
+
 .teacher-edit-profile-grid-content {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
-  flex-grow: 1;
-}
-
-@media (min-width: 900px) {
-  .teacher-edit-profile-grid-content {
-    grid-template-columns: 1.2fr 1fr;
-    align-content: center;
-    align-items: center;
-    gap: clamp(2rem, 5vw, 5rem);
-  }
-}
-
-@media (max-width: 899px) {
-  .teacher-edit-profile-grid-content {
-    flex-direction: column-reverse;
-    gap: 1rem;
-  }
-
-  .teacher-edit-profile-form-right {
-    align-items: center;
-    margin-bottom: 0.5rem;
-    flex-shrink: 0;
-  }
+  flex-shrink: 1;
+  min-height: 0;
 }
 
 .teacher-edit-profile-form-left,
@@ -101,13 +125,21 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
+  min-height: 0;
+  gap: 0.5rem;
+}
+
+.teacher-edit-profile-form-left {
+  order: 2;
+}
+
+.teacher-edit-profile-form-right {
+  order: 1;
 }
 
 .teacher-edit-profile-form-right .teacher-edit-profile-field-label {
   text-align: center;
-  color: black;
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  margin-bottom: 0.5rem;
+  color: white;
 }
 
 /* IMAGEN DE PERFIL */
@@ -115,28 +147,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 0;
+  margin-top: 0.5rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
-  flex-shrink: 0;
-}
-
-.teacher-edit-profile-profile-image-container:hover {
-  transform: scale(1.05);
 }
 
 .teacher-edit-profile-profile-placeholder {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: clamp(100px, 20vw, 160px);
-  height: clamp(100px, 20vw, 160px);
-  border-radius: 24px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border: 4px solid white;
-  box-shadow: none;
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  background-color: var(--ion-color-primary);
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   color: white;
-  font-size: clamp(50px, 10vw, 80px);
+  font-size: 40px;
   line-height: 1;
   margin: 0;
   padding: 0;
@@ -144,124 +170,249 @@
 }
 
 .teacher-edit-profile-selected-image {
-  width: clamp(100px, 20vw, 160px);
-  height: clamp(100px, 20vw, 160px);
+  width: 70px;
+  height: 70px;
   object-fit: cover;
-  border-radius: 24px;
-  border: 4px solid white;
-  box-shadow: none;
+  border-radius: 16px;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* CAMPOS INPUT */
+/* Tablet y Desktop o modo horizontal: orden original (campos izquierda, imagen derecha) */
+@media (min-width: 768px), (orientation: landscape) {
+  .teacher-edit-profile-grid-content {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+  }
+
+  .teacher-edit-profile-form-left {
+    order: 1;
+  }
+
+  .teacher-edit-profile-form-right {
+    order: 2;
+  }
+
+  .teacher-edit-profile-profile-placeholder {
+    width: 90px;
+    height: 90px;
+    font-size: 50px;
+  }
+
+  .teacher-edit-profile-selected-image {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-edit-profile-grid-content {
+    grid-template-columns: 2fr 1fr;
+    gap: 2.5rem;
+  }
+
+  .teacher-edit-profile-profile-placeholder {
+    width: 100px;
+    height: 100px;
+    font-size: 56px;
+  }
+
+  .teacher-edit-profile-selected-image {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* =============================================================================
+   CAMPOS COMUNES
+   ========================================================================== */
+
 .teacher-edit-profile-field-wrapper {
   width: 100%;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
+  min-height: 0;
 }
 
 .teacher-edit-profile-field-label {
-  color: #000000;
-  font-size: clamp(1rem, 1.5vw, 1.2rem);
-  margin: 0.4rem 0;
+  color: white;
+  font-size: 0.85rem;
+  margin: 0.3rem 0;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+ion-input.teacher-edit-profile-input-item {
+  --background: white;
+  --border-radius: 100px;
+  --padding-start: 1rem;
+  --padding-end: 2.5rem;
+  --padding-top: 0.6rem;
+  --padding-bottom: 0.6rem;
+  width: 100%;
+  border: none;
+  margin: 0;
+  font-size: 0.9rem;
+  min-height: 40px;
+  flex-shrink: 0;
 }
 
 .teacher-edit-profile-input-with-icon {
   display: flex;
   align-items: center;
   position: relative;
-  width: 100%;
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 100px;
-  overflow: hidden;
-  height: clamp(3rem, 5vh, 4rem);
-  max-height: 60px;
   flex-shrink: 0;
-  flex-grow: 0;
-}
-
-ion-input.teacher-edit-profile-input-item {
-  --background: white;
-  --border-radius: 0;
-  --padding-start: 1.2rem;
-  --padding-end: 1.2rem;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  font-size: clamp(1rem, 1.5vw, 1.2rem);
-  width: 100%;
-  height: 100%;
-  border: none;
-  margin: 0;
 }
 
 .teacher-edit-profile-input-with-icon ion-icon:last-child {
   position: absolute;
-  right: 16px;
-  font-size: clamp(1.4rem, 2vw, 1.8rem);
+  right: 12px;
+  font-size: 1.3rem;
   cursor: pointer;
   z-index: 2;
+  flex-shrink: 0;
   color: #666;
 }
 
 .teacher-edit-profile-input-with-icon ion-icon:first-child {
   padding-left: 12px;
-  font-size: clamp(1.4rem, 2vw, 1.8rem);
+  font-size: 1.3rem;
   color: var(--ion-color-medium);
-}
-
-/* BOTONES FORMULARIO */
-.teacher-edit-profile-form-button-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: auto;
-  padding-top: 1rem;
-  width: 100%;
   flex-shrink: 0;
 }
 
-@media (min-width: 666px) {
-  .teacher-edit-profile-form-button-container {
-    flex-direction: row;
-    gap: clamp(1.5rem, 3vw, 3rem);
+/* Tablet y Desktop */
+@media (min-width: 768px) {
+  .teacher-edit-profile-field-label {
+    font-size: 1rem;
+    margin: 0.4rem 0;
   }
 
-  .teacher-edit-profile-cancel-button,
-  .teacher-edit-profile-confirm-button {
-    flex: 1;
-    width: auto;
+  ion-input.teacher-edit-profile-input-item {
+    --border-radius: 100px;
+    --padding-top: 0.7rem;
+    --padding-bottom: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .teacher-edit-profile-input-with-icon ion-icon:last-child {
+    font-size: 1.5rem;
+  }
+
+  .teacher-edit-profile-input-with-icon ion-icon:first-child {
+    font-size: 1.5rem;
   }
 }
 
-.teacher-edit-profile-cancel-button,
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-edit-profile-field-label {
+    font-size: 1.1rem;
+  }
+
+  ion-input.teacher-edit-profile-input-item {
+    font-size: 1.05rem;
+    --padding-top: 0.8rem;
+    --padding-bottom: 0.8rem;
+  }
+}
+
+/* =============================================================================
+   BOTONES FORMULARIO
+   ========================================================================== */
+
+.teacher-edit-profile-form-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+
 .teacher-edit-profile-confirm-button {
+  --background: white;
+  --color: var(--ion-color-primary);
   --border-radius: 100px;
-  --padding-top: clamp(0.8rem, 1.5vw, 1.2rem);
-  --padding-bottom: clamp(0.8rem, 1.5vw, 1.2rem);
-  --box-shadow: none;
-  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  --padding-top: 0.7rem;
+  --padding-bottom: 0.7rem;
+  font-size: 0.95rem;
   width: 100%;
-  max-width: clamp(250px, 30vw, 350px);
-  height: auto;
-  min-height: 48px;
+  max-width: 100%;
+  font-weight: 600;
+  order: 2;
+  border: 2px solid var(--ion-color-primary);
 }
 
 .teacher-edit-profile-cancel-button {
   --background: white;
   --color: var(--ion-color-primary);
+  --border-radius: 100px;
+  --padding-top: 0.7rem;
+  --padding-bottom: 0.7rem;
+  font-size: 0.95rem;
+  width: 100%;
+  max-width: 100%;
+  font-weight: 600;
+  order: 1;
+  border: 2px solid var(--ion-color-primary);
 }
 
-.teacher-edit-profile-confirm-button {
-  --background: white;
-  --color: var(--ion-color-primary);
+.teacher-edit-profile-confirm-button::part(native) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  outline: none;
+}
+
+.teacher-edit-profile-cancel-button::part(native) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
+.teacher-edit-profile-confirm-button:hover::part(native) {
+  opacity: 0.9;
+}
+
+.teacher-edit-profile-cancel-button:hover::part(native) {
+  background-color: #f5f5f5;
 }
 
 .teacher-edit-profile-confirm-button--disabled {
   opacity: 0.6;
+}
+
+.teacher-edit-profile-confirm-button--disabled::part(native) {
+  cursor: not-allowed !important;
+}
+
+/* Tablet y Desktop */
+@media (min-width: 768px) {
+  .teacher-edit-profile-form-button-container {
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .teacher-edit-profile-confirm-button,
+  .teacher-edit-profile-cancel-button {
+    --border-radius: 100px;
+    --padding-top: 0.9rem;
+    --padding-bottom: 0.9rem;
+    font-size: 1.1rem;
+    max-width: 250px;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .teacher-edit-profile-confirm-button,
+  .teacher-edit-profile-cancel-button {
+    font-size: 1.15rem;
+    max-width: 280px;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+  }
 }
 
 /* =============================================================================
@@ -469,4 +620,324 @@ ion-input.teacher-edit-profile-input-item {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+/* =============================================================================
+   MEDIA QUERIES - PANTALLAS PEQUEÑAS Y LANDSCAPE
+   ========================================================================== */
+
+/* Pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .teacher-edit-profile-main-container {
+    padding: 0.5rem;
+  }
+
+  .teacher-edit-profile-form-card {
+    padding: 0.8rem;
+    border-radius: 12px;
+    gap: 0.7rem;
+  }
+
+  .teacher-edit-profile-form-container-header h2 {
+    font-size: 1rem;
+  }
+
+  .teacher-edit-profile-form-container-header p {
+    font-size: 0.75rem;
+  }
+
+  .teacher-edit-profile-grid-content {
+    gap: 0.8rem;
+  }
+
+  .teacher-edit-profile-field-label {
+    font-size: 0.8rem;
+    margin: 0.2rem 0;
+  }
+
+  ion-input.teacher-edit-profile-input-item {
+    font-size: 0.85rem;
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
+    --padding-start: 0.8rem;
+  }
+
+  .teacher-edit-profile-input-with-icon ion-icon:last-child {
+    font-size: 1.2rem;
+  }
+
+  .teacher-edit-profile-profile-placeholder,
+  .teacher-edit-profile-selected-image {
+    width: 65px;
+    height: 65px;
+  }
+
+  .teacher-edit-profile-profile-placeholder {
+    font-size: 38px;
+  }
+
+  .teacher-edit-profile-confirm-button,
+  .teacher-edit-profile-cancel-button {
+    font-size: 0.9rem;
+    --padding-top: 0.6rem;
+    --padding-bottom: 0.6rem;
+  }
+}
+
+/* Landscape móvil */
+@media (max-height: 600px) and (orientation: landscape) {
+  .teacher-edit-profile-main-container {
+    padding: 0.5rem 0.3rem;
+  }
+
+  .teacher-edit-profile-form-card {
+    padding: 0.6rem;
+    gap: 0.4rem;
+    max-height: calc(100vh - 3rem);
+    margin-top: 0.5rem;
+  }
+
+  .teacher-edit-profile-form-container-header {
+    margin-bottom: 0;
+  }
+
+  .teacher-edit-profile-form-container-header h2 {
+    font-size: 0.9rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .teacher-edit-profile-form-container-header p {
+    font-size: 0.7rem;
+  }
+
+  .teacher-edit-profile-grid-content {
+    gap: 0.5rem;
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+
+  .teacher-edit-profile-form-left {
+    gap: 0.3rem;
+  }
+
+  .teacher-edit-profile-form-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    height: 100%;
+  }
+
+  .teacher-edit-profile-form-right .teacher-edit-profile-field-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .teacher-edit-profile-form-right .teacher-edit-profile-field-label {
+    flex-shrink: 0;
+  }
+
+  .teacher-edit-profile-profile-image-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.2rem;
+  }
+
+  .teacher-edit-profile-field-wrapper {
+    margin-bottom: 0;
+  }
+
+  .teacher-edit-profile-field-label {
+    margin: 0.1rem 0;
+    font-size: 0.7rem;
+  }
+
+  ion-input.teacher-edit-profile-input-item {
+    --padding-top: 0.3rem;
+    --padding-bottom: 0.3rem;
+    --padding-start: 0.7rem;
+    --padding-end: 2rem;
+    --border-radius: 100px;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
+
+  .teacher-edit-profile-input-with-icon ion-icon:last-child {
+    font-size: 1rem;
+    right: 8px;
+  }
+
+  .teacher-edit-profile-profile-placeholder,
+  .teacher-edit-profile-selected-image {
+    width: 100%;
+    height: auto;
+    max-width: 90px;
+    max-height: 90px;
+    aspect-ratio: 1;
+  }
+
+  .teacher-edit-profile-profile-placeholder {
+    font-size: 45px;
+  }
+
+  .teacher-edit-profile-form-button-container {
+    gap: 0.3rem;
+    margin-top: 0.2rem;
+    justify-content: flex-start;
+  }
+
+  .teacher-edit-profile-cancel-button {
+    --padding-top: 0.4rem;
+    --padding-bottom: 0.4rem;
+    --border-radius: 100px;
+    font-size: 0.75rem;
+    min-height: 36px;
+    max-width: 48%;
+  }
+
+  .teacher-edit-profile-confirm-button {
+    --padding-top: 0.4rem;
+    --padding-bottom: 0.4rem;
+    --border-radius: 100px;
+    font-size: 0.75rem;
+    min-height: 36px;
+    max-width: 48%;
+  }
+
+  .teacher-edit-profile-avatar-picker {
+    max-height: 90vh;
+  }
+}
+
+/* Landscape móvil - pantallas muy cortas */
+@media (max-height: 500px) and (orientation: landscape) {
+  .teacher-edit-profile-main-container {
+    padding: 0.4rem 0.3rem;
+  }
+
+  .teacher-edit-profile-form-card {
+    padding: 0.5rem;
+    gap: 0.3rem;
+    max-height: calc(100vh - 2.5rem);
+    margin-top: 0.4rem;
+  }
+
+  .teacher-edit-profile-form-container-header h2 {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+  }
+
+  .teacher-edit-profile-form-container-header p {
+    font-size: 0.65rem;
+  }
+
+  .teacher-edit-profile-grid-content {
+    gap: 0.4rem;
+  }
+
+  .teacher-edit-profile-form-right {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .teacher-edit-profile-form-right .teacher-edit-profile-field-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .teacher-edit-profile-profile-image-container {
+    flex: 1;
+    margin-top: 0;
+  }
+
+  .teacher-edit-profile-field-label {
+    font-size: 0.65rem;
+    margin: 0;
+  }
+
+  ion-input.teacher-edit-profile-input-item {
+    --padding-top: 0.25rem;
+    --padding-bottom: 0.25rem;
+    --padding-start: 0.6rem;
+    font-size: 0.75rem;
+    min-height: 30px;
+  }
+
+  .teacher-edit-profile-input-with-icon ion-icon:last-child {
+    font-size: 0.9rem;
+  }
+
+  .teacher-edit-profile-profile-placeholder,
+  .teacher-edit-profile-selected-image {
+    max-width: 80px;
+    max-height: 80px;
+  }
+
+  .teacher-edit-profile-profile-placeholder {
+    font-size: 40px;
+  }
+
+  .teacher-edit-profile-cancel-button,
+  .teacher-edit-profile-confirm-button {
+    --padding-top: 0.3rem;
+    --padding-bottom: 0.3rem;
+    font-size: 0.7rem;
+    min-height: 32px;
+  }
+}
+
+/* Landscape móvil - pantallas extremadamente cortas */
+@media (max-height: 400px) and (orientation: landscape) {
+  .teacher-edit-profile-main-container {
+    padding: 0.3rem 0.2rem;
+  }
+
+  .teacher-edit-profile-form-card {
+    padding: 0.4rem;
+    gap: 0.2rem;
+    max-height: calc(100vh - 2rem);
+  }
+
+  .teacher-edit-profile-form-container-header h2 {
+    font-size: 0.75rem;
+  }
+
+  .teacher-edit-profile-form-container-header p {
+    font-size: 0.6rem;
+  }
+
+  .teacher-edit-profile-grid-content {
+    gap: 0.3rem;
+  }
+
+  .teacher-edit-profile-field-label {
+    font-size: 0.6rem;
+  }
+
+  ion-input.teacher-edit-profile-input-item {
+    --padding-top: 0.2rem;
+    --padding-bottom: 0.2rem;
+    font-size: 0.7rem;
+    min-height: 28px;
+  }
+
+  .teacher-edit-profile-profile-placeholder,
+  .teacher-edit-profile-selected-image {
+    max-width: 70px;
+    max-height: 70px;
+  }
+
+  .teacher-edit-profile-profile-placeholder {
+    font-size: 35px;
+  }
+
+  .teacher-edit-profile-cancel-button,
+  .teacher-edit-profile-confirm-button {
+    font-size: 0.65rem;
+    min-height: 28px;
+  }
 }

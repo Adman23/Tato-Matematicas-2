@@ -16,6 +16,7 @@ setupIonicReact();
 interface Props {
   userName: string;
   photoUrl?: string;
+  hidden?: boolean;
   url?: string;
 }
 
@@ -23,9 +24,12 @@ interface Props {
 const SimpleHeaderUser: React.FC<Props> = ({
   userName,
   photoUrl,
+  hidden = false,
   url
+  
 }) => {
   const router = useIonRouter();
+  const { } = useAuth();
   const { user } = useAuth();
 
   const handleProfile = () => {
@@ -53,29 +57,18 @@ const SimpleHeaderUser: React.FC<Props> = ({
           <div className="header-text">{userName}</div>
         </IonButtons>
 
-        <IonButtons slot="end">
-          <Button3Dtext color="var(--button-profile-bg)" onClick={handleProfile}>
-            {url != null ? (
-              <>
-                <img
-                  src="/assets/pictograms/juegos.png"
-                  alt="Ir al dashboard"
-                  className="btn-icon-header-user"
-                />
-                <span className="btn-text">JUEGOS</span>
-              </>
-            ) : (
-              <>
+        {!hidden && (
+          <IonButtons slot="end">
+            <Button3Dtext color="var(--button-profile-bg)" onClick={handleProfile}>
                 <img
                   src="/assets/pictograms/yo.png"
                   alt="Ir a mi perfil"
                   className="btn-icon-header-user"
                 />
                 <span className="btn-text">MI PERFIL</span>
-              </>
-            )}
-          </Button3Dtext>
-        </IonButtons>
+            </Button3Dtext>
+          </IonButtons>
+        )}
 
       </IonToolbar>
     </IonHeader>

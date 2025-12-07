@@ -127,6 +127,13 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           display: block;
         }
 
+        /* Iconos de Ionicons dentro del botón */
+        .pushable-button ion-icon {
+          color: #000000;
+          font-size: 1.5rem;
+          --ionicon-stroke-width: 64px;
+        }
+
         @media (hover: hover) {
           .pushable-button:not(:disabled):hover .front {
             transform: translateY(-8px);

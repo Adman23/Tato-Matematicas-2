@@ -92,7 +92,7 @@ export default function App() {
         <ManagerDataWrapper>
           <IonReactRouter>
 
-            <IonRouterOutlet>
+            <IonRouterOutlet animated={false}>
 
               <PublicRoute path="/home" exact component={Home} />
               <PublicRoute path="/login" exact component={Login} />
@@ -121,6 +121,8 @@ export default function App() {
                 exact component={TutorDashboard} />
               <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]} 
                 exact component={TeacherProfilePage} />
+              <PrivateRoute path="/teacher/edit-profile/:userId" allowedRoles={["admin"]} 
+                exact component={TeacherEditProfile} />
               <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]} 
                 exact component={TeacherEditProfile} />
               <PrivateRoute path="/teacher/register" allowedRoles={["admin"]} 
