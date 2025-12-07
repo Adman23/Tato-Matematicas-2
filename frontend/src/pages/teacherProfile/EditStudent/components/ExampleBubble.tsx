@@ -56,7 +56,7 @@ const ExampleBubble: React.FC<Props & { className?: string }> = ({
             <div
                 className={classes}
             >
-                <span className="nmExample-number-value">{value}</span>
+                <span aria-hidden="true" className="nmExample-number-value">{value}</span>
             </div>
 
             {/* Feedback icon below the circle: tick for correct, cross for incorrect */}
