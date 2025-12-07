@@ -40,16 +40,16 @@
  * />
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     IonContent,
-    IonPage,
-    IonButton
+    IonPage
 } from '@ionic/react';
 
 import './FeedbackScreen.css';
 
 import GameHeader from './GameHeader';
+import ExitScreen from './ExitScreen';
 import audioManager from '../../../lib/AudioManager';
 
 import imgSiguienteDefault from '/assets/juegosImg/siguiente.png';
@@ -57,6 +57,7 @@ import imgRepetirDefault from '/assets/juegosImg/volver.png';
 import imgTatoFelizDefault from '/assets/Tato/TatoFeliz.png';
 import imgTatoTristeDefault from '/assets/Tato/TatoTriste.png';
 import type { StudentMessage } from '../../../lib/api';
+import { GameControlButton } from '../../global_components/GameControlButton';
 
 
 /**
@@ -126,6 +127,8 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     onRepeat,
     hideNextOnError = false
 }) => {
+    // Estado para mostrar la pantalla de confirmación de salida
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
 
 
     /**
@@ -268,6 +271,16 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
         };
     }, [selectedMessage?.sound_url, isCorrect]);
 
+    // Si se muestra la confirmación de salida, renderizar ExitScreen
+    if (showExitConfirm) {
+        return (
+            <ExitScreen
+                confirmExit={onHomeClick}
+                cancelExit={() => setShowExitConfirm(false)}
+            />
+        );
+    }
+
     return (
         <IonPage>
             <IonContent className="feedback-content">
@@ -279,7 +292,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     pictogram2={headerPictogram2}
                     currentRound={currentRound}
                     totalRounds={totalRounds}
-                    onHomeClick={onHomeClick}
+                    onBackClick={() => setShowExitConfirm(true)}
                 />
 
                 {/* Feedback screen */}
@@ -302,36 +315,34 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     {/* Buttons */}
                     <div className="feedback-button-container">
                         {!isCorrect && onRepeat && (
-                            <IonButton
-                                fill="clear"
-                                className="feedback-check-button"
+                            <GameControlButton
                                 onClick={onRepeat}
                             >
-                                {imgRepetir ? (
-                                    <img
-                                        src={imgRepetir}
-                                        alt="Repetir"
-                                        className="feedback-check-button-image"
-                                    />
-                                ) : (
-                                    <>Repetir</>
-                                )}
-                            </IonButton>
+                                <img
+                                    src={imgRepetir}
+                                    alt="Repetir"
+                                    className="game-control-button-image"
+                                />
+                                <span className="game-control-button-text">
+                                    REPETIR
+                                </span>
+                            </GameControlButton>
                         )}
 
                         {/* Mostrar botón "Siguiente" solo si: es correcto O (es incorrecto pero hideNextOnError es false) */}
                         {(isCorrect || !hideNextOnError) && (
-                            <IonButton
-                                fill="clear"
-                                className="feedback-check-button"
+                            <GameControlButton
                                 onClick={() => { incrementMessageIndex(); onNext(); }}
                             >
                                 <img
                                     src={imgSiguiente}
                                     alt="Siguiente"
-                                    className="feedback-check-button-image"
+                                    className="game-control-button-image"
                                 />
-                            </IonButton>
+                                <span className="game-control-button-text">
+                                    SIGUIENTE
+                                </span>
+                            </GameControlButton>
                         )}
                     </div>
                 </div>

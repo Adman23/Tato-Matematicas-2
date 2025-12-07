@@ -20,11 +20,12 @@
 .game1-content {
     --background: var(--ion-color-primary-contrast);
     --footer-height: 220px;
-    --header-height: 15vh;
+    --header-height: clamp(70px, 13vh, 115px);
 
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
     overflow: hidden;
 }
@@ -38,6 +39,7 @@
     justify-content: center;
     align-items: center;
     height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
     max-height: calc(100vh - var(--header-height));
     gap: clamp(1rem, 3vw, 3rem);
     padding: clamp(0.5rem, 1.5vw, 2rem);
@@ -58,29 +60,28 @@
 .game1-game-column {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     padding: 0;
     margin: 0;
-    height: 100%;
+    height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
+    max-height: calc(100vh - var(--header-height));
     gap: clamp(1rem, 3vh, 3rem);
     width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 /* ========================================
     Tato
    ======================================== */
-.game1-tato-container {
+.game1-tato-image {
     width: 100%;
     max-width: clamp(200px, 28vw, 350px);
     height: auto;
     aspect-ratio: 1;
     max-height: clamp(200px, 35vh, 350px);
-}
-
-.game1-tato-container .game-control-button {
-    width: 100% !important;
-    height: 100% !important;
 }
 
 /* ========================================
@@ -117,9 +118,10 @@
         padding: clamp(0.25rem, 0.8vh, 0.8rem);
     }
 
-    .game1-tato-container {
-        max-width: clamp(160px, 35vw, 240px);
-        max-height: clamp(160px, 28vh, 240px);
+    .game1-tato-image {
+        max-width: 170px;
+        max-height: 170px;
+        margin-top: 10px;
     }
 
     .game1-buttons-container {
@@ -127,8 +129,8 @@
     }
 
     .game1-buttons-container .game-control-button {
-        width: clamp(75px, 17vw, 130px) !important;
-        height: clamp(75px, 17vw, 130px) !important;
+        width: clamp(75px, 18vw, 170px) !important;
+        height: clamp(75px, 18vw, 170px) !important;
     }
 }
 
@@ -139,9 +141,10 @@
         padding: clamp(0.15rem, 0.6vh, 0.6rem);
     }
 
-    .game1-tato-container {
-        max-width: clamp(140px, 38vw, 200px);
-        max-height: clamp(140px, 25vh, 200px);
+    .game1-tato-image {
+        max-width: 170px;
+        max-height: 170px;
+        margin-top: 10px;
     }
 
     .game1-buttons-container {
@@ -149,8 +152,8 @@
     }
 
     .game1-buttons-container .game-control-button {
-        width: clamp(65px, 19vw, 110px) !important;
-        height: clamp(65px, 19vw, 110px) !important;
+        width: clamp(65px, 21vw, 110px) !important;
+        height: clamp(65px, 21vw, 110px) !important;
     }
 }
 
@@ -162,13 +165,20 @@
         padding: clamp(0.25rem, 0.8vh, 0.6rem);
     }
 
-    .game1-tato-container {
-        max-width: clamp(120px, 28vh, 200px);
-        max-height: clamp(120px, 28vh, 200px);
+    .game1-tato-image {
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 10px;
     }
 
     .game1-game-column {
         gap: clamp(0.4rem, 1.8vh, 1.2rem);
+    }
+
+    .game1-tato-image {
+        max-width: 300px;
+        max-height: 300px;
+        margin-top: 10px;
     }
 
     .game1-buttons-container {
@@ -176,8 +186,8 @@
     }
 
     .game1-buttons-container .game-control-button {
-        width: clamp(60px, 11vh, 120px) !important;
-        height: clamp(60px, 11vh, 120px) !important;
+        width: clamp(60px, 17vh, 120px) !important;
+        height: clamp(60px, 17vh, 120px) !important;
     }
 }
 

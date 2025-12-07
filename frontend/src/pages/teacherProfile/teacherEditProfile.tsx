@@ -7,6 +7,7 @@ import {
   useIonViewWillEnter, // Detecta cuando entras
   useIonViewDidLeave,  // Detecta cuando sales
 } from '@ionic/react';
+import { useParams } from 'react-router-dom';
 import {
   checkmarkOutline, closeOutline, eyeOutline, eyeOffOutline,
   person, addOutline, checkmarkCircle
@@ -17,13 +18,19 @@ import { createPortal } from 'react-dom';
 // Importación de tipos y APIs
 import { authAPI, uploadImage, getImages, userAPI, type User } from '../../lib/api';
 import HeaderTeacherItem from './components/HeaderTeacherItem';
+import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
 export default function TeacherEditProfile() {
   const router = useIonRouter();
+  const { userId } = useParams<{ userId?: string }>();
   const { user, logout, updateUser } = useAuth();
+  
+  const isEditingAsAdmin = !!userId && user?.role === 'admin';
+  const [teacherData, setTeacherData] = useState<User | null>(null);
+  const [loadingTeacher, setLoadingTeacher] = useState(isEditingAsAdmin);
   
   // Refs para DOM
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,12 +88,28 @@ export default function TeacherEditProfile() {
 
   // Carga inicial estándar
   useEffect(() => {
-    if (user) {
-      setUserName(user.username || '');
-      setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
-      //setSelectedAvatarUrl(user.photo_url || DEFAULT_AVATAR);
-    }
-  }, [user]);
+    const loadTeacherData = async () => {
+      if (isEditingAsAdmin && userId) {
+        try {
+          setLoadingTeacher(true);
+          const teacher = await userAPI.fetchUserData(userId);
+          setTeacherData(teacher);
+          setUserName(teacher.username || '');
+          setAvatarPreview(teacher.photo_url || DEFAULT_AVATAR);
+        } catch (error) {
+          console.error('Error cargando profesor:', error);
+          showFeedback('Error al cargar los datos del profesor', 'danger');
+        } finally {
+          setLoadingTeacher(false);
+        }
+      } else if (user) {
+        setUserName(user.username || '');
+        setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
+      }
+    };
+    
+    loadTeacherData();
+  }, [user, userId, isEditingAsAdmin]);
 
   // Cargar avatares
   useEffect(() => {
@@ -105,12 +128,13 @@ export default function TeacherEditProfile() {
 
   // Validación usuario
   useEffect(() => {
+    const targetUser = isEditingAsAdmin ? teacherData : user;
     const trimmed = userName.trim();
     if (trimmed.length < 3 || trimmed.includes(' ')) {
       setIsUsernameAvailable(false);
       return;
     }
-    if (user && trimmed === user.username) {
+    if (targetUser && trimmed === targetUser.username) {
       setIsUsernameAvailable(true);
       return;
     }
@@ -127,7 +151,7 @@ export default function TeacherEditProfile() {
     }, 400);
 
     return () => clearTimeout(handler);
-  }, [userName, user?.username]);
+  }, [userName, user?.username, teacherData, isEditingAsAdmin]);
 
   const isUserNameLong = userName.trim().length >= 3;
   const isUserNameSpaceless = !userName.includes(' ');
@@ -135,10 +159,11 @@ export default function TeacherEditProfile() {
   const isPasswordValid = /\d/.test(password);
   const doPasswordsMatch = password === confirmPassword;
   
+  const targetUser = isEditingAsAdmin ? teacherData : user;
   const canSubmit =
     isUserNameLong &&
     isUserNameSpaceless &&
-    (userName === (user?.username || '') || isUsernameAvailable === true) &&
+    (userName === (targetUser?.username || '') || isUsernameAvailable === true) &&
     (password === '' || (isPasswordLong && isPasswordValid && doPasswordsMatch));
 
   // --- HANDLERS ---
@@ -170,12 +195,14 @@ export default function TeacherEditProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    
+    const targetUser = isEditingAsAdmin ? teacherData : user;
+    if (!targetUser) return;
 
     let errorMsg = '';
     if (!isUserNameLong) errorMsg += 'Nombre: min 3 caracteres. ';
     if (!isUserNameSpaceless) errorMsg += 'Nombre: sin espacios. ';
-    if (userName !== user.username && isUsernameAvailable === false) errorMsg += 'Nombre en uso. ';
+    if (userName !== targetUser.username && isUsernameAvailable === false) errorMsg += 'Nombre en uso. ';
     if (password && (!isPasswordLong || !isPasswordValid)) errorMsg += 'Contraseña insegura. ';
     if (password && !doPasswordsMatch) errorMsg += 'Las contraseñas no coinciden. ';
 
@@ -186,11 +213,9 @@ export default function TeacherEditProfile() {
 
     try {
       let filenameToSend = null;
-      //let fullUrlForContext = user.photo_url || DEFAULT_AVATAR;
 
       if (selectedAvatar && avatarOptions.some(a => a.id === selectedAvatar)) {
         filenameToSend = selectedAvatar; 
-        //fullUrlForContext = selectedAvatarUrl; 
       } 
       else if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
@@ -198,11 +223,10 @@ export default function TeacherEditProfile() {
         const uniqueFilename = `${sanitize(userName.trim())}_${Date.now()}_${sanitize(file.name)}`;
         
         filenameToSend = await uploadImage(file, uniqueFilename);
-        //fullUrlForContext = avatarPreview; 
       }
 
       const payload: any = {};
-      if (userName !== user.username) payload.username = userName;
+      if (userName !== targetUser.username) payload.username = userName;
       if (password) payload.password = password;
       if (filenameToSend) payload.photo_url = filenameToSend;
 
@@ -211,21 +235,29 @@ export default function TeacherEditProfile() {
         return;
       }
 
-      await userAPI.updateUser(user.id, payload);
+      await userAPI.updateUser(targetUser.id, payload);
       
-      // Re-fetch para asegurar datos y URL
-      const freshUser = await authAPI.fetchBasicUserInfo();
-      const timestamp = Date.now();
-      let freshUrl = freshUser.photo_url || DEFAULT_AVATAR;
-      freshUrl = freshUrl.includes('?') ? `${freshUrl}&t=${timestamp}` : `${freshUrl}?t=${timestamp}`;
+      if (isEditingAsAdmin) {
+        // Si es admin editando, redirigir de vuelta a la lista
+        showFeedback('Profesor actualizado correctamente', 'success');
+        setTimeout(() => {
+          router.push('/admin/dashboard/profesores', 'back');
+        }, 1500);
+      } else {
+        // Si es el profesor editando su propio perfil
+        const freshUser = await authAPI.fetchBasicUserInfo();
+        const timestamp = Date.now();
+        let freshUrl = freshUser.photo_url || DEFAULT_AVATAR;
+        freshUrl = freshUrl.includes('?') ? `${freshUrl}&t=${timestamp}` : `${freshUrl}?t=${timestamp}`;
 
-      const userForContext: User = {
-        ...freshUser,
-        photo_url: freshUrl
-      };
+        const userForContext: User = {
+          ...freshUser,
+          photo_url: freshUrl
+        };
 
-      updateUser(userForContext);
-      setIsUpdateSuccess(true);
+        updateUser(userForContext);
+        setIsUpdateSuccess(true);
+      }
       setPassword('');
       setConfirmPassword('');
 
@@ -278,18 +310,41 @@ export default function TeacherEditProfile() {
     }
   }, [showAvatarModal, updateModalPos]);
 
-  if (!user) return <IonPage><IonContent className="ion-text-center"><IonSpinner name="crescent" /></IonContent></IonPage>;
+  if (!user) {
+    return (
+      <IonPage>
+        <IonContent className="ion-text-center">
+          <IonSpinner name="crescent" />
+        </IonContent>
+      </IonPage>
+    );
+  }
+
+  const displayUser = targetUser || user;
 
   return (
     <IonPage style={{ backgroundColor: '#f4f5f8' }}>
-      <HeaderTeacherItem
-        teacherName={user.username || 'Profesor'}
-        teacherAvatar={user.photo_url || DEFAULT_AVATAR}
-        onLogoutClick={handleLogout}
-      />
+      {isEditingAsAdmin ? (
+        <SimpleHeaderAdmin adminName={user?.username || 'Admin'} />
+      ) : (
+        <HeaderTeacherItem
+          teacherName={user?.username || 'Profesor'}
+          teacherAvatar={user?.photo_url || DEFAULT_AVATAR}
+          onLogoutClick={handleLogout}
+        />
+      )}
 
-      <IonContent className="teacher-edit-profile-content">
-        <div className="teacher-edit-profile-main-container">
+      <IonContent className="teacher-edit-profile-content" scrollY={!loadingTeacher}>
+        {loadingTeacher ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', position: 'fixed', top: 0, left: 0 }}>
+            <IonSpinner name="crescent" />
+          </div>
+        ) : !displayUser ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', position: 'fixed', top: 0, left: 0 }}>
+            <IonSpinner name="crescent" />
+          </div>
+        ) : (
+          <div className="teacher-edit-profile-main-container">
           
           {isUpdateSuccess ? (
             <IonCard className="teacher-edit-profile-confirmation-card">
@@ -382,12 +437,13 @@ export default function TeacherEditProfile() {
                   className={`teacher-edit-profile-confirm-button ${!canSubmit ? 'teacher-edit-profile-confirm-button--disabled' : ''}`}
                   onClick={handleSubmit}
                 >
-                  Guardar cambios
+                  Confirmar
                 </IonButton>
               </div>
             </div>
           )}
-        </div>
+          </div>
+        )}
 
         <input type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} style={{ display: 'none' }} />
         <IonToast isOpen={showToast} message={toastMessage} color={toastColor} duration={3000} onDidDismiss={() => setShowToast(false)} className="teacher-edit-profile-toast" />

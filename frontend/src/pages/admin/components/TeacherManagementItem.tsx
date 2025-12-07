@@ -1,20 +1,32 @@
 import React from 'react';
-import { IonAvatar, IonItem, IonIcon, IonButton } from '@ionic/react';
+import { IonAvatar, IonItem, IonIcon, IonButton, useIonRouter } from '@ionic/react';
 import { create } from 'ionicons/icons';
 import './TeacherManagementItem.css';
 
 interface Props {
   teacherAvatar: string;
   teacherName: string;
-  onEditClick?: () => void;
-
+  userId: string;
+  tipo: string;
 }
 
 const TeacherManagementItem: React.FC<Props> = ({
   teacherAvatar,
   teacherName,
-
+  userId,
+  tipo,
 }) => {
+  const router = useIonRouter();
+
+  const handleEdit = () => {
+    if (tipo === 'profesores') {
+      router.push(`/teacher/edit-profile/${userId}`, 'forward');
+    } else {
+      // Para alumnos, puedes añadir la ruta correspondiente si existe
+      console.log('Editar alumno:', userId);
+    }
+  };
+
   return (
 
     <IonItem lines="none" className="teacherManagementItem-item">
@@ -28,7 +40,7 @@ const TeacherManagementItem: React.FC<Props> = ({
 
             <div className="teacherManagementItem-name">{teacherName}</div>
 
-            <IonButton className='teacherManagementItme-EditButton'>
+            <IonButton className='teacherManagementItme-EditButton' onClick={handleEdit}>
                 <IonIcon slot="icon-only" md={create}></IonIcon>
             </IonButton>
 
