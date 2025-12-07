@@ -40,8 +40,6 @@ import ResultsScreen from '../components/ResultsScreen';
 import { GameControlButton } from '../../global_components/GameControlButton';
 import LoadingSpinner from '../../global_components/LoadingSpinner';
 
-// (Now using NumberPictogram component which resolves pictogram path for 0-10)
-
 const TOTAL_ROUNDS = 5;
 
 
