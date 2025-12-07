@@ -14,8 +14,6 @@
 
     outline: none !important;
     box-shadow: none !important;
-    transform: scale(1.03);
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
     transition: 0.2s ease;
     cursor: pointer;
     border-width: clamp(2px, 1.2vw, 4px);
@@ -66,7 +64,7 @@
 =======================================*/
 .ColorPaletteCard-studentEditColor-IonCardSelected{
 
-    border: 3px solid #1628ca;
+    border: 3px solid var(--ion-color-primary);
     transform: scale(1.06);
     transition: 0.2s ease;
 }
