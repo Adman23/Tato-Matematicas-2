@@ -29,7 +29,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   IonContent,
   IonPage,
-  IonButton,
   IonText,
   IonSpinner,
   useIonRouter
@@ -109,7 +108,7 @@ const Game2: React.FC = () => {
   const location = useLocation();
   const router = useIonRouter();
   const { user, loadingAuth: authLoading } = useAuth();
-  const { getAllMessages, refreshUserData, loadingUser } = useUserData();
+  const { getAllMessages, loadingUser } = useUserData();
 
   // Determinar el usuario actual (puede ser estudiante o profesor)
   const currentUser = user;
