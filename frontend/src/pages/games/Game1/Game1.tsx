@@ -31,7 +31,6 @@ import imgSonido from '/assets/pictograms/escucha.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
 import imgPista from '/assets/juegosImg/lupa.png';
-import imgTato from '/assets/Tato/Tato.png';
 
 
 // Flecha desde assets
