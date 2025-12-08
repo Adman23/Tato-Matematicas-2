@@ -138,6 +138,7 @@ export interface User {
   username: string;
   role: Role;
   photo_url?: string;
+  password_type?: PasswordType;
   group_id?: string;
   group_alias?: string;
 }
