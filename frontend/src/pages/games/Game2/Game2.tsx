@@ -137,6 +137,9 @@ const Game2: React.FC = () => {
   const [feedbackType, setFeedbackType] = useState<'correct' | 'incorrect' | null>(null);
   const [draggingNumber, setDraggingNumber] = useState<number | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+  const [hoverTimer, setHoverTimer] = useState<number | null>(null);
+  const [mouseMoveHandler, setMouseMoveHandler] = useState<((e: MouseEvent) => void) | null>(null);
+  const [mouseUpHandler, setMouseUpHandler] = useState<((e: MouseEvent) => void) | null>(null);
 
   // States for touch events (mobile/tablet)
   //const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
@@ -169,6 +172,15 @@ const Game2: React.FC = () => {
 
   // Determinar si usar pictogramas (solo para rango 0-10)
   const usePictograms = config?.number_range === '0-10';
+  const accessibilityMode = config?.settings?.accessibility_mode || 'drag_drop';
+  // Drag + click/enter unificados para drag_drop y click_nav
+  const allowNativeDrag = accessibilityMode === 'drag_drop' || accessibilityMode === 'click_nav';
+  const enableClickPlacement =
+    accessibilityMode === 'drag_drop' ||
+    accessibilityMode === 'click_nav' ||
+    accessibilityMode === 'hover_select';
+  const isHoverSelectMode = accessibilityMode === 'hover_select';
+  const isDragFollowMode = accessibilityMode === 'drag_follow';
 
   // Pre-load images to avoid slots appearing empty while downloading
   useEffect(() => {
@@ -199,6 +211,15 @@ const Game2: React.FC = () => {
       });
     };
   }, []);
+
+  // Cleanup global listeners / timers
+  useEffect(() => {
+    return () => {
+      if (mouseMoveHandler) document.removeEventListener('mousemove', mouseMoveHandler);
+      if (mouseUpHandler) document.removeEventListener('mouseup', mouseUpHandler);
+      if (hoverTimer) window.clearTimeout(hoverTimer);
+    };
+  }, [mouseMoveHandler, mouseUpHandler, hoverTimer]);
 
   // Load configuration on mount (only once)
   // Runs every time location changes to force complete reset
@@ -324,7 +345,8 @@ const Game2: React.FC = () => {
         number_range: data.number_range || '0-10',
         settings: {
           quantity: data.settings?.quantity || 5,
-          order: data.settings?.order || 'ascending'
+          order: data.settings?.order || 'ascending',
+          accessibility_mode: data.settings?.accessibility_mode || 'drag_drop'
         }
       };
 
@@ -341,7 +363,8 @@ const Game2: React.FC = () => {
         number_range: '0-10',
         settings: {
           quantity: 5,
-          order: 'ascending'
+          order: 'ascending',
+          accessibility_mode: 'drag_drop'
         }
       };
 
@@ -914,6 +937,25 @@ const Game2: React.FC = () => {
     setSelectedNumber(selectedNumber === number ? null : number);
   };
 
+  const handleNumberHover = (number: number) => {
+    if (!isHoverSelectMode || showFeedback) return;
+    if (hoverTimer) {
+      window.clearTimeout(hoverTimer);
+      setHoverTimer(null);
+    }
+    const timer = window.setTimeout(() => {
+      setSelectedNumber(number);
+    }, 1000); // delay más alto para evitar selecciones inmediatas
+    setHoverTimer(timer);
+  };
+
+  const clearHoverSelection = () => {
+    if (hoverTimer) {
+      window.clearTimeout(hoverTimer);
+      setHoverTimer(null);
+    }
+  };
+
   /**
    * Functional summary:
    * Handles touch start on number for mobile/tablet devices.
@@ -932,6 +974,12 @@ const Game2: React.FC = () => {
    */
   const handleTouchStart = (e: React.TouchEvent, number: number) => {
     if (showFeedback) return;
+
+    if (!allowNativeDrag && !isDragFollowMode) {
+      // En modos de click/hover tratamos el toque como un click de selección
+      handleNumberClick(number);
+      return;
+    }
 
     // Prevent default behavior to avoid scroll
     e.preventDefault();
@@ -970,6 +1018,7 @@ const Game2: React.FC = () => {
    * handleTouchMove(event);
    */
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (!allowNativeDrag && !isDragFollowMode) return;
     // Allow dragging number 0 using explicit null check
     if (draggingNumber === null || !draggedElement) return;
 
@@ -999,11 +1048,13 @@ const Game2: React.FC = () => {
     setDraggedElement(null);
 
     // Clean any orphan clone
-    const orphanClone = document.getElementById('touch-drag-clone');
-    if (orphanClone && orphanClone.parentNode) {
-      orphanClone.parentNode.removeChild(orphanClone);
-    }
-
+    const orphanClones = ['touch-drag-clone', 'mouse-drag-clone'];
+    orphanClones.forEach((id) => {
+      const orphan = document.getElementById(id);
+      if (orphan && orphan.parentNode) {
+        orphan.parentNode.removeChild(orphan);
+      }
+    });
     // Reset states
     setDraggingNumber(null);
   };
@@ -1025,6 +1076,7 @@ const Game2: React.FC = () => {
    * handleTouchEnd(event);
    */
   const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!allowNativeDrag && !isDragFollowMode) return;
     // Prevent default behavior
     e.preventDefault();
 
@@ -1064,6 +1116,14 @@ const Game2: React.FC = () => {
     }
   };
 
+  const handleNumberKeyDown = (e: React.KeyboardEvent, number: number) => {
+    if (showFeedback) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleNumberClick(number);
+    }
+  };
+
   /**
    * Functional summary:
    * Handles touch cancel by cleaning state when system interrupts gesture.
@@ -1075,6 +1135,7 @@ const Game2: React.FC = () => {
    * handleTouchCancel(event);
    */
   const handleTouchCancel = (e: React.TouchEvent) => {
+    if (!allowNativeDrag && !isDragFollowMode) return;
     e.preventDefault();
     cleanupTouchDrag();
   };
@@ -1101,6 +1162,7 @@ const Game2: React.FC = () => {
    * Handles drag over on a slot.
    */
   const handleDragOver = (e: React.DragEvent) => {
+    if (!allowNativeDrag) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
@@ -1109,6 +1171,7 @@ const Game2: React.FC = () => {
    * Handles drop on a slot.
    */
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    if (!allowNativeDrag) return;
     e.preventDefault();
     const dataStr = e.dataTransfer.getData('text/plain');
     const draggedNumber = parseInt(dataStr, 10);
@@ -1117,6 +1180,102 @@ const Game2: React.FC = () => {
       tryPlaceNumber(draggedNumber, targetIndex);
     }
     setDraggingNumber(null);
+  };
+
+  /**
+   * Place selected number when using click/keyboard modes.
+   */
+  const handleSlotClick = (targetIndex: number) => {
+    if (!enableClickPlacement) return;
+    if (showFeedback || selectedNumber === null) return;
+    tryPlaceNumber(selectedNumber, targetIndex);
+    setSelectedNumber(null);
+  };
+
+  const handleSlotKeyDown = (e: React.KeyboardEvent, targetIndex: number) => {
+    if (!enableClickPlacement) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleSlotClick(targetIndex);
+    }
+  };
+
+  // Hover placement for hover_select mode
+  const handleSlotHover = (targetIndex: number) => {
+    if (!isHoverSelectMode) return;
+    if (showFeedback || selectedNumber === null) return;
+    tryPlaceNumber(selectedNumber, targetIndex);
+    setSelectedNumber(null);
+  };
+
+  /**
+   * Mouse-follow drag for accessibility mode "drag_follow".
+   */
+  const startMouseFollow = (e: React.MouseEvent, number: number) => {
+    if (!isDragFollowMode || showFeedback) return;
+    e.preventDefault();
+
+    setDraggingNumber(number);
+    setSelectedNumber(null);
+
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const clone = target.cloneNode(true) as HTMLElement;
+    clone.classList.add('number-card-dragging-touch');
+    clone.style.position = 'fixed';
+    clone.style.pointerEvents = 'none';
+    clone.style.zIndex = '9999';
+    clone.style.width = `${rect.width}px`;
+    clone.style.height = `${rect.height}px`;
+    clone.style.transform = 'none';
+    clone.style.left = `${e.clientX - rect.width / 2}px`;
+    clone.style.top = `${e.clientY - rect.height / 2}px`;
+    clone.id = 'mouse-drag-clone';
+    document.body.appendChild(clone);
+    setDraggedElement(clone);
+
+    const moveHandler = (ev: MouseEvent) => {
+      const rectClone = clone.getBoundingClientRect();
+      clone.style.left = `${ev.clientX - rectClone.width / 2}px`;
+      clone.style.top = `${ev.clientY - rectClone.height / 2}px`;
+    };
+
+    const upHandler = (ev: MouseEvent) => {
+      ev.preventDefault();
+      const currentNumber = number;
+      cleanupTouchDrag();
+      const dropZone = document.getElementById('drop-zone-container');
+      if (dropZone) {
+        const slots = dropZone.querySelectorAll('.droppable-slot');
+        let targetIndex = -1;
+
+        slots.forEach((slot, index) => {
+          const slotRect = slot.getBoundingClientRect();
+          if (
+            ev.clientX >= slotRect.left &&
+            ev.clientX <= slotRect.right &&
+            ev.clientY >= slotRect.top &&
+            ev.clientY <= slotRect.bottom
+          ) {
+            targetIndex = index;
+          }
+        });
+
+        if (targetIndex !== -1 && typeof currentNumber === 'number') {
+          tryPlaceNumber(currentNumber, targetIndex);
+        }
+      }
+
+      if (moveHandler) document.removeEventListener('mousemove', moveHandler);
+      if (upHandler) document.removeEventListener('mouseup', upHandler);
+      setMouseMoveHandler(null);
+      setMouseUpHandler(null);
+    };
+
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('mouseup', upHandler);
+    setMouseMoveHandler(() => moveHandler);
+    setMouseUpHandler(() => upHandler);
   };
 
 
@@ -1245,15 +1404,22 @@ const Game2: React.FC = () => {
                       <div
                         key={`available-${num}-${index}`}
                         className={classes}
-                        draggable={!showFeedback}
-                        onDragStart={(e) => handleDragStart(e, num)}
-                        onDragEnd={handleDragEnd}
+                        draggable={allowNativeDrag && !showFeedback}
+                        onDragStart={allowNativeDrag ? (e) => handleDragStart(e, num) : undefined}
+                        onDragEnd={allowNativeDrag ? handleDragEnd : undefined}
                         onTouchStart={(e) => handleTouchStart(e, num)}
                         onTouchMove={handleTouchMove}
                         onTouchEnd={handleTouchEnd}
                         onTouchCancel={handleTouchCancel}
+                        onMouseDown={(e) => {
+                          if (isDragFollowMode) startMouseFollow(e, num);
+                        }}
+                        onMouseEnter={() => handleNumberHover(num)}
+                        onMouseLeave={clearHoverSelection}
                         onClick={() => handleNumberClick(num)}
-                        style={{ cursor: showFeedback ? 'not-allowed' : 'grab' }}
+                        onKeyDown={(e) => handleNumberKeyDown(e, num)}
+                        tabIndex={0}
+                        style={{ cursor: showFeedback ? 'not-allowed' : enableClickPlacement ? 'pointer' : 'grab' }}
                         onDragStartCapture={(e) => {
                           // Prevenir drag de elementos hijos en fase de captura
                           if (e.target !== e.currentTarget) {
@@ -1295,6 +1461,11 @@ const Game2: React.FC = () => {
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
                     feedbackType={feedbackType}
+                    onSlotClick={handleSlotClick}
+                    onSlotKeyDown={handleSlotKeyDown}
+                    enableClickPlacement={enableClickPlacement}
+                    onSlotHover={handleSlotHover}
+                    enableHoverPlacement={isHoverSelectMode}
                   />
                 </div>
               </div>

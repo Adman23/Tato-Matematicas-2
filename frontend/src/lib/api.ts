@@ -655,6 +655,7 @@ export interface GameConfig {
     voice?: 'woman' | 'man';
     quantity?: number;
     order?: 'ascending' | 'descending';
+    accessibility_mode?: string;
   };
 }
 

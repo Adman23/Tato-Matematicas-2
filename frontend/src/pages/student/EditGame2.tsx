@@ -36,7 +36,7 @@ import { Button3Dtext } from '../global_components/PushableButtons';
 import LoadingSpinner from '../global_components/LoadingSpinner';
 import './EditGame2.css';
 import '../games/components/GameHeader.css';
-import { arrowBack } from 'ionicons/icons';
+import { arrowBack, accessibilityOutline } from 'ionicons/icons';
 
 // Opciones de rango (de acuerdo a la DB)
 const RANGE_OPTIONS = [
@@ -48,6 +48,25 @@ const RANGE_OPTIONS = [
 
 // Opciones de cantidad (3-12)
 const QUANTITY_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+// Opciones de accesibilidad
+const ACCESSIBILITY_OPTIONS = [
+    {
+        value: 'drag_drop',
+        label: 'Arrastrar o Click/Enter',
+        description: 'Drag & drop y también click + Enter'
+    },
+    {
+        value: 'drag_follow',
+        label: 'Click y seguir',
+        description: 'Click y el objeto sigue al cursor'
+    },
+    {
+        value: 'hover_select',
+        label: 'Hover con retardo',
+        description: 'Selecciona al permanecer encima'
+    }
+];
 
 /**
  * Componente principal de configuración del Juego 2.
@@ -80,14 +99,16 @@ export default function EditGame2() {
     const [saving, setSaving] = useState(false);
 
     // Estados de configuración
-    const [order, setOrder] = useState<'ascending' | 'descending'>('ascending');
-    const [quantity, setQuantity] = useState<number>(5);
-    const [numberRange, setNumberRange] = useState<string>('0-10');
+  const [order, setOrder] = useState<'ascending' | 'descending'>('ascending');
+  const [quantity, setQuantity] = useState<number>(5);
+  const [numberRange, setNumberRange] = useState<string>('0-10');
+    const [accessibilityMode, setAccessibilityMode] = useState<string>('drag_drop');
 
-    // Estados de modales
-    const [showQuantityModal, setShowQuantityModal] = useState(false);
-    const [showRangeModal, setShowRangeModal] = useState(false);
-    const [showOrderModal, setShowOrderModal] = useState(false);
+  // Estados de modales
+  const [showQuantityModal, setShowQuantityModal] = useState(false);
+  const [showRangeModal, setShowRangeModal] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+    const [showAccessibilityModal, setShowAccessibilityModal] = useState(false);
 
     // Estado de validación
     const [error, setError] = useState<string>('');
@@ -121,6 +142,7 @@ export default function EditGame2() {
             setOrder(data.settings?.order || 'ascending');
             setQuantity(data.settings?.quantity || 5);
             setNumberRange(data.number_range || '0-10');
+            setAccessibilityMode(data.settings?.accessibility_mode || 'drag_drop');
 
             setLoading(false);
         } catch (error) {
@@ -192,9 +214,10 @@ export default function EditGame2() {
                 number_range: numberRange,
                 settings: {
                     order,
-                    quantity
-                }
-            };
+                    quantity,
+                    accessibility_mode: accessibilityMode
+        }
+      };
 
             await gamesAPI.updateGameConfig(user.id, 'order_sequence', config);
 
@@ -218,9 +241,10 @@ export default function EditGame2() {
    * closeAllModals();
    */
     const closeAllModals = () => {
-        setShowQuantityModal(false);
-        setShowRangeModal(false);
-        setShowOrderModal(false);
+    setShowQuantityModal(false);
+    setShowRangeModal(false);
+    setShowOrderModal(false);
+        setShowAccessibilityModal(false);
     };
 
   /**
@@ -239,6 +263,10 @@ export default function EditGame2() {
     const getRangeSize = () => {
         const [min, max] = numberRange.split('-').map(Number);
         return max - min + 1;
+    };
+
+    const getAccessibilityLabel = () => {
+        return ACCESSIBILITY_OPTIONS.find(opt => opt.value === accessibilityMode)?.label || 'Accesibilidad';
     };
 
     const isQuantityDisabled = (num: number) => num > getRangeSize();
@@ -335,7 +363,7 @@ export default function EditGame2() {
                                     alt={order === 'ascending' ? 'Ascendente' : 'Descendente'}
                                     className="EditGame2-config-button-image"
                                 />
-                                <span className="modal-range-text">{order === 'ascending' ? 'Ascendente' : 'Descendente'}</span>
+                               
                             </div>
                             {/* Botón Orden */}
                             <Button3Dtext
@@ -349,6 +377,23 @@ export default function EditGame2() {
                                         className="EditGame2-config-button-image"
                                     />
                                     <span className="btn-text">ORDEN</span>
+                                </div>
+                            </Button3Dtext>
+                        </div>
+
+                        <div className="EditGame2-buttons-result">
+                            {/* Accesibilidad elegida */}
+                            <div className="EditGame2-config-button-value">
+                                <span className="EditGame2-accessibility-text">{getAccessibilityLabel()}</span>
+                            </div>
+                            {/* Botón Accesibilidad */}
+                            <Button3Dtext
+                                className="EditGame2-config-button-3d"
+                                onClick={() => { setShowAccessibilityModal(true); setError(''); }}
+                            >
+                                <div className="EditGame2-config-button-content">
+                                    <IonIcon icon={accessibilityOutline} className="EditGame2-accessibility-icon" />
+                                    <span className="btn-text">ACCESIBILIDAD</span>
                                 </div>
                             </Button3Dtext>
                         </div>
@@ -476,6 +521,32 @@ export default function EditGame2() {
                                         <span className="order-sublabel">Mayor a Menor</span>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* MODAL: Accesibilidad */}
+                {showAccessibilityModal && (
+                    <div className="modal-overlay" onClick={closeAllModals}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <div className="modal-options-grid accessibility-grid">
+                                {ACCESSIBILITY_OPTIONS.map((option) => (
+                                    <div
+                                        key={option.value}
+                                        className={`modal-option large ${accessibilityMode === option.value ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            setAccessibilityMode(option.value);
+                                            closeAllModals();
+                                        }}
+                                    >
+                                        <div className="order-content">
+                                            <span className="order-label-large">{option.label}</span>
+                                            <span className="order-sublabel">{option.description}</span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
