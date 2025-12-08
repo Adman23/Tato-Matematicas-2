@@ -159,6 +159,7 @@ export const ManagerProvider: React.FC<{ children: ReactNode, manager_id: string
               const data: UserData = {
                   username: userData.username,
                   password_type: userData.password_type,
+                  password_length: userData.password_length,
                   user_profile: userData.user_profile,
                   game_configurations: userData.game_configurations,
                   reinforcement_messages: userData.reinforcement_messages,
