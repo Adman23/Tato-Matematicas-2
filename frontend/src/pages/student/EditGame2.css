@@ -1,651 +1,453 @@
-/* Contenedor principal */
-.edit-game2-content {
-  --background: #87CEEB;
+.EditGame2-content {
+    --background: var(--background-color);
+    height: 100%;
+    overflow: hidden;
 }
 
-.edit-game2-main-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 15px;
-  padding-top: 30px;
-  min-height: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  position: relative;
-  overflow: visible;
-  justify-content: flex-start;
-  padding-bottom: 24px;
+/* Wrapper similar a EditGame1 pero optimizado para que todo entre en pantalla */
+.EditGame2-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100%;
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    background-color: var(--background-color);
+    box-sizing: border-box;
+    padding: clamp(8px, 2vw, 20px);
+    gap: clamp(8px, 2vh, 16px);
 }
 
-/* Cabecera compacta */
-.edit-game2-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 4px 0;
+.EditGame2-back-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
 }
 
-.edit-game2-header-title {
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: white;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin: 0 auto;
-  text-align: center;
-  flex: 1;
+.EditGame2-config-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(12px, 2vw, 24px);
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    width: 100%;
 }
 
-.header-spacer {
-  width: 58px;
-  flex-shrink: 0;
+.EditGame2-buttons-result {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2vh, 16px);
+    align-items: center;
+    flex: 1 1 180px;
+    min-width: 160px;
+    max-width: 240px;
 }
 
-/* Botón de volver atrás - Solo flecha */
-.back-button-arrow {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
-  width: 58px;
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.EditGame2-config-button-3d,
+.EditGame2-config-button-value {
+    min-width: clamp(100px, 20vw, 140px);
+    min-height: clamp(90px, 20vh, 140px);
+    width: clamp(110px, 22vw, 150px);
+    height: clamp(110px, 22vh, 160px);
 }
 
-.back-button-arrow:hover {
-  transform: scale(1.1);
+.EditGame2-config-button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
 }
 
-.back-button-arrow:active {
-  transform: scale(0.92);
+.EditGame2-config-button-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border: 3px solid var(--bubble-bg);
+    border-radius: 8px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.65);
 }
 
-.back-arrow-icon {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+.EditGame2-config-button-image {
+    width: clamp(60px, 10vw, 90px);
+    height: clamp(60px, 10vw, 90px);
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-/* Botones principales de configuración */
-.game2-config-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  flex-wrap: wrap;
-  flex-shrink: 0;
+.EditGame2-save-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: clamp(8px, 1.5vw, 16px);
 }
 
-.config-button-3d {
-  min-width: clamp(120px, 24vw, 160px);
-  min-height: clamp(130px, 26vw, 180px);
+.EditGame2-error-message {
+    background: #ef4444;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 720px;
 }
 
-.config-button-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-}
-
-.config-button-image {
-  width: clamp(70px, 12vw, 100px);
-  height: clamp(70px, 12vw, 100px);
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.config-button-label {
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Fila con resumen y botón de guardar */
-.summary-and-save-row {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-}
-
-/* Resumen de configuración */
-.config-summary {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border: 3px solid #3b82f6;
-  flex: 1;
-  min-width: 250px;
-  max-width: 350px;
-}
-
-.summary-item {
-  font-size: 1.1rem;
-  margin: 8px 0;
-  color: #1e293b;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.summary-item strong {
-  color: #3b82f6;
-  min-width: 100px;
-}
-
-/* Mensaje de error */
-.error-message-box {
-  background: #ef4444;
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 600;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 999;
-  max-width: 90%;
-}
-
-/* Botón Guardar */
-.save-button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.save-button-large {
-  min-width: 220px;
-  min-height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  font-size: 1.2rem;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
-
-.save-button-large span {
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.save-icon {
-  width: 35px;
-  height: 35px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-/* MODALES */
+/* ========================================
+    Modales
+   ======================================== */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
 }
 
 .modal-content {
-  background: white;
-  border-radius: 24px;
-  padding: 40px;
-  max-width: 700px;
-  width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 5px solid #3b82f6;
+    background: white;
+    border-radius: 24px;
+    padding: 70px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 5px solid var(--ion-color-primary);
 }
 
 .modal-close-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #ef4444;
-  color: white;
-  border: none;
-  font-size: 2rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: white;
+    border: none;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
 }
 
 .modal-close-btn:hover {
-  background: #dc2626;
-  transform: scale(1.1);
+    background: #dc2626;
+    transform: scale(1.1);
 }
 
 .modal-close-btn:active {
-  transform: scale(0.95);
-}
-
-.modal-title {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #3b82f6;
-  text-align: center;
-  margin-bottom: 30px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+    transform: scale(0.95);
 }
 
 /* Grid de opciones en modales */
 .modal-options-grid {
-  display: grid;
-  gap: 16px;
+    display: grid;
+    gap: 16px;
 }
 
 .quantity-grid {
-  grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .range-grid {
-  grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
 }
 
 .order-grid {
-  grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
 }
 
 /* Opciones del modal */
 .modal-option {
-  background: #f1f5f9;
-  border: 4px solid #cbd5e1;
-  border-radius: 16px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100px;
-  position: relative;
+    background: #f1f5f9;
+    border: 4px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    position: relative;
 }
 
 .modal-option:hover {
-  transform: scale(1.05);
-  border-color: #3b82f6;
-  background: #e0f2fe;
+    transform: scale(1.05);
+    border-color: #3b82f6;
+    background: #e0f2fe;
 }
 
 .modal-option.selected {
-  background: #4ade80;
-  border-color: #fbbf24;
-  border-width: 6px;
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(74, 222, 128, 0.5);
+    background: var(--bubble-bg);
+    border-color: var(--ion-color-primary);
+    border-width: 6px;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.5);
+}
+
+.modal-option.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.modal-option.disabled:hover {
+    transform: none;
+    border-color: #cbd5e1;
+    background: #f1f5f9;
 }
 
 .modal-option.large {
-  min-height: 150px;
+    min-height: 150px;
 }
 
 /* Números en modal de cantidad */
 .modal-number-img {
-  width: 70px;
-  height: 70px;
-  object-fit: contain;
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
 }
 
 .modal-number-text {
-  font-size: 3rem;
-  font-weight: 900;
-  color: #1e293b;
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--tatomaths-text);
 }
 
 .modal-option.selected .modal-number-text {
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    color: black;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Rangos en modal de rango */
 .modal-range-text {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #1e293b;
-  text-align: center;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--tatomaths-text);
+    text-align: center;
 }
 
 .modal-option.selected .modal-range-text {
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    color: black;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Orden en modal de orden */
 .order-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.order-arrow-large {
-  font-size: 4rem;
-  font-weight: bold;
-  color: #1e293b;
-}
-
-.modal-option.selected .order-arrow-large {
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
 .order-label-large {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #1e293b;
-}
-
-.modal-option.selected .order-label-large {
-  color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
 }
 
 .order-sublabel {
-  font-size: 1.1rem;
-  color: #64748b;
-}
-
-.modal-option.selected .order-sublabel {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* Responsive - Tablet */
-@media (max-width: 768px) {
-  .edit-game2-main-container {
-    padding: 12px;
-    padding-top: 24px;
-    gap: 15px;
-    min-height: auto;
-    padding-bottom: 20px;
-  }
-
-  .edit-game2-header {
-    padding: 8px;
-  }
-
-  .edit-game2-header-title {
-    font-size: 1.4rem;
-  }
-
-  .config-button-3d {
-    min-width: 140px;
-    min-height: 160px;
-  }
-
-  .config-button-content {
-    padding: 10px;
-    gap: 8px;
-  }
-
-  .config-button-image {
-    width: 80px;
-    height: 80px;
-  }
-
-  .config-button-label {
-    font-size: 0.95rem;
-  }
-
-  .summary-and-save-row {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .config-summary {
-    max-width: 100%;
-    padding: 12px;
-  }
-
-  .summary-item {
-    font-size: 0.95rem;
-    margin: 6px 0;
-  }
-
-  .save-button-large {
-    min-width: 200px;
-    min-height: 60px;
-    font-size: 1.1rem;
-  }
-
-  .save-icon {
-    width: 30px;
-    height: 30px;
-  }
-
-  .modal-content {
-    padding: 30px;
-  }
-
-  .modal-title {
-    font-size: 1.6rem;
-  }
-
-  .quantity-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .back-button-arrow {
-    width: 55px;
-    height: 55px;
-    top: 8px;
-    left: 15px;
-  }
-
-  .back-arrow-icon {
-    width: 55px;
-    height: 55px;
-  }
-
-  .header-spacer {
-    width: 55px;
-  }
-}
-
-/* Responsive - Mobile */
-@media (max-width: 480px) {
-  .edit-game2-main-container {
-    padding: 8px;
-    padding-top: 20px;
-    gap: 12px;
-    min-height: auto;
-    padding-bottom: 18px;
-  }
-
-  .back-button-arrow {
-    width: 45px;
-    height: 45px;
-    top: 5px;
-    left: 8px;
-  }
-
-  .back-arrow-icon {
-    width: 45px;
-    height: 45px;
-  }
-
-  .header-spacer {
-    width: 45px;
-  }
-
-  .edit-game2-header {
-    padding: 5px;
-  }
-
-  .edit-game2-header-title {
-    font-size: 1.15rem;
-  }
-
-  .game2-config-buttons {
-    gap: 12px;
-  }
-
-  .config-button-3d {
-    min-width: 100px;
-    min-height: 130px;
-  }
-
-  .config-button-content {
-    padding: 8px;
-    gap: 6px;
-  }
-
-  .config-button-image {
-    width: 60px;
-    height: 60px;
-  }
-
-  .config-button-label {
-    font-size: 0.85rem;
-  }
-
-  .summary-and-save-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .config-summary {
-    padding: 10px;
-    max-width: 100%;
-    min-width: 100%;
-  }
-
-  .summary-item {
-    font-size: 0.85rem;
-    flex-direction: row;
-    align-items: center;
-    margin: 4px 0;
-  }
-
-  .summary-item strong {
-    min-width: 80px;
-  }
-
-  .save-button-container {
-    width: 100%;
-  }
-
-  .save-button-large {
-    min-width: 100%;
-    min-height: 55px;
     font-size: 1rem;
-  }
-
-  .save-icon {
-    width: 28px;
-    height: 28px;
-  }
-
-  .modal-content {
-    padding: 24px;
-    max-height: 90vh;
-  }
-
-  .modal-close-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
-    top: 12px;
-    right: 12px;
-  }
-
-  .modal-title {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-  }
-
-  .quantity-grid,
-  .range-grid,
-  .order-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .modal-option {
-    padding: 16px;
-    min-height: 80px;
-  }
-
-  .modal-option.large {
-    min-height: 120px;
-  }
-
-  .modal-number-img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .modal-number-text {
-    font-size: 2.5rem;
-  }
-
-  .modal-range-text {
-    font-size: 1.3rem;
-  }
-
-  .order-arrow-large {
-    font-size: 3rem;
-  }
-
-  .order-label-large {
-    font-size: 1.3rem;
-  }
-
-  .order-sublabel {
-    font-size: 1rem;
-  }
+    color: #64748b;
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* ========================================
+    RESPONSIVE - Móviles (vertical)
+   ======================================== */
+@media screen and (max-width: 576px) {
+    .EditGame2-wrapper {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .EditGame2-config-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .EditGame2-buttons-result {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        min-width: 100%;
+        gap: 10px;
+    }
+
+    .EditGame2-config-button-3d,
+    .EditGame2-config-button-value {
+        min-width: 90px;
+        min-height: 90px;
+        width: 100px;
+        height: 100px;
+    }
+
+    .EditGame2-config-button-image {
+        width: clamp(40px, 12vw, 60px);
+        height: clamp(40px, 12vw, 60px);
+    }
+
+    /* Modales responsive para móvil */
+    .modal-content {
+        padding: 28px 18px;
+        max-width: 95%;
+        max-height: 85vh;
+    }
+
+    .quantity-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .range-grid,
+    .order-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-option {
+        min-height: 70px;
+        padding: 12px;
+    }
+
+    .modal-number-img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .modal-number-text {
+        font-size: 2rem;
+    }
+
+    .modal-range-text {
+        font-size: 1.2rem;
+    }
+
+    .modal-close-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1.4rem;
+        top: 10px;
+        right: 10px;
+    }
 }
 
-.modal-overlay {
-  animation: fadeIn 0.2s ease;
+/* Tablets en vertical y horizontal */
+@media screen and (min-width: 577px) and (max-width: 992px) {
+    .EditGame2-wrapper {
+        gap: 14px;
+        padding: 12px;
+    }
+
+    .EditGame2-config-buttons {
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .EditGame2-buttons-result {
+        flex-direction: column;
+        gap: 14px;
+        min-width: 150px;
+    }
+
+    .EditGame2-config-button-3d,
+    .EditGame2-config-button-value {
+        min-width: clamp(110px, 18vw, 150px);
+        min-height: clamp(110px, 18vw, 150px);
+        width: clamp(120px, 20vw, 160px);
+        height: clamp(120px, 20vw, 170px);
+    }
+
+    .modal-content {
+        padding: 40px 32px;
+        max-width: 85%;
+        max-height: 85vh;
+    }
 }
 
-.modal-content {
-  animation: fadeIn 0.3s ease;
+/* Paisaje con poca altura: comprimir aún más */
+@media screen and (max-height: 640px) and (orientation: landscape) {
+    .EditGame2-wrapper {
+        padding: 8px;
+        gap: 6px;
+    }
+
+    .EditGame2-config-buttons {
+        gap: 8px;
+    }
+
+    .EditGame2-buttons-result {
+        gap: 8px;
+        flex: 1 1 130px;
+    }
+
+    .EditGame2-config-button-3d,
+    .EditGame2-config-button-value {
+        min-width: 85px;
+        min-height: 85px;
+        width: 95px;
+        height: 95px;
+    }
+
+    .EditGame2-config-button-image {
+        width: 42px;
+        height: 42px;
+    }
+
+    .EditGame2-save-button {
+        padding: 6px;
+    }
+
+    .modal-content {
+        padding: 32px 24px;
+        max-height: 80vh;
+    }
+}
+
+/* Monitores grandes */
+@media screen and (min-width: 1200px) and (min-height: 850px) {
+    .EditGame2-config-buttons {
+        gap: 30px;
+    }
+
+    .EditGame2-buttons-result {
+        gap: 18px;
+        max-width: 260px;
+    }
+
+    .EditGame2-config-button-3d,
+    .EditGame2-config-button-value {
+        min-width: clamp(150px, 16vw, 190px);
+        min-height: clamp(160px, 17vw, 200px);
+        width: clamp(160px, 18vw, 210px);
+        height: clamp(170px, 19vw, 220px);
+    }
+
+    .EditGame2-config-button-image {
+        width: 90px;
+        height: 90px;
+    }
 }
