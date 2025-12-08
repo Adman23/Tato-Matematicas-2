@@ -891,7 +891,7 @@ const Game1: React.FC = () => {
                                         className="game-control-button-image"
                                     />
                                     <span className="game-control-button-text">
-                                        INSTRUCCIONES
+                                        TUTORIAL
                                     </span>
                                 </GameControlButton>
 
