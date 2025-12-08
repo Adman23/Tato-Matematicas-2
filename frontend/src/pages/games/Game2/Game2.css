@@ -377,7 +377,7 @@
 .number-card-dragging-touch {
   opacity: 0.8;
   transform: scale(1.1) !important;
-  box-shadow: 0 6px 16px rgba(132, 172, 241, 0.5);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--ion-color-primary, #3b82f6) 60%, transparent);
   pointer-events: none;
   z-index: 9999;
   transition: none;

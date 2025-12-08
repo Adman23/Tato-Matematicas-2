@@ -138,8 +138,10 @@ const Game2: React.FC = () => {
   const [draggingNumber, setDraggingNumber] = useState<number | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [hoverTimer, setHoverTimer] = useState<number | null>(null);
+  const [slotHoverTimer, setSlotHoverTimer] = useState<number | null>(null);
   const [mouseMoveHandler, setMouseMoveHandler] = useState<((e: MouseEvent) => void) | null>(null);
   const [mouseUpHandler, setMouseUpHandler] = useState<((e: MouseEvent) => void) | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   // States for touch events (mobile/tablet)
   //const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
@@ -173,8 +175,8 @@ const Game2: React.FC = () => {
   // Determinar si usar pictogramas (solo para rango 0-10)
   const usePictograms = config?.number_range === '0-10';
   const accessibilityMode = config?.settings?.accessibility_mode || 'drag_drop';
-  // Drag + click/enter unificados para drag_drop y click_nav
-  const allowNativeDrag = accessibilityMode === 'drag_drop' || accessibilityMode === 'click_nav';
+  // Drag nativo habilitado salvo en drag_follow u hover_select
+  const allowNativeDrag = accessibilityMode !== 'drag_follow' && accessibilityMode !== 'hover_select';
   const enableClickPlacement =
     accessibilityMode === 'drag_drop' ||
     accessibilityMode === 'click_nav' ||
@@ -220,6 +222,13 @@ const Game2: React.FC = () => {
       if (hoverTimer) window.clearTimeout(hoverTimer);
     };
   }, [mouseMoveHandler, mouseUpHandler, hoverTimer]);
+
+  // Al entrar en feedback/exits limpiar seguimientos y clones
+  useEffect(() => {
+    if (showFeedback || showFeedbackScreen || gameFinished || exiting || showExitConfirm || showVideoModal) {
+      cleanupTouchDrag();
+    }
+  }, [showFeedback, showFeedbackScreen, gameFinished, exiting, showExitConfirm, showVideoModal]);
 
   // Load configuration on mount (only once)
   // Runs every time location changes to force complete reset
@@ -722,6 +731,7 @@ const Game2: React.FC = () => {
    * useHint();
    */
   const useHint = () => {
+    resetHoverState(); // Evita clones/hover activos antes de colocar la pista
     // Don't allow hints during feedback or if no available numbers
     if (showFeedback) return;
 
@@ -809,6 +819,7 @@ const Game2: React.FC = () => {
    */
   const handleEarlyExit = async () => {
     setExiting(true);
+    cleanupTouchDrag(); // asegúrate de limpiar clones/listeners antes de salir
     // First close any feedback screen
     setShowFeedbackScreen(false);
     setFeedbackType(null);
@@ -935,25 +946,50 @@ const Game2: React.FC = () => {
   const handleNumberClick = (number: number) => {
     if (showFeedback) return;
     setSelectedNumber(selectedNumber === number ? null : number);
+    clearHoverSelection();
   };
+
+  function clearHoverSelection() {
+    if (hoverTimer) {
+      window.clearTimeout(hoverTimer);
+      setHoverTimer(null);
+    }
+    if (slotHoverTimer) {
+      window.clearTimeout(slotHoverTimer);
+      setSlotHoverTimer(null);
+    }
+  }
 
   const handleNumberHover = (number: number) => {
     if (!isHoverSelectMode || showFeedback) return;
-    if (hoverTimer) {
-      window.clearTimeout(hoverTimer);
-      setHoverTimer(null);
-    }
+    clearHoverSelection();
     const timer = window.setTimeout(() => {
       setSelectedNumber(number);
-    }, 1000); // delay más alto para evitar selecciones inmediatas
+    }, 800); // delay ajustado para interacción rápida por hover
     setHoverTimer(timer);
   };
 
-  const clearHoverSelection = () => {
-    if (hoverTimer) {
-      window.clearTimeout(hoverTimer);
-      setHoverTimer(null);
+  const runHoverAction = (action: () => void) => {
+    if (isHoverSelectMode) {
+      resetHoverState();
+      window.setTimeout(action, 800); // coherente con retardo hover
     }
+  };
+
+  // Ejecuta acción con retardo hover (800ms) o click inmediato según modo
+  const hoverOrClick = (action: () => void) => {
+    if (isHoverSelectMode) {
+      runHoverAction(action);
+    } else {
+      action();
+    }
+  };
+
+  // Limpia estados de hover/drag y selección actual (para botones externos)
+  const resetHoverState = () => {
+    clearHoverSelection();
+    setSelectedNumber(null);
+    cleanupTouchDrag();
   };
 
   /**
@@ -1055,8 +1091,17 @@ const Game2: React.FC = () => {
         orphan.parentNode.removeChild(orphan);
       }
     });
+    if (mouseMoveHandler) {
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      setMouseMoveHandler(null);
+    }
+    if (mouseUpHandler) {
+      document.removeEventListener('mouseup', mouseUpHandler);
+      setMouseUpHandler(null);
+    }
     // Reset states
     setDraggingNumber(null);
+    setIsFollowing(false);
   };
 
   /**
@@ -1144,6 +1189,7 @@ const Game2: React.FC = () => {
    * Opens video modal for instructions.
    */
   const openVideoModal = () => {
+    resetHoverState(); // Limpiar clones/hover al abrir instrucciones
     setShowVideoModal(true);
   };
 
@@ -1190,6 +1236,7 @@ const Game2: React.FC = () => {
     if (showFeedback || selectedNumber === null) return;
     tryPlaceNumber(selectedNumber, targetIndex);
     setSelectedNumber(null);
+    resetHoverState();
   };
 
   const handleSlotKeyDown = (e: React.KeyboardEvent, targetIndex: number) => {
@@ -1202,10 +1249,27 @@ const Game2: React.FC = () => {
 
   // Hover placement for hover_select mode
   const handleSlotHover = (targetIndex: number) => {
-    if (!isHoverSelectMode) return;
-    if (showFeedback || selectedNumber === null) return;
-    tryPlaceNumber(selectedNumber, targetIndex);
-    setSelectedNumber(null);
+    if (showFeedback) return;
+    // Hover-select: coloca tras selección por hover
+    if (isHoverSelectMode && selectedNumber !== null) {
+      if (slotHoverTimer) {
+        window.clearTimeout(slotHoverTimer);
+        setSlotHoverTimer(null);
+      }
+      const timer = window.setTimeout(() => {
+        tryPlaceNumber(selectedNumber, targetIndex);
+        setSelectedNumber(null);
+        resetHoverState();
+      }, 800);
+      setSlotHoverTimer(timer);
+      return;
+    }
+    // Drag-follow: coloca el número que sigue al cursor
+    if (isDragFollowMode && draggingNumber !== null) {
+      tryPlaceNumber(draggingNumber, targetIndex);
+      setSelectedNumber(null);
+      resetHoverState();
+    }
   };
 
   /**
@@ -1215,8 +1279,14 @@ const Game2: React.FC = () => {
     if (!isDragFollowMode || showFeedback) return;
     e.preventDefault();
 
+    // Reiniciar cualquier seguimiento previo
+    if (isFollowing) {
+      cleanupTouchDrag();
+    }
+
     setDraggingNumber(number);
-    setSelectedNumber(null);
+    setSelectedNumber(number);
+    setIsFollowing(true);
 
     const target = e.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
@@ -1240,42 +1310,8 @@ const Game2: React.FC = () => {
       clone.style.top = `${ev.clientY - rectClone.height / 2}px`;
     };
 
-    const upHandler = (ev: MouseEvent) => {
-      ev.preventDefault();
-      const currentNumber = number;
-      cleanupTouchDrag();
-      const dropZone = document.getElementById('drop-zone-container');
-      if (dropZone) {
-        const slots = dropZone.querySelectorAll('.droppable-slot');
-        let targetIndex = -1;
-
-        slots.forEach((slot, index) => {
-          const slotRect = slot.getBoundingClientRect();
-          if (
-            ev.clientX >= slotRect.left &&
-            ev.clientX <= slotRect.right &&
-            ev.clientY >= slotRect.top &&
-            ev.clientY <= slotRect.bottom
-          ) {
-            targetIndex = index;
-          }
-        });
-
-        if (targetIndex !== -1 && typeof currentNumber === 'number') {
-          tryPlaceNumber(currentNumber, targetIndex);
-        }
-      }
-
-      if (moveHandler) document.removeEventListener('mousemove', moveHandler);
-      if (upHandler) document.removeEventListener('mouseup', upHandler);
-      setMouseMoveHandler(null);
-      setMouseUpHandler(null);
-    };
-
     document.addEventListener('mousemove', moveHandler);
-    document.addEventListener('mouseup', upHandler);
     setMouseMoveHandler(() => moveHandler);
-    setMouseUpHandler(() => upHandler);
   };
 
 
@@ -1344,30 +1380,36 @@ const Game2: React.FC = () => {
             totalErrors={totalErrorsMade}
             totalNumbersCorrect={totalNumbersCorrect}
             totalNumbersRequired={totalNumbersRequired}
-            onHomeClick={exitToDashboard}
+            onHomeClick={() => hoverOrClick(exitToDashboard)}
             headerTitle="Sort Number"
             headerPictogram1={imgOrdenar}
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
             elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
+            enableHoverMode={isHoverSelectMode}
           />
         ) : showExitConfirm ? (
           <ExitScreen
-            confirmExit={handleEarlyExit}
-            cancelExit={() => setShowExitConfirm(false)}
+            confirmExit={() => hoverOrClick(handleEarlyExit)}
+            cancelExit={() => hoverOrClick(() => setShowExitConfirm(false))}
+            enableHoverMode={isHoverSelectMode}
           />
         ) : (
           <>
             {/* Header */}
-            <GameHeader
-              title="Sort Number"
-              pictogram1={imgOrdenar}
-              pictogramArrow={imgFlecha}
-              pictogram2={imgJuego}
-              currentRound={currentRound}
-              totalRounds={TOTAL_ROUNDS}
-              onBackClick={() => setShowExitConfirm(true)}
-            />
+              <GameHeader
+                title="Sort Number"
+                pictogram1={imgOrdenar}
+                pictogramArrow={imgFlecha}
+                pictogram2={imgJuego}
+                currentRound={currentRound}
+                totalRounds={TOTAL_ROUNDS}
+                onBackClick={() => {
+                  resetHoverState();
+                  setShowExitConfirm(true);
+                }}
+                onBackHover={() => runHoverAction(() => setShowExitConfirm(true))}
+              />
 
             {/* Wrapper principal */}
             <div className="game2-main-wrapper">
@@ -1413,6 +1455,12 @@ const Game2: React.FC = () => {
                         onTouchCancel={handleTouchCancel}
                         onMouseDown={(e) => {
                           if (isDragFollowMode) startMouseFollow(e, num);
+                        }}
+                        onMouseUp={(e) => {
+                          if (isDragFollowMode) {
+                            // Ya se está siguiendo al cursor, evitar que mouseup haga drop
+                            e.preventDefault();
+                          }
                         }}
                         onMouseEnter={() => handleNumberHover(num)}
                         onMouseLeave={clearHoverSelection}
@@ -1465,50 +1513,54 @@ const Game2: React.FC = () => {
                     onSlotKeyDown={handleSlotKeyDown}
                     enableClickPlacement={enableClickPlacement}
                     onSlotHover={handleSlotHover}
-                    enableHoverPlacement={isHoverSelectMode}
+                    enableHoverPlacement={isHoverSelectMode || isDragFollowMode}
                   />
                 </div>
               </div>
 
-              {/* Botones de control */}
-              <div className="check-button-container">
-                {/* Botón de pistas (Tato) */}
-                <GameControlButton
-                  noBorder
-                  onClick={useHint}
-                  disabled={availableNumbers.every(n => n === undefined)}
-                >
-                  <img
-                    src={imgTato}
-                    alt="Pista"
-                    className="game-control-button-image"
-                  />
-                </GameControlButton>
+                {/* Botones de control */}
+                <div className="check-button-container" onMouseEnter={resetHoverState}>
+                  {/* Botón de pistas (Tato) */}
+                  <GameControlButton
+                    noBorder
+                    onMouseEnter={() => runHoverAction(useHint)}
+                    onFocus={resetHoverState}
+                    onClick={() => hoverOrClick(useHint)}
+                    disabled={availableNumbers.every(n => n === undefined)}
+                  >
+                    <img
+                      src={imgTato}
+                      alt="Pista"
+                      className="game-control-button-image"
+                    />
+                  </GameControlButton>
 
-                {/* Indicador de orden */}
-                <div className="order-indicator">
-                  <span className="order-icon">
-                    {config?.settings.order === 'ascending' ? '↑' : '↓'}
-                  </span>
-                  <span className="order-text">
-                    {config?.settings.order === 'ascending' ? 'Ascendente' : 'Descendente'}
-                  </span>
+                  {/* Indicador de orden */}
+                  <div className="order-indicator">
+                    <span className="order-icon">
+                      {config?.settings.order === 'ascending' ? '↑' : '↓'}
+                    </span>
+                    <span className="order-text">
+                      {config?.settings.order === 'ascending' ? 'Ascendente' : 'Descendente'}
+                    </span>
+                  </div>
+
+                  {/* Botón de instrucciones/tutorial */}
+                  <GameControlButton
+                    onMouseEnter={() => runHoverAction(openVideoModal)}
+                    onFocus={resetHoverState}
+                    onClick={() => hoverOrClick(openVideoModal)}
+                  >
+                    <img
+                      src={imgInstrucciones}
+                      alt="Video de ayuda"
+                      className="game-control-button-image"
+                    />
+                    <span className="game-control-button-text">
+                      INSTRUCCIONES
+                    </span>
+                  </GameControlButton>
                 </div>
-
-                {/* Botón de instrucciones/tutorial */}
-                <GameControlButton
-                  onClick={openVideoModal}
-                >
-                  <img
-                    src={imgInstrucciones}
-                    alt="Video de ayuda"
-                    className="game-control-button-image"
-                  />
-                  <span className="game-control-button-text">
-                    INSTRUCCIONES
-                  </span>
-                </GameControlButton>
-              </div>
             </div>
 
             {/* Video Modal */}
@@ -1533,7 +1585,10 @@ const Game2: React.FC = () => {
 
             {/* Feedback Screen */}
             {showFeedbackScreen && feedbackType && (
-              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1000 }}>
+              <div
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1000 }}
+                onMouseEnter={() => runHoverAction(closeFeedbackScreen)}
+              >
                 <FeedbackScreen
                   isCorrect={feedbackType === 'correct'}
                   currentRound={currentRound}
@@ -1546,10 +1601,11 @@ const Game2: React.FC = () => {
                   imgTatoTriste={imgTatoTriste}
                   imgSiguiente={imgSiguiente}
                   messages={Messages}
-                  onNext={closeFeedbackScreen}
-                  onHomeClick={handleEarlyExit}
-                  onRepeat={feedbackType === 'incorrect' ? closeFeedbackScreen : undefined}
+                  onNext={() => hoverOrClick(closeFeedbackScreen)}
+                  onHomeClick={() => hoverOrClick(handleEarlyExit)}
+                  onRepeat={feedbackType === 'incorrect' ? () => hoverOrClick(closeFeedbackScreen) : undefined}
                   hideNextOnError={true}
+                  enableHoverMode={isHoverSelectMode}
                 />
               </div>
             )}

@@ -6,6 +6,9 @@ interface GameControlButtonProps {
     className?: string;
     children: React.ReactNode;
     onClick?: () => void;
+    onMouseEnter?: () => void;
+    onFocus?: () => void;
+    onMouseLeave?: () => void;
     disabled?: boolean;
     noBorder?: boolean;
     text?: string;
@@ -34,6 +37,9 @@ export const GameControlButton: React.FC<GameControlButtonProps> = ({
     children, 
     className = '',
     onClick,
+    onMouseEnter,
+    onFocus,
+    onMouseLeave,
     disabled = false,
     noBorder = false,
     text,
@@ -43,6 +49,9 @@ export const GameControlButton: React.FC<GameControlButtonProps> = ({
             fill="clear"
             className={`game-control-button ${noBorder ? 'no-border' : ''} ${className}`}
             onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onFocus={onFocus}
+            onMouseLeave={onMouseLeave}
             disabled={disabled}
         >
             <div className="game-control-button-content">

@@ -7,9 +7,10 @@ import { Button3Dtext } from '../../global_components/PushableButtons';
 interface ExitScreenProps {
     confirmExit: () => void;
     cancelExit: () => void;
+    enableHoverMode?: boolean;
 }
 
-const ExitScreen: React.FC<ExitScreenProps> = ({ confirmExit, cancelExit }) => {
+const ExitScreen: React.FC<ExitScreenProps> = ({ confirmExit, cancelExit, enableHoverMode = false }) => {
     return (
         <div className="game-header-exit-overlay" aria-label="Confirmar salida">
             <div className="game-header-exit-card">
@@ -23,11 +24,21 @@ const ExitScreen: React.FC<ExitScreenProps> = ({ confirmExit, cancelExit }) => {
                 </div>
 
                 <div className="game-header-exit-actions">
-                    <Button3Dtext className="exit-btn" onClick={confirmExit} aria-label="Sí, salir">
+                    <Button3Dtext
+                        className="exit-btn"
+                        onClick={confirmExit}
+                        onMouseEnter={enableHoverMode ? confirmExit : undefined}
+                        aria-label="Sí, salir"
+                    >
                         <img src={iconCorrect} alt="Confirmar" />
                     </Button3Dtext>
 
-                    <Button3Dtext className="exit-btn" onClick={cancelExit} aria-label="No, continuar">
+                    <Button3Dtext
+                        className="exit-btn"
+                        onClick={cancelExit}
+                        onMouseEnter={enableHoverMode ? cancelExit : undefined}
+                        aria-label="No, continuar"
+                    >
                         <img src={iconIncorrect} alt="Cancelar" />
                     </Button3Dtext>
                 </div>

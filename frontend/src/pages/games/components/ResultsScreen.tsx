@@ -19,6 +19,7 @@ interface ResultsScreenProps {
   headerPictogramArrow: string;
   headerPictogram2: string;
   elapsedTime?: number; // tiempo en segundos
+  enableHoverMode?: boolean;
 }
 
 const ResultsScreen: React.FC<ResultsScreenProps> = ({
@@ -32,7 +33,8 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   headerPictogram1,
   headerPictogramArrow,
   headerPictogram2,
-  elapsedTime = 0
+  elapsedTime = 0,
+  enableHoverMode = false
 }) => {
   const netCorrect = Math.max(totalNumbersCorrect - totalHints, 0);
 
@@ -63,6 +65,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
         currentRound={totalRounds}
         totalRounds={totalRounds}
         onBackClick={onHomeClick}
+        onBackHover={enableHoverMode ? onHomeClick : undefined}
       />
 
       <div className="results-screen-new" role="region" aria-label="Resumen de la partida">
@@ -118,6 +121,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
           <button
             className="pushable-accept-button"
             onClick={onHomeClick}
+            onMouseEnter={enableHoverMode ? onHomeClick : undefined}
             aria-label="Aceptar y volver"
           >
             <span className="shadow-accept"></span>
