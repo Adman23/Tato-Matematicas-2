@@ -23,13 +23,20 @@
 /* ========================================
     Back Button
    ======================================== */
-.EditGame1-back-button {
+.EditGame1-back-button-content {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     width: 100%;
     padding: 20px;
+}
+
+.EditGame1-back-button {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
 }
 
 
@@ -190,15 +197,17 @@
 
 .EditGame1-range-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
 }
 
 .EditGame1-voice-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 2fr);
+    gap: 30px;
 }
 
 .EditGame1-modal-option:hover {
     transform: scale(1.05);
-    border-color: #3b82f6;
+    border-color: var(--ion-color-primary);
     background: #e0f2fe;
 }
 
@@ -206,7 +215,7 @@
     background: var(--bubble-bg);
     border-color: var(--ion-color-primary);
     border-width: 6px;
-    transform: scale(1.05);
+    transform: scale(1.1);
     box-shadow: 0 6px 16px rgba(74, 222, 128, 0.5);
 }
 
@@ -256,6 +265,13 @@
     justify-content: center;
     min-height: 100px;
     position: relative;
+}
+
+.EditGame1-modal-option:focus {
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+    border: 5px solid black;
+    outline: none;
+    transform: scale(1.05);
 }
 
 
@@ -320,10 +336,10 @@
 
     .EditGame1-config-button-3d,
     .EditGame1-config-button-value {
-        min-width: clamp(100px, 35vw, 130px);
-        min-height: clamp(100px, 35vw, 130px);
+        min-width: clamp(100px, 35vw, 140px);
+        min-height: clamp(50px, 24vw, 200px);
         width: clamp(100px, 35vw, 150px);
-        height: clamp(100px, 35vw, 130px);
+        height: clamp(50px, 15vw, 200px);
     }
 
     .EditGame1-config-button-image {
@@ -428,6 +444,11 @@
     .EditGame1-quantity-grid {
         grid-template-columns: repeat(4, 1fr);
     }
+
+    .EditGame1-back-button {
+        width: 60px;
+        height: 60px;
+    }
 }
 
 
@@ -462,6 +483,11 @@
     .EditGame1-quantity-grid {
         grid-template-columns: repeat(5, 1fr);
     }
+
+    .EditGame1-back-button {
+        width: 80px;
+        height: 80px;
+    }
 }
 
 
@@ -485,7 +511,7 @@
         min-width: clamp(90px, 16vw, 130px);
         min-height: clamp(90px, 18vh, 130px);
         width: clamp(90px, 20vw, 200px);
-        height: clamp(90px, 22vh, 200px);
+        height: clamp(90px, 20vh, 200px);
     }
 
     .EditGame1-config-button-image {
@@ -496,6 +522,11 @@
     .EditGame1-back-button,
     .EditGame1-save-button {
         padding: 10px;
+    }
+
+    .EditGame1-back-button {
+        width: 52px;
+        height: 52px;
     }
 
     .EditGame1-modal-content {
@@ -543,6 +574,11 @@
         padding: 8px;
     }
 
+    .EditGame1-back-button {
+        width: 48px;
+        height: 48px;
+    }
+
     .btn-text {
         font-size: 0.85rem;
     }
@@ -588,6 +624,11 @@
     .EditGame1-save-button {
         padding: 12px;
     }
+
+    .EditGame1-back-button {
+        width: 56px;
+        height: 56px;
+    }
 }
 
 
@@ -608,14 +649,24 @@
     .EditGame1-config-button-3d,
     .EditGame1-config-button-value {
         min-width: clamp(140px, 18vw, 180px);
-        min-height: clamp(150px, 20vw, 200px);
+        min-height: clamp(150px, 20vw, 190px);
         width: clamp(140px, 20vw, 200px);
-        height: clamp(150px, 22vw, 200px);
+        height: clamp(150px, 22vw, 190px);
     }
 
     .EditGame1-config-button-image {
         width: clamp(70px, 10vw, 90px);
         height: clamp(70px, 10vw, 90px);
+    }
+
+    .EditGame1-back-button {
+        width: 64px;
+        height: 64px;
+    }
+
+    .EditGame1-back-button {
+        width: 80px;
+        height: 80px;
     }
 }
 
@@ -653,5 +704,10 @@
 
     .EditGame1-modal-range-text {
         font-size: 1.8rem;
+    }
+
+    .EditGame1-back-button {
+        width: 72px;
+        height: 72px;
     }
 }

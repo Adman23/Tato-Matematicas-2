@@ -21,7 +21,7 @@ import { IonContent, IonIcon, IonPage, useIonRouter } from "@ionic/react";
 import { useAuth } from '../../../contexts/AuthContext';
 import { Button3Dtext } from "../../global_components/PushableButtons";
 import { arrowBack } from "ionicons/icons";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import './EditGame1.css';
 import { gamesAPI, type GameConfig } from "../../../lib/api";
@@ -80,6 +80,65 @@ export default function EditGame1() {
     const [showQuantityModal, setShowQuantityModal] = useState(false);
     const [showRangeModal, setShowRangeModal] = useState(false);
     const [showVoiceModal, setShowVoiceModal] = useState(false);
+
+    // Refs for focus trapping
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    /**
+     * Focus trapping effect for modals.
+     * Keeps Tab navigation inside the modal when it's open.
+     */
+    useEffect(() => {
+        const isAnyModalOpen = showQuantityModal || showRangeModal || showVoiceModal;
+
+        if (!isAnyModalOpen || !modalRef.current) return;
+
+        const modal = modalRef.current;
+        const focusableElements = modal.querySelectorAll<HTMLElement>(
+            'button, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        // Focus first element when modal opens
+        setTimeout(() => firstElement?.focus(), 0);
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                closeAllModals();
+                return;
+            }
+
+            if (e.key !== 'Tab') return;
+
+            if (e.shiftKey) {
+                // Shift + Tab
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement?.focus();
+                }
+            } else {
+                // Tab
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement?.focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [showQuantityModal, showRangeModal, showVoiceModal]);
+
+    /**
+     * Handle keyboard selection for modal options
+     */
+    const handleKeySelect = useCallback((e: React.KeyboardEvent, action: () => void) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            action();
+        }
+    }, []);
 
     /**
      * 
@@ -217,10 +276,11 @@ export default function EditGame1() {
                 photoUrl={user?.photo_url} hidden={true} />
             <IonContent className="EditGame1-content">
                 <div className="EditGame1-wrapper">
-                    <div className="EditGame1-back-button">
+                    <div className="EditGame1-back-button-content">
                         <Button3Dtext
                             onClick={() => router.push('/student/dashboard', "back", "pop")}
-                            aria-label="Volver atrás">
+                            aria-label="Volver atrás"
+                            className="EditGame1-back-button">
                             <IonIcon icon={arrowBack} />
                         </Button3Dtext>
                     </div>
@@ -324,7 +384,14 @@ export default function EditGame1() {
                 {/* MODAL: Quantity */}
                 {showQuantityModal && (
                     <div className="EditGame1-modal-overlay" onClick={closeAllModals}>
-                        <div className="EditGame1-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div
+                            className="EditGame1-modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            ref={modalRef}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Seleccionar cantidad"
+                        >
                             <button className="EditGame1-modal-close-btn" onClick={closeAllModals}>✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
@@ -335,12 +402,22 @@ export default function EditGame1() {
                                         <div
                                             key={num}
                                             className={`EditGame1-modal-option ${quantity === num ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                            tabIndex={isDisabled ? -1 : 0}
+                                            role="button"
+                                            aria-pressed={quantity === num}
+                                            aria-disabled={isDisabled}
                                             onClick={() => {
                                                 if (!isDisabled) {
                                                     setQuantity(num);
                                                     closeAllModals();
                                                 }
                                             }}
+                                            onKeyDown={(e) => handleKeySelect(e, () => {
+                                                if (!isDisabled) {
+                                                    setQuantity(num);
+                                                    closeAllModals();
+                                                }
+                                            })}
                                         >
                                             {pictogram ? (
                                                 <img src={pictogram} alt={`${num}`} className="EditGame1-modal-number-img" />
@@ -358,13 +435,23 @@ export default function EditGame1() {
                 {/* MODAL: Range */}
                 {showRangeModal && (
                     <div className="EditGame1-modal-overlay" onClick={closeAllModals}>
-                        <div className="EditGame1-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div
+                            className="EditGame1-modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            ref={modalRef}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Seleccionar rango"
+                        >
                             <button className="EditGame1-modal-close-btn" onClick={closeAllModals}>✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-range-grid">
                                 {RANGE_OPTIONS.map((option) => (
                                     <div
                                         key={option.value}
                                         className={`EditGame1-modal-option large ${numberRange === option.value ? 'selected' : ''}`}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-pressed={numberRange === option.value}
                                         onClick={() => {
                                             setNumberRange(option.value);
                                             // If the range is 0-10 and the quantity is greater than 10, adjust to 10
@@ -373,6 +460,13 @@ export default function EditGame1() {
                                             }
                                             closeAllModals();
                                         }}
+                                        onKeyDown={(e) => handleKeySelect(e, () => {
+                                            setNumberRange(option.value);
+                                            if (option.value === '0-10' && quantity > 10) {
+                                                setQuantity(10);
+                                            }
+                                            closeAllModals();
+                                        })}
                                     >
                                         <span className="EditGame1-modal-range-text">{option.label}</span>
                                     </div>
@@ -385,15 +479,29 @@ export default function EditGame1() {
                 {/* MODAL: Voice */}
                 {showVoiceModal && (
                     <div className="EditGame1-modal-overlay" onClick={closeAllModals}>
-                        <div className="EditGame1-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div
+                            className="EditGame1-modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            ref={modalRef}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Seleccionar voz"
+                        >
                             <button className="EditGame1-modal-close-btn" onClick={closeAllModals}>✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-voice-grid">
                                 <div
                                     className={`EditGame1-modal-option voice ${voice === 'woman' ? 'selected' : ''}`}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-pressed={voice === 'woman'}
                                     onClick={() => {
                                         setVoice('woman');
                                         closeAllModals();
                                     }}
+                                    onKeyDown={(e) => handleKeySelect(e, () => {
+                                        setVoice('woman');
+                                        closeAllModals();
+                                    })}
                                 >
                                     <div className="EditGame1-voice-content">
                                         <img
@@ -406,10 +514,17 @@ export default function EditGame1() {
                                 </div>
                                 <div
                                     className={`EditGame1-modal-option voice ${voice === 'man' ? 'selected' : ''}`}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-pressed={voice === 'man'}
                                     onClick={() => {
                                         setVoice('man');
                                         closeAllModals();
                                     }}
+                                    onKeyDown={(e) => handleKeySelect(e, () => {
+                                        setVoice('man');
+                                        closeAllModals();
+                                    })}
                                 >
                                     <div className="EditGame1-voice-content">
                                         <img
