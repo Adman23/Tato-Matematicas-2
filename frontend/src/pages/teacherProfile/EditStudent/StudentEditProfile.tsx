@@ -510,8 +510,19 @@ export default function StudentEditProfile() {
       const payload: any = {};
       if (isUserNameChanged) payload.username = userName;
       if (photoUrl) payload.photo_url = photoUrl;
-      if (isPasswordChanged) payload.password = Array.isArray(newPassword) ? newPassword.join('-') : newPassword;
-      payload.password_type = passwordType;
+      if (isPasswordChanged) {
+        payload.password = Array.isArray(newPassword) ? newPassword.join('-') : newPassword;
+        payload.password_type = passwordType;
+        payload.password_length = Array.isArray(newPassword)
+          ? newPassword.length
+          : (typeof newPassword === 'string' ? newPassword.length : 0);
+      }
+
+      if (isPasswordChanged) {
+        payload.password_length = Array.isArray(newPassword)
+          ? newPassword.length
+          : (typeof newPassword === 'string' ? newPassword.length : 0);
+      }
       
       if (Object.keys(payload).length === 0) {
         setToastMessage('No se han detectado cambios en los datos del perfil del estudiante.');
