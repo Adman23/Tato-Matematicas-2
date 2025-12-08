@@ -389,7 +389,7 @@ export default function EditGame1() {
                             <button className="EditGame1-modal-close-btn" onClick={closeAllModals}>✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-voice-grid">
                                 <div
-                                    className={`EditGame1-modal-option large ${voice === 'woman' ? 'selected' : ''}`}
+                                    className={`EditGame1-modal-option voice ${voice === 'woman' ? 'selected' : ''}`}
                                     onClick={() => {
                                         setVoice('woman');
                                         closeAllModals();
@@ -405,7 +405,7 @@ export default function EditGame1() {
                                     </div>
                                 </div>
                                 <div
-                                    className={`EditGame1-modal-option large ${voice === 'man' ? 'selected' : ''}`}
+                                    className={`EditGame1-modal-option voice ${voice === 'man' ? 'selected' : ''}`}
                                     onClick={() => {
                                         setVoice('man');
                                         closeAllModals();

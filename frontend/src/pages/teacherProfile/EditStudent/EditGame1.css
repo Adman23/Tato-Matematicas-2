@@ -8,6 +8,7 @@
    ======================================== */
 .EditGame1-content {
     --background: var(--background-color);
+    position: relative;
 }
 
 .EditGame1-wrapper {
@@ -105,7 +106,7 @@
     Modals Layout
    ======================================== */
 .EditGame1-modal-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -121,14 +122,18 @@
 .EditGame1-modal-content {
     background: white;
     border-radius: 24px;
-    padding: 70px;
-    max-width: 700px;
+    padding: 40px;
     width: 100%;
-    max-height: 80vh;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     overflow-y: auto;
     position: relative;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     border: 5px solid var(--ion-color-primary);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
 
@@ -171,6 +176,12 @@
 .EditGame1-modal-options-grid {
     display: grid;
     gap: 16px;
+    flex: 1;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .EditGame1-quantity-grid {
@@ -183,20 +194,6 @@
 
 .EditGame1-voice-grid {
     grid-template-columns: repeat(2, 1fr);
-}
-
-.EditGame1-modal-option {
-    background: #f1f5f9;
-    border: 4px solid #cbd5e1;
-    border-radius: 16px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100px;
-    position: relative;
 }
 
 .EditGame1-modal-option:hover {
@@ -225,10 +222,6 @@
     background: #f1f5f9;
 }
 
-.EditGame1-modal-option.large {
-    min-height: 150px;
-}
-
 
 /* ========================================
     Modals Options Quantity
@@ -251,6 +244,21 @@
 }
 
 
+.EditGame1-modal-option {
+    background: #f1f5f9;
+    border: 4px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    position: relative;
+}
+
+
 /* ========================================
     Modals Options Range
    ======================================== */
@@ -264,6 +272,10 @@
 .EditGame1-modal-option.selected .EditGame1-modal-range-text {
     color: black;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.EditGame1-modal-option.large {
+    min-height: 150px;
 }
 
 
@@ -280,6 +292,11 @@
 .EditGame1-modal-option.selected {
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.EditGame1-modal-option.voice {
+    min-height: 250px;
+    min-width: 250px;
 }
 
 
@@ -305,7 +322,7 @@
     .EditGame1-config-button-value {
         min-width: clamp(100px, 35vw, 130px);
         min-height: clamp(100px, 35vw, 130px);
-        width: clamp(100px, 35vw, 130px);
+        width: clamp(100px, 35vw, 150px);
         height: clamp(100px, 35vw, 130px);
     }
 
@@ -323,9 +340,8 @@
     }
 
     .EditGame1-modal-content {
-        padding: 30px 20px;
-        max-width: 95%;
-        max-height: 85vh;
+        padding: 50px 20px 20px 20px;
+        border-radius: 16px;
     }
 
     .EditGame1-quantity-grid {
@@ -344,6 +360,15 @@
     .EditGame1-modal-option {
         min-height: 70px;
         padding: 12px;
+    }
+
+    .EditGame1-modal-option.large {
+        min-height: 100px;
+    }
+
+    .EditGame1-modal-option.voice {
+        min-height: 200px;
+        min-width: 200px;
     }
 
     .EditGame1-modal-number-img {
@@ -396,8 +421,8 @@
     }
 
     .EditGame1-modal-content {
-        padding: 50px 40px;
-        max-width: 85%;
+        padding: 50px 30px 30px 30px;
+        border-radius: 20px;
     }
 
     .EditGame1-quantity-grid {
@@ -425,13 +450,13 @@
     .EditGame1-config-button-value {
         min-width: clamp(110px, 18vw, 140px);
         min-height: clamp(120px, 18vw, 150px);
-        width: clamp(110px, 18vw, 140px);
-        height: clamp(120px, 18vw, 150px);
+        width: clamp(110px, 20vw, 200px);
+        height: clamp(120px, 22vw, 200px);
     }
 
     .EditGame1-modal-content {
-        padding: 50px 40px;
-        max-width: 80%;
+        padding: 50px 30px 30px 30px;
+        border-radius: 20px;
     }
 
     .EditGame1-quantity-grid {
@@ -459,8 +484,8 @@
     .EditGame1-config-button-value {
         min-width: clamp(90px, 16vw, 130px);
         min-height: clamp(90px, 18vh, 130px);
-        width: clamp(90px, 16vw, 130px);
-        height: clamp(90px, 18vh, 130px);
+        width: clamp(90px, 20vw, 200px);
+        height: clamp(90px, 22vh, 200px);
     }
 
     .EditGame1-config-button-image {
@@ -474,9 +499,8 @@
     }
 
     .EditGame1-modal-content {
-        padding: 40px 35px;
-        max-width: 70%;
-        max-height: 90vh;
+        padding: 50px 25px 25px 25px;
+        border-radius: 16px;
     }
 }
 
@@ -500,8 +524,8 @@
     .EditGame1-config-button-value {
         min-width: clamp(80px, 12vw, 110px);
         min-height: clamp(70px, 16vh, 100px);
-        width: clamp(80px, 12vw, 110px);
-        height: clamp(70px, 16vh, 100px);
+        width: clamp(80px, 16vw, 200px);
+        height: clamp(70px, 20vh, 200px);
     }
 
     .EditGame1-config-button-image {
@@ -551,8 +575,8 @@
     .EditGame1-config-button-value {
         min-width: clamp(110px, 14vw, 140px);
         min-height: clamp(110px, 15vh, 140px);
-        width: clamp(110px, 14vw, 140px);
-        height: clamp(110px, 15vh, 140px);
+        width: clamp(110px, 16vw, 170px);
+        height: clamp(110px, 20vh, 170px);
     }
 
     .EditGame1-config-button-image {
@@ -585,8 +609,8 @@
     .EditGame1-config-button-value {
         min-width: clamp(140px, 18vw, 180px);
         min-height: clamp(150px, 20vw, 200px);
-        width: clamp(140px, 18vw, 180px);
-        height: clamp(150px, 20vw, 200px);
+        width: clamp(140px, 20vw, 200px);
+        height: clamp(150px, 22vw, 200px);
     }
 
     .EditGame1-config-button-image {
