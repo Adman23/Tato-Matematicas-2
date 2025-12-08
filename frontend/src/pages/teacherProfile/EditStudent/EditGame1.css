@@ -1,8 +1,15 @@
+/* =============================================================================
+   CSS Styles for EditGame1 page
+   ========================================================================== */
+
+
+/* ========================================
+    Layout general
+   ======================================== */
 .EditGame1-content {
     --background: var(--background-color);
 }
 
-/* Wrapper que ocupa todo el espacio del IonContent y distribuye los hijos */
 .EditGame1-wrapper {
     display: flex;
     flex-direction: column;
@@ -12,6 +19,9 @@
     background-color: var(--background-color);
 }
 
+/* ========================================
+    Back Button
+   ======================================== */
 .EditGame1-back-button {
     display: flex;
     flex-direction: row;
@@ -21,6 +31,10 @@
     padding: 20px;
 }
 
+
+/* ========================================
+    Configuration Buttons
+   ======================================== */
 .EditGame1-config-buttons {
     display: flex;
     justify-content: center;
@@ -74,6 +88,9 @@
 }
 
 
+/* ========================================
+    Save Button
+   ======================================== */
 .EditGame1-save-button {
     display: flex;
     flex-direction: row;
@@ -85,9 +102,9 @@
 
 
 /* ========================================
-    Modales
+    Modals Layout
    ======================================== */
-.modal-overlay {
+.EditGame1-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -101,7 +118,7 @@
     padding: 20px;
 }
 
-.modal-content {
+.EditGame1-modal-content {
     background: white;
     border-radius: 24px;
     padding: 70px;
@@ -114,7 +131,11 @@
     border: 5px solid var(--ion-color-primary);
 }
 
-.modal-close-btn {
+
+/* ========================================
+    Modals Button Close
+   ======================================== */
+.EditGame1-modal-close-btn {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -134,35 +155,37 @@
     transition: all 0.2s ease;
 }
 
-.modal-close-btn:hover {
+.EditGame1-modal-close-btn:hover {
     background: #dc2626;
     transform: scale(1.1);
 }
 
-.modal-close-btn:active {
+.EditGame1-modal-close-btn:active {
     transform: scale(0.95);
 }
 
-/* Grid de opciones en modales */
-.modal-options-grid {
+
+/* ========================================
+    Modals Options Grid
+   ======================================== */
+.EditGame1-modal-options-grid {
     display: grid;
     gap: 16px;
 }
 
-.quantity-grid {
+.EditGame1-quantity-grid {
     grid-template-columns: repeat(4, 1fr);
 }
 
-.range-grid {
+.EditGame1-range-grid {
     grid-template-columns: repeat(2, 1fr);
 }
 
-.order-grid {
+.EditGame1-voice-grid {
     grid-template-columns: repeat(2, 1fr);
 }
 
-/* Opciones del modal */
-.modal-option {
+.EditGame1-modal-option {
     background: #f1f5f9;
     border: 4px solid #cbd5e1;
     border-radius: 16px;
@@ -176,13 +199,13 @@
     position: relative;
 }
 
-.modal-option:hover {
+.EditGame1-modal-option:hover {
     transform: scale(1.05);
     border-color: #3b82f6;
     background: #e0f2fe;
 }
 
-.modal-option.selected {
+.EditGame1-modal-option.selected {
     background: var(--bubble-bg);
     border-color: var(--ion-color-primary);
     border-width: 6px;
@@ -190,71 +213,75 @@
     box-shadow: 0 6px 16px rgba(74, 222, 128, 0.5);
 }
 
-.modal-option.disabled {
+.EditGame1-modal-option.disabled {
     opacity: 0.4;
     cursor: not-allowed;
     pointer-events: auto;
 }
 
-.modal-option.disabled:hover {
+.EditGame1-modal-option.disabled:hover {
     transform: none;
     border-color: #cbd5e1;
     background: #f1f5f9;
 }
 
-.modal-option.large {
+.EditGame1-modal-option.large {
     min-height: 150px;
 }
 
-/* Números en modal de cantidad */
-.modal-number-img {
+
+/* ========================================
+    Modals Options Quantity
+   ======================================== */
+.EditGame1-modal-number-img {
     width: 70px;
     height: 70px;
     object-fit: contain;
 }
 
-.modal-number-text {
+.EditGame1-modal-number-text {
     font-size: 3rem;
     font-weight: bold;
     color: var(--tatomaths-text);
 }
 
-.modal-option.selected .modal-number-text {
+.EditGame1-modal-option.selected .EditGame1-modal-number-text {
     color: black;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Rangos en modal de rango */
-.modal-range-text {
+
+/* ========================================
+    Modals Options Range
+   ======================================== */
+.EditGame1-modal-range-text {
     font-size: 1.6rem;
     font-weight: bold;
     color: var(--tatomaths-text);
     text-align: center;
 }
 
-.modal-option.selected .modal-range-text {
+.EditGame1-modal-option.selected .EditGame1-modal-range-text {
     color: black;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Orden en modal de orden */
-.order-content {
+
+/* ========================================
+    Modals Options Voice
+   ======================================== */
+.EditGame1-voice-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
 }
 
-.modal-option.selected .order-arrow-large {
+.EditGame1-modal-option.selected {
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.order-label-large {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #1e293b;
-}
 
 /* ========================================
     RESPONSIVE - Móviles (vertical)
@@ -295,45 +322,44 @@
         padding: 10px;
     }
 
-    /* Modales responsive para móvil */
-    .modal-content {
+    .EditGame1-modal-content {
         padding: 30px 20px;
         max-width: 95%;
         max-height: 85vh;
     }
 
-    .quantity-grid {
+    .EditGame1-quantity-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
     }
 
-    .range-grid {
+    .EditGame1-range-grid {
         grid-template-columns: 1fr;
     }
 
-    .order-grid {
+    .EditGame1-voice-grid {
         grid-template-columns: 1fr;
     }
 
-    .modal-option {
+    .EditGame1-modal-option {
         min-height: 70px;
         padding: 12px;
     }
 
-    .modal-number-img {
+    .EditGame1-modal-number-img {
         width: 50px;
         height: 50px;
     }
 
-    .modal-number-text {
+    .EditGame1-modal-number-text {
         font-size: 2rem;
     }
 
-    .modal-range-text {
+    .EditGame1-modal-range-text {
         font-size: 1.2rem;
     }
 
-    .modal-close-btn {
+    .EditGame1-modal-close-btn {
         width: 40px;
         height: 40px;
         font-size: 1.5rem;
@@ -341,6 +367,7 @@
         right: 10px;
     }
 }
+
 
 /* ========================================
     RESPONSIVE - Tablets pequeñas (portrait)
@@ -368,15 +395,16 @@
         height: clamp(120px, 22vw, 150px);
     }
 
-    .modal-content {
+    .EditGame1-modal-content {
         padding: 50px 40px;
         max-width: 85%;
     }
 
-    .quantity-grid {
+    .EditGame1-quantity-grid {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
 
 /* ========================================
     RESPONSIVE - Tablets grandes (portrait) - 3 en fila
@@ -401,15 +429,16 @@
         height: clamp(120px, 18vw, 150px);
     }
 
-    .modal-content {
+    .EditGame1-modal-content {
         padding: 50px 40px;
         max-width: 80%;
     }
 
-    .quantity-grid {
+    .EditGame1-quantity-grid {
         grid-template-columns: repeat(5, 1fr);
     }
 }
+
 
 /* ========================================
     RESPONSIVE - Tablets (landscape)
@@ -444,12 +473,13 @@
         padding: 10px;
     }
 
-    .modal-content {
+    .EditGame1-modal-content {
         padding: 40px 35px;
         max-width: 70%;
         max-height: 90vh;
     }
 }
+
 
 /* ========================================
     RESPONSIVE - Pantallas anchas pero poco altas
@@ -493,14 +523,15 @@
         font-size: 0.85rem;
     }
 
-    .modal-range-text {
+    .EditGame1-modal-range-text {
         font-size: 1.2rem;
     }
 
-    .modal-number-text {
+    .EditGame1-modal-number-text {
         font-size: 2rem;
     }
 }
+
 
 /* ========================================
     RESPONSIVE - Portátiles/Desktop (altura media 601-850px)
@@ -535,6 +566,7 @@
     }
 }
 
+
 /* ========================================
     RESPONSIVE - Portátiles/Desktop (altura suficiente >850px)
    ======================================== */
@@ -562,6 +594,7 @@
         height: clamp(70px, 10vw, 90px);
     }
 }
+
 
 /* ========================================
     RESPONSIVE - Pantallas muy anchas (grandes monitores)
@@ -594,7 +627,7 @@
         font-size: 1.3rem;
     }
 
-    .modal-range-text {
+    .EditGame1-modal-range-text {
         font-size: 1.8rem;
     }
 }
