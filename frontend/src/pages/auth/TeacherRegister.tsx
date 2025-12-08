@@ -161,9 +161,12 @@ export default function TeacherRegister() {
         photoUrl = await uploadImage(file, uniqueFilename);
       }
 
+      const passwordLength = password.length;
+
       await authAPI.register({
         username: userName,
         password: password,
+        password_length: passwordLength,
         role: 'teacher',
         photo_url: photoUrl,
       });
