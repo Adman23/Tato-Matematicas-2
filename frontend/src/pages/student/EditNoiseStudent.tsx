@@ -260,7 +260,7 @@ const EditNoiseStudent: React.FC = () => {
             
             {/* Círculo del icono principal */}
             <div className="icon-circle" style={{ backgroundColor: theme.color }}>
-              <IonIcon icon={theme.icon} />
+              <IonIcon icon={theme.icon} aria-label={`Icono de tema ${theme.label}`} />
             </div>
 
             {/* Sub-iconos de feedback (Check, X, Trofeo) - ahora son botones 3D */}

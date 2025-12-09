@@ -44,7 +44,7 @@
   overflow: hidden;
 }
 
-@media (max-height: 700px), (max-width: 900px) {
+@media (max-height: 700px), (max-width: 912px) {
   .themes-row {
     grid-template-columns: repeat(2, 1fr);
     gap: min(1vh, 10px);
@@ -139,8 +139,10 @@
 }
 
 .feedback-button {
-  width: min(5vh, 48px);
-  height: min(5vh, 48px);
+  width: clamp(48px, 5vh, 60px);
+  height: clamp(48px, 5vh, 60px);
+  min-width: 48px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -249,8 +251,10 @@
 
 /* Botones de volumen */
 .volume-button {
-  width: clamp(50px, 8vh, 70px);
-  height: clamp(50px, 8vh, 70px);
+  width: clamp(48px, 8vh, 70px);
+  height: clamp(48px, 8vh, 70px);
+  min-width: 48px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -316,7 +320,7 @@
    Temas en columna vertical sin iconos principales
    ========================================================================== */
 
-@media (max-width: 390px) {
+@media (max-width: 414px) {
   .container {
     max-height: 100vh;
     overflow: hidden;
@@ -401,12 +405,12 @@
   }
 }
 
-/* =============================================================================
+/* ==========================================================================
    AJUSTE ESPECÍFICO PARA ALTURA 667px (iPhone 6/7/8, SE)
    Controles en fila horizontal en la parte inferior
    ========================================================================== */
 
-@media (max-height: 667px) and (min-height: 650px) {
+@media (max-height: 740px) {
   .container {
     height: auto;
     max-height: none;
@@ -499,22 +503,17 @@
     height: 48px !important;
     min-width: 48px !important;
     min-height: 48px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0 !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
   }
 
   .Accept-button-container-editColorsStudent .Accept-Button-image {
-    width: 46px !important;
-    height: 46px !important;
-    max-width: 46px !important;
-    max-height: 46px !important;
-    min-width: 46px !important;
-    min-height: 46px !important;
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
     object-fit: contain !important;
     display: block !important;
-    margin: auto !important;
   }
 
   /* Iconos de temas compactos */
@@ -553,11 +552,14 @@
   z-index: 11;
 }
 
+.Accept-Button-Button-editColorsStudent {
+  min-width: 48px;
+  min-height: 48px;
+}
+
 .Accept-Button-image {
   height: min(10vh, 90px);
   width: min(10vh, 90px);
-  min-height: 70px;
-  min-width: 70px;
   object-fit: contain;
 }
 
@@ -726,6 +728,37 @@
   
   .controls-area {
     max-height: 100px;
+  }
+}
+
+/* Landscape - Ocultar iconos de temas a partir de 430px de altura */
+@media (max-height: 430px) and (orientation: landscape) {
+  .icon-circle {
+    display: none !important;
+  }
+  
+  .theme-label {
+    margin-bottom: min(1.5vh, 10px) !important;
+  }
+  
+  .feedback-icons {
+    margin-top: min(1vh, 8px);
+  }
+}
+
+/* Landscape - Si la anchura es menor o igual a 740px, mostrar solo iconos sin botones de feedback */
+@media (max-width: 740px) and (orientation: landscape) {
+  .feedback-icons {
+    display: none !important;
+  }
+  
+  .icon-circle {
+    display: flex !important;
+    margin-bottom: min(1.5vh, 10px) !important;
+  }
+  
+  .theme-label {
+    margin-bottom: 0 !important;
   }
 }
 
