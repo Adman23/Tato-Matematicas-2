@@ -63,6 +63,7 @@ import EditColor from './pages/teacherProfile/EditStudent/EditColors';
 import Prueba from './pages/teacherProfile/EditStudent/prueba';
 import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
 import EditColorsStudent from './pages/student/EditColorsStudent';
+import EditText from './pages/teacherProfile/EditStudent/EditText';
 
 
 /**
@@ -145,6 +146,8 @@ export default function App() {
                 exact component={EditMenu} />
               <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]} 
                 exact component={EditColor} />
+              <PrivateRoute path="/student-edit-text/:id/:name" allowedRoles={["teacher"]} 
+                exact component={EditText} />
               <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
               <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]} 
                 exact component={StudentEditProfile} />

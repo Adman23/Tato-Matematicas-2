@@ -1,0 +1,43 @@
+.MainContainer-EditText{
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+}
+
+.fontWeightContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px;
+}
+
+.previewBox {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid #dedede;
+  min-width: 120px;
+  width: 500px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.weightSelector {
+  min-width: 130px;
+  width: 300px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+}
+
+/* Hover y focus accesibles */
+.weightSelector:hover {
+  border-color: #808080;
+}
+
+.weightSelector:focus {
+  border-color: var(--ion-color-primary);
+
+}
+
