@@ -157,6 +157,12 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
   if (usePictogram) cardClass += ' number-card-pictogram';
   if (isLocked) cardClass += ' number-card-locked';
 
+  // Determinar el label para el slot
+  const isEmpty = number === undefined;
+  const slotLabel = isEmpty
+    ? `Posición ${index + 1}, vacía`
+    : `Posición ${index + 1}, número ${number}${isLocked ? ', bloqueado' : ''}`;
+
   return (
     <div
       className={slotClass}
@@ -186,13 +192,16 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
         }
       }}
       tabIndex={enableClickPlacement && isDropTarget ? 0 : -1}
+      role={enableClickPlacement && isDropTarget ? "button" : undefined}
+      aria-label={enableClickPlacement && isDropTarget ? `Colocar número en ${slotLabel}` : slotLabel}
+      aria-live={isDropTarget ? "polite" : undefined}
     >
       {number !== undefined ? (
-        <div className={cardClass}>
+        <div className={cardClass} aria-hidden="true">
           {pictogramImg ? (
             <img
               src={pictogramImg}
-              alt={`Pictograma número ${number}`}
+              alt=""
               className="pictogram-image"
               loading="eager"
               decoding="sync"
@@ -203,16 +212,16 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
           )}
 
           {isCorrect && (
-            <IonIcon icon={checkmarkCircle} className="feedback-icon feedback-correct" />
+            <IonIcon icon={checkmarkCircle} className="feedback-icon feedback-correct" aria-label="Correcto" />
           )}
           {isIncorrect && (
-            <IonIcon icon={closeCircle} className="feedback-icon feedback-incorrect" />
+            <IonIcon icon={closeCircle} className="feedback-icon feedback-incorrect" aria-label="Incorrecto" />
           )}
         </div>
       ) : (
-        <div className="empty-slot">
+        <div className="empty-slot" aria-hidden="true">
           {feedbackType === 'incorrect' && isDropTarget && (
-            <IonIcon icon={closeCircle} className="feedback-icon feedback-incorrect-slot" />
+            <IonIcon icon={closeCircle} className="feedback-icon feedback-incorrect-slot" aria-label="Incorrecto" />
           )}
         </div>
       )}

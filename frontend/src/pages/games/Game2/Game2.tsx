@@ -1352,7 +1352,7 @@ const Game2: React.FC = () => {
           <div style={{ marginTop: '50%' }}>
             <IonSpinner name="crescent" />
             <IonText>
-              <p>Loading game...</p>
+              <p>Cargando juego2...</p>
             </IonText>
           </div>
         </IonContent>
@@ -1428,7 +1428,12 @@ const Game2: React.FC = () => {
               <div className="game2-container">
 
                 {/* Números disponibles (arriba) - Grid fijo con números o huecos vacíos */}
-                <div className="available-numbers-top" id="available-zone">
+                <div
+                  className="available-numbers-top"
+                  id="available-zone"
+                  role="region"
+                  aria-label="Números disponibles para ordenar"
+                >
                   {availableNumbers.map((num, index) => {
                     if (num === undefined) {
                       // Hueco vacío - círculo gris con borde punteado negro
@@ -1436,6 +1441,7 @@ const Game2: React.FC = () => {
                         <div
                           key={`empty-${index}`}
                           className="number-card-v2 number-card-empty"
+                          aria-hidden="true"
                         />
                       );
                     }
@@ -1460,10 +1466,10 @@ const Game2: React.FC = () => {
                         draggable={allowNativeDrag && !showFeedback}
                         onDragStart={allowNativeDrag ? (e) => handleDragStart(e, num) : undefined}
                         onDragEnd={allowNativeDrag ? handleDragEnd : undefined}
-                        onTouchStart={(e) => handleTouchStart(e, num)}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                        onTouchCancel={handleTouchCancel}
+                        onTouchStart={enableClickPlacement ? undefined : (e) => handleTouchStart(e, num)}
+                        onTouchMove={enableClickPlacement ? undefined : handleTouchMove}
+                        onTouchEnd={enableClickPlacement ? undefined : handleTouchEnd}
+                        onTouchCancel={enableClickPlacement ? undefined : handleTouchCancel}
                         onMouseDown={(e) => {
                           if (isDragFollowMode) startMouseFollow(e, num);
                         }}
@@ -1478,7 +1484,14 @@ const Game2: React.FC = () => {
                         onClick={() => handleNumberClick(num)}
                         onKeyDown={(e) => handleNumberKeyDown(e, num)}
                         tabIndex={0}
-                        style={{ cursor: showFeedback ? 'not-allowed' : enableClickPlacement ? 'pointer' : 'grab' }}
+                        role="button"
+                        aria-label={`Número ${num}${isSelected ? ', seleccionado' : ''}`}
+                        aria-pressed={isSelected}
+                        aria-disabled={showFeedback}
+                        style={{
+                          cursor: showFeedback ? 'not-allowed' : enableClickPlacement ? 'pointer' : 'grab',
+                          touchAction: enableClickPlacement ? 'manipulation' : 'none'
+                        }}
                         onDragStartCapture={(e) => {
                           // Prevenir drag de elementos hijos en fase de captura
                           if (e.target !== e.currentTarget) {
@@ -1490,7 +1503,8 @@ const Game2: React.FC = () => {
                         {pictogramImg ? (
                           <img
                             src={pictogramImg}
-                            alt={`Pictograma número ${num}`}
+                            alt=""
+                            aria-hidden="true"
                             className="pictogram-image"
                             loading="eager"
                             decoding="sync"
@@ -1501,7 +1515,7 @@ const Game2: React.FC = () => {
                             }}
                           />
                         ) : (
-                          <span className="number-value">{num}</span>
+                          <span className="number-value" aria-hidden="true">{num}</span>
                         )}
                       </div>
                     );
@@ -1509,7 +1523,11 @@ const Game2: React.FC = () => {
                 </div>
 
                 {/* Zona de ordenamiento (abajo) - Una casilla vacía a la vez */}
-                <div id="drop-zone-container">
+                <div
+                  id="drop-zone-container"
+                  role="region"
+                  aria-label={`Zona de ordenamiento ${config?.settings.order === 'ascending' ? 'ascendente' : 'descendente'}`}
+                >
                   <DropZone
                     numbers={orderedNumbers}
                     correctOrder={correctOrder}
@@ -1540,7 +1558,8 @@ const Game2: React.FC = () => {
                   >
                     <img
                       src={imgPista}
-                      alt="Pista"
+                      alt=""
+                      aria-hidden="true"
                       className="game-control-button-image"
                     />
                     <span className="game-control-button-text">
@@ -1566,7 +1585,8 @@ const Game2: React.FC = () => {
                   >
                     <img
                       src={imgInstrucciones}
-                      alt="Video de ayuda"
+                      alt=""
+                      aria-hidden="true"
                       className="game-control-button-image"
                     />
                     <span className="game-control-button-text">

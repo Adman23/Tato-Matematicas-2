@@ -28,7 +28,7 @@ import {
     IonIcon,
     IonSpinner
 } from '@ionic/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { gamesAPI, type GameConfig } from '../../lib/api';
 import SimpleHeaderUser from './components/SimpleHeaderUser';
@@ -112,6 +112,65 @@ export default function EditGame2() {
 
     // Estado de validación
     const [error, setError] = useState<string>('');
+
+    // Ref para focus trapping
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    /**
+     * Focus trapping effect for modals.
+     * Keeps Tab navigation inside the modal when it's open.
+     */
+    useEffect(() => {
+        const isAnyModalOpen = showQuantityModal || showRangeModal || showOrderModal || showAccessibilityModal;
+
+        if (!isAnyModalOpen || !modalRef.current) return;
+
+        const modal = modalRef.current;
+        const focusableElements = modal.querySelectorAll<HTMLElement>(
+            'button, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        // Focus first element when modal opens
+        setTimeout(() => firstElement?.focus(), 0);
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                closeAllModals();
+                return;
+            }
+
+            if (e.key !== 'Tab') return;
+
+            if (e.shiftKey) {
+                // Shift + Tab
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement?.focus();
+                }
+            } else {
+                // Tab
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement?.focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [showQuantityModal, showRangeModal, showOrderModal, showAccessibilityModal]);
+
+    /**
+     * Handle keyboard selection for modal options
+     */
+    const handleKeySelect = useCallback((e: React.KeyboardEvent, action: () => void) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            action();
+        }
+    }, []);
 
     useEffect(() => {
         loadGameConfig();
@@ -437,8 +496,19 @@ export default function EditGame2() {
                 {/* MODAL: Cantidad */}
                 {showQuantityModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                        <div
+                            className="modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            ref={modalRef}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Seleccionar cantidad"
+                        >
+                            <button
+                                className="modal-close-btn"
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de cantidad"
+                            >✕</button>
                             <div className="modal-options-grid quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
@@ -447,6 +517,11 @@ export default function EditGame2() {
                                         <div
                                             key={num}
                                             className={`modal-option ${quantity === num ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                            tabIndex={isDisabled ? -1 : 0}
+                                            role="button"
+                                            aria-pressed={quantity === num}
+                                            aria-disabled={isDisabled}
+                                            aria-label={`Seleccionar cantidad ${num}`}
                                             onClick={() => {
                                                 if (!isDisabled) {
                                                     setQuantity(num);
@@ -454,18 +529,13 @@ export default function EditGame2() {
                                                     closeAllModals();
                                                 }
                                             }}
-                                            tabIndex={isDisabled ? -1 : 0}
-                                            role="button"
-                                            aria-label={`Seleccionar cantidad ${num}`}
-                                            aria-disabled={isDisabled}
-                                            onKeyDown={(e) => {
-                                                if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
-                                                    e.preventDefault();
+                                            onKeyDown={(e) => handleKeySelect(e, () => {
+                                                if (!isDisabled) {
                                                     setQuantity(num);
                                                     setError('');
                                                     closeAllModals();
                                                 }
-                                            }}
+                                            })}
                                         >
                                             {pictogram ? (
                                                 <img src={pictogram} alt={`${num}`} className="modal-number-img" />
@@ -483,13 +553,28 @@ export default function EditGame2() {
                 {/* MODAL: Rango */}
                 {showRangeModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                        <div
+                            className="modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            ref={modalRef}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Seleccionar rango"
+                        >
+                            <button
+                                className="modal-close-btn"
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de rango"
+                            >✕</button>
                             <div className="modal-options-grid range-grid">
                                 {RANGE_OPTIONS.map((option) => (
                                     <div
                                         key={option.value}
                                         className={`modal-option large ${numberRange === option.value ? 'selected' : ''}`}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-pressed={numberRange === option.value}
+                                        aria-label={`Seleccionar rango ${option.label}`}
                                         onClick={() => {
                                             setNumberRange(option.value);
                                             // Ajustar cantidad si el rango es más pequeño
@@ -501,22 +586,16 @@ export default function EditGame2() {
                                             setError('');
                                             closeAllModals();
                                         }}
-                                        tabIndex={0}
-                                        role="button"
-                                        aria-label={`Seleccionar rango ${option.label}`}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                setNumberRange(option.value);
-                                                const [minRange, maxRange] = option.value.split('-').map(Number);
-                                                const maxQuantity = maxRange - minRange + 1;
-                                                if (quantity > maxQuantity) {
-                                                    setQuantity(Math.min(quantity, maxQuantity));
-                                                }
-                                                setError('');
-                                                closeAllModals();
+                                        onKeyDown={(e) => handleKeySelect(e, () => {
+                                            setNumberRange(option.value);
+                                            const [minRange, maxRange] = option.value.split('-').map(Number);
+                                            const maxQuantity = maxRange - minRange + 1;
+                                            if (quantity > maxQuantity) {
+                                                setQuantity(Math.min(quantity, maxQuantity));
                                             }
-                                        }}
+                                            setError('');
+                                            closeAllModals();
+                                        })}
                                     >
                                         <span className="modal-range-text">{option.label}</span>
                                     </div>
@@ -529,25 +608,34 @@ export default function EditGame2() {
                 {/* MODAL: Orden */}
                 {showOrderModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                        <div
+                            className="modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            ref={modalRef}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Seleccionar orden"
+                        >
+                            <button
+                                className="modal-close-btn"
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de orden"
+                            >✕</button>
                             <div className="modal-options-grid order-grid">
                                 <div
                                     className={`modal-option large ${order === 'ascending' ? 'selected' : ''}`}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-pressed={order === 'ascending'}
+                                    aria-label="Seleccionar orden ascendente"
                                     onClick={() => {
                                         setOrder('ascending');
                                         closeAllModals();
                                     }}
-                                    tabIndex={0}
-                                    role="button"
-                                    aria-label="Seleccionar orden ascendente"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            e.preventDefault();
-                                            setOrder('ascending');
-                                            closeAllModals();
-                                        }
-                                    }}
+                                    onKeyDown={(e) => handleKeySelect(e, () => {
+                                        setOrder('ascending');
+                                        closeAllModals();
+                                    })}
                                 >
                                     <div className="order-content">
                                         <div className="order-arrow-large">↑</div>
@@ -557,20 +645,18 @@ export default function EditGame2() {
                                 </div>
                                 <div
                                     className={`modal-option large ${order === 'descending' ? 'selected' : ''}`}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-pressed={order === 'descending'}
+                                    aria-label="Seleccionar orden descendente"
                                     onClick={() => {
                                         setOrder('descending');
                                         closeAllModals();
                                     }}
-                                    tabIndex={0}
-                                    role="button"
-                                    aria-label="Seleccionar orden descendente"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            e.preventDefault();
-                                            setOrder('descending');
-                                            closeAllModals();
-                                        }
-                                    }}
+                                    onKeyDown={(e) => handleKeySelect(e, () => {
+                                        setOrder('descending');
+                                        closeAllModals();
+                                    })}
                                 >
                                     <div className="order-content">
                                         <div className="order-arrow-large">↓</div>
@@ -586,27 +672,36 @@ export default function EditGame2() {
                 {/* MODAL: Accesibilidad */}
                 {showAccessibilityModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                        <div
+                            className="modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            ref={modalRef}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Seleccionar modo de accesibilidad"
+                        >
+                            <button
+                                className="modal-close-btn"
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de modo de accesibilidad"
+                            >✕</button>
                             <div className="modal-options-grid accessibility-grid">
                                 {ACCESSIBILITY_OPTIONS.map((option) => (
                                     <div
                                         key={option.value}
                                         className={`modal-option large ${accessibilityMode === option.value ? 'selected' : ''}`}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-pressed={accessibilityMode === option.value}
+                                        aria-label={`Seleccionar modo ${option.label}`}
                                         onClick={() => {
                                             setAccessibilityMode(option.value);
                                             closeAllModals();
                                         }}
-                                        tabIndex={0}
-                                        role="button"
-                                        aria-label={`Seleccionar modo ${option.label}`}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                setAccessibilityMode(option.value);
-                                                closeAllModals();
-                                            }
-                                        }}
+                                        onKeyDown={(e) => handleKeySelect(e, () => {
+                                            setAccessibilityMode(option.value);
+                                            closeAllModals();
+                                        })}
                                     >
                                         <div className="order-content">
                                             <span className="order-label-large">{option.label}</span>
