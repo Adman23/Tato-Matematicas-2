@@ -130,6 +130,24 @@ const Game1: React.FC = () => {
     const [totalErrorsMade, setTotalErrorsMade] = useState(0);
     const [roundTimes, setRoundTimes] = useState<number[]>([]); // Tiempos por ronda
 
+    // Accessibility announcement state
+    const [liveAnnouncement, setLiveAnnouncement] = useState<string>('');
+
+    /**
+     * Function to make accessible announcements using aria-live.
+     * Waits for the current announcement to finish before announcing the change.
+     * 
+     * @param message - Message to announce
+     */
+    const announce = (message: string) => {
+        // Clear first to force re-announcement if it's the same message
+        setLiveAnnouncement('');
+        // Small delay to ensure screen reader detects the change for accessibility announcements (aria-live)
+        setTimeout(() => {
+            setLiveAnnouncement(message);
+        }, 100);
+    };
+
 
     // Determine if pictograms should be used (only for range 0-10)
     const usePictograms = config?.number_range === '0-10';
@@ -377,6 +395,9 @@ const Game1: React.FC = () => {
         setHintsCount(0);
         setSelectedNumber(null);
         setListeningAudio(false);
+
+        // Anunciar nueva ronda para lectores de pantalla
+        announce(`Ronda ${currentRound} de ${TOTAL_ROUNDS}. Escucha el número y selecciona la opción correcta.`);
     };
 
 
@@ -421,6 +442,10 @@ const Game1: React.FC = () => {
         setHintsCount(prev => prev + 1);
         setTotalHintsUsed(prev => prev + 1);
         console.log(`Pista usada: se ha deshabilitado el número ${hintNumber}`);
+
+        // Anunciar pista para lectores de pantalla
+        const remainingHints = availableIncorrectNumbers.length - 1;
+        announce(`Pista usada. Se ha eliminado una opción incorrecta. ${remainingHints > 0 ? `Quedan ${remainingHints} pistas disponibles.` : 'No quedan más pistas.'}`);
     };
 
     /**
@@ -451,6 +476,13 @@ const Game1: React.FC = () => {
         // Store if answer is correct and show feedback screen
         setIsCorrectAnswer(correct);
         setShowFeedbackScreen(true);
+
+        // Anunciar resultado para lectores de pantalla
+        if (correct) {
+            announce(`¡Correcto! Has seleccionado el número ${selectedNumber}.`);
+        } else {
+            announce(`Incorrecto. Has seleccionado el número ${selectedNumber}.`);
+        }
 
         // Save in the backend
         if (sessionId && correct) {
@@ -493,6 +525,9 @@ const Game1: React.FC = () => {
         setHintsUsed([]);
         setRoundStartTime(Date.now());
         setSelectedNumber(null);
+
+        // Anunciar repetición para lectores de pantalla
+        announce(`Intentando de nuevo. Ronda ${currentRound} de ${TOTAL_ROUNDS}.`);
     }
 
     /**
@@ -578,6 +613,9 @@ const Game1: React.FC = () => {
         }
 
         setGameFinished(true);
+
+        // Anunciar fin del juego para lectores de pantalla
+        announce(`¡Juego completado! Has acertado ${totalNumbersCorrect} de ${TOTAL_ROUNDS} rondas.`);
     };
 
 
@@ -692,6 +730,8 @@ const Game1: React.FC = () => {
             if (!files || files.length === 0) return;
 
             setListeningAudio(true);
+            // Anunciar que se está reproduciendo audio
+            announce('Reproduciendo número. Escucha atentamente.');
 
             try {
                 const base = useWomanVoice ? '/assets/sounds/woman/' : '/assets/sounds/man/';
@@ -814,6 +854,26 @@ const Game1: React.FC = () => {
     return (
         <IonPage>
             <IonContent className="game1-content">
+                {/* Aria live region for accessibility announcements */}
+                <div
+                    aria-live="polite"
+                    aria-atomic="true"
+                    className="sr-only"
+                    style={{
+                        position: 'absolute',
+                        width: '1px',
+                        height: '1px',
+                        padding: 0,
+                        margin: '-1px',
+                        overflow: 'hidden',
+                        clip: 'rect(0, 0, 0, 0)',
+                        whiteSpace: 'nowrap',
+                        border: 0
+                    }}
+                >
+                    {liveAnnouncement}
+                </div>
+
                 {gameFinished ? (
                     <ResultsScreen
                         totalRounds={TOTAL_ROUNDS}
