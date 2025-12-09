@@ -392,6 +392,11 @@
     font-size: 22px;
   }
 
+  .Accept-button-container-editNoiseStudent {
+    bottom: 8px;
+    right: 8px;
+  }
+
   .Accept-Button-image {
     height: 60px;
     width: 60px;
@@ -483,6 +488,33 @@
   }
 
   /* Botón ACEPTAR a la derecha */
+  .Accept-button-container-editNoiseStudent {
+    position: absolute !important;
+    right: 10px !important;
+    bottom: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    left: auto !important;
+  }
+
+  .Accept-button-container-editNoiseStudent .Accept-Button-Button-editNoiseStudent {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
+  }
+
+  .Accept-button-container-editNoiseStudent .Accept-Button-image {
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
 
   /* Iconos de temas compactos */
   .icon-circle {
@@ -511,6 +543,19 @@
 /* =============================================================================
    BOTÓN ACEPTAR - Guardar preferencias
    ========================================================================== */
+
+.Accept-button-container-editNoiseStudent {
+  flex-shrink: 0;
+  position: fixed;
+  bottom: min(1vh, 10px);
+  right: min(2vw, 20px);
+  z-index: 11;
+}
+
+.Accept-Button-Button-editNoiseStudent {
+  min-width: 48px;
+  min-height: 48px;
+}
 
 .Accept-Button-image {
   height: min(10vh, 90px);
@@ -601,6 +646,13 @@
     bottom: min(18vh, 155px);
     left: 50%;
     transform: translateX(-50%);
+  }
+  
+  .Accept-button-container-editNoiseStudent {
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    bottom: 10px;
   }
 }
 

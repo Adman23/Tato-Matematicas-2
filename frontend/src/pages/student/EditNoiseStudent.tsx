@@ -238,9 +238,9 @@ const EditNoiseStudent: React.FC = () => {
               ))}
             </div>
             
-            <div className='Accept-button-container-editColorsStudent'>
+            <div className='Accept-button-container-editNoiseStudent'>
               <Button3Dtext 
-                className='Accept-Button-Button-editColorsStudent' 
+                className='Accept-Button-Button-editNoiseStudent' 
                 color='var(--bubble-bg)'
                 onClick={handleSavePreferences}
                 aria-label="Guardar preferencias de audio"
