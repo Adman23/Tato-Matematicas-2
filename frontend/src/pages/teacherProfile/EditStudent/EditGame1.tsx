@@ -81,6 +81,22 @@ export default function EditGame1() {
     const [showRangeModal, setShowRangeModal] = useState(false);
     const [showVoiceModal, setShowVoiceModal] = useState(false);
 
+    // Accessibility announcement state
+    const [liveAnnouncement, setLiveAnnouncement] = useState<string>('');
+
+    /**
+     * Function to make accessible announcements using aria-live.
+     * Waits for the current announcement to finish before announcing the change.
+     * 
+     * @param message - Message to announce
+     */
+    const announce = (message: string) => {
+        setLiveAnnouncement('');
+        setTimeout(() => {
+            setLiveAnnouncement(message);
+        }, 100);
+    };
+
     // Refs for focus trapping
     const modalRef = useRef<HTMLDivElement>(null);
 
@@ -213,10 +229,14 @@ export default function EditGame1() {
 
             await gamesAPI.updateGameConfig(user.id, 'touch_number', config);
 
+            // Anunciar que se guardó la configuración
+            announce('Configuración guardada correctamente');
+
             // Return to profile
             router.push('/student/profile', 'back');
         } catch (error) {
             console.error('Error saving config:', error);
+            announce('Error al guardar la configuración');
         }
     };
 
@@ -275,6 +295,26 @@ export default function EditGame1() {
                 userName={user?.username || "username"}
                 photoUrl={user?.photo_url} hidden={true} />
             <IonContent className="EditGame1-content">
+                {/* Aria live region for accessibility announcements */}
+                <div
+                    aria-live="polite"
+                    aria-atomic="true"
+                    className="sr-only"
+                    style={{
+                        position: 'absolute',
+                        width: '1px',
+                        height: '1px',
+                        padding: 0,
+                        margin: '-1px',
+                        overflow: 'hidden',
+                        clip: 'rect(0, 0, 0, 0)',
+                        whiteSpace: 'nowrap',
+                        border: 0
+                    }}
+                >
+                    {liveAnnouncement}
+                </div>
+
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
                         <Button3Dtext
@@ -409,12 +449,14 @@ export default function EditGame1() {
                                             onClick={() => {
                                                 if (!isDisabled) {
                                                     setQuantity(num);
+                                                    announce(`Cantidad seleccionada: ${num} opciones`);
                                                     closeAllModals();
                                                 }
                                             }}
                                             onKeyDown={(e) => handleKeySelect(e, () => {
                                                 if (!isDisabled) {
                                                     setQuantity(num);
+                                                    announce(`Cantidad seleccionada: ${num} opciones`);
                                                     closeAllModals();
                                                 }
                                             })}
@@ -457,6 +499,9 @@ export default function EditGame1() {
                                             // If the range is 0-10 and the quantity is greater than 10, adjust to 10
                                             if (option.value === '0-10' && quantity > 10) {
                                                 setQuantity(10);
+                                                announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
+                                            } else {
+                                                announce(`Rango seleccionado: ${option.label}`);
                                             }
                                             closeAllModals();
                                         }}
@@ -464,6 +509,9 @@ export default function EditGame1() {
                                             setNumberRange(option.value);
                                             if (option.value === '0-10' && quantity > 10) {
                                                 setQuantity(10);
+                                                announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
+                                            } else {
+                                                announce(`Rango seleccionado: ${option.label}`);
                                             }
                                             closeAllModals();
                                         })}
@@ -496,10 +544,12 @@ export default function EditGame1() {
                                     aria-pressed={voice === 'woman'}
                                     onClick={() => {
                                         setVoice('woman');
+                                        announce('Voz seleccionada: Mujer');
                                         closeAllModals();
                                     }}
                                     onKeyDown={(e) => handleKeySelect(e, () => {
                                         setVoice('woman');
+                                        announce('Voz seleccionada: Mujer');
                                         closeAllModals();
                                     })}
                                 >
@@ -519,10 +569,12 @@ export default function EditGame1() {
                                     aria-pressed={voice === 'man'}
                                     onClick={() => {
                                         setVoice('man');
+                                        announce('Voz seleccionada: Hombre');
                                         closeAllModals();
                                     }}
                                     onKeyDown={(e) => handleKeySelect(e, () => {
                                         setVoice('man');
+                                        announce('Voz seleccionada: Hombre');
                                         closeAllModals();
                                     })}
                                 >
