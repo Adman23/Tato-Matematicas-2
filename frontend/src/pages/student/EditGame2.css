@@ -1,7 +1,8 @@
 .EditGame2-content {
     --background: var(--background-color);
-    height: 100%;
+    min-height: 100dvh;
     overflow: hidden;
+    padding: clamp(8px, 2vw, 12px) 0;
 }
 
 /* Wrapper similar a EditGame1 pero optimizado para que todo entre en pantalla */
@@ -9,14 +10,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    min-height: 100%;
+    justify-content: flex-start;
     width: min(1100px, 100%);
     margin: 0 auto;
     background-color: var(--background-color);
     box-sizing: border-box;
-    padding: clamp(8px, 2vw, 20px);
-    gap: clamp(8px, 2vh, 16px);
+    padding: clamp(8px, 2vw, 18px);
+    gap: clamp(10px, 2vh, 16px);
+    padding-bottom: clamp(24px, 5vh, 40px);
 }
 
 .EditGame2-back-button {
@@ -34,6 +35,7 @@
     gap: clamp(12px, 2vw, 24px);
     flex-wrap: wrap;
     flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
 }
 
@@ -49,10 +51,10 @@
 
 .EditGame2-config-button-3d,
 .EditGame2-config-button-value {
-    min-width: clamp(100px, 20vw, 140px);
-    min-height: clamp(90px, 20vh, 140px);
-    width: clamp(110px, 22vw, 150px);
-    height: clamp(110px, 22vh, 160px);
+    min-width: clamp(92px, 18vw, 132px);
+    min-height: clamp(76px, 14vh, 112px);
+    width: clamp(104px, 20vw, 142px);
+    height: clamp(98px, 16vh, 132px);
 }
 
 .EditGame2-config-button-content {
@@ -102,7 +104,8 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: clamp(8px, 1.5vw, 16px);
+    padding: clamp(8px, 1.5vw, 14px);
+    box-sizing: border-box;
 }
 
 .EditGame2-error-message {
@@ -299,32 +302,37 @@
     .EditGame2-wrapper {
         gap: 8px;
         padding: 8px;
+        padding-bottom: 20px;
+        min-height: 100dvh;
+        justify-content: space-between;
     }
 
     .EditGame2-config-buttons {
-        flex-direction: column;
-        gap: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
     }
 
     .EditGame2-buttons-result {
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-width: 100%;
-        gap: 10px;
+        min-width: 0;
+        gap: 6px;
+        max-width: 100%;
     }
 
     .EditGame2-config-button-3d,
     .EditGame2-config-button-value {
-        min-width: 90px;
-        min-height: 90px;
-        width: 100px;
-        height: 100px;
+        min-width: 76px;
+        min-height: 76px;
+        width: 86px;
+        height: 86px;
     }
 
     .EditGame2-config-button-image {
-        width: clamp(40px, 12vw, 60px);
-        height: clamp(40px, 12vw, 60px);
+        width: clamp(34px, 11vw, 48px);
+        height: clamp(34px, 11vw, 48px);
     }
 
     /* Modales responsive para móvil */
@@ -372,6 +380,10 @@
         top: 10px;
         right: 10px;
     }
+
+    .EditGame2-save-button {
+        padding: 8px;
+    }
 }
 
 /* Tablets en vertical y horizontal */
@@ -410,33 +422,50 @@
 /* Paisaje con poca altura: comprimir aún más */
 @media screen and (max-height: 640px) and (orientation: landscape) {
     .EditGame2-wrapper {
-        padding: 8px;
-        gap: 6px;
-    }
+    padding: 8px;
+    gap: 6px;
+    min-height: 100dvh;
+    justify-content: space-between;
+    grid-template-rows: auto 1fr auto auto;
+    padding-bottom: 12px;
+}
 
     .EditGame2-config-buttons {
-        gap: 8px;
+        gap: 6px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: 1fr;
     }
 
     .EditGame2-buttons-result {
-        gap: 8px;
-        flex: 1 1 130px;
+        gap: 6px;
+        grid-template-rows: auto 1fr;
     }
 
     .EditGame2-config-button-3d,
     .EditGame2-config-button-value {
-        min-width: 85px;
-        min-height: 85px;
-        width: 95px;
-        height: 95px;
+        min-width: 68px;
+        min-height: 68px;
+        width: 74px;
+        height: 74px;
+        max-width: 90px;
     }
 
     .EditGame2-config-button-image {
-        width: 42px;
-        height: 42px;
+        width: 32px;
+        height: 32px;
     }
 
     .EditGame2-save-button {
+        padding: 6px;
+    }
+
+    .EditGame2-config-button-content {
+        gap: 4px;
+        padding: 6px;
+    }
+
+    .EditGame2-config-button-value {
+        gap: 4px;
         padding: 6px;
     }
 

@@ -63,7 +63,7 @@ const ACCESSIBILITY_OPTIONS = [
     },
     {
         value: 'hover_select',
-        label: 'Hover con retardo',
+        label: 'Permanece encima',
         description: 'Selecciona al permanecer encima'
     }
 ];
@@ -393,7 +393,7 @@ export default function EditGame2() {
                             >
                                 <div className="EditGame2-config-button-content">
                                     <IonIcon icon={accessibilityOutline} className="EditGame2-accessibility-icon" />
-                                    <span className="btn-text">ACCESIBILIDAD</span>
+                                    <span className="btn-text">MODO</span>
                                 </div>
                             </Button3Dtext>
                         </div>
