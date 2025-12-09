@@ -65,14 +65,6 @@ const EditNoiseStudent: React.FC = () => {
   const getSoundFile = (type: 'correct' | 'incorrect' | 'trophy', theme: string): string => {
     // Primero intentar con sonido específico del tema
     const themeSound = `/assets/sounds/${type}_${theme}.mp3`;
-    
-    // Fallback a sonidos genéricos si no existe el específico
-    const fallbackMap: Record<string, string> = {
-      correct: '/assets/sounds/correct.mp3',
-      incorrect: '/assets/sounds/incorrect.mp3',
-      trophy: '/assets/sounds/aplausos.mp3',
-    };
-    
     // Por ahora retornar el tema específico (agregar lógica de fallback si es necesario)
     return themeSound;
   };
@@ -402,7 +394,7 @@ const EditNoiseStudent: React.FC = () => {
       </div>
 
       <div aria-live="polite" style={{position: 'absolute', left: '-9999px', height: '1px', width: '1px', overflow: 'hidden'}}>
-        Tema seleccionado: {themes.find(t => t.id === selectedTheme)?.label}. Volumen: {selectedVolume}
+        {themes.find(t => t.id === selectedTheme)?.label}
       </div>
         </div>
 
