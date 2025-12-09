@@ -8,15 +8,13 @@
 import {
     IonPage,
     IonContent,
-    IonTitle,
     IonLabel,
     IonButton,
-    IonButtons,
-    IonIcon,
     useIonRouter,
     IonItem,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    IonToast
 
 } from '@ionic/react';
 import './EditText.css';
@@ -26,6 +24,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import FontSelector from './components/FontSelector';
+import { saveFont } from '../../../lib/api';
 
 
 /**
@@ -56,8 +55,17 @@ export default function EditText(){
 
     const router = useIonRouter();
 
-    const [weight, setWeight] = useState();
-    const [currentFont, setcurrentFont] = useState<string>("Arial");
+    const [showToast, setShowToast] = useState(false);
+
+
+    const [weight, setWeight] = useState("400");
+    const [currentFont, setcurrentFont] = useState<string>("'Atkinson Hyperlegible', sans-serif");
+
+    const [textConfig, settextConfig] = useState({
+        
+        font: currentFont,
+        weight: weight,
+    });
 
     const handleHome = () => {
         router.push(`/student-edit-menu/${id}/${name}`);
@@ -66,6 +74,26 @@ export default function EditText(){
     if (!user) {
         return <Redirect to="/login" />;
     }
+
+    useEffect(() => {
+        settextConfig({
+            font: currentFont,
+            weight: weight,
+        });
+        console.log("Cambio", textConfig);
+    }, [currentFont, weight]);
+
+
+    const saveTextConfiguration = async () => {
+        try {
+            await saveFont(id, textConfig);
+            setShowToast(true);
+           
+            //console.log("Configuración guardada correctamente!", customPalette);
+        } catch (err) {
+            console.error("Error al guardar la paleta", err);
+        }
+    };
 
     return(
         <IonPage>
@@ -80,7 +108,10 @@ export default function EditText(){
 
                     <div className='fontWeightContainer'>
 
-                        <div className="previewBox" style={{ fontFamily: currentFont, fontWeight: weight, fontSize: "25px" }}>Texto de ejemplo</div>
+                        <div className="previewBox" style={{ fontFamily: currentFont, fontWeight: weight, fontSize: "25px" }}>
+                            Este es un texto de ejemplo para previsualizar
+                            la fuente escogida.
+                        </div>
 
                         <IonItem className='DropDown-EditText'>
                             <IonLabel>Peso del texto</IonLabel>
@@ -102,7 +133,7 @@ export default function EditText(){
                             
                     </div>
                     <div className='LinkProfiles-buttons editTextButtons'>
-                        <IonButton type="submit" className='LinkProfiles-button' onClick={() => ""}>
+                        <IonButton type="submit" className='LinkProfiles-button' onClick={saveTextConfiguration}>
                             Guardar
                         </IonButton>
                         <IonButton
@@ -117,6 +148,15 @@ export default function EditText(){
                     </div>
 
                 </div>
+
+                <IonToast className='Iontoast-EditarText'
+                    isOpen={showToast}
+                    onDidDismiss={() => setShowToast(false)}
+                    message="¡Cambios guardados correctamente!"
+                    duration={2000}
+                    position="bottom"
+                    color="success"
+                />
                 
 
             </IonContent>

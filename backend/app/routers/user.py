@@ -468,3 +468,25 @@ async def get_audio_preferences(user_id: str):
             status_code=500,
             detail=f"Error retrieving audio preferences: {str(e)}"
         )
+
+@router.post("/{user_id}/update_text_preferences")
+async def update_text_preferences(user_id: str, text_preferences: dict):
+    """
+    Actualiza la paleta de colores de un usuario.
+    """
+    try:
+        update = supabase_admin.table("user_profiles")\
+            .update({"text_preferences": text_preferences})\
+            .eq("user_id", user_id)\
+            .execute()
+
+        print("Datos guardados:", update.data)  # debería mostrar la fila actualizada
+        return {"message": "Text preferences updated", "saved": text_preferences}
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating text preferences: {str(e)}"
+        )
+    

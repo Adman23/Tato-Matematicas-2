@@ -41,3 +41,33 @@
 
 }
 
+/*==========================
+  Toast
+  ==========================*/
+.Iontoast-EditarText{
+
+  font-size: 24px;
+  text-align: center;
+}
+
+/*==========================
+  Mobile
+  ==========================*/
+
+@media (max-width: 430px) {
+
+  .fontWeightContainer{
+
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .previewBox{
+
+    font-size: 12px;
+    width: 300px;
+
+  }
+}
+
+

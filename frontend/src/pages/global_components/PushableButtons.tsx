@@ -93,6 +93,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           width: 100%;
           height: 100%;
           font-weight: 700;
+          font-family: var(--tatomaths-font);
           transform: translateY(-6px);
           transition: transform 100ms cubic-bezier(0.3, 0.7, 0.4, 1), background-color 250ms;
         }

@@ -93,7 +93,8 @@
 /* Texto debajo de la imagen */
 .simple-button-title {
     font-size: clamp(0.7rem, 2vw, 1.2rem);
-    font-weight: 600;
+    font-family: var(--tatomaths-font);
+    font-weight: var(--tatomaths-weight);
     color: var(--tatomaths-text);
     text-align: center;
     margin: 0;

@@ -112,6 +112,9 @@
   --font-weight-bold: 700;
   --font-weight-black: 900;
 
+  --tatomaths-font: 'Atkinson Hyperlegible', sans-serif;
+  --tatomaths-weight: 400;
+
   /* ========== ESPACIADO ========== */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
