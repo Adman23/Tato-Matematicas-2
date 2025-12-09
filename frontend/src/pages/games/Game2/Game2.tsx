@@ -50,7 +50,7 @@ import { GameControlButton } from '../../global_components/GameControlButton';
 // Import images for header
 import imgOrdenar from '/assets/juegosImg/game2/ordenar.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
-import imgTato from '/assets/Tato/TatoPista.png';
+import imgPista from '/assets/juegosImg/lupa.png';
 import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
@@ -190,7 +190,7 @@ const Game2: React.FC = () => {
     const uiAssets = [
       imgOrdenar,
       imgJuego,
-      imgTato,
+      imgPista,
       imgTatoFeliz,
       imgTatoTriste,
       imgSiguiente,
@@ -1522,17 +1522,19 @@ const Game2: React.FC = () => {
                 <div className="check-button-container" onMouseEnter={resetHoverState}>
                   {/* Botón de pistas (Tato) */}
                   <GameControlButton
-                    noBorder
                     onMouseEnter={() => runHoverAction(useHint)}
                     onFocus={resetHoverState}
                     onClick={() => hoverOrClick(useHint)}
                     disabled={availableNumbers.every(n => n === undefined)}
                   >
                     <img
-                      src={imgTato}
+                      src={imgPista}
                       alt="Pista"
                       className="game-control-button-image"
                     />
+                    <span className="game-control-button-text">
+                      PISTA
+                    </span>
                   </GameControlButton>
 
                   {/* Indicador de orden */}
