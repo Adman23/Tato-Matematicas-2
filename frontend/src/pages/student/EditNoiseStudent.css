@@ -3,14 +3,14 @@
    Configuración de audio: tema y volumen
    ========================================================================== */
 
-.container {
+.container-editNoiseStudent {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   max-width: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   text-align: center;
-  background-color: transparent; /* Transparente para heredar el fondo del IonContent */
+  background-color: transparent;
   height: auto;
   max-height: calc(100vh - 60px);
   display: flex;
@@ -19,7 +19,7 @@
   box-sizing: border-box;
 }
 
-.main-title {
+.main-title-editNoiseStudent {
   font-size: min(2.5vh, 1.8rem);
   font-weight: 500;
   margin: min(1vh, 10px) 0;
@@ -29,10 +29,10 @@
 }
 
 /* =============================================================================
-   SECCIÓN DE TEMAS - Grid responsive (4 columnas → 2 columnas)
+   SECCIÓN DE TEMAS - Grid responsive
    ========================================================================== */
 
-.themes-row {
+.themes-row-editNoiseStudent {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: min(1.5vh, 12px);
@@ -45,15 +45,15 @@
 }
 
 @media (max-height: 700px), (max-width: 912px) {
-  .themes-row {
+  .themes-row-editNoiseStudent {
     grid-template-columns: repeat(2, 1fr);
     gap: min(1vh, 10px);
     max-height: calc(100vh - 200px);
   }
 }
 
-/* Tarjetas de tema (usando SimpleButton) */
-.theme-card {
+/* Tarjetas de tema */
+.theme-card-editNoiseStudent {
   --background: transparent;
   --border-width: clamp(4px, 1.2vw, 8px);
   --border-style: solid;
@@ -67,25 +67,25 @@
   box-sizing: border-box;
 }
 
-.theme-card .simple-button-content {
+.theme-card-editNoiseStudent .simple-button-content-editNoiseStudent {
   flex-direction: column;
   padding: min(1vh, 10px);
   gap: 0;
 }
 
 /* Estado seleccionado */
-.theme-card.selected {
+.theme-card-editNoiseStudent.selected {
   --border-color: var(--ion-color-primary);
 }
 
-.theme-card:hover,
-.theme-card:focus {
+.theme-card-editNoiseStudent:hover,
+.theme-card-editNoiseStudent:focus {
   --border-color: var(--ion-color-primary);
-  transform: none; /* Deshabilitar zoom en hover */
+  transform: none;
 }
 
-/* Estado deshabilitado (cuando volumen = silencio) */
-.theme-card.disabled {
+/* Estado deshabilitado */
+.theme-card-editNoiseStudent.disabled {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
@@ -94,14 +94,14 @@
 }
 
 /* Etiqueta del tema */
-.theme-label {
+.theme-label-editNoiseStudent {
   margin-bottom: min(0.5vh, 5px);
   font-size: min(1.8vh, 1rem);
   color: #333;
 }
 
 /* Círculo del icono principal del tema */
-.icon-circle {
+.icon-circle-editNoiseStudent {
   width: min(10vh, 80px);
   height: min(10vh, 80px);
   border-radius: 50%;
@@ -114,7 +114,7 @@
 }
 
 @media (max-height: 700px) {
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     width: min(7vh, 60px);
     height: min(7vh, 60px);
     font-size: min(3.5vh, 2rem);
@@ -123,22 +123,22 @@
 }
 
 /* =============================================================================
-   BOTONES DE FEEDBACK - Preview de sonidos (correcto, incorrecto, trofeo)
+   BOTONES DE FEEDBACK
    ========================================================================== */
 
-.feedback-icons {
+.feedback-icons-editNoiseStudent {
   display: flex;
   gap: min(1vh, 10px);
   justify-content: center;
 }
 
-.feedback-item {
+.feedback-item-editNoiseStudent {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.feedback-button {
+.feedback-button-editNoiseStudent {
   width: clamp(48px, 5vh, 60px);
   height: clamp(48px, 5vh, 60px);
   min-width: 48px;
@@ -149,14 +149,14 @@
 }
 
 @media (max-height: 700px) and (min-height: 601px) {
-  .feedback-button {
+  .feedback-button-editNoiseStudent {
     width: min(5vh, 48px);
     height: min(5vh, 48px);
   }
 }
 
 @media (max-height: 600px) {
-  .feedback-button {
+  .feedback-button-editNoiseStudent {
     width: 48px;
     height: 48px;
   }
@@ -164,40 +164,40 @@
 
 /* Ajustes específicos para iPhone 6/7/8 (375x667) en portrait */
 @media (max-width: 400px) and (min-height: 650px) and (orientation: portrait) {
-  .feedback-button {
+  .feedback-button-editNoiseStudent {
     width: 48px !important;
     height: 48px !important;
   }
   
-  .feedback-button .btn-icon {
+  .feedback-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 18px !important;
   }
   
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     width: 52px !important;
     height: 52px !important;
     font-size: 1.6rem !important;
   }
   
-  .theme-card {
+  .theme-card-editNoiseStudent {
     padding: 5px !important;
   }
   
-  .feedback-icons {
+  .feedback-icons-editNoiseStudent {
     gap: 5px !important;
   }
 }
 
-.feedback-button .btn-icon {
+.feedback-button-editNoiseStudent .btn-icon-editNoiseStudent {
   font-size: min(3vh, 22px);
   color: white;
 }
 
 /* =============================================================================
-   CONTROLES DE VOLUMEN - Botones de selección de volumen
+   CONTROLES DE VOLUMEN
    ========================================================================== */
 
-.controls-area {
+.controls-area-editNoiseStudent {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -216,7 +216,7 @@
   z-index: 10;
 }
 
-.volume-group {
+.volume-group-editNoiseStudent {
   display: flex;
   gap: min(1vw, 10px);
   flex-shrink: 1;
@@ -226,13 +226,13 @@
   transform: translateX(-50%);
 }
 
-.volume-wrapper {
+.volume-wrapper-editNoiseStudent {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.volume-label {
+.volume-label-editNoiseStudent {
   margin-bottom: min(1.5vh, 10px);
   font-size: min(2vh, 1rem);
   color: #333;
@@ -240,17 +240,17 @@
 
 /* Ocultar labels de volumen en pantallas muy estrechas */
 @media (max-width: 500px) {
-  .volume-label {
+  .volume-label-editNoiseStudent {
     display: none;
   }
   
-  .volume-wrapper {
+  .volume-wrapper-editNoiseStudent {
     gap: 0;
   }
 }
 
 /* Botones de volumen */
-.volume-button {
+.volume-button-editNoiseStudent {
   width: clamp(48px, 8vh, 70px);
   height: clamp(48px, 8vh, 70px);
   min-width: 48px;
@@ -260,11 +260,11 @@
   justify-content: center;
 }
 
-.volume-button .front {
+.volume-button-editNoiseStudent .front-editNoiseStudent {
   background-color: #dcdcdc !important;
 }
 
-.volume-button .edge {
+.volume-button-editNoiseStudent .edge-editNoiseStudent {
   background-color: #b0b0b0 !important;
   filter: brightness(0.7);
   background-image: linear-gradient(
@@ -276,11 +276,11 @@
   ) !important;
 }
 
-.volume-button.selected .front {
+.volume-button-editNoiseStudent.selected .front-editNoiseStudent {
   background-color: var(--bubble-bg) !important;
 }
 
-.volume-button.selected .edge {
+.volume-button-editNoiseStudent.selected .edge-editNoiseStudent {
   background-color: var(--bubble-bg) !important;
   filter: brightness(0.7);
   background-image: linear-gradient(
@@ -292,7 +292,7 @@
   ) !important;
 }
 
-.volume-button .btn-icon {
+.volume-button-editNoiseStudent .btn-icon-editNoiseStudent {
   font-size: clamp(24px, 4vh, 32px);
   color: #000;
   font-weight: normal;
@@ -301,38 +301,37 @@
 
 /* Botones de volumen más grandes en pantallas anchas */
 @media (min-width: 1024px) {
-  .volume-button {
+  .volume-button-editNoiseStudent {
     width: 100px;
     height: 100px;
   }
   
-  .volume-button .btn-icon {
+  .volume-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 40px;
   }
 
-  .volume-label {
+  .volume-label-editNoiseStudent {
     font-size: 1.1rem;
   }
 }
 
 /* =============================================================================
    PANTALLAS MUY ESTRECHAS - Evitar scroll (≤390px)
-   Temas en columna vertical sin iconos principales
    ========================================================================== */
 
 @media (max-width: 430px) {
-  .container {
+  .container-editNoiseStudent {
     max-height: 100vh;
     overflow: hidden;
     padding-bottom: 0;
   }
 
-  .main-title {
+  .main-title-editNoiseStudent {
     font-size: 1rem;
     margin: 8px 0 5px 0;
   }
 
-  .themes-row {
+  .themes-row-editNoiseStudent {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -343,52 +342,50 @@
   }
 
   /* Ocultar iconos principales de temas para ahorrar espacio */
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     display: none;
   }
 
-  .theme-card .simple-button-content {
+  .theme-card-editNoiseStudent .simple-button-content-editNoiseStudent {
     padding: 8px;
     gap: 4px;
   }
 
-  .theme-label {
+  .theme-label-editNoiseStudent {
     font-size: 0.9rem;
     margin-bottom: 6px;
     font-weight: 500;
   }
 
-  /* Botones de feedback más compactos */
-  .feedback-icons {
+  .feedback-icons-editNoiseStudent {
     gap: 6px;
   }
 
-  .feedback-button {
+  .feedback-button-editNoiseStudent {
     width: 48px;
     height: 48px;
   }
 
-  .feedback-button .btn-icon {
+  .feedback-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 20px;
   }
 
-  /* Área de controles más compacta */
-  .controls-area {
+  .controls-area-editNoiseStudent {
     max-height: 90px;
     padding: 5px 8px;
   }
 
-  .volume-group {
+  .volume-group-editNoiseStudent {
     gap: 6px;
     bottom: 8px;
   }
 
-  .volume-button {
+  .volume-button-editNoiseStudent {
     width: 48px;
     height: 48px;
   }
 
-  .volume-button .btn-icon {
+  .volume-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 22px;
   }
 
@@ -397,7 +394,7 @@
     right: 8px;
   }
 
-  .Accept-Button-image {
+  .Accept-Button-image-editNoiseStudent {
     height: 60px;
     width: 60px;
     min-height: 60px;
@@ -407,31 +404,30 @@
 
 /* ==========================================================================
    AJUSTE ESPECÍFICO PARA ALTURA 667px (iPhone 6/7/8, SE)
-   Controles en fila horizontal en la parte inferior
+   SOLO si la anchura es estrecha (móvil portrait)
    ========================================================================== */
 
 @media (max-height: 815px) and (max-width: 530px) {
-  .container {
+  .container-editNoiseStudent {
     height: auto;
     max-height: none;
     overflow: visible;
     padding-bottom: 65px;
   }
 
-  .main-title {
+  .main-title-editNoiseStudent {
     font-size: 1.2rem;
     margin: 5px 0;
   }
 
-  .themes-row {
+  .themes-row-editNoiseStudent {
     overflow: visible;
     max-height: none;
     margin-bottom: 5px;
     padding-bottom: 5px;
   }
 
-  /* Área de controles: posición fija en el fondo */
-  .controls-area {
+  .controls-area-editNoiseStudent {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
@@ -454,8 +450,7 @@
     gap: 0 !important;
   }
 
-  /* Grupo de volumen centrado dentro del flex */
-  .volume-group {
+  .volume-group-editNoiseStudent {
     position: static !important;
     transform: none !important;
     display: flex !important;
@@ -466,12 +461,11 @@
     left: auto !important;
   }
 
-  .volume-wrapper {
+  .volume-wrapper-editNoiseStudent {
     position: static;
   }
 
-  /* Botones de volumen mínimo 48px */
-  .volume-button {
+  .volume-button-editNoiseStudent {
     width: 48px;
     height: 48px;
     min-width: 48px;
@@ -479,11 +473,11 @@
     flex-shrink: 0;
   }
 
-  .volume-button .btn-icon {
+  .volume-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 20px;
   }
 
-  .volume-label {
+  .volume-label-editNoiseStudent {
     display: none;
   }
 
@@ -507,7 +501,7 @@
     max-height: 48px !important;
   }
 
-  .Accept-button-container-editNoiseStudent .Accept-Button-image {
+  .Accept-button-container-editNoiseStudent .Accept-Button-image-editNoiseStudent {
     width: 40px !important;
     height: 40px !important;
     max-width: 40px !important;
@@ -516,32 +510,31 @@
     display: block !important;
   }
 
-  /* Iconos de temas compactos */
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     width: 45px;
     height: 45px;
     font-size: 1.4rem;
     margin-bottom: 6px;
   }
 
-  .feedback-button {
+  .feedback-button-editNoiseStudent {
     width: 48px;
     height: 48px;
     min-width: 48px;
     min-height: 48px;
   }
 
-  .feedback-button .btn-icon {
+  .feedback-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 18px;
   }
 
-  .theme-card .simple-button-content {
+  .theme-card-editNoiseStudent .simple-button-content-editNoiseStudent {
     padding: 6px;
   }
 }
 
 /* =============================================================================
-   BOTÓN ACEPTAR - Guardar preferencias
+   BOTÓN ACEPTAR
    ========================================================================== */
 
 .Accept-button-container-editNoiseStudent {
@@ -557,7 +550,7 @@
   min-height: 48px;
 }
 
-.Accept-Button-image {
+.Accept-Button-image-editNoiseStudent {
   height: min(10vh, 90px);
   width: min(10vh, 90px);
   object-fit: contain;
@@ -569,52 +562,52 @@
 
 /* Pantallas muy pequeñas (altura < 600px) */
 @media (max-height: 600px) {
-  .main-title {
+  .main-title-editNoiseStudent {
     font-size: 1rem;
     margin: 5px 0;
   }
   
-  .themes-row {
+  .themes-row-editNoiseStudent {
     gap: 6px;
     padding: 5px;
     max-height: calc(100vh - 180px);
   }
   
-  .theme-card {
+  .theme-card-editNoiseStudent {
     padding: 5px;
   }
   
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     width: 50px;
     height: 50px;
     font-size: 1.5rem;
     margin-bottom: 4px;
   }
   
-  .feedback-button {
+  .feedback-button-editNoiseStudent {
     width: 48px;
     height: 48px;
   }
   
-  .feedback-button .btn-icon {
+  .feedback-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 18px;
   }
   
-  .volume-button {
+  .volume-button-editNoiseStudent {
     width: 48px;
     height: 48px;
   }
   
-  .volume-button .btn-icon {
+  .volume-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: 20px;
   }
   
-  .Accept-Button-image {
+  .Accept-Button-image-editNoiseStudent {
     height: 70px;
     width: 70px;
   }
   
-  .controls-area {
+  .controls-area-editNoiseStudent {
     max-height: 100px;
     padding: 5px 10px;
   }
@@ -622,27 +615,27 @@
 
 /* Pantallas móviles estrechas */
 @media (max-width: 480px) {
-  .themes-row {
+  .themes-row-editNoiseStudent {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .volume-group {
+  .volume-group-editNoiseStudent {
     gap: 8px;
   }
   
-  .feedback-icons {
+  .feedback-icons-editNoiseStudent {
     gap: 8px;
   }
 }
 
 /* Pantallas muy estrechas - controles apilados verticalmente */
 @media (max-width: 530px) {
-  .controls-area {
+  .controls-area-editNoiseStudent {
     height: auto;
     max-height: min(30vh, 200px);
   }
   
-  .volume-group {
+  .volume-group-editNoiseStudent {
     bottom: min(18vh, 155px);
     left: 50%;
     transform: translateX(-50%);
@@ -658,18 +651,18 @@
 
 /* Modo landscape con poca altura - temas en fila horizontal */
 @media (max-height: 500px) and (orientation: landscape) {
-  .container {
+  .container-editNoiseStudent {
     padding: 0;
     margin-top: -50px;
   }
   
-  .main-title {
+  .main-title-editNoiseStudent {
     font-size: clamp(1rem, 3vh, 1.5rem);
     margin: 0;
     margin-bottom: min(8vh, 45px);
   }
   
-  .themes-row {
+  .themes-row-editNoiseStudent {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -680,85 +673,84 @@
     overflow-y: hidden;
   }
   
-  .theme-card {
+  .theme-card-editNoiseStudent {
     padding: min(1.2vh, 10px);
     flex-direction: column;
     min-width: min(20vw, 150px);
     flex-shrink: 0;
   }
   
-  .theme-label {
+  .theme-label-editNoiseStudent {
     font-size: clamp(0.8rem, 2vh, 1rem);
     margin-bottom: min(0.8vh, 6px);
   }
   
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     width: min(12vh, 70px);
     height: min(12vh, 70px);
     font-size: min(6vh, 2.5rem);
     margin-bottom: min(2.5vh, 15px);
   }
   
-  .feedback-icons {
+  .feedback-icons-editNoiseStudent {
     gap: min(1.8vh, 12px);
   }
   
-  .feedback-button {
+  .feedback-button-editNoiseStudent {
     width: clamp(48px, 9vh, 60px);
     height: clamp(48px, 9vh, 60px);
   }
   
-  .feedback-button .btn-icon {
+  .feedback-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: min(4.5vh, 28px);
   }
   
-  .volume-button {
+  .volume-button-editNoiseStudent {
     width: min(10vh, 65px);
     height: min(10vh, 65px);
   }
   
-  .volume-button .btn-icon {
+  .volume-button-editNoiseStudent .btn-icon-editNoiseStudent {
     font-size: min(5vh, 30px);
   }
   
-  .Accept-Button-image {
+  .Accept-Button-image-editNoiseStudent {
     height: min(12vh, 85px);
     width: min(12vh, 85px);
   }
   
-  .controls-area {
+  .controls-area-editNoiseStudent {
     max-height: 100px;
   }
 }
 
 /* Landscape - Ocultar iconos de temas a partir de 430px de altura */
 @media (max-height: 500px) and (orientation: landscape) {
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     display: none !important;
   }
   
-  .theme-label {
+  .theme-label-editNoiseStudent {
     margin-bottom: min(1.5vh, 10px) !important;
   }
   
-  .feedback-icons {
+  .feedback-icons-editNoiseStudent {
     margin-top: min(1vh, 8px);
   }
 }
 
-/* Landscape - Si la anchura es menor o igual a 740px, mostrar solo iconos sin botones de feedback */
+/* Landscape - Si la anchura es menor o igual a 740px, mostrar solo iconos */
 @media (max-width: 862px) and (orientation: landscape) {
-  .feedback-icons {
+  .feedback-icons-editNoiseStudent {
     display: none !important;
   }
   
-  .icon-circle {
+  .icon-circle-editNoiseStudent {
     display: flex !important;
     margin-bottom: min(1.5vh, 10px) !important;
   }
   
-  .theme-label {
+  .theme-label-editNoiseStudent {
     margin-bottom: 0 !important;
   }
 }
-

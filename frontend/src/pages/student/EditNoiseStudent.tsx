@@ -169,15 +169,16 @@ const EditNoiseStudent: React.FC = () => {
           <IonIcon icon={arrowBack} />
         </Button3Dtext>
 
-        <div className="container">
-          <h1 className="main-title">Elige tus sonidos</h1>
+        {/* CONTENEDOR PRINCIPAL */}
+        <div className="container-editNoiseStudent">
+          <h1 className="main-title-editNoiseStudent">Elige tus sonidos</h1>
 
           {/* Sección de Temas */}
-          <div className="themes-row">
+          <div className="themes-row-editNoiseStudent">
             {THEMES.map((theme) => (
               <SimpleButton
                 key={theme.id}
-                className={`theme-card ${selectedTheme === theme.id ? 'selected' : ''} ${isMuted ? 'disabled' : ''}`}
+                className={`theme-card-editNoiseStudent ${selectedTheme === theme.id ? 'selected' : ''} ${isMuted ? 'disabled' : ''}`}
                 onClick={() => !isMuted && setSelectedTheme(theme.id)}
                 onKeyDown={(e: React.KeyboardEvent) => {
                   if ((e.key === 'Enter' || e.key === ' ') && !isMuted) {
@@ -190,16 +191,16 @@ const EditNoiseStudent: React.FC = () => {
                 aria-label={`Seleccionar tema ${theme.label}`}
                 aria-pressed={selectedTheme === theme.id}
               >
-                <span className="theme-label">{theme.label}</span>
+                <span className="theme-label-editNoiseStudent">{theme.label}</span>
                 
-                <div className="icon-circle" style={{ backgroundColor: theme.color }}>
+                <div className="icon-circle-editNoiseStudent" style={{ backgroundColor: theme.color }}>
                   <IonIcon icon={theme.icon} />
                 </div>
 
                 {/* Sub-iconos de feedback optimizados */}
-                <div className="feedback-icons">
+                <div className="feedback-icons-editNoiseStudent">
                   {FEEDBACK_BUTTONS.map((btn) => (
-                    <div className="feedback-item" key={btn.type}>
+                    <div className="feedback-item-editNoiseStudent" key={btn.type}>
                       <Button3Dtext
                         onClick={(e) => handleFeedbackInteraction(e, btn.type, theme.id)}
                         onKeyDown={(e) => handleFeedbackInteraction(e, btn.type, theme.id)}
@@ -208,12 +209,12 @@ const EditNoiseStudent: React.FC = () => {
                           '--bubble-bg-hover': theme.color,
                           '--bubble-shadow-dark': theme.color,
                         } as React.CSSProperties}
-                        className="feedback-button"
+                        className="feedback-button-editNoiseStudent"
                         disabled={isMuted}
                         aria-label={`Escuchar sonido de ${btn.label} para tema ${theme.label}`}
                         pressed={pressedButton === `${theme.id}-${btn.type}`}
                       >
-                        <IonIcon icon={btn.icon} className="btn-icon" style={{ fontSize: '24px' }} />
+                        <IonIcon icon={btn.icon} className="btn-icon-editNoiseStudent" style={{ fontSize: '24px' }} />
                       </Button3Dtext>
                     </div>
                   ))}
@@ -223,16 +224,16 @@ const EditNoiseStudent: React.FC = () => {
           </div>
 
           {/* Sección de Volumen */}
-          <div className="controls-area">
-            <div className="volume-group">
+          <div className="controls-area-editNoiseStudent">
+            <div className="volume-group-editNoiseStudent">
               {VOLUMES.map((vol) => (
-                <div key={vol.id} className="volume-wrapper">
-                  <span className="volume-label">{vol.label}</span>
+                <div key={vol.id} className="volume-wrapper-editNoiseStudent">
+                  <span className="volume-label-editNoiseStudent">{vol.label}</span>
                   <Button3Dtext
                     onClick={() => handleVolumeChange(vol.id)}
-                    className={`volume-button ${selectedVolume === vol.id ? 'selected' : ''}`}
+                    className={`volume-button-editNoiseStudent ${selectedVolume === vol.id ? 'selected' : ''}`}
                   >
-                    <IonIcon icon={vol.icon} className="btn-icon" style={{ fontSize: '32px' }} />
+                    <IonIcon icon={vol.icon} className="btn-icon-editNoiseStudent" style={{ fontSize: '32px' }} />
                   </Button3Dtext>
                 </div>
               ))}
@@ -245,7 +246,7 @@ const EditNoiseStudent: React.FC = () => {
                 onClick={handleSavePreferences}
                 aria-label="Guardar preferencias de audio"
               >
-                <img src={imgAceptar} alt="Guardar los cambios" className="Accept-Button-image" />
+                <img src={imgAceptar} alt="Guardar los cambios" className="Accept-Button-image-editNoiseStudent" />
               </Button3Dtext>
             </div>
           </div>
