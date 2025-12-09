@@ -135,6 +135,13 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     const hoverTimer = useRef<number | null>(null);
     const HOVER_DELAY = 800;
 
+    const handleKeyActivate = (e: React.KeyboardEvent, action: () => void) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            action();
+        }
+    };
+
     const triggerHover = (action?: () => void) => {
         if (!enableHoverMode || !action) return;
         if (hoverTimer.current) {
@@ -344,6 +351,8 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                             <GameControlButton
                                 onClick={onRepeat}
                                 onMouseEnter={enableHoverMode ? onRepeat : undefined}
+                                onKeyDown={(e) => handleKeyActivate(e, onRepeat)}
+                                tabIndex={0}
                             >
                                 <img
                                     src={imgRepetir}
@@ -365,6 +374,8 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                                         ? () => { incrementMessageIndex(); onNext(); }
                                         : undefined
                                 }
+                                onKeyDown={(e) => handleKeyActivate(e, () => { incrementMessageIndex(); onNext(); })}
+                                tabIndex={0}
                             >
                                 <img
                                     src={imgSiguiente}

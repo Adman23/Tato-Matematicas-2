@@ -1,5 +1,5 @@
 .EditGame2-content {
-    --background: var(--background-color);
+    --background: var(--ion-color-primary-contrast);
     min-height: 100dvh;
     overflow: hidden;
     padding: clamp(8px, 2vw, 12px) 0;
@@ -13,7 +13,7 @@
     justify-content: flex-start;
     width: min(1100px, 100%);
     margin: 0 auto;
-    background-color: var(--background-color);
+    background-color: var(--ion-color-primary-contrast);
     box-sizing: border-box;
     padding: clamp(8px, 2vw, 18px);
     gap: clamp(10px, 2vh, 16px);

@@ -5,7 +5,8 @@ import './ResultsScreen.css';
 import GameHeader from './GameHeader';
 import iconHint from '/assets/Tato/TatoPista.png';
 import tatoImage from '/assets/Tato/Tato.png';
-import acceptButton from '/assets/juegosImg/aceptar.png';
+import iconCorrect from '/assets/juegosImg/correct.png';
+import { Button3Dtext } from '../../global_components/PushableButtons';
 
 interface ResultsScreenProps {
   totalRounds: number;
@@ -48,8 +49,10 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   // Calcular estrellas (simple: 3 si todos correctos, 2 si >50%, 1 si completó)
   const calculateStars = () => {
     const percentage = (netCorrect / totalNumbersRequired) * 100;
-    if (percentage >= 90) return 3;
-    if (percentage >= 50) return 2;
+    if (percentage >= 90) return 5;
+    if (percentage >= 75) return 4;
+    if (percentage >= 50) return 3;
+    if (percentage >= 25) return 2;
     return 1;
   };
 
@@ -107,7 +110,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
         {/* Estrellas */}
         <div className="stars-container">
-          {[1, 2, 3].map((starNum) => (
+          {[1, 2, 3, 4, 5].map((starNum) => (
             <IonIcon
               key={starNum}
               icon={star}
@@ -118,22 +121,14 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
         {/* Botón Aceptar */}
         <div className="accept-button-container">
-          <button
-            className="pushable-accept-button"
+          <Button3Dtext
+            className="exit-btn"
             onClick={onHomeClick}
             onMouseEnter={enableHoverMode ? onHomeClick : undefined}
             aria-label="Aceptar y volver"
           >
-            <span className="shadow-accept"></span>
-            <span className="edge-accept"></span>
-            <span className="front-accept">
-              <img
-                src={acceptButton}
-                alt="Aceptar"
-                className="accept-icon"
-              />
-            </span>
-          </button>
+            <img src={iconCorrect} alt="Aceptar" />
+          </Button3Dtext>
         </div>
       </div>
     </div>

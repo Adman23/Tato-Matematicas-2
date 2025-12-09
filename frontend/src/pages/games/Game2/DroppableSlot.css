@@ -20,6 +20,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  outline: none;
 }
 
 .droppable-slot-hover {
@@ -38,6 +39,29 @@
   border: 3px dashed transparent;
   transition: all 0.2s;
   cursor: default;
+}
+
+.droppable-slot-target:focus-visible .empty-slot,
+.droppable-slot-target:focus-visible .number-card-v2 {
+  transform: scale(1.2);
+  background: transparent;
+  border-color: #000;
+  border-style: solid;
+  border-width: 4px;
+  box-shadow: none;
+  z-index: 5;
+}
+
+/* Borde negro también al navegar o pasar con hover SOLO en el target activo */
+.droppable-slot-target:hover .empty-slot {
+  transform: scale(1.2);
+  background: transparent;
+  border-color: #000;
+  border-style: solid;
+  border-width: 4px;
+  box-shadow: none;
+  z-index: 5;
+  animation: none;
 }
 
 /* Solo la casilla objetivo (primera vacía) se ve */

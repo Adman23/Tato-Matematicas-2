@@ -1381,7 +1381,7 @@ const Game2: React.FC = () => {
             totalNumbersCorrect={totalNumbersCorrect}
             totalNumbersRequired={totalNumbersRequired}
             onHomeClick={() => hoverOrClick(exitToDashboard)}
-            headerTitle="Sort Number"
+            headerTitle="Ordenar Nº"
             headerPictogram1={imgOrdenar}
             headerPictogramArrow={imgFlecha}
             headerPictogram2={imgJuego}
@@ -1398,7 +1398,7 @@ const Game2: React.FC = () => {
           <>
             {/* Header */}
               <GameHeader
-                title="Sort Number"
+                title="Ordenar Nº"
                 pictogram1={imgOrdenar}
                 pictogramArrow={imgFlecha}
                 pictogram2={imgJuego}

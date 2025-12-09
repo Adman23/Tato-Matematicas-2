@@ -137,6 +137,16 @@
   z-index: 10;
 }
 
+/* Borde negro más marcado en la bandeja superior al hacer hover o navegar con tab */
+.available-numbers-top .number-card-v2:hover,
+.available-numbers-top .number-card-v2:focus-visible {
+  border-color: #000 !important;
+  border-width: 4px;
+  box-shadow: none;
+  transform: scale(1.2);
+  outline: none;
+}
+
 /* Active (click): Scale 1.2 + cursor grabbing */
 .number-card-v2:active {
   transform: scale(1.2);
@@ -376,6 +386,9 @@
    ============================================================================ */
 
 .number-card-dragging-touch {
+  background: var(--bubble-bg, #e5e7eb);
+  border: 2px solid var(--bubble-selected-bg, #000000);
+  color: var(--tatomaths-text, #000000);
   opacity: 0.8;
   transform: scale(1.1) !important;
   box-shadow: 0 6px 16px color-mix(in srgb, var(--ion-color-primary, #3b82f6) 60%, transparent);
