@@ -48,6 +48,11 @@ interface DropZoneProps {
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent, targetIndex: number) => void;
   feedbackType?: 'correct' | 'incorrect' | null;
+  onSlotClick?: (targetIndex: number) => void;
+  onSlotKeyDown?: (e: React.KeyboardEvent, targetIndex: number) => void;
+  enableClickPlacement?: boolean;
+  onSlotHover?: (targetIndex: number) => void;
+  enableHoverPlacement?: boolean;
 }
 
 /**
@@ -101,7 +106,12 @@ const DropZone: React.FC<DropZoneProps> = ({
   lockedIndices = new Set(),
   onDragOver,
   onDrop,
-  feedbackType = null
+  feedbackType = null,
+  onSlotClick,
+  onSlotKeyDown,
+  enableClickPlacement = false,
+  onSlotHover,
+  enableHoverPlacement = false
 }) => {
   // Calcular el primer índice vacío UNA SOLA VEZ, fuera del loop
   const firstEmptyIndex = numbers.findIndex(n => n === undefined);
@@ -138,6 +148,11 @@ const DropZone: React.FC<DropZoneProps> = ({
         onDragOver={onDragOver}
         onDrop={onDrop}
         feedbackType={feedbackType}
+        onClickSlot={onSlotClick}
+        onKeyDownSlot={onSlotKeyDown}
+        enableClickPlacement={enableClickPlacement}
+        onHoverSlot={onSlotHover}
+        enableHoverPlacement={enableHoverPlacement}
       />
     );
   });

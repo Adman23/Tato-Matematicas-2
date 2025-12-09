@@ -40,7 +40,7 @@
  * />
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
     IonContent,
     IonPage
@@ -79,6 +79,7 @@ import { GameControlButton } from '../../global_components/GameControlButton';
  * @param onNext - Callback called when the "Next" button is pressed.
  * @param onHomeClick - Callback called when the home button is pressed.
  * @param onRepeat - Optional callback to repeat the hint when the answer is incorrect.
+ * @param enableHoverMode - If true, hovering over buttons triggers the same actions (accessibility).
  *
  * @returns `FeedbackScreenProps` type used by the component.
  */
@@ -100,6 +101,7 @@ interface FeedbackScreenProps {
     onRepeat?: () => void;
     hideNextOnError?: boolean; // Si es true, oculta el botón "Siguiente" cuando hay error
     audioPreferences?: AudioPreferences; // Preferencias de audio del usuario
+    enableHoverMode?: boolean;
 }
 
 /**
@@ -128,10 +130,39 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     onHomeClick,
     onRepeat,
     hideNextOnError = false,
-    audioPreferences
+    audioPreferences,
+    enableHoverMode = false
 }) => {
     // Estado para mostrar la pantalla de confirmación de salida
     const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const hoverTimer = useRef<number | null>(null);
+    const HOVER_DELAY = 800;
+
+    const handleKeyActivate = (e: React.KeyboardEvent, action: () => void) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            action();
+        }
+    };
+
+    const triggerHover = (action?: () => void) => {
+        if (!enableHoverMode || !action) return;
+        if (hoverTimer.current) {
+            window.clearTimeout(hoverTimer.current);
+        }
+        hoverTimer.current = window.setTimeout(() => {
+            hoverTimer.current = null;
+            action();
+        }, HOVER_DELAY);
+    };
+
+    useEffect(() => {
+        return () => {
+            if (hoverTimer.current) {
+                window.clearTimeout(hoverTimer.current);
+            }
+        };
+    }, []);
 
 
     /**
@@ -302,6 +333,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
             <ExitScreen
                 confirmExit={onHomeClick}
                 cancelExit={() => setShowExitConfirm(false)}
+                enableHoverMode={enableHoverMode}
             />
         );
     }
@@ -318,6 +350,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     currentRound={currentRound}
                     totalRounds={totalRounds}
                     onBackClick={() => setShowExitConfirm(true)}
+                    onBackHover={enableHoverMode ? () => triggerHover(() => setShowExitConfirm(true)) : undefined}
                 />
 
                 {/* Feedback screen */}
@@ -341,7 +374,11 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     <div className="feedback-button-container">
                         {!isCorrect && onRepeat && (
                             <GameControlButton
+                                aria-label="Repetir"
                                 onClick={onRepeat}
+                                onMouseEnter={enableHoverMode ? onRepeat : undefined}
+                                onKeyDown={(e) => handleKeyActivate(e, onRepeat)}
+                                tabIndex={0}
                             >
                                 <img
                                     src={imgRepetir}
@@ -357,7 +394,15 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                         {/* Mostrar botón "Siguiente" solo si: es correcto O (es incorrecto pero hideNextOnError es false) */}
                         {(isCorrect || !hideNextOnError) && (
                             <GameControlButton
+                                aria-label="Siguiente"
                                 onClick={() => { incrementMessageIndex(); onNext(); }}
+                                onMouseEnter={
+                                    enableHoverMode
+                                        ? () => { incrementMessageIndex(); onNext(); }
+                                        : undefined
+                                }
+                                onKeyDown={(e) => handleKeyActivate(e, () => { incrementMessageIndex(); onNext(); })}
+                                tabIndex={0}
                             >
                                 <img
                                     src={imgSiguiente}
