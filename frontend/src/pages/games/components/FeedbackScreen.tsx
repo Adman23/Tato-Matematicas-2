@@ -316,6 +316,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     <div className="feedback-button-container">
                         {!isCorrect && onRepeat && (
                             <GameControlButton
+                                aria-label="Repetir"
                                 onClick={onRepeat}
                             >
                                 <img
@@ -332,6 +333,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                         {/* Mostrar botón "Siguiente" solo si: es correcto O (es incorrecto pero hideNextOnError es false) */}
                         {(isCorrect || !hideNextOnError) && (
                             <GameControlButton
+                                aria-label="Siguiente"
                                 onClick={() => { incrementMessageIndex(); onNext(); }}
                             >
                                 <img

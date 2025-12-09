@@ -339,6 +339,7 @@ export default function EditGame1() {
                             </div>
                             {/* Voice Button */}
                             <Button3Dtext
+                                aria-label="Configurar voz"
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowVoiceModal(true) }}
                             >
@@ -369,6 +370,7 @@ export default function EditGame1() {
 
                             {/* Quantity Button */}
                             <Button3Dtext
+                                aria-label="Configurar cantidad"
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowQuantityModal(true) }}
                             >
@@ -392,6 +394,7 @@ export default function EditGame1() {
                             </div>
                             {/* Range Button */}
                             <Button3Dtext
+                                aria-label="Configurar rango"
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowRangeModal(true) }}
                             >
@@ -432,7 +435,10 @@ export default function EditGame1() {
                             aria-modal="true"
                             aria-label="Seleccionar cantidad"
                         >
-                            <button className="EditGame1-modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <button
+                                className="EditGame1-modal-close-btn"
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de cantidad">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
@@ -485,7 +491,10 @@ export default function EditGame1() {
                             aria-modal="true"
                             aria-label="Seleccionar rango"
                         >
-                            <button className="EditGame1-modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <button
+                                className="EditGame1-modal-close-btn"
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de rango">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-range-grid">
                                 {RANGE_OPTIONS.map((option) => (
                                     <div
@@ -535,7 +544,10 @@ export default function EditGame1() {
                             aria-modal="true"
                             aria-label="Seleccionar voz"
                         >
-                            <button className="EditGame1-modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <button
+                                className="EditGame1-modal-close-btn"
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de voz">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-voice-grid">
                                 <div
                                     className={`EditGame1-modal-option voice ${voice === 'woman' ? 'selected' : ''}`}

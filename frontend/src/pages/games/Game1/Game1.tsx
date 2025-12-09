@@ -928,6 +928,7 @@ const Game1: React.FC = () => {
                             <div className="game1-buttons-container">
                                 {/* Listen button */}
                                 <GameControlButton
+                                    aria-label="Escuchar número"
                                     disabled={listeningAudio}
                                     onClick={() => speakNumber(currentNumber)}
                                 >
@@ -943,6 +944,7 @@ const Game1: React.FC = () => {
 
                                 {/* Video button - always visible on the left */}
                                 <GameControlButton
+                                    aria-label="Ver tutorial en video"
                                     onClick={openVideoModal}
                                 >
                                     <img
@@ -957,6 +959,7 @@ const Game1: React.FC = () => {
 
                                 {/* Hint button */}
                                 <GameControlButton
+                                    aria-label="Usar pista"
                                     onClick={useHint}
                                     disabled={hintsUsed.length >= availableNumbers.length - 1}
                                 >
@@ -972,6 +975,7 @@ const Game1: React.FC = () => {
 
                                 {/* Accept/Check button */}
                                 <GameControlButton
+                                    aria-label="Comprobar respuesta"
                                     onClick={checkAnswer}
                                     disabled={selectedNumber === null}
                                 >
@@ -995,7 +999,10 @@ const Game1: React.FC = () => {
                 {showVideoModal && (
                     <div className="game1-video-modal-overlay" onClick={closeVideoModal}>
                         <div className="game1-video-modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="game1-video-close-button" onClick={closeVideoModal}>
+                            <button
+                                className="game1-video-close-button"
+                                onClick={closeVideoModal}
+                                aria-label="Cerrar video tutorial">
                                 ✕
                             </button>
                             <video
