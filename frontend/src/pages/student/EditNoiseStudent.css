@@ -260,11 +260,15 @@
   justify-content: center;
 }
 
-.volume-button-editNoiseStudent .front-editNoiseStudent {
+/* ESTILOS DE ESTADO: .front y .edge son clases internas del componente Button3D */
+
+/* Estado por defecto (No seleccionado) - GRIS */
+.volume-button-editNoiseStudent .front {
   background-color: #dcdcdc !important;
+  color: #000 !important;
 }
 
-.volume-button-editNoiseStudent .edge-editNoiseStudent {
+.volume-button-editNoiseStudent .edge {
   background-color: #b0b0b0 !important;
   filter: brightness(0.7);
   background-image: linear-gradient(
@@ -276,11 +280,13 @@
   ) !important;
 }
 
-.volume-button-editNoiseStudent.selected .front-editNoiseStudent {
+/* Estado Seleccionado - COLOR PRIMARIO */
+.volume-button-editNoiseStudent.selected .front {
   background-color: var(--bubble-bg) !important;
+  color: #000 !important;
 }
 
-.volume-button-editNoiseStudent.selected .edge-editNoiseStudent {
+.volume-button-editNoiseStudent.selected .edge {
   background-color: var(--bubble-bg) !important;
   filter: brightness(0.7);
   background-image: linear-gradient(
@@ -294,7 +300,7 @@
 
 .volume-button-editNoiseStudent .btn-icon-editNoiseStudent {
   font-size: clamp(24px, 4vh, 32px);
-  color: #000;
+  color: inherit;
   font-weight: normal;
   --ionicon-stroke-width: 32px;
 }
