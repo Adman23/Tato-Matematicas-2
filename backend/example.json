@@ -1,7 +1,8 @@
 {
     "user_profile":{
         "audio_preferences":{
-
+            "theme": "classic",
+            "volume": "medio"
         },
         "text_preferences":{
             "active_palette_idx": 0,

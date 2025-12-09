@@ -192,24 +192,50 @@ async def get_user_data(user_id: str):
 
 @router.patch("/{target_user_id}", response_model=UserData)
 async def update_user(
-    target_user_id: str, 
-    payload: UserUpdate, 
+    target_user_id: str,
+    payload: UserUpdate,
     current_user: tuple = Depends(is_auth_current_user)
 ):
+    """
+    Actualiza la información de un usuario (username, password, photo_url).
+
+    Permite que un usuario edite su propio perfil o que profesores/admins
+    editen perfiles de otros usuarios. Valida permisos antes de permitir
+    la modificación.
+
+    Args:
+        target_user_id (str): ID del usuario a actualizar.
+        payload (UserUpdate): Datos a actualizar (username, password, photo_url, password_type).
+        current_user (tuple): Tupla (id, email) del usuario autenticado.
+
+    Returns:
+        UserData: Información completa del usuario actualizado.
+
+    Raises:
+        HTTPException:
+            - 403: Si el usuario no tiene permisos para editar al target.
+            - 400: Si el username ya está en uso.
+            - 404: Si el usuario no se encuentra tras la actualización.
+            - 500: Error interno al actualizar.
+    """
     requester_id, requester_email = current_user
-    
-    # 1. VERIFICAR PERMISOS (MODIFICADO)
+
+    # 1. VERIFICAR PERMISOS
     # Si el usuario intenta editar a otro, verificamos si tiene rango superior
     if requester_id != target_user_id:
         # Consultamos el rol de quien hace la petición
-        requester_data = supabase_admin.table("users")\
-            .select("role")\
-            .eq("id", requester_id)\
-            .single()\
+        requester_data = supabase_admin.table("users") \
+            .select("role") \
+            .eq("id", requester_id) \
+            .single() \
             .execute()
-            
-        requester_role = requester_data.data.get("role") if requester_data.data else "student"
-        
+
+        requester_role = (
+            requester_data.data.get("role")
+            if requester_data.data
+            else "student"
+        )
+
         # Solo permitimos si es Profesor o Admin
         if requester_role not in ["admin", "teacher"]:
             raise HTTPException(
@@ -220,13 +246,9 @@ async def update_user(
     try:
         # 2. ACTUALIZAR AUTH (Email/Username y Password)
         auth_attributes = {}
-        
+
         if payload.username:
             new_email = f"{payload.username}@tatomaths.local"
-            # Solo actualizamos si el email cambia
-            # Nota: Para editar a OTROS, no podemos comparar con requester_email.
-            # Deberíamos comparar con el email del target, pero Supabase Auth maneja
-            # la redundancia internamente si el email es el mismo, así que lo enviamos.
             auth_attributes["email"] = new_email
 
         if payload.password:
@@ -234,66 +256,78 @@ async def update_user(
 
         if auth_attributes:
             try:
-                supabase_admin.auth.admin.update_user_by_id(target_user_id, auth_attributes)
+                supabase_admin.auth.admin.update_user_by_id(
+                    target_user_id, auth_attributes
+                )
             except Exception as e:
                 msg = str(e).lower()
                 if "duplicate" in msg or "unique" in msg:
-                    raise HTTPException(status_code=400, detail="El nombre de usuario ya está en uso.")
+                    raise HTTPException(
+                        status_code=400,
+                        detail="El nombre de usuario ya está en uso."
+                    )
                 raise e
 
-        # 3. ACTUALIZAR DB PÚBLICA (Solo foto y tipo de contraseña, sin group_id)
+        # 3. ACTUALIZAR DB PÚBLICA (foto y tipo de contraseña)
         public_updates = {}
         if payload.photo_url:
             public_updates["photo_url"] = payload.photo_url
-         
+
         if payload.password_type:
-           public_updates["password_type"] = payload.password_type
-            
+            public_updates["password_type"] = payload.password_type
+
         if public_updates:
-            supabase_admin.table("users")\
-                .update(public_updates)\
-                .eq("id", target_user_id)\
+            supabase_admin.table("users") \
+                .update(public_updates) \
+                .eq("id", target_user_id) \
                 .execute()
 
         # 4. CONSTRUIR RESPUESTA
         resp = supabase_admin.table("users") \
-                .select("id, role, photo_url, group_id, password_type, \
-                        user_profiles!user_id(*), \
-                        game_configurations!user_id(*)") \
-                .eq("id", target_user_id) \
-                .single() \
-                .execute()
+            .select(
+                "id, role, photo_url, group_id, password_type, "
+                "user_profiles!user_id(*), "
+                "game_configurations!user_id(*)"
+            ) \
+            .eq("id", target_user_id) \
+            .single() \
+            .execute()
 
         if not resp.data:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado tras actualización")
+            raise HTTPException(
+                status_code=404,
+                detail="Usuario no encontrado tras actualización"
+            )
 
         user_data_db = resp.data
-        
+
         # Calculamos el username final
         final_username = payload.username if payload.username else None
-        
-        # Si no cambiamos el nombre, intentamos recuperarlo de Auth (o usamos un placeholder seguro)
+
+        # Si no cambiamos el nombre, intentamos recuperarlo de Auth
         if not final_username:
-             try:
-                target_auth = supabase_admin.auth.admin.get_user_by_id(target_user_id)
+            try:
+                target_auth = supabase_admin.auth.admin.get_user_by_id(
+                    target_user_id
+                )
                 if target_auth and target_auth.user and target_auth.user.email:
                     final_username = target_auth.user.email.split("@")[0]
-             except:
-                final_username = "usuario" # Fallback raro
+            except Exception:
+                final_username = "usuario"  # Fallback seguro
 
         # Manejo seguro de listas
         u_profile = user_data_db.get("user_profiles")
         if isinstance(u_profile, list) and len(u_profile) > 0:
             u_profile = u_profile[0]
         elif isinstance(u_profile, list):
-             u_profile = None
-             
+            u_profile = None
+
         return UserData(
             id=user_data_db["id"],
             username=final_username,
             role=user_data_db["role"],
             photo_url=user_data_db.get("photo_url"),
-            password_type = user_data_db.get("password_type"),
+            password_type=user_data_db.get("password_type"),
             group_id=user_data_db.get("group_id"),
             user_profile=u_profile,
             game_configurations=user_data_db.get("game_configurations") or [],
@@ -349,4 +383,88 @@ async def get_color_preferences(user_id: str):
         return resp.data["color_preferences"]
 
     except Exception as e:
-        raise HTTPException(500, f"Error fetching color preferences: {e}")
+        raise HTTPException(500, f"Error fetching color preferences: {e}")# Endpoints para audio_preferences
+# Agregar estos endpoints al final de user.py
+
+@router.post("/{user_id}/update_audio_preferences")
+async def update_audio_preferences(user_id: str, audio_preferences: dict):
+    """
+    Actualiza las preferencias de audio de un usuario.
+
+    Guarda el tema de sonido y nivel de volumen seleccionados por el estudiante
+    para personalizar su experiencia en los juegos.
+
+    Args:
+        user_id (str): ID del usuario cuyas preferencias se actualizarán.
+        audio_preferences (dict): Diccionario con keys 'theme' y 'volume'.
+            - theme: 'classic' | 'digital' | 'zen' | 'juego'
+            - volume: 'silencio' | 'bajito' | 'medio' | 'alto'
+
+    Returns:
+        dict: Confirmación con mensaje y preferencias guardadas.
+
+    Raises:
+        HTTPException: 500 si ocurre un error al actualizar la base de datos.
+    """
+    try:
+        update = supabase_admin.table("user_profiles") \
+            .update({"audio_preferences": audio_preferences}) \
+            .eq("user_id", user_id) \
+            .execute()
+
+        print("Audio preferences guardadas:", update.data)
+        return {
+            "message": "Audio preferences updated",
+            "saved": audio_preferences
+        }
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating audio preferences: {str(e)}"
+        )
+
+
+@router.get("/{user_id}/audio_preferences")
+async def get_audio_preferences(user_id: str):
+    """
+    Obtiene las preferencias de audio de un usuario.
+
+    Si el usuario no tiene preferencias guardadas, devuelve valores por defecto
+    (theme='classic', volume='medio').
+
+    Args:
+        user_id (str): ID del usuario cuyas preferencias se consultan.
+
+    Returns:
+        dict: Diccionario con keys 'theme' y 'volume'.
+
+    Raises:
+        HTTPException:
+            - 404: Si el usuario no existe.
+            - 500: Error al consultar la base de datos.
+    """
+    try:
+        resp = supabase_admin.table("user_profiles") \
+            .select("audio_preferences") \
+            .eq("user_id", user_id) \
+            .single() \
+            .execute()
+
+        if not resp.data:
+            raise HTTPException(404, "User not found")
+
+        # Devolver preferencias por defecto si no existen
+        audio_prefs = resp.data.get("audio_preferences")
+        if not audio_prefs:
+            return {"theme": "classic", "volume": "medio"}
+
+        return audio_prefs
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving audio preferences: {str(e)}"
+        )

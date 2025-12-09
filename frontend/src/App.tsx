@@ -64,6 +64,7 @@ import Prueba from './pages/teacherProfile/EditStudent/prueba';
 import EditGame1 from './pages/teacherProfile/EditStudent/EditGame1';
 import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
 import EditColorsStudent from './pages/student/EditColorsStudent';
+import EditNoiseStudent from './pages/student/EditNoiseStudent';
 
 
 /**
@@ -120,6 +121,8 @@ export default function App() {
                   exact component={EditGame2} />
                 <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
                   exact component={EditColorsStudent} />
+                <PrivateRoute path="/student/edit-noise" allowedRoles={["student"]}
+                  exact component={EditNoiseStudent} />
                 <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]}
                   exact component={TutorDashboard} />
                 <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]}

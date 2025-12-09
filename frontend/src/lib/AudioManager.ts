@@ -19,6 +19,7 @@
  */
 class AudioManager {
     private audio: HTMLAudioElement | null = null;
+    private volume: number = 0.6; // Default volume (60%)
 
     /**
      * Waits for any active speech synthesis (screen reader) to finish.
@@ -93,6 +94,7 @@ class AudioManager {
 
             const audio = new Audio(path);
             this.audio = audio;
+            audio.volume = this.volume; // Apply current volume setting
 
             const finish = () => {
                 try {
@@ -141,6 +143,41 @@ class AudioManager {
         }
     }
 
+    /**
+     * Sets the volume for audio playback (0.0 to 1.0)
+     *
+     * @param volume - Volume level between 0.0 (mute) and 1.0 (full volume)
+     * @returns void
+     * @example
+     * audioManager.setVolume(0.5); // 50% volume
+     */
+    setVolume(volume: number) {
+        this.volume = Math.max(0, Math.min(1, volume)); // Clamp between 0 and 1
+        if (this.audio) {
+            this.audio.volume = this.volume;
+        }
+    }
+
+    /**
+     * Play audio with a specific volume, temporarily overriding the default volume.
+     * After playback, the default volume is restored.
+     *
+     * @param path - Path to the audio file
+     * @param volume - Volume level for this playback (0.0 to 1.0)
+     * @returns Promise that resolves when audio finishes
+     * @example
+     * await audioManager.playWithVolume('/assets/sounds/1.mp3', 0.6);
+     */
+    async playWithVolume(path: string, volume: number): Promise<void> {
+        const originalVolume = this.volume;
+        this.volume = Math.max(0, Math.min(1, volume));
+        try {
+            await this.play(path);
+        } finally {
+            this.volume = originalVolume;
+        }
+    }
+
     // Play an array of audio files sequentially
     /**
      * Reproduce una secuencia de rutas de audio de forma secuencial.
@@ -159,6 +196,28 @@ class AudioManager {
         for (const p of paths) {
             // If stop() was called externally, audio will be null and play will just proceed
             await this.play(p);
+        }
+    }
+
+    /**
+     * Play a sequence of audio files with a specific volume.
+     * Useful for essential game audio that should maintain consistent volume.
+     *
+     * @param paths - Array of audio file paths
+     * @param volume - Volume level for this sequence (0.0 to 1.0)
+     * @returns Promise that resolves when all audio finishes
+     * @example
+     * await audioManager.playSequentialWithVolume(['/assets/sounds/1.mp3'], 0.6);
+     */
+    async playSequentialWithVolume(paths: string[], volume: number): Promise<void> {
+        const originalVolume = this.volume;
+        this.volume = Math.max(0, Math.min(1, volume));
+        try {
+            for (const p of paths) {
+                await this.play(p);
+            }
+        } finally {
+            this.volume = originalVolume;
         }
     }
 }

@@ -27,8 +27,35 @@ import { useAuth } from '../../contexts/AuthContext';
 import { createPortal } from 'react-dom';
 import ConfirmationModal from '../global_components/ConfirmationModal';
 
+/**
+ * Avatar por defecto cuando no se selecciona ninguna imagen.
+ * @constant
+ */
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
+/**
+ * Componente de registro de profesores.
+ * 
+ * @remarks
+ * Permite a los administradores registrar nuevos profesores con:
+ * - Nombre de usuario único
+ * - Contraseña segura (validación de coincidencia)
+ * - Avatar personalizado o por defecto
+ * 
+ * Características:
+ * - Validación de contraseña en tiempo real
+ * - Toggle de visibilidad de contraseña
+ * - Previsualización de avatar
+ * - Modal de confirmación tras registro exitoso
+ * - Gestión de imágenes mediante API
+ * 
+ * @component
+ * 
+ * @example
+ * ```tsx
+ * <TeacherRegister />
+ * ```
+ */
 export default function TeacherRegister() {
   const router = useIonRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);

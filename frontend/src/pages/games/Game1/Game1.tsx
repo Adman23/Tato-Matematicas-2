@@ -39,6 +39,7 @@ import audioManager from '../../../lib/AudioManager';
 import ResultsScreen from '../components/ResultsScreen';
 import { GameControlButton } from '../../global_components/GameControlButton';
 import LoadingSpinner from '../../global_components/LoadingSpinner';
+import { getAudioPreferences, type AudioPreferences } from '../../../lib/api';
 
 // (Now using NumberPictogram component which resolves pictogram path for 0-10)
 
@@ -88,6 +89,7 @@ const Game1: React.FC = () => {
     const [loadingMessages, setLoadingMessages] = useState(true);
     const [config, setConfig] = useState<GameConfig | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
+    const [audioPreferences, setAudioPreferences] = useState<AudioPreferences | undefined>();
 
     // Game states
     const [currentRound, setCurrentRound] = useState(1);
@@ -235,6 +237,16 @@ const Game1: React.FC = () => {
             };
 
             setConfig(validatedConfig);
+            
+            // Load audio preferences
+            try {
+                const audioPrefs = await getAudioPreferences(currentUser.id);
+                setAudioPreferences(audioPrefs);
+            } catch (err) {
+                console.error('Error loading audio preferences:', err);
+                // Use defaults if error
+            }
+            
             setLoadingGame(false);
         } catch (error) {
             console.error('Error loading game config:', error);
@@ -725,7 +737,7 @@ const Game1: React.FC = () => {
             return files;
         };
 
-        // Play files sequentially using AudioManager
+        // Play files sequentially using AudioManager with medium volume (essential for gameplay)
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
@@ -736,7 +748,9 @@ const Game1: React.FC = () => {
             try {
                 const base = useWomanVoice ? '/assets/sounds/woman/' : '/assets/sounds/man/';
                 const paths = files.map(f => `${base}${f}`);
-                await audioManager.playSequential(paths);
+                // Always use medium volume (0.6) for number pronunciation, regardless of user preferences
+                // This is essential for gameplay in the "Asociar Números" game
+                await audioManager.playSequentialWithVolume(paths, 0.6);
             } finally {
                 setListeningAudio(false);
             }
@@ -847,6 +861,7 @@ const Game1: React.FC = () => {
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}
                 onRepeat={repeatExercise}
+                audioPreferences={audioPreferences}
             />
         );
     }
@@ -887,6 +902,7 @@ const Game1: React.FC = () => {
                         headerPictogramArrow={imgFlecha}
                         headerPictogram2={imgJuego}
                         elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
+                        audioPreferences={audioPreferences}
                     />
                 ) : showExitConfirm ? (
                     <ExitScreen
