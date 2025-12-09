@@ -298,7 +298,7 @@ export default function EditGame2() {
                         <Button3Dtext
                             onClick={() => router.push('/student/profile', "back", "pop")}
                             aria-label="Volver atrás">
-                            <IonIcon icon={arrowBack} />
+                            <IonIcon icon={arrowBack} aria-hidden="true" />
                         </Button3Dtext>
                     </div>
 
@@ -322,6 +322,8 @@ export default function EditGame2() {
                             <Button3Dtext
                                 className="EditGame2-config-button-3d"
                                 onClick={() => { setShowQuantityModal(true); setError(''); }}
+                                tabIndex={0}
+                                aria-label="Configurar cantidad de números"
                             >
                                 <div className="EditGame2-config-button-content">
                                     <img
@@ -345,6 +347,8 @@ export default function EditGame2() {
                             <Button3Dtext
                                 className="EditGame2-config-button-3d"
                                 onClick={() => { setShowRangeModal(true); setError(''); }}
+                                tabIndex={0}
+                                aria-label="Configurar rango de números"
                             >
                                 <div className="EditGame2-config-button-content">
                                     <img
@@ -371,6 +375,8 @@ export default function EditGame2() {
                             <Button3Dtext
                                 className="EditGame2-config-button-3d"
                                 onClick={() => { setShowOrderModal(true); setError(''); }}
+                                tabIndex={0}
+                                aria-label="Configurar orden de números"
                             >
                                 <div className="EditGame2-config-button-content">
                                     <img
@@ -392,9 +398,10 @@ export default function EditGame2() {
                             <Button3Dtext
                                 className="EditGame2-config-button-3d"
                                 onClick={() => { setShowAccessibilityModal(true); setError(''); }}
+                                aria-label="Configurar modo de accesibilidad"
                             >
                                 <div className="EditGame2-config-button-content">
-                                    <IonIcon icon={accessibilityOutline} className="EditGame2-accessibility-icon" />
+                                    <IonIcon icon={accessibilityOutline} className="EditGame2-accessibility-icon" aria-hidden="true" />
                                     <span className="btn-text">MODO</span>
                                 </div>
                             </Button3Dtext>
@@ -409,7 +416,7 @@ export default function EditGame2() {
 
                     {/* Botón Guardar cambios */}
                     <div className="EditGame2-save-button">
-                        <Button3Dtext onClick={handleSave} disabled={saving}>
+                        <Button3Dtext onClick={handleSave} disabled={saving} tabIndex={0} aria-label="Guardar configuración">
                             {saving ? (
                                 <IonSpinner name="crescent" />
                             ) : (
@@ -431,7 +438,7 @@ export default function EditGame2() {
                 {showQuantityModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
                             <div className="modal-options-grid quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
@@ -442,6 +449,18 @@ export default function EditGame2() {
                                             className={`modal-option ${quantity === num ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                                             onClick={() => {
                                                 if (!isDisabled) {
+                                                    setQuantity(num);
+                                                    setError('');
+                                                    closeAllModals();
+                                                }
+                                            }}
+                                            tabIndex={isDisabled ? -1 : 0}
+                                            role="button"
+                                            aria-label={`Seleccionar cantidad ${num}`}
+                                            aria-disabled={isDisabled}
+                                            onKeyDown={(e) => {
+                                                if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
+                                                    e.preventDefault();
                                                     setQuantity(num);
                                                     setError('');
                                                     closeAllModals();
@@ -465,7 +484,7 @@ export default function EditGame2() {
                 {showRangeModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
                             <div className="modal-options-grid range-grid">
                                 {RANGE_OPTIONS.map((option) => (
                                     <div
@@ -482,6 +501,22 @@ export default function EditGame2() {
                                             setError('');
                                             closeAllModals();
                                         }}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-label={`Seleccionar rango ${option.label}`}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                setNumberRange(option.value);
+                                                const [minRange, maxRange] = option.value.split('-').map(Number);
+                                                const maxQuantity = maxRange - minRange + 1;
+                                                if (quantity > maxQuantity) {
+                                                    setQuantity(Math.min(quantity, maxQuantity));
+                                                }
+                                                setError('');
+                                                closeAllModals();
+                                            }
+                                        }}
                                     >
                                         <span className="modal-range-text">{option.label}</span>
                                     </div>
@@ -495,13 +530,23 @@ export default function EditGame2() {
                 {showOrderModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
                             <div className="modal-options-grid order-grid">
                                 <div
                                     className={`modal-option large ${order === 'ascending' ? 'selected' : ''}`}
                                     onClick={() => {
                                         setOrder('ascending');
                                         closeAllModals();
+                                    }}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-label="Seleccionar orden ascendente"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            setOrder('ascending');
+                                            closeAllModals();
+                                        }
                                     }}
                                 >
                                     <div className="order-content">
@@ -515,6 +560,16 @@ export default function EditGame2() {
                                     onClick={() => {
                                         setOrder('descending');
                                         closeAllModals();
+                                    }}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-label="Seleccionar orden descendente"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            setOrder('descending');
+                                            closeAllModals();
+                                        }
                                     }}
                                 >
                                     <div className="order-content">
@@ -532,7 +587,7 @@ export default function EditGame2() {
                 {showAccessibilityModal && (
                     <div className="modal-overlay" onClick={closeAllModals}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
                             <div className="modal-options-grid accessibility-grid">
                                 {ACCESSIBILITY_OPTIONS.map((option) => (
                                     <div
@@ -541,6 +596,16 @@ export default function EditGame2() {
                                         onClick={() => {
                                             setAccessibilityMode(option.value);
                                             closeAllModals();
+                                        }}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-label={`Seleccionar modo ${option.label}`}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                setAccessibilityMode(option.value);
+                                                closeAllModals();
+                                            }
                                         }}
                                     >
                                         <div className="order-content">

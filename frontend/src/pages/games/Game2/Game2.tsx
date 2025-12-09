@@ -1577,6 +1577,7 @@ const Game2: React.FC = () => {
                     controls
                     autoPlay
                     className="game2-video-player"
+                    aria-label="Video de instrucciones del Juego 2: Ordenar números"
                   >
                     <source src="/assets/videos/video_game2.mp4" type="video/mp4" />
                     Tu navegador no soporta la reproducción de videos.

@@ -632,6 +632,54 @@
     }
 }
 
+/* ========================================
+    NAVEGACIÓN CON TAB - FOCUS VISIBLE
+   ======================================== */
+
+/* Estilos de focus para todos los elementos interactivos */
+.EditGame2-back-button button:focus-visible,
+.EditGame2-config-button-3d:focus-visible,
+.EditGame2-save-button button:focus-visible,
+.modal-close-btn:focus-visible,
+.modal-option:focus-visible {
+    outline: 5px solid #2563eb;
+    outline-offset: 4px;
+    border-radius: 12px;
+    transform: scale(1.08);
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.3),
+                0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+/* Focus especial para opciones del modal */
+.modal-option:focus-visible {
+    outline-color: #2563eb;
+    outline-width: 6px;
+    border-color: #1d4ed8;
+    background: #dbeafe;
+    transform: scale(1.1);
+}
+
+/* Focus para el botón de cerrar modal */
+.modal-close-btn:focus-visible {
+    outline-color: #ef4444;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.3),
+                0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Mejora del focus para botones deshabilitados */
+.EditGame2-save-button button:disabled:focus-visible {
+    outline-color: #9ca3af;
+    transform: scale(1.02);
+}
+
+/* Animación suave al cambiar de elemento con Tab */
+*:focus-visible {
+    transition: outline 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
 /* Monitores grandes */
 @media screen and (min-width: 1200px) and (min-height: 850px) {
     .EditGame2-config-buttons {
