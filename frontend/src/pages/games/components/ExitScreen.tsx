@@ -1,9 +1,24 @@
+/**
+ * Exit Screen: A modal overlay component prompting users to confirm exiting a game.
+ * 
+ * Functional Summary:
+ * This component renders a full-screen overlay that asks the user to confirm
+ * 
+ */
+
 import React from 'react';
 import './ExitScreen.css';
 import iconCorrect from '/assets/juegosImg/correct.png';
 import iconIncorrect from '/assets/juegosImg/incorrecto.png';
 import { Button3Dtext } from '../../global_components/PushableButtons';
 
+/**
+ * Props interface for the ExitScreen component.
+ * 
+ * @interface ExitScreenProps
+ * @property {() => void} confirmExit - Callback function executed when user confirms exit
+ * @property {() => void} cancelExit - Callback function executed when user cancels exit
+ */
 interface ExitScreenProps {
     confirmExit: () => void;
     cancelExit: () => void;
