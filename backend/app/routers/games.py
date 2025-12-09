@@ -86,7 +86,8 @@ async def get_game_config(student_id: str, game_key: str):
         if game_key == "order_sequence":
             default_settings = {
                 "quantity": 5,  # 5 numbers to order
-                "order": "ascending"  # ascending order
+                "order": "ascending",  # ascending order
+                "accessibility_mode": "drag_drop"  # default drag & drop
             }
 
         return GameConfigResponse(

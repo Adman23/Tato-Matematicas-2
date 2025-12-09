@@ -11,8 +11,8 @@
 
 // Imports--------------------------------------------------------------
 import {
-    IonPage, 
-    IonContent, 
+    IonPage,
+    IonContent,
     IonSpinner,
     useIonRouter,
     IonGrid,
@@ -22,7 +22,7 @@ import {
 } from '@ionic/react';
 
 import { useAuth } from '../../contexts/AuthContext';
-import { useUserData } from "../../contexts/UserContext" 
+import { useUserData } from "../../contexts/UserContext"
 
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import { Button3Dtext } from '../global_components/PushableButtons';
@@ -51,7 +51,7 @@ export default function StudentProfile() {
      *               group_id?: string;
      *               group_alias?: string;
      *           }  
-     */ 
+     */
     const { user, logout } = useAuth();
     const { loadingUser, refreshUserData } = useUserData();
     const router = useIonRouter();
@@ -63,13 +63,13 @@ export default function StudentProfile() {
     const handleDirection = (url: string) => {
         router.push(url);
     }
-    
+
     /**
      * @brief Its used by the logout button
      */
     const handleLogout = async () => {
         await logout();
-        router.push('/student/login',"none","replace");
+        router.push('/student/login', "none", "replace");
     }
 
     /**
@@ -83,7 +83,7 @@ export default function StudentProfile() {
     if (loadingUser) {
         return (
             <IonPage>
-                <IonContent className="ion-padding ion-text-center" 
+                <IonContent className="ion-padding ion-text-center"
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <IonSpinner name="crescent" />
                 </IonContent>
@@ -95,15 +95,15 @@ export default function StudentProfile() {
     return (
         <IonPage>
             {/* Header */}
-            <SimpleHeaderUser userName={user?.username || "username"} 
-                    photoUrl={user?.photo_url} hidden={true} />
-            
+            <SimpleHeaderUser title={"PERFIL"} title_image='/assets/pictograms/yo.png'
+            userName={user?.username || "username"} photoUrl={user?.photo_url} hidden={true} />
+
 
             {/* Main Content */}
             <IonContent className="ion-padding" style={{ '--background': 'var(--ion-color-primary-contrast)' }}>
                 {/* Back button and main grid container */}
-                <Button3Dtext 
-                    onClick={() => router.push('/student/dashboard', "back", "pop")} 
+                <Button3Dtext
+                    onClick={() => router.push('/student/dashboard', "back", "pop")}
                     aria-label="Volver atrás">
                     <IonIcon icon={arrowBack} />
                 </Button3Dtext>
@@ -115,39 +115,39 @@ export default function StudentProfile() {
                                 {/* Edit colors */}
                                 <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-colors")}>
                                     <img
-                                    src="/assets/pictograms/colores.png"
-                                    alt="Ir a editar colores"
-                                    className="simple-button-image"
+                                        src="/assets/pictograms/colores.png"
+                                        alt="Ir a editar colores"
+                                        className="simple-button-image"
                                     />
                                     <div className="simple-button-title">COLORES</div>
                                 </SimpleButton>
-                                
+
                                 {/* Edit game_1 */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
+                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-game1")}>
                                     <img
-                                    src="/assets/juegosImg/juego1.png"
-                                    alt="Ir a editar juego uno"
-                                    className="simple-button-image"
+                                        src="/assets/juegosImg/juego1.png"
+                                        alt="Ir a editar juego uno"
+                                        className="simple-button-image"
                                     />
                                     <div className="simple-button-title">JUEGO 1</div>
                                 </SimpleButton>
-                                
+
                                 {/* Edit game_2 */}
                                 <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-game2")}>
                                     <img
-                                    src="/assets/juegosImg/juego2.png"
-                                    alt="Ir a editar Juego dos"
-                                    className="simple-button-image"
+                                        src="/assets/juegosImg/juego2.png"
+                                        alt="Ir a editar Juego dos"
+                                        className="simple-button-image"
                                     />
                                     <div className="simple-button-title">JUEGO 2</div>
                                 </SimpleButton>
 
                                 {/* Edit sound */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
+                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-noise")}>
                                     <img
-                                    src="/assets/pictograms/escucha.png"
-                                    alt="Ir a editar sonido"
-                                    className="simple-button-image"
+                                        src="/assets/pictograms/escucha.png"
+                                        alt="Ir a editar sonido"
+                                        className="simple-button-image"
                                     />
                                     <div className="simple-button-title">SONIDO</div>
                                 </SimpleButton>
@@ -155,9 +155,9 @@ export default function StudentProfile() {
                                 {/* Edit game_3 */}
                                 <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/juego3.png"
-                                    alt="Ir a editar juego tres"
-                                    className="simple-button-image"
+                                        src="/assets/juegosImg/juego3.png"
+                                        alt="Ir a editar juego tres"
+                                        className="simple-button-image"
                                     />
                                     <div className="simple-button-title">JUEGO 3</div>
                                 </SimpleButton>
@@ -165,9 +165,9 @@ export default function StudentProfile() {
                                 {/* Edit game_4 */}
                                 <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
                                     <img
-                                    src="/assets/juegosImg/juego4.png"
-                                    alt="Ir a editar juego cuatro"
-                                    className="simple-button-image"
+                                        src="/assets/juegosImg/juego4.png"
+                                        alt="Ir a editar juego cuatro"
+                                        className="simple-button-image"
                                     />
                                     <div className="simple-button-title">JUEGO 4</div>
                                 </SimpleButton>
@@ -179,22 +179,22 @@ export default function StudentProfile() {
                             <div className="button-section">
                                 {/* Refresh button */}
                                 <Button3Dtext frontClassName="small-padding"
-                                        className="small-button vertical-card" onClick={handleRefresh}>
+                                    className="small-button vertical-card" onClick={handleRefresh}>
                                     <img
-                                    src="/assets/pictograms/recargar.png"
-                                    alt="Recargar los estilos"
-                                    className="btn-icon"
+                                        src="/assets/pictograms/recargar.png"
+                                        alt="Recargar los estilos"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">RECARGA</span>
-                                </Button3Dtext>  
-                                
+                                </Button3Dtext>
+
                                 {/* Exit button */}
                                 <Button3Dtext frontClassName="small-padding"
-                                        className="small-button vertical-card" onClick={handleLogout}>
+                                    className="small-button vertical-card" onClick={handleLogout}>
                                     <img
-                                    src="/assets/pictograms/salir.png"
-                                    alt="Cerrar sesión"
-                                    className="btn-icon"
+                                        src="/assets/pictograms/salir.png"
+                                        alt="Cerrar sesión"
+                                        className="btn-icon"
                                     />
                                     <span className="btn-text">SALIR</span>
                                 </Button3Dtext>
@@ -203,7 +203,7 @@ export default function StudentProfile() {
                     </IonRow>
                 </IonGrid>
             </IonContent>
-        </IonPage> 
-    ); 
+        </IonPage>
+    );
     // End of component--------------------------------------------
 }

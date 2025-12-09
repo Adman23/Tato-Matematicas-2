@@ -98,9 +98,8 @@
     text-align: center;
     margin: 0;
     padding: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
     width: 100%;
 }
 

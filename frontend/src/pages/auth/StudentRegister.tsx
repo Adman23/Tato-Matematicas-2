@@ -23,6 +23,10 @@ import ConfirmationModal from '../global_components/ConfirmationModal';
 
 setupIonicReact();
 
+/**
+ * Pictogramas disponibles para la contraseña visual del estudiante.
+ * @constant
+ */
 const PICTOGRAMS = [
   { id: 'perro', name: 'Perro', image: '/assets/pictograms/perro.png' },
   { id: 'gato', name: 'Gato', image: '/assets/pictograms/gato.png' },
@@ -35,10 +39,41 @@ const PICTOGRAMS = [
   { id: 'caballo', name: 'Caballo', image: '/assets/pictograms/caballo.png' },
 ];
 
+/**
+ * Número máximo de pictogramas permitidos para la contraseña.
+ * @constant
+ */
 const MAX_PICTOGRAMS = 3;
 
+/**
+ * Avatar por defecto cuando no se selecciona ninguna imagen.
+ * @constant
+ */
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
+/**
+ * Componente de registro de estudiantes.
+ * 
+ * @remarks
+ * Permite a los administradores o profesores registrar nuevos estudiantes con:
+ * - Nombre de usuario único
+ * - Avatar personalizado o por defecto
+ * - Contraseña visual mediante pictogramas (máximo 3)
+ * - Asignación a un grupo
+ * 
+ * Características:
+ * - Validación de datos en tiempo real
+ * - Previsualización de avatar
+ * - Modal de confirmación
+ * - Gestión de imágenes mediante API
+ * 
+ * @component
+ * 
+ * @example
+ * ```tsx
+ * <StudentRegister />
+ * ```
+ */
 export default function StudentRegister() {
   const router = useIonRouter();
 
