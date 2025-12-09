@@ -34,9 +34,9 @@ import './EditColorsStudent.css';
 import type { Palette } from '../teacherProfile/EditStudent/types/palette';
 import { saveColorPalette } from '../../lib/api';
 import PaletteSelector from '../teacherProfile/EditStudent/components/PaletteSelector';
-import imgAceptar from '/assets/juegosImg/aceptar.png';
 import { useUserData } from '../../contexts/UserContext';
 import { arrowBack } from 'ionicons/icons';
+import iconCorrect from '/assets/juegosImg/correct.png';
 
 /**
  * Principal component of the color configuration.
@@ -131,7 +131,7 @@ export default function EditColorsStudent(){
               bubble_selected: palette.colors[6]
           });
 
-          setAriaMessage(`Paleta ${palette.name} seleccionada`);
+          
         };
 
         //Function for saving the palette in the data base
@@ -185,7 +185,7 @@ export default function EditColorsStudent(){
 
                     <div className='Preview-PrimaryColors-Example' style={{ backgroundColor: customPalette.primary }}>
                       <span className='Text-PrimaryColors-Example' style={{ color: customPalette.text_on_primary }}>Hola!</span>
-                      <Button3Dtext className='Button-PrimaryColors-Example' tabIndex={-1} color={customPalette.button}><span></span></Button3Dtext>
+                      <Button3Dtext className='Button-PrimaryColors-Example' aria-hidden="true" tabIndex={-1} color={customPalette.button}><span></span></Button3Dtext>
                     </div>
 
                     <IonGrid className="ion-grid-custom">
@@ -250,18 +250,13 @@ export default function EditColorsStudent(){
 
                 <div className='Accept-button-container-editColorsStudent'>
 
-                  <Button3Dtext className='Accept-Button-Button-editColorsStudent' 
-                  color='var(--bubble-bg)'
-                  
+                  <Button3Dtext className="exit-btn accepChanges-EditColor" 
                   onClick={async () => {
                     await savePalette();      // ejecuta y espera a que termine
                     await handleRefresh();    // ejecuta y espera a que termine
-                  }}>
-                    <img
-                          src={imgAceptar}
-                          alt="Guardar los cambios"
-                          className="Accept-Button-image"
-                      />
+                  }} 
+                  aria-label="¡Hecho!">
+                      <img src={iconCorrect} alt="Guardar los cambios" />
                   </Button3Dtext>
 
                 </div>
