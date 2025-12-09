@@ -305,12 +305,13 @@ export default function EditGame1() {
                     {liveAnnouncement}
                 </div>
 
+                    {/*className="EditGame1-back-button" estaba comentado como clase para el boton*/}
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
                         <Button3Dtext
-                            onClick={() => router.push('/student/dashboard', "back", "pop")}
+                            onClick={() => router.push('/student/profile', 'back', 'pop')}
                             aria-label="Volver atrás"
-                            className="EditGame1-back-button">
+                            >
                             <IonIcon icon={arrowBack} />
                         </Button3Dtext>
                     </div>

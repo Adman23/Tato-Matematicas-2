@@ -335,6 +335,8 @@
   .main-title-editNoiseStudent {
     font-size: 1rem;
     margin: 8px 0 5px 0;
+    font-family: var(--tatomaths-font);
+    font-weight: var(--tatomaths-weight);
   }
 
   .themes-row-editNoiseStudent {

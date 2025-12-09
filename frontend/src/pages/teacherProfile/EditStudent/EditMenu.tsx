@@ -112,7 +112,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => ""}
+                                    onClick={() => router.push(`/student-edit-text/${id}/${name}`)}
                                 >
                                     Texto
                                 </IonButton>

@@ -255,6 +255,16 @@ const UserDataProvider: React.FC<{ children: ReactNode, user_id: string }> = ({ 
 
         console.log("Styles applied");
     }
+
+    if (userData?.user_profile?.text_preferences) {
+        const root = document.documentElement;
+        const textPrefs = userData.user_profile.text_preferences;
+
+        // Aplica cada color según tus variables CSS
+        root.style.setProperty('--tatomaths-font', textPrefs.font);
+        root.style.setProperty('--tatomaths-weight', textPrefs.weight);
+        console.log("Styles applied");
+    }
 }, [userData]);
 
 
