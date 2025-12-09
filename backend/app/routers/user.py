@@ -263,7 +263,7 @@ async def update_user(
 
         # 4. CONSTRUIR RESPUESTA
         resp = supabase_admin.table("users") \
-                .select("id, role, photo_url, group_id, password_type, password_length \
+                .select("id, role, photo_url, group_id, password_type, password_length, \
                         user_profiles!user_id(*), \
                         game_configurations!user_id(*)") \
                 .eq("id", target_user_id) \
