@@ -18,9 +18,29 @@ import { IonIcon, IonPage, IonContent, useIonRouter, useIonViewWillEnter } from 
 import { useAuth } from '../../contexts/AuthContext';
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import { Button3Dtext } from '../global_components/PushableButtons';
-import imgAceptar from '/assets/juegosImg/aceptar.png';
+import { SimpleButton } from '../global_components/SimpleButton';
+import imgAceptar from '/assets/pictograms/correcto.png';
 import { getAudioPreferences, saveAudioPreferences, type AudioPreferences } from '../../lib/api';
 
+/**
+ * Componente de edición de preferencias de audio para estudiantes.
+ * 
+ * Permite a los estudiantes personalizar su experiencia de audio en los juegos
+ * seleccionando un tema de sonido (clásico, digital, zen, juego) y un nivel de volumen.
+ * 
+ * @remarks
+ * - Carga las preferencias guardadas al montar el componente
+ * - Permite previsualizar los sonidos antes de guardar
+ * - Soporta navegación por teclado y es completamente responsive
+ * - Los sonidos de números en juegos mantienen volumen medio independientemente de la configuración
+ * 
+ * @component
+ * 
+ * @example
+ * ```tsx
+ * <EditNoiseStudent />
+ * ```
+ */
 const EditNoiseStudent: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState<string>('classic');
   const [selectedVolume, setSelectedVolume] = useState<string>('bajito');
@@ -29,7 +49,19 @@ const EditNoiseStudent: React.FC = () => {
   const { user } = useAuth();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Mapa de sonidos por tipo y tema
+  /**
+   * Genera la ruta del archivo de sonido basado en el tipo y tema.
+   * 
+   * @param type - Tipo de sonido: 'correct', 'incorrect' o 'trophy'
+   * @param theme - Tema de sonido seleccionado (classic, digital, zen, juego)
+   * @returns Ruta completa al archivo de sonido temático
+   * 
+   * @example
+   * ```tsx
+   * const soundPath = getSoundFile('correct', 'classic');
+   * // Returns: '/assets/sounds/correct_classic.mp3'
+   * ```
+   */
   const getSoundFile = (type: 'correct' | 'incorrect' | 'trophy', theme: string): string => {
     // Primero intentar con sonido específico del tema
     const themeSound = `/assets/sounds/${type}_${theme}.mp3`;
@@ -45,7 +77,18 @@ const EditNoiseStudent: React.FC = () => {
     return themeSound;
   };
 
-  // Función para reproducir preview de sonido
+  /**
+   * Reproduce una previsualización del sonido con el tema y volumen especificados.
+   * 
+   * @param type - Tipo de sonido a reproducir
+   * @param theme - Tema del sonido
+   * @param volume - Nivel de volumen (silencio, bajito, medio, alto)
+   * 
+   * @remarks
+   * - Detiene cualquier audio previo antes de reproducir uno nuevo
+   * - Crea una nueva instancia de Audio para cada reproducción
+   * - Maneja errores de reproducción silenciosamente
+   */
   const playPreview = (type: 'correct' | 'incorrect' | 'trophy', theme: string, volume: string) => {
     const soundFile = getSoundFile(type, theme);
     if (!soundFile) return;
@@ -66,7 +109,18 @@ const EditNoiseStudent: React.FC = () => {
     });
   };
 
-  // Función para obtener nivel de volumen
+  /**
+   * Convierte el nivel de volumen textual a su valor numérico correspondiente.
+   * 
+   * @param volume - Nivel de volumen textual
+   * @returns Valor numérico entre 0.0 (silencio) y 1.0 (alto)
+   * 
+   * @example
+   * ```tsx
+   * getVolumeLevel('medio')  // Returns: 0.6
+   * getVolumeLevel('bajito') // Returns: 0.3
+   * ```
+   */
   const getVolumeLevel = (volume: string): number => {
     switch (volume) {
       case 'silencio': return 0;
@@ -77,7 +131,15 @@ const EditNoiseStudent: React.FC = () => {
     }
   };
 
-  // Función para manejar cambio de volumen con preview
+  /**
+   * Maneja el cambio de volumen y reproduce una previsualización.
+   * 
+   * @param volumeId - ID del nuevo nivel de volumen seleccionado
+   * 
+   * @remarks
+   * - Actualiza el estado del volumen seleccionado
+   * - Reproduce un sonido de previsualización si no es 'silencio'
+   */
   const handleVolumeChange = (volumeId: string) => {
     setSelectedVolume(volumeId);
     if (volumeId !== 'silencio') {
@@ -99,7 +161,15 @@ const EditNoiseStudent: React.FC = () => {
     { id: 'alto', label: 'Alto', icon: volumeHighOutline },
   ];
 
-  // Cargar preferencias de audio al entrar
+  /**
+   * Carga las preferencias de audio del usuario al entrar a la página.
+   * 
+   * @remarks
+   * - Se ejecuta automáticamente cuando el componente entra en vista
+   * - Carga las preferencias desde la API usando el ID del usuario
+   * - Mantiene valores por defecto si ocurre un error
+   * - Usa useIonViewWillEnter para ejecutarse antes de que la vista sea visible
+   */
   useIonViewWillEnter(() => {
     const loadAudioPreferences = async () => {
       if (!user?.id) return;
@@ -117,7 +187,17 @@ const EditNoiseStudent: React.FC = () => {
     loadAudioPreferences();
   });
 
-  // Guardar preferencias de audio
+  /**
+   * Guarda las preferencias de audio del usuario y navega de vuelta al perfil.
+   * 
+   * @remarks
+   * - Valida que exista un usuario autenticado
+   * - Guarda las preferencias en la base de datos vía API
+   * - Navega automáticamente a la página de perfil tras guardar
+   * - Maneja errores de guardado mostrándolos en consola
+   * 
+   * @throws Error si no hay usuario autenticado o falla la llamada a la API
+   */
   const handleSavePreferences = async () => {
     if (!user?.id) return;
     
@@ -143,11 +223,10 @@ const EditNoiseStudent: React.FC = () => {
         hidden={true}
       />
 
-      <IonContent className="ion-padding" scrollY={false} style={{ '--padding-top': '0', '--padding-bottom': '0', '--overflow': 'hidden' } as React.CSSProperties}>
+      <IonContent className="ion-padding" scrollY={false} style={{ '--background': 'var(--ion-color-primary-contrast)', '--padding-bottom': '0', '--overflow': 'hidden' } as React.CSSProperties}>
         <Button3Dtext 
           onClick={() => router.push('/student/profile', 'back', 'pop')} 
           aria-label="Volver atrás"
-          style={{ margin: '10px' }}
         >
           <IonIcon icon={arrowBack} />
         </Button3Dtext>
@@ -158,7 +237,7 @@ const EditNoiseStudent: React.FC = () => {
       {/* Sección de Temas */}
       <div className="themes-row">
         {themes.map((theme) => (
-          <div
+          <SimpleButton
             key={theme.id}
             className={`theme-card ${selectedTheme === theme.id ? 'selected' : ''} ${selectedVolume === 'silencio' ? 'disabled' : ''}`}
             onClick={() => {
@@ -166,7 +245,7 @@ const EditNoiseStudent: React.FC = () => {
                 setSelectedTheme(theme.id);
               }
             }}
-            onKeyDown={(e) => {
+            onKeyDown={(e: any) => {
               if ((e.key === 'Enter' || e.key === ' ') && selectedVolume !== 'silencio') {
                 e.preventDefault();
                 setSelectedTheme(theme.id);
@@ -285,7 +364,7 @@ const EditNoiseStudent: React.FC = () => {
                 </Button3Dtext>
               </div>
             </div>
-          </div>
+          </SimpleButton>
         ))}
       </div>
 

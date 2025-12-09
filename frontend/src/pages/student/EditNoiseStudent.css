@@ -1,4 +1,8 @@
-/* Evitar scroll - diseño que cabe en pantalla */
+/* =============================================================================
+   ESTILOS GENERALES - EditNoiseStudent
+   Configuración de audio: tema y volumen
+   ========================================================================== */
+
 .container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   max-width: 100%;
@@ -6,7 +10,7 @@
   margin: 0;
   padding: 0;
   text-align: center;
-  background-color: #fff;
+  background-color: transparent; /* Transparente para heredar el fondo del IonContent */
   height: auto;
   max-height: calc(100vh - 60px);
   display: flex;
@@ -24,7 +28,10 @@
   flex-shrink: 0;
 }
 
-/* --- Sección de Temas --- Grid 2x2 cuando no hay espacio */
+/* =============================================================================
+   SECCIÓN DE TEMAS - Grid responsive (4 columnas → 2 columnas)
+   ========================================================================== */
+
 .themes-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -45,39 +52,55 @@
   }
 }
 
+/* Tarjetas de tema (usando SimpleButton) */
 .theme-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: min(1vh, 10px);
+  --background: transparent;
+  --border-width: clamp(4px, 1.2vw, 8px);
+  --border-style: solid;
+  --border-color: transparent;
+  --border-radius: clamp(8px, 1vw, 16px);
+  
   cursor: pointer;
-  border: 3px solid transparent;
   transition: all 0.2s ease;
   min-height: 0;
   height: 100%;
   box-sizing: border-box;
 }
 
-/* Estado seleccionado: recuadro azul */
-.theme-card.selected {
-  border: 3px solid #5bc0de;
+.theme-card .simple-button-content {
+  flex-direction: column;
+  padding: min(1vh, 10px);
+  gap: 0;
 }
 
+/* Estado seleccionado */
+.theme-card.selected {
+  --border-color: var(--ion-color-primary);
+}
+
+.theme-card:hover,
+.theme-card:focus {
+  --border-color: var(--ion-color-primary);
+  transform: none; /* Deshabilitar zoom en hover */
+}
+
+/* Estado deshabilitado (cuando volumen = silencio) */
 .theme-card.disabled {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
   filter: grayscale(1);
-  border: 3px solid transparent !important;
+  --border-color: transparent !important;
 }
 
+/* Etiqueta del tema */
 .theme-label {
   margin-bottom: min(0.5vh, 5px);
   font-size: min(1.8vh, 1rem);
   color: #333;
 }
 
+/* Círculo del icono principal del tema */
 .icon-circle {
   width: min(10vh, 80px);
   height: min(10vh, 80px);
@@ -99,7 +122,10 @@
   }
 }
 
-/* --- Sub-iconos de Feedback --- */
+/* =============================================================================
+   BOTONES DE FEEDBACK - Preview de sonidos (correcto, incorrecto, trofeo)
+   ========================================================================== */
+
 .feedback-icons {
   display: flex;
   gap: min(1vh, 10px);
@@ -134,7 +160,7 @@
   }
 }
 
-/* Específico para pantallas como iPhone 6/7/8 (375x667) en portrait */
+/* Ajustes específicos para iPhone 6/7/8 (375x667) en portrait */
 @media (max-width: 400px) and (min-height: 650px) and (orientation: portrait) {
   .feedback-button {
     width: 38px !important;
@@ -165,7 +191,10 @@
   color: white;
 }
 
-/* --- Sección Inferior (Volumen y Botón) --- */
+/* =============================================================================
+   CONTROLES DE VOLUMEN - Botones de selección de volumen
+   ========================================================================== */
+
 .controls-area {
   display: flex;
   justify-content: center;
@@ -207,11 +236,21 @@
   color: #333;
 }
 
+/* Ocultar labels de volumen en pantallas muy estrechas */
+@media (max-width: 500px) {
+  .volume-label {
+    display: none;
+  }
+  
+  .volume-wrapper {
+    gap: 0;
+  }
+}
+
+/* Botones de volumen */
 .volume-button {
-  width: min(8vh, 60px);
-  height: min(8vh, 60px);
-  min-width: 50px;
-  min-height: 50px;
+  width: clamp(50px, 8vh, 70px);
+  height: clamp(50px, 8vh, 70px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -250,13 +289,32 @@
 }
 
 .volume-button .btn-icon {
-  font-size: min(4vh, 26px);
+  font-size: clamp(24px, 4vh, 32px);
   color: #000;
   font-weight: normal;
   --ionicon-stroke-width: 32px;
 }
 
-/* --- Botón ACEPTAR --- */
+/* Botones de volumen más grandes en pantallas anchas */
+@media (min-width: 1024px) {
+  .volume-button {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .volume-button .btn-icon {
+    font-size: 40px;
+  }
+
+  .volume-label {
+    font-size: 1.1rem;
+  }
+}
+
+/* =============================================================================
+   BOTÓN ACEPTAR - Guardar preferencias
+   ========================================================================== */
+
 .Accept-button-container-editColorsStudent {
   flex-shrink: 0;
   position: fixed;
@@ -272,7 +330,11 @@
   min-width: 70px;
 }
 
-/* Pantallas muy pequeñas */
+/* =============================================================================
+   MEDIA QUERIES - Ajustes responsivos
+   ========================================================================== */
+
+/* Pantallas muy pequeñas (altura < 600px) */
 @media (max-height: 600px) {
   .main-title {
     font-size: 1rem;
@@ -325,7 +387,7 @@
   }
 }
 
-/* Asegurar que todo quepa sin scroll */
+/* Pantallas móviles estrechas */
 @media (max-width: 480px) {
   .themes-row {
     grid-template-columns: repeat(2, 1fr);
@@ -340,7 +402,7 @@
   }
 }
 
-/* Pantallas estrechas - botones apilados */
+/* Pantallas muy estrechas - controles apilados verticalmente */
 @media (max-width: 515px) {
   .controls-area {
     height: auto;
@@ -361,7 +423,7 @@
   }
 }
 
-/* Landscape mode con poca altura - temas en línea */
+/* Modo landscape con poca altura - temas en fila horizontal */
 @media (max-height: 500px) and (orientation: landscape) {
   .container {
     padding: 0;
@@ -435,3 +497,4 @@
     max-height: 100px;
   }
 }
+
