@@ -22,21 +22,21 @@
  */
 
 import {
-  IonPage,
-  IonContent,
-  IonSpinner,
-  useIonRouter,
-  IonIcon
+    IonPage,
+    IonContent,
+    useIonRouter,
+    IonIcon,
+    IonSpinner
 } from '@ionic/react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { gamesAPI } from '../../lib/api';
-import type { GameConfig } from '../../lib/api';
+import { gamesAPI, type GameConfig } from '../../lib/api';
 import SimpleHeaderUser from './components/SimpleHeaderUser';
 import { Button3Dtext } from '../global_components/PushableButtons';
+import LoadingSpinner from '../global_components/LoadingSpinner';
 import './EditGame2.css';
 import '../games/components/GameHeader.css';
-import { arrowBack } from 'ionicons/icons';
+import { arrowBack, accessibilityOutline } from 'ionicons/icons';
 
 // Opciones de rango (de acuerdo a la DB)
 const RANGE_OPTIONS = [
@@ -48,6 +48,25 @@ const RANGE_OPTIONS = [
 
 // Opciones de cantidad (3-12)
 const QUANTITY_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+// Opciones de accesibilidad
+const ACCESSIBILITY_OPTIONS = [
+    {
+        value: 'drag_drop',
+        label: 'Arrastrar o Click/Enter',
+        description: 'Drag & drop y también click + Enter'
+    },
+    {
+        value: 'drag_follow',
+        label: 'Click y seguir',
+        description: 'Click y el objeto sigue al cursor'
+    },
+    {
+        value: 'hover_select',
+        label: 'Permanece encima',
+        description: 'Selecciona al permanecer encima'
+    }
+];
 
 /**
  * Componente principal de configuración del Juego 2.
@@ -73,28 +92,30 @@ const QUANTITY_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  * <Route path="/student/edit-game2" component={EditGame2} />
  */
 export default function EditGame2() {
-  const { user } = useAuth();
-  const router = useIonRouter();
+    const { user } = useAuth();
+    const router = useIonRouter();
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-  // Estados de configuración
+    // Estados de configuración
   const [order, setOrder] = useState<'ascending' | 'descending'>('ascending');
   const [quantity, setQuantity] = useState<number>(5);
   const [numberRange, setNumberRange] = useState<string>('0-10');
+    const [accessibilityMode, setAccessibilityMode] = useState<string>('drag_drop');
 
   // Estados de modales
   const [showQuantityModal, setShowQuantityModal] = useState(false);
   const [showRangeModal, setShowRangeModal] = useState(false);
   const [showOrderModal, setShowOrderModal] = useState(false);
+    const [showAccessibilityModal, setShowAccessibilityModal] = useState(false);
 
-  // Estado de validación
-  const [error, setError] = useState<string>('');
+    // Estado de validación
+    const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    loadGameConfig();
-  }, []);
+    useEffect(() => {
+        loadGameConfig();
+    }, []);
 
   /**
    * Resumen funcional:
@@ -111,23 +132,24 @@ export default function EditGame2() {
    * @example
    * await loadGameConfig();
    */
-  const loadGameConfig = async () => {
-    try {
-      if (!user?.id) return;
+    const loadGameConfig = async () => {
+        try {
+            if (!user?.id) return;
 
-      const data = await gamesAPI.getGameConfig(user.id, 'order_sequence');
+            const data = await gamesAPI.getGameConfig(user.id, 'order_sequence');
 
-      // Cargar valores actuales
-      setOrder(data.settings?.order || 'ascending');
-      setQuantity(data.settings?.quantity || 5);
-      setNumberRange(data.number_range || '0-10');
+            // Cargar valores actuales
+            setOrder(data.settings?.order || 'ascending');
+            setQuantity(data.settings?.quantity || 5);
+            setNumberRange(data.number_range || '0-10');
+            setAccessibilityMode(data.settings?.accessibility_mode || 'drag_drop');
 
-      setLoading(false);
-    } catch (error) {
-      console.error('Error loading game config:', error);
-      setLoading(false);
-    }
-  };
+            setLoading(false);
+        } catch (error) {
+            console.error('Error loading game config:', error);
+            setLoading(false);
+        }
+    };
 
   /**
    * Resumen funcional:
@@ -143,23 +165,23 @@ export default function EditGame2() {
    *
    * @example
    */
-  const validateInputs = (): boolean => {
-    const [min, max] = numberRange.split('-').map(Number);
-    const rangeSize = max - min + 1;
+    const validateInputs = (): boolean => {
+        const [min, max] = numberRange.split('-').map(Number);
+        const rangeSize = max - min + 1;
 
-    if (quantity > rangeSize) {
-      setError(`La cantidad no puede ser mayor que el rango (${rangeSize} números disponibles)`);
-      return false;
-    }
+        if (quantity > rangeSize) {
+            setError(`La cantidad no puede ser mayor que el rango (${rangeSize} números disponibles)`);
+            return false;
+        }
 
-    if (quantity < 3 || quantity > 12) {
-      setError('La cantidad debe estar entre 3 y 12');
-      return false;
-    }
+        if (quantity < 3 || quantity > 12) {
+            setError('La cantidad debe estar entre 3 y 12');
+            return false;
+        }
 
-    setError('');
-    return true;
-  };
+        setError('');
+        return true;
+    };
 
   /**
    * Resumen funcional:
@@ -176,37 +198,38 @@ export default function EditGame2() {
    * @example
    * await handleSave();
    */
-  const handleSave = async () => {
-    if (!validateInputs()) {
-      return;
-    }
+    const handleSave = async () => {
+        if (!validateInputs()) {
+            return;
+        }
 
-    setSaving(true);
-    try {
-      if (!user?.id) return;
+        setSaving(true);
+        try {
+            if (!user?.id) return;
 
-      const config: GameConfig = {
-        game_id: 0,
-        game_key: 'order_sequence',
-        user_id: user.id,
-        number_range: numberRange,
-        settings: {
-          order,
-          quantity
+            const config: GameConfig = {
+                game_id: 0,
+                game_key: 'order_sequence',
+                user_id: user.id,
+                number_range: numberRange,
+                settings: {
+                    order,
+                    quantity,
+                    accessibility_mode: accessibilityMode
         }
       };
 
-      await gamesAPI.updateGameConfig(user.id, 'order_sequence', config);
+            await gamesAPI.updateGameConfig(user.id, 'order_sequence', config);
 
-      // Volver al perfil
-      router.push('/student/profile', 'back');
-    } catch (error) {
-      console.error('Error saving config:', error);
-      setError('Error al guardar la configuración');
-    } finally {
-      setSaving(false);
-    }
-  };
+            // Volver al perfil
+            router.push('/student/profile', 'back');
+        } catch (error) {
+            console.error('Error saving config:', error);
+            setError('Error al guardar la configuración');
+        } finally {
+            setSaving(false);
+        }
+    };
 
   /**
    * Resumen funcional:
@@ -217,11 +240,12 @@ export default function EditGame2() {
    * @example
    * closeAllModals();
    */
-  const closeAllModals = () => {
+    const closeAllModals = () => {
     setShowQuantityModal(false);
     setShowRangeModal(false);
     setShowOrderModal(false);
-  };
+        setShowAccessibilityModal(false);
+    };
 
   /**
    * Resumen funcional:
@@ -232,239 +256,369 @@ export default function EditGame2() {
    * @example
    * getSelectedRangeLabel(); // "De 0 a 10"
    */
-  const getSelectedRangeLabel = () => {
-    return RANGE_OPTIONS.find(opt => opt.value === numberRange)?.label || numberRange;
-  };
+    const getSelectedRangeLabel = () => {
+        return RANGE_OPTIONS.find(opt => opt.value === numberRange)?.label || numberRange;
+    };
 
-  // Mostrar spinner mientras carga
-  if (loading) {
+    const getRangeSize = () => {
+        const [min, max] = numberRange.split('-').map(Number);
+        return max - min + 1;
+    };
+
+    const getAccessibilityLabel = () => {
+        return ACCESSIBILITY_OPTIONS.find(opt => opt.value === accessibilityMode)?.label || 'Accesibilidad';
+    };
+
+    const isQuantityDisabled = (num: number) => num > getRangeSize();
+
+    // Mostrar spinner mientras carga
+    if (loading) {
+        return (
+            <IonPage>
+                <IonContent className="ion-padding ion-text-center">
+                    <LoadingSpinner message="Cargando configuración del juego 2" />
+                </IonContent>
+            </IonPage>
+        );
+    }
+
     return (
-      <IonPage>
-        <IonContent className="ion-padding ion-text-center"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <IonSpinner name="crescent" />
-        </IonContent>
-      </IonPage>
-    );
-  }
+        <IonPage className="EditGame2-page">
+            <SimpleHeaderUser
+                userName={user?.username || "username"}
+                photoUrl={user?.photo_url}
+                hidden={true}
+                title={"JUEGO 2"}
+                title_image="/assets/juegosImg/juego2.png"
+            />
 
-  return (
-    <IonPage>
-      <SimpleHeaderUser
-        userName={user?.username || "username"}
-        photoUrl={user?.photo_url}
-        hidden={true}
-      />
-
-      <IonContent className="edit-game2-content" fullscreen scrollY={false}>
-
-        <Button3Dtext 
-            onClick={() => router.push('/student/profile', 'back', 'pop')} 
-            aria-label="Volver atrás">
-            <IonIcon icon={arrowBack} />
-        </Button3Dtext>
-        <div className="edit-game2-main-container">
-          {/* Cabecera compacta con volver + título */}
-          <div className="edit-game2-header-row">
-            <button
-              className="back-button-arrow"
-              onClick={() => router.push('/student/profile', 'back')}
-              aria-label="Volver"
-            >
-              <img src="/assets/pictograms/flecha.png" alt="Volver" className="back-arrow-icon" />
-            </button>
-            <h2 className="edit-game2-header-title">Modificar JUEGO2</h2>
-            <div className="header-spacer" aria-hidden />
-          </div>
-
-          {/* 3 Botones principales */}
-          <div className="game2-config-buttons">
-            {/* Botón Cantidad */}
-            <Button3Dtext
-              color="rgb(59, 130, 246)"
-              className="config-button-3d"
-              onClick={() => setShowQuantityModal(true)}
-            >
-              <div className="config-button-content">
-                <img
-                  src="/assets/editarJuegos/cantidad.png"
-                  alt="Cantidad"
-                  className="config-button-image"
-                />
-                <div className="config-button-label">Cantidad</div>
-              </div>
-            </Button3Dtext>
-
-            {/* Botón Rango */}
-            <Button3Dtext
-              color="rgb(59, 130, 246)"
-              className="config-button-3d"
-              onClick={() => setShowRangeModal(true)}
-            >
-              <div className="config-button-content">
-                <img
-                  src="/assets/editarJuegos/nums.png"
-                  alt="Rango"
-                  className="config-button-image"
-                />
-                <div className="config-button-label">Rango</div>
-              </div>
-            </Button3Dtext>
-
-            {/* Botón Orden */}
-            <Button3Dtext
-              color="rgb(59, 130, 246)"
-              className="config-button-3d"
-              onClick={() => setShowOrderModal(true)}
-            >
-              <div className="config-button-content">
-                <img
-                  src={order === 'ascending' ? "/assets/editarJuegos/botón arriba.png" : "/assets/editarJuegos/botón abajo.png"}
-                  alt="Orden"
-                  className="config-button-image"
-                />
-                <div className="config-button-label">Orden</div>
-              </div>
-            </Button3Dtext>
-          </div>
-
-          {/* Mensaje de error */}
-          {error && (
-            <div className="error-message-box">
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Resumen y botón de guardar en la misma fila */}
-          <div className="summary-and-save-row">
-            {/* Resumen de configuración actual */}
-            <div className="config-summary">
-              <div className="summary-item">
-                <strong>Cantidad:</strong> {quantity} números
-              </div>
-              <div className="summary-item">
-                <strong>Rango:</strong> {getSelectedRangeLabel()}
-              </div>
-              <div className="summary-item">
-                <strong>Orden:</strong> {order === 'ascending' ? 'Ascendente ↑' : 'Descendente ↓'}
-              </div>
-            </div>
-
-            {/* Botón Guardar */}
-            <div className="save-button-container">
-              <Button3Dtext
-                color="#4ade80"
-                className="save-button-large"
-                onClick={handleSave}
-              >
-                {saving ? (
-                  <IonSpinner name="crescent" />
-                ) : (
-                  <>
-                    <img src="/assets/pictograms/correcto.png" alt="Guardar" className="save-icon" />
-                    <span>GUARDAR</span>
-                  </>
-                )}
-              </Button3Dtext>
-            </div>
-          </div>
-        </div>
-
-        {/* MODAL: Cantidad */}
-        {showQuantityModal && (
-          <div className="modal-overlay" onClick={closeAllModals}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
-              <h2 className="modal-title">SELECCIONA LA CANTIDAD</h2>
-              <div className="modal-options-grid quantity-grid">
-                {QUANTITY_OPTIONS.map((num) => {
-                  const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
-                  return (
-                    <div
-                      key={num}
-                      className={`modal-option ${quantity === num ? 'selected' : ''}`}
-                      onClick={() => {
-                        setQuantity(num);
-                        setError('');
-                        closeAllModals();
-                      }}
-                    >
-                      {pictogram ? (
-                        <img src={pictogram} alt={`${num}`} className="modal-number-img" />
-                      ) : (
-                        <span className="modal-number-text">{num}</span>
-                      )}
+            <IonContent className="EditGame2-content" fullscreen scrollY={false}>
+                <div className="EditGame2-wrapper">
+                    <div className="EditGame2-back-button">
+                        <Button3Dtext
+                            onClick={() => router.push('/student/profile', "back", "pop")}
+                            aria-label="Volver atrás">
+                            <IonIcon icon={arrowBack} aria-hidden="true" />
+                        </Button3Dtext>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* MODAL: Rango */}
-        {showRangeModal && (
-          <div className="modal-overlay" onClick={closeAllModals}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
-              <h2 className="modal-title">SELECCIONA EL RANGO</h2>
-              <div className="modal-options-grid range-grid">
-                {RANGE_OPTIONS.map((option) => (
-                  <div
-                    key={option.value}
-                    className={`modal-option large ${numberRange === option.value ? 'selected' : ''}`}
-                    onClick={() => {
-                      setNumberRange(option.value);
-                      setError('');
-                      closeAllModals();
-                    }}
-                  >
-                    <span className="modal-range-text">{option.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+                    {/* 3 Botones principales */}
+                    <div className="EditGame2-config-buttons">
+                        <div className="EditGame2-buttons-result">
+                            {/* Cantidad elegida */}
+                            <div className="EditGame2-config-button-value">
+                                {quantity <= 10 ? (
+                                    <img
+                                        src={`/assets/numbers/${quantity}.png`}
+                                        alt={`Número ${quantity}`}
+                                        className="EditGame2-config-button-image"
+                                    />
+                                ) : (
+                                    <span className="modal-number-text">{quantity}</span>
+                                )}
+                            </div>
 
-        {/* MODAL: Orden */}
-        {showOrderModal && (
-          <div className="modal-overlay" onClick={closeAllModals}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-close-btn" onClick={closeAllModals}>✕</button>
-              <h2 className="modal-title">SELECCIONA EL ORDEN</h2>
-              <div className="modal-options-grid order-grid">
-                <div
-                  className={`modal-option large ${order === 'ascending' ? 'selected' : ''}`}
-                  onClick={() => {
-                    setOrder('ascending');
-                    closeAllModals();
-                  }}
-                >
-                  <div className="order-content">
-                    <div className="order-arrow-large">↑</div>
-                    <span className="order-label-large">Ascendente</span>
-                    <span className="order-sublabel">Menor a Mayor</span>
-                  </div>
+                            {/* Botón Cantidad */}
+                            <Button3Dtext
+                                className="EditGame2-config-button-3d"
+                                onClick={() => { setShowQuantityModal(true); setError(''); }}
+                                tabIndex={0}
+                                aria-label="Configurar cantidad de números"
+                            >
+                                <div className="EditGame2-config-button-content">
+                                    <img
+                                        src="/assets/pictograms/cantidad.png"
+                                        alt="Cantidad"
+                                        className="EditGame2-config-button-image"
+                                    />
+                                    <span className="btn-text">CANTIDAD</span>
+                                </div>
+                            </Button3Dtext>
+                        </div>
+
+                        <div className="EditGame2-buttons-result">
+                            {/* Rango elegido */}
+                            <div className="EditGame2-config-button-value">
+                                <div className="range-chosen">
+                                    <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                                </div>
+                            </div>
+                            {/* Botón Rango */}
+                            <Button3Dtext
+                                className="EditGame2-config-button-3d"
+                                onClick={() => { setShowRangeModal(true); setError(''); }}
+                                tabIndex={0}
+                                aria-label="Configurar rango de números"
+                            >
+                                <div className="EditGame2-config-button-content">
+                                    <img
+                                        src="/assets/pictograms/rango.png"
+                                        alt="Rango"
+                                        className="EditGame2-config-button-image"
+                                    />
+                                    <span className="btn-text">RANGO</span>
+                                </div>
+                            </Button3Dtext>
+                        </div>
+
+                        <div className="EditGame2-buttons-result">
+                            {/* Orden elegido */}
+                            <div className="EditGame2-config-button-value">
+                                <img
+                                    src={order === 'ascending' ? "/assets/editarJuegos/botón arriba.png" : "/assets/editarJuegos/botón abajo.png"}
+                                    alt={order === 'ascending' ? 'Ascendente' : 'Descendente'}
+                                    className="EditGame2-config-button-image"
+                                />
+                               
+                            </div>
+                            {/* Botón Orden */}
+                            <Button3Dtext
+                                className="EditGame2-config-button-3d"
+                                onClick={() => { setShowOrderModal(true); setError(''); }}
+                                tabIndex={0}
+                                aria-label="Configurar orden de números"
+                            >
+                                <div className="EditGame2-config-button-content">
+                                    <img
+                                        src="/assets/editarJuegos/nums.png"
+                                        alt="Orden"
+                                        className="EditGame2-config-button-image"
+                                    />
+                                    <span className="btn-text">ORDEN</span>
+                                </div>
+                            </Button3Dtext>
+                        </div>
+
+                        <div className="EditGame2-buttons-result">
+                            {/* Accesibilidad elegida */}
+                            <div className="EditGame2-config-button-value">
+                                <span className="EditGame2-accessibility-text">{getAccessibilityLabel()}</span>
+                            </div>
+                            {/* Botón Accesibilidad */}
+                            <Button3Dtext
+                                className="EditGame2-config-button-3d"
+                                onClick={() => { setShowAccessibilityModal(true); setError(''); }}
+                                aria-label="Configurar modo de accesibilidad"
+                            >
+                                <div className="EditGame2-config-button-content">
+                                    <IonIcon icon={accessibilityOutline} className="EditGame2-accessibility-icon" aria-hidden="true" />
+                                    <span className="btn-text">MODO</span>
+                                </div>
+                            </Button3Dtext>
+                        </div>
+                    </div>
+
+                    {error && (
+                        <div className="EditGame2-error-message">
+                            <span>{error}</span>
+                        </div>
+                    )}
+
+                    {/* Botón Guardar cambios */}
+                    <div className="EditGame2-save-button">
+                        <Button3Dtext onClick={handleSave} disabled={saving} tabIndex={0} aria-label="Guardar configuración">
+                            {saving ? (
+                                <IonSpinner name="crescent" />
+                            ) : (
+                                <>
+                                    <img
+                                        src="/assets/pictograms/correctoS.png"
+                                        alt="Guardar cambios"
+                                        className="EditGame2-config-button-image"
+                                    />
+                                    <span className="btn-text">GUARDAR</span>
+                                </>
+                            )}
+                        </Button3Dtext>
+                    </div>
                 </div>
-                <div
-                  className={`modal-option large ${order === 'descending' ? 'selected' : ''}`}
-                  onClick={() => {
-                    setOrder('descending');
-                    closeAllModals();
-                  }}
-                >
-                  <div className="order-content">
-                    <div className="order-arrow-large">↓</div>
-                    <span className="order-label-large">Descendente</span>
-                    <span className="order-sublabel">Mayor a Menor</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </IonContent>
-    </IonPage>
-  );
+
+
+                {/* MODAL: Cantidad */}
+                {showQuantityModal && (
+                    <div className="modal-overlay" onClick={closeAllModals}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                            <div className="modal-options-grid quantity-grid">
+                                {QUANTITY_OPTIONS.map((num) => {
+                                    const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
+                                    const isDisabled = isQuantityDisabled(num);
+                                    return (
+                                        <div
+                                            key={num}
+                                            className={`modal-option ${quantity === num ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                            onClick={() => {
+                                                if (!isDisabled) {
+                                                    setQuantity(num);
+                                                    setError('');
+                                                    closeAllModals();
+                                                }
+                                            }}
+                                            tabIndex={isDisabled ? -1 : 0}
+                                            role="button"
+                                            aria-label={`Seleccionar cantidad ${num}`}
+                                            aria-disabled={isDisabled}
+                                            onKeyDown={(e) => {
+                                                if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
+                                                    e.preventDefault();
+                                                    setQuantity(num);
+                                                    setError('');
+                                                    closeAllModals();
+                                                }
+                                            }}
+                                        >
+                                            {pictogram ? (
+                                                <img src={pictogram} alt={`${num}`} className="modal-number-img" />
+                                            ) : (
+                                                <span className="modal-number-text">{num}</span>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* MODAL: Rango */}
+                {showRangeModal && (
+                    <div className="modal-overlay" onClick={closeAllModals}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                            <div className="modal-options-grid range-grid">
+                                {RANGE_OPTIONS.map((option) => (
+                                    <div
+                                        key={option.value}
+                                        className={`modal-option large ${numberRange === option.value ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            setNumberRange(option.value);
+                                            // Ajustar cantidad si el rango es más pequeño
+                                            const [minRange, maxRange] = option.value.split('-').map(Number);
+                                            const maxQuantity = maxRange - minRange + 1;
+                                            if (quantity > maxQuantity) {
+                                                setQuantity(Math.min(quantity, maxQuantity));
+                                            }
+                                            setError('');
+                                            closeAllModals();
+                                        }}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-label={`Seleccionar rango ${option.label}`}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                setNumberRange(option.value);
+                                                const [minRange, maxRange] = option.value.split('-').map(Number);
+                                                const maxQuantity = maxRange - minRange + 1;
+                                                if (quantity > maxQuantity) {
+                                                    setQuantity(Math.min(quantity, maxQuantity));
+                                                }
+                                                setError('');
+                                                closeAllModals();
+                                            }
+                                        }}
+                                    >
+                                        <span className="modal-range-text">{option.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* MODAL: Orden */}
+                {showOrderModal && (
+                    <div className="modal-overlay" onClick={closeAllModals}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                            <div className="modal-options-grid order-grid">
+                                <div
+                                    className={`modal-option large ${order === 'ascending' ? 'selected' : ''}`}
+                                    onClick={() => {
+                                        setOrder('ascending');
+                                        closeAllModals();
+                                    }}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-label="Seleccionar orden ascendente"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            setOrder('ascending');
+                                            closeAllModals();
+                                        }
+                                    }}
+                                >
+                                    <div className="order-content">
+                                        <div className="order-arrow-large">↑</div>
+                                        <span className="order-label-large">Ascendente</span>
+                                        <span className="order-sublabel">Menor a Mayor</span>
+                                    </div>
+                                </div>
+                                <div
+                                    className={`modal-option large ${order === 'descending' ? 'selected' : ''}`}
+                                    onClick={() => {
+                                        setOrder('descending');
+                                        closeAllModals();
+                                    }}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-label="Seleccionar orden descendente"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            setOrder('descending');
+                                            closeAllModals();
+                                        }
+                                    }}
+                                >
+                                    <div className="order-content">
+                                        <div className="order-arrow-large">↓</div>
+                                        <span className="order-label-large">Descendente</span>
+                                        <span className="order-sublabel">Mayor a Menor</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* MODAL: Accesibilidad */}
+                {showAccessibilityModal && (
+                    <div className="modal-overlay" onClick={closeAllModals}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closeAllModals} aria-label="Cerrar modal">✕</button>
+                            <div className="modal-options-grid accessibility-grid">
+                                {ACCESSIBILITY_OPTIONS.map((option) => (
+                                    <div
+                                        key={option.value}
+                                        className={`modal-option large ${accessibilityMode === option.value ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            setAccessibilityMode(option.value);
+                                            closeAllModals();
+                                        }}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-label={`Seleccionar modo ${option.label}`}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                setAccessibilityMode(option.value);
+                                                closeAllModals();
+                                            }
+                                        }}
+                                    >
+                                        <div className="order-content">
+                                            <span className="order-label-large">{option.label}</span>
+                                            <span className="order-sublabel">{option.description}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </IonContent>
+        </IonPage>
+    );
 }

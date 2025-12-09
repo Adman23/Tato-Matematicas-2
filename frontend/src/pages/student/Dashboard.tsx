@@ -40,11 +40,11 @@ export default function StudentDashboard() {
   return (
     <IonPage>
 
-      
+ 
       <SimpleHeaderUser title={"JUEGOS"} title_image='/assets/pictograms/juegos.png' 
                         userName={user?.username || "username"} photoUrl={user?.photo_url} />
 
-      <IonContent className="student-dashboard-content">
+      <IonContent className="student-dashboard-content" fullscreen scrollY={false}>
         {loadingUser ? (
           // --- ESTADO DE CARGA ---
           // Usamos un div contenedor para centrar, no el IonContent directamente
