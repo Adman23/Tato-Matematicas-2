@@ -5,7 +5,7 @@ import './ResultsScreen.css';
 import GameHeader from './GameHeader';
 import iconHint from '/assets/Tato/TatoPista.png';
 import tatoImage from '/assets/Tato/Tato.png';
-import acceptButton from '/assets/juegosImg/aceptar.png';
+// import acceptButton from '/assets/juegosImg/aceptar.png'; Quitado porque no se usaba y daba warning para vercel
 import audioManager from '../../../lib/AudioManager';
 import type { AudioPreferences } from '../../../lib/api';
 import iconCorrect from '/assets/juegosImg/correct.png';
