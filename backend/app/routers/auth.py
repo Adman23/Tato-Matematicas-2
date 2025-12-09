@@ -40,6 +40,8 @@ async def register( data: RegisterRequest,
             - username (str): Username of the new user (should be unique).
             - password (str): Password.
             - role (str): "teacher" "student" "admin" -> Last one should be rare.
+            - photo_url (str): URL of the student's photo (if any).
+            - password_length (int): Length of the password.
 
     Raises:
         HTTPException: Username exists or error while creating the user(`400 BAD REQUEST`).

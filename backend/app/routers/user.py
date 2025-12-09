@@ -125,7 +125,7 @@ async def get_user_data(user_id: str):
 		# Fetch all the extra info of the user
 		# Fetch user's direct relations (keep it simple to avoid complex nested selects)
 		resp = supabase_admin.table("users") \
-				.select("group_id, password_type, password_length\
+				.select("group_id, password_type, password_length,\
 						user_profiles!user_id(\
 							id,\
 							text_preferences,\

@@ -21,7 +21,7 @@ class RegisterRequest(BaseModel):
     password: str
     role: str = "student"  # Default is student
     photo_url: str | None = None  # Optional photo URL, it has to be uploaded previously to a storage
-    password_length: int | None = None  # Length of the password
+    password_length: int  # Length of the password
 
     class Config:
         json_schema_extra = {
@@ -65,8 +65,8 @@ class User(BaseModel):
     username: str
     role: str
     photo_url: str | None = None
-    password_type: str
-    password_length: int
+    password_type: str | None = None
+    password_length: int | None = None
 
     class Config:
         from_attributes = True
