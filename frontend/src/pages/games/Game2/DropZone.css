@@ -11,7 +11,7 @@
 .drop-zone-v2 {
   display: grid;
   /* Auto-fit con máximo de columnas para evitar dispersión */
-  grid-template-columns: repeat(auto-fit, minmax(var(--size-card), max-content));
+  grid-template-columns: repeat(auto-fit, minmax(min(80px, var(--size-card)), 1fr));
   gap: var(--gap-card);
   justify-content: center;
   justify-items: center;

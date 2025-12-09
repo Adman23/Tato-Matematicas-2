@@ -38,6 +38,7 @@ interface GameHeaderProps {
   currentRound: number;
   totalRounds: number;
   onBackClick?: () => void;
+  onBackHover?: () => void;
 }
 
 /**
@@ -66,7 +67,8 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   pictogram2,
   currentRound,
   totalRounds,
-  onBackClick
+  onBackClick,
+  onBackHover
 }) => {
 
   return (
@@ -74,6 +76,8 @@ const GameHeader: React.FC<GameHeaderProps> = ({
       <div className="game-header-component">
         <Button3Dtext
           onClick={onBackClick}
+          onMouseEnter={onBackHover}
+          onFocus={onBackHover}
           aria-label="Salir del juego">
           <IonIcon icon={arrowBack} />
         </Button3Dtext>

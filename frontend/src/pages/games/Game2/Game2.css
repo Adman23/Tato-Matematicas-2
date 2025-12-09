@@ -10,9 +10,9 @@
 
 .game2-content {
   --background: var(--ion-color-primary-contrast);
-  --size-card: clamp(60px, min(12vw, 11vh), 140px);
-  --gap-card: clamp(0.4rem, 1vw, 1.2rem);
-  --pad-zone: clamp(0.5rem, 1.5vw, 1.5rem);
+  --size-card: clamp(60px, min(11vw, 10vh), 120px);
+  --gap-card: clamp(0.35rem, 0.9vw, 1.1rem);
+  --pad-zone: clamp(0.45rem, 1.2vw, 1.2rem);
 
   height: 100dvh;
   overflow: hidden;
@@ -42,7 +42,7 @@
   flex: 1 1 auto;
   max-width: 100%;
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(0.8rem, 2vh, 2rem);
   box-sizing: border-box;
   overflow: hidden;
@@ -63,7 +63,7 @@
 
 .available-numbers-top {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--size-card), max-content));
+  grid-template-columns: repeat(auto-fit, minmax(min(80px, var(--size-card)), 1fr));
   gap: var(--gap-card);
   justify-content: center;
   justify-items: center;
@@ -135,6 +135,16 @@
   transform: scale(1.2);
   box-shadow: 0 6px 16px rgba(132, 172, 241, 0.4);
   z-index: 10;
+}
+
+/* Borde negro más marcado en la bandeja superior al hacer hover o navegar con tab */
+.available-numbers-top .number-card-v2:hover,
+.available-numbers-top .number-card-v2:focus-visible {
+  border-color: #000 !important;
+  border-width: 4px;
+  box-shadow: none;
+  transform: scale(1.2);
+  outline: none;
 }
 
 /* Active (click): Scale 1.2 + cursor grabbing */
@@ -213,6 +223,7 @@
   box-sizing: border-box;
   position: relative;
   z-index: 5;
+  flex-wrap: wrap;
 }
 
 /* Order indicator (between buttons) */
@@ -250,12 +261,12 @@
   flex-shrink: 0;
 }
 
-/* Larger Tato button */
+/* Mismo tamaño para todos los botones (pista e instrucciones iguales) */
 .check-button-container .game-control-button:first-child {
-  width: clamp(110px, 15vw, 220px) !important;
-  height: clamp(110px, 15vw, 220px) !important;
-  min-width: clamp(110px, 15vw, 220px) !important;
-  min-height: clamp(110px, 15vw, 220px) !important;
+  width: clamp(90px, 12vw, 180px) !important;
+  height: clamp(90px, 12vw, 180px) !important;
+  min-width: clamp(90px, 12vw, 180px) !important;
+  min-height: clamp(90px, 12vw, 180px) !important;
 }
 
 /* ============================================================================
@@ -375,9 +386,12 @@
    ============================================================================ */
 
 .number-card-dragging-touch {
+  background: var(--bubble-bg, #e5e7eb);
+  border: 2px solid var(--bubble-selected-bg, #000000);
+  color: var(--tatomaths-text, #000000);
   opacity: 0.8;
   transform: scale(1.1) !important;
-  box-shadow: 0 6px 16px rgba(132, 172, 241, 0.5);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--ion-color-primary, #3b82f6) 60%, transparent);
   pointer-events: none;
   z-index: 9999;
   transition: none;
@@ -401,54 +415,72 @@
   }
 
   .check-button-container .game-control-button:first-child {
-    width: clamp(90px, 17vw, 160px) !important;
-    height: clamp(90px, 17vw, 160px) !important;
-    min-width: clamp(90px, 17vw, 160px) !important;
-    min-height: clamp(90px, 17vw, 160px) !important;
+    width: clamp(75px, 14vw, 130px) !important;
+    height: clamp(75px, 14vw, 130px) !important;
+    min-width: clamp(75px, 14vw, 130px) !important;
+    min-height: clamp(75px, 14vw, 130px) !important;
   }
 }
 
-/* Mobile Portrait */
+/* Mobile Portrait (unificado) */
 @media (max-width: 600px) and (orientation: portrait) {
   .game2-content {
-    --size-card: clamp(45px, 13vw, 80px);
-    --gap-card: clamp(0.3rem, 0.8vw, 0.6rem);
-    --pad-zone: clamp(0.3rem, 1vw, 0.8rem);
+    --size-card: clamp(50px, 18vw, 76px);
+    --gap-card: clamp(0.4rem, 1vw, 0.75rem);
+    --pad-zone: clamp(0.35rem, 1vw, 0.8rem);
+  }
+
+  .game2-main-wrapper {
+    padding: 0.35rem 0.55rem 0.3rem;
   }
 
   .game2-container {
-    gap: clamp(0.5rem, 1.5vh, 1rem);
+    gap: clamp(0.5rem, 1.6vh, 0.9rem);
+  }
+
+  /* Grid compacto para números y slots */
+  .available-numbers-top {
+    grid-template-columns: repeat(auto-fit, minmax(min(70px, var(--size-card)), 1fr));
+    padding: clamp(0.35rem, 1vw, 0.7rem);
+  }
+
+  .drop-zone-v2 {
+    grid-template-columns: repeat(auto-fit, minmax(min(70px, var(--size-card)), 1fr));
+    padding: clamp(0.35rem, 1vw, 0.7rem);
   }
 
   .number-card-v2 {
-    font-size: clamp(1.2rem, 4vw, 2rem);
+    font-size: clamp(1.3rem, 4.2vw, 2.1rem);
+    border-width: 2px;
   }
 
   .pictogram-image {
-    width: clamp(28px, 50%, 55px);
-    height: clamp(28px, 50%, 55px);
+    width: clamp(32px, 52%, 60px);
+    height: clamp(32px, 52%, 60px);
   }
 
   .check-button-container {
-    gap: clamp(0.5rem, 1.5vw, 1rem);
+    gap: clamp(0.4rem, 1.5vw, 0.8rem);
+    padding: clamp(0.35rem, 0.8vh, 0.6rem) 0 0;
+    justify-content: center;
   }
 
   .check-button-container .game-control-button {
-    width: clamp(65px, 16vw, 105px) !important;
-    height: clamp(65px, 16vw, 105px) !important;
-    min-width: clamp(65px, 16vw, 105px) !important;
-    min-height: clamp(65px, 16vw, 105px) !important;
+    width: clamp(60px, 16vw, 95px) !important;
+    height: clamp(60px, 16vw, 95px) !important;
+    min-width: clamp(60px, 16vw, 95px) !important;
+    min-height: clamp(60px, 16vw, 95px) !important;
   }
 
   .check-button-container .game-control-button:first-child {
-    width: clamp(75px, 19vw, 125px) !important;
-    height: clamp(75px, 19vw, 125px) !important;
-    min-width: clamp(75px, 19vw, 125px) !important;
-    min-height: clamp(75px, 19vw, 125px) !important;
+    width: clamp(60px, 16vw, 95px) !important;
+    height: clamp(60px, 16vw, 95px) !important;
+    min-width: clamp(60px, 16vw, 95px) !important;
+    min-height: clamp(60px, 16vw, 95px) !important;
   }
 
   .order-icon {
-    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    font-size: clamp(1.5rem, 4vw, 2.3rem);
   }
 
   .order-text {
@@ -456,119 +488,59 @@
   }
 }
 
-/* MOBILE OPTIMIZED TO USE VERTICAL SPACE */
-@media (max-width: 600px) and (orientation: portrait) {
-  .game2-content {
-    --size-card: clamp(70px, 18vw, 110px);
-    --gap-card: clamp(0.5rem, 1.2vw, 0.8rem);
-    --pad-zone: clamp(0.4rem, 1vw, 0.7rem);
-  }
-
-  .game2-main-wrapper {
-    padding: 0.4rem 0.5rem 0.3rem;
-  }
-
-  .game2-container {
-    gap: clamp(0.6rem, 2vh, 1.2rem);
-  }
-
-  /* Grid with more columns to use width */
-  .available-numbers-top {
-    grid-template-columns: repeat(3, minmax(var(--size-card), 1fr));
-    padding: clamp(0.5rem, 1.2vw, 0.8rem);
-  }
-
-  .number-card-v2 {
-    font-size: clamp(1.6rem, 5vw, 2.4rem);
-    border-width: 3px;
-  }
-
-  .pictogram-image {
-    width: clamp(40px, 55%, 70px);
-    height: clamp(40px, 55%, 70px);
-  }
-
-  .check-button-container {
-    gap: clamp(0.5rem, 1.5vw, 1rem);
-    padding: clamp(0.4rem, 0.8vh, 0.7rem) 0 0;
-  }
-
-  .check-button-container .game-control-button {
-    width: clamp(65px, 16vw, 105px) !important;
-    height: clamp(65px, 16vw, 105px) !important;
-    min-width: clamp(65px, 16vw, 105px) !important;
-    min-height: clamp(65px, 16vw, 105px) !important;
-  }
-
-  .check-button-container .game-control-button:first-child {
-    width: clamp(75px, 19vw, 125px) !important;
-    height: clamp(75px, 19vw, 125px) !important;
-    min-width: clamp(75px, 19vw, 125px) !important;
-    min-height: clamp(75px, 19vw, 125px) !important;
-  }
-
-  .order-icon {
-    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
-  }
-
-  .order-text {
-    font-size: clamp(0.7rem, 2.2vw, 1.1rem);
-  }
-}
-
 /* VERY SMALL MOBILE Portrait - Fine adjustment */
 @media (max-width: 400px) and (orientation: portrait) {
   .game2-content {
-    --size-card: clamp(65px, 17vw, 95px);
-    --gap-card: clamp(0.4rem, 1vw, 0.7rem);
+    --size-card: clamp(46px, 16vw, 68px);
+    --gap-card: clamp(0.35rem, 1vw, 0.6rem);
   }
 
   .available-numbers-top {
-    grid-template-columns: repeat(3, minmax(var(--size-card), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(64px, var(--size-card)), 1fr));
   }
 
   .number-card-v2 {
-    font-size: clamp(1.4rem, 4.5vw, 2rem);
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
   }
 
   .pictogram-image {
-    width: clamp(35px, 52%, 60px);
-    height: clamp(35px, 52%, 60px);
+    width: clamp(30px, 50%, 48px);
+    height: clamp(30px, 50%, 48px);
   }
 
   .check-button-container .game-control-button {
-    width: clamp(58px, 15vw, 90px) !important;
-    height: clamp(58px, 15vw, 90px) !important;
-    min-width: clamp(58px, 15vw, 90px) !important;
-    min-height: clamp(58px, 15vw, 90px) !important;
+    width: clamp(54px, 15vw, 82px) !important;
+    height: clamp(54px, 15vw, 82px) !important;
+    min-width: clamp(54px, 15vw, 82px) !important;
+    min-height: clamp(54px, 15vw, 82px) !important;
   }
 
   .check-button-container .game-control-button:first-child {
-    width: clamp(68px, 18vw, 110px) !important;
-    height: clamp(68px, 18vw, 110px) !important;
-    min-width: clamp(68px, 18vw, 110px) !important;
-    min-height: clamp(68px, 18vw, 110px) !important;
+    width: clamp(54px, 15vw, 82px) !important;
+    height: clamp(54px, 15vw, 82px) !important;
+    min-width: clamp(54px, 15vw, 82px) !important;
+    min-height: clamp(54px, 15vw, 82px) !important;
   }
 }
 
 /* LARGE MOBILE Portrait - Even larger bubbles */
 @media (min-width: 401px) and (max-width: 600px) and (orientation: portrait) and (min-height: 700px) {
   .game2-content {
-    --size-card: clamp(75px, 19vw, 120px);
+    --size-card: clamp(55px, 18vw, 82px);
   }
 
   .available-numbers-top {
-    grid-template-columns: repeat(3, minmax(var(--size-card), 1fr));
-    gap: clamp(0.6rem, 1.4vw, 1rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(72px, var(--size-card)), 1fr));
+    gap: clamp(0.45rem, 1.2vw, 0.85rem);
   }
 
   .number-card-v2 {
-    font-size: clamp(1.7rem, 5.5vw, 2.6rem);
+    font-size: clamp(1.4rem, 4.8vw, 2.2rem);
   }
 
   .pictogram-image {
-    width: clamp(42px, 56%, 75px);
-    height: clamp(42px, 56%, 75px);
+    width: clamp(34px, 54%, 62px);
+    height: clamp(34px, 54%, 62px);
   }
 }
 
@@ -584,7 +556,7 @@
   }
 
   .available-numbers-top {
-    grid-template-columns: repeat(auto-fit, minmax(var(--size-card), max-content));
+    grid-template-columns: repeat(auto-fit, minmax(min(80px, var(--size-card)), 1fr));
   }
 
   .number-card-v2 {
@@ -609,10 +581,10 @@
   }
 
   .check-button-container .game-control-button:first-child {
-    width: clamp(68px, 13vh, 130px) !important;
-    height: clamp(68px, 13vh, 130px) !important;
-    min-width: clamp(68px, 13vh, 130px) !important;
-    min-height: clamp(68px, 13vh, 130px) !important;
+    width: clamp(58px, 10vh, 105px) !important;
+    height: clamp(58px, 10vh, 105px) !important;
+    min-width: clamp(58px, 10vh, 105px) !important;
+    min-height: clamp(58px, 10vh, 105px) !important;
   }
 
   .order-icon {
@@ -638,9 +610,9 @@
   }
 
   .check-button-container .game-control-button:first-child {
-    width: clamp(130px, 14vw, 240px) !important;
-    height: clamp(130px, 14vw, 240px) !important;
-    min-width: clamp(130px, 14vw, 240px) !important;
-    min-height: clamp(130px, 14vw, 240px) !important;
+    width: clamp(110px, 12vw, 190px) !important;
+    height: clamp(110px, 12vw, 190px) !important;
+    min-width: clamp(110px, 12vw, 190px) !important;
+    min-height: clamp(110px, 12vw, 190px) !important;
   }
 }
