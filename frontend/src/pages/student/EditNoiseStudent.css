@@ -139,8 +139,8 @@
 }
 
 .feedback-button {
-  width: min(5vh, 45px);
-  height: min(5vh, 45px);
+  width: min(5vh, 48px);
+  height: min(5vh, 48px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,23 +148,23 @@
 
 @media (max-height: 700px) and (min-height: 601px) {
   .feedback-button {
-    width: min(4vh, 35px);
-    height: min(4vh, 35px);
+    width: min(5vh, 48px);
+    height: min(5vh, 48px);
   }
 }
 
 @media (max-height: 600px) {
   .feedback-button {
-    width: min(4vh, 35px);
-    height: min(4vh, 35px);
+    width: 48px;
+    height: 48px;
   }
 }
 
 /* Ajustes específicos para iPhone 6/7/8 (375x667) en portrait */
 @media (max-width: 400px) and (min-height: 650px) and (orientation: portrait) {
   .feedback-button {
-    width: 38px !important;
-    height: 38px !important;
+    width: 48px !important;
+    height: 48px !important;
   }
   
   .feedback-button .btn-icon {
@@ -312,6 +312,236 @@
 }
 
 /* =============================================================================
+   PANTALLAS MUY ESTRECHAS - Evitar scroll (≤390px)
+   Temas en columna vertical sin iconos principales
+   ========================================================================== */
+
+@media (max-width: 390px) {
+  .container {
+    max-height: 100vh;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  .main-title {
+    font-size: 1rem;
+    margin: 8px 0 5px 0;
+  }
+
+  .themes-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 5px 8px;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Ocultar iconos principales de temas para ahorrar espacio */
+  .icon-circle {
+    display: none;
+  }
+
+  .theme-card .simple-button-content {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .theme-label {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  /* Botones de feedback más compactos */
+  .feedback-icons {
+    gap: 6px;
+  }
+
+  .feedback-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .feedback-button .btn-icon {
+    font-size: 20px;
+  }
+
+  /* Área de controles más compacta */
+  .controls-area {
+    max-height: 90px;
+    padding: 5px 8px;
+  }
+
+  .volume-group {
+    gap: 6px;
+    bottom: 8px;
+  }
+
+  .volume-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .volume-button .btn-icon {
+    font-size: 22px;
+  }
+
+  .Accept-button-container-editColorsStudent {
+    bottom: 8px;
+    right: 8px;
+  }
+
+  .Accept-Button-image {
+    height: 60px;
+    width: 60px;
+    min-height: 60px;
+    min-width: 60px;
+  }
+}
+
+/* =============================================================================
+   AJUSTE ESPECÍFICO PARA ALTURA 667px (iPhone 6/7/8, SE)
+   Controles en fila horizontal en la parte inferior
+   ========================================================================== */
+
+@media (max-height: 667px) and (min-height: 650px) {
+  .container {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 65px;
+  }
+
+  .main-title {
+    font-size: 1.2rem;
+    margin: 5px 0;
+  }
+
+  .themes-row {
+    overflow: visible;
+    max-height: none;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+  }
+
+  /* Área de controles: posición fija en el fondo */
+  .controls-area {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    padding: 6px 15px !important;
+    margin: 0 !important;
+    margin-top: 0 !important;
+    background: var(--ion-color-primary-contrast) !important;
+    border-top: 1px solid #e0e0e0 !important;
+    z-index: 11 !important;
+    box-sizing: border-box !important;
+    gap: 0 !important;
+  }
+
+  /* Grupo de volumen centrado dentro del flex */
+  .volume-group {
+    position: static !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    margin: 0 auto !important;
+    bottom: auto !important;
+    left: auto !important;
+  }
+
+  .volume-wrapper {
+    position: static;
+  }
+
+  /* Botones de volumen mínimo 48px */
+  .volume-button {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    flex-shrink: 0;
+  }
+
+  .volume-button .btn-icon {
+    font-size: 20px;
+  }
+
+  .volume-label {
+    display: none;
+  }
+
+  /* Botón ACEPTAR a la derecha */
+  .Accept-button-container-editColorsStudent {
+    position: absolute !important;
+    right: 10px !important;
+    bottom: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    left: auto !important;
+  }
+
+  .Accept-button-container-editColorsStudent .Accept-Button-Button-editColorsStudent {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+
+  .Accept-button-container-editColorsStudent .Accept-Button-image {
+    width: 46px !important;
+    height: 46px !important;
+    max-width: 46px !important;
+    max-height: 46px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: auto !important;
+  }
+
+  /* Iconos de temas compactos */
+  .icon-circle {
+    width: 45px;
+    height: 45px;
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+  }
+
+  .feedback-button {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .feedback-button .btn-icon {
+    font-size: 18px;
+  }
+
+  .theme-card .simple-button-content {
+    padding: 6px;
+  }
+}
+
+/* =============================================================================
    BOTÓN ACEPTAR - Guardar preferencias
    ========================================================================== */
 
@@ -328,6 +558,7 @@
   width: min(10vh, 90px);
   min-height: 70px;
   min-width: 70px;
+  object-fit: contain;
 }
 
 /* =============================================================================
@@ -359,17 +590,17 @@
   }
   
   .feedback-button {
-    width: 30px;
-    height: 30px;
+    width: 48px;
+    height: 48px;
   }
   
   .feedback-button .btn-icon {
-    font-size: 16px;
+    font-size: 18px;
   }
   
   .volume-button {
-    width: 45px;
-    height: 45px;
+    width: 48px;
+    height: 48px;
   }
   
   .volume-button .btn-icon {
@@ -471,8 +702,8 @@
   }
   
   .feedback-button {
-    width: min(9vh, 60px);
-    height: min(9vh, 60px);
+    width: clamp(48px, 9vh, 60px);
+    height: clamp(48px, 9vh, 60px);
   }
   
   .feedback-button .btn-icon {
