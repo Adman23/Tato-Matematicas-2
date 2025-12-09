@@ -319,7 +319,7 @@ export default function Login() {
 
             <form onSubmit={handleLogin} className="login-form">
               <IonItem lines="none" className="input-item">
-                <IonLabel position="stacked">Usuario</IonLabel>
+                <IonLabel className='input-text' position="stacked">Usuario</IonLabel>
                 <IonInput
                   className='login-custom-input'
                   type="text"
@@ -339,7 +339,7 @@ export default function Login() {
               </IonItem>
 
               <IonItem lines="none" className="input-item">
-                <IonLabel position="stacked">Contraseña</IonLabel>
+                <IonLabel className='input-text' position="stacked">Contraseña</IonLabel>
                 <IonInput
                   className='login-custom-input'
                   type={showPassword ? "text" : "password"}
