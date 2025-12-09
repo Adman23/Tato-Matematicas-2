@@ -517,12 +517,6 @@ export default function StudentEditProfile() {
           ? newPassword.length
           : (typeof newPassword === 'string' ? newPassword.length : 0);
       }
-
-      if (isPasswordChanged) {
-        payload.password_length = Array.isArray(newPassword)
-          ? newPassword.length
-          : (typeof newPassword === 'string' ? newPassword.length : 0);
-      }
       
       if (Object.keys(payload).length === 0) {
         setToastMessage('No se han detectado cambios en los datos del perfil del estudiante.');
