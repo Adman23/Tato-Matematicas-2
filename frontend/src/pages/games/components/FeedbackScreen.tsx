@@ -375,8 +375,14 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                         {!isCorrect && onRepeat && (
                             <GameControlButton
                                 aria-label="Repetir"
-                                onClick={onRepeat}
-                                onMouseEnter={enableHoverMode ? onRepeat : undefined}
+                                onClick={enableHoverMode ? undefined : onRepeat}
+                                onMouseEnter={() => triggerHover(onRepeat)}
+                                onMouseLeave={() => {
+                                    if (hoverTimer.current) {
+                                        window.clearTimeout(hoverTimer.current);
+                                        hoverTimer.current = null;
+                                    }
+                                }}
                                 onKeyDown={(e) => handleKeyActivate(e, onRepeat)}
                                 tabIndex={0}
                             >
@@ -395,12 +401,18 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                         {(isCorrect || !hideNextOnError) && (
                             <GameControlButton
                                 aria-label="Siguiente"
-                                onClick={() => { incrementMessageIndex(); onNext(); }}
-                                onMouseEnter={
+                                onClick={
                                     enableHoverMode
-                                        ? () => { incrementMessageIndex(); onNext(); }
-                                        : undefined
+                                        ? undefined
+                                        : () => { incrementMessageIndex(); onNext(); }
                                 }
+                                onMouseEnter={() => triggerHover(() => { incrementMessageIndex(); onNext(); })}
+                                onMouseLeave={() => {
+                                    if (hoverTimer.current) {
+                                        window.clearTimeout(hoverTimer.current);
+                                        hoverTimer.current = null;
+                                    }
+                                }}
                                 onKeyDown={(e) => handleKeyActivate(e, () => { incrementMessageIndex(); onNext(); })}
                                 tabIndex={0}
                             >

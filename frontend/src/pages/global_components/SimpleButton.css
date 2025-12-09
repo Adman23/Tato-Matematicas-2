@@ -14,7 +14,10 @@
 
 /* Botón principal */
 .simple-button {
-    --background: transparent;
+    --background: #ffffff;
+    --background-activated: #ffffff;
+    --background-focused: #ffffff;
+    --background-hover: #ffffff;
     --border-width: clamp(4px, 1.2vw, 8px);
     --border-style: solid;
     --border-radius: clamp(8px, 1vw, 16px);
