@@ -27,9 +27,9 @@ interface ExitScreenProps {
 
 const ExitScreen: React.FC<ExitScreenProps> = ({ confirmExit, cancelExit, enableHoverMode = false }) => {
     return (
-        <div className="game-header-exit-overlay" aria-label="Confirmar salida">
+        <div className="game-header-exit-overlay" role="dialog" aria-labelledby="exit-title">
             <div className="game-header-exit-card">
-                <p className="game-header-exit-text">¿Seguro que quieres salir?</p>
+                <p id="exit-title" className="game-header-exit-text">¿Seguro que quieres salir?</p>
                 <div className="feedback-tato">
                     <img
                         src={"/assets/Tato/TatoTriste.png"}

@@ -92,7 +92,11 @@
 }
 
 .login-card h2 {
-    color: white;
+    color: var(--tatomaths-text-primary);
+}
+
+.login-card p {
+    color: var(--tatomaths-text-primary)
 }
 
 
@@ -124,6 +128,10 @@ ion-input.login-custom-input {
     margin-top: 20px;
     height: 50px;
     text-align: left;
+}
+
+ion-label.input-text {
+    color: var(--tatomaths-text-primary) !important;
 }
 
 

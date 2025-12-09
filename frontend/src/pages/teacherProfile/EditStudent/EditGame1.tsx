@@ -21,7 +21,7 @@ import { IonContent, IonIcon, IonPage, useIonRouter } from "@ionic/react";
 import { useAuth } from '../../../contexts/AuthContext';
 import { Button3Dtext } from "../../global_components/PushableButtons";
 import { arrowBack } from "ionicons/icons";
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import './EditGame1.css';
 import { gamesAPI, type GameConfig } from "../../../lib/api";
@@ -145,16 +145,6 @@ export default function EditGame1() {
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [showQuantityModal, showRangeModal, showVoiceModal]);
-
-    /**
-     * Handle keyboard selection for modal options
-     */
-    const handleKeySelect = useCallback((e: React.KeyboardEvent, action: () => void) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            action();
-        }
-    }, []);
 
     /**
      * 
@@ -329,13 +319,18 @@ export default function EditGame1() {
                     <div className="EditGame1-config-buttons">
                         <div className="EditGame1-buttons-result">
                             {/* Selected Voice */}
-                            <div className="EditGame1-config-button-value">
+                            <div
+                                className="EditGame1-config-button-value"
+                                role="status"
+                                aria-label={`Voz seleccionada: ${voice === 'woman' ? 'Mujer' : 'Hombre'}`}
+                            >
                                 <img
                                     src={voice === 'woman' ? '/assets/pictograms/mujer.png' : '/assets/pictograms/hombre.png'}
-                                    alt={voice === 'woman' ? 'Mujer' : 'Hombre'}
+                                    alt=""
+                                    aria-hidden="true"
                                     className="EditGame1-config-button-image"
                                 />
-                                <span className="modal-range-text">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
+                                <span className="modal-range-text" aria-hidden="true">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
                             </div>
                             {/* Voice Button */}
                             <Button3Dtext
@@ -343,10 +338,10 @@ export default function EditGame1() {
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowVoiceModal(true) }}
                             >
-                                <div className="EditGame1-config-button-content">
+                                <div className="EditGame1-config-button-content" aria-hidden="true">
                                     <img
                                         src={"/assets/pictograms/voz.png"}
-                                        alt="Voz"
+                                        alt=""
                                         className="EditGame1-config-button-image"
                                     />
                                     <span className="btn-text">VOZ</span>
@@ -356,15 +351,20 @@ export default function EditGame1() {
 
                         <div className="EditGame1-buttons-result">
                             {/* Selected Quantity */}
-                            <div className="EditGame1-config-button-value">
+                            <div
+                                className="EditGame1-config-button-value"
+                                role="status"
+                                aria-label={`Cantidad seleccionada: ${quantity} opciones`}
+                            >
                                 {quantity <= 10 ? (
                                     <img
                                         src={`/assets/numbers/${quantity}.png`}
-                                        alt={`Número ${quantity}`}
+                                        alt=""
+                                        aria-hidden="true"
                                         className="EditGame1-config-button-image"
                                     />
                                 ) : (
-                                    <span className="modal-number-text">{quantity}</span>
+                                    <span className="modal-number-text" aria-hidden="true">{quantity}</span>
                                 )}
                             </div>
 
@@ -374,10 +374,10 @@ export default function EditGame1() {
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowQuantityModal(true) }}
                             >
-                                <div className="EditGame1-config-button-content">
+                                <div className="EditGame1-config-button-content" aria-hidden="true">
                                     <img
                                         src="/assets/pictograms/cantidad.png"
-                                        alt="Cantidad"
+                                        alt=""
                                         className="EditGame1-config-button-image"
                                     />
                                     <span className="btn-text">CANTIDAD</span>
@@ -387,8 +387,12 @@ export default function EditGame1() {
 
                         <div className="EditGame1-buttons-result">
                             {/* Selected Range */}
-                            <div className="EditGame1-config-button-value">
-                                <div className="range-chosen">
+                            <div
+                                className="EditGame1-config-button-value"
+                                role="status"
+                                aria-label={`Rango seleccionado: ${getSelectedRangeLabel()}`}
+                            >
+                                <div className="range-chosen" aria-hidden="true">
                                     <span className="modal-range-text">{getSelectedRangeLabel()}</span>
                                 </div>
                             </div>
@@ -398,10 +402,10 @@ export default function EditGame1() {
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowRangeModal(true) }}
                             >
-                                <div className="EditGame1-config-button-content">
+                                <div className="EditGame1-config-button-content" aria-hidden="true">
                                     <img
                                         src="/assets/pictograms/rango.png"
-                                        alt="Rango"
+                                        alt=""
                                         className="EditGame1-config-button-image"
                                     />
                                     <span className="btn-text">RANGO</span>
@@ -412,13 +416,17 @@ export default function EditGame1() {
 
                     {/* Save Changes Button */}
                     <div className="EditGame1-save-button">
-                        <Button3Dtext onClick={handleSave}>
+                        <Button3Dtext
+                            aria-label="Guardar cambios"
+                            onClick={handleSave}
+                        >
                             <img
                                 src="/assets/pictograms/correctoS.png"
-                                alt="Guardar cambios"
+                                alt=""
+                                aria-hidden="true"
                                 className="EditGame1-config-button-image"
                             />
-                            <span className="btn-text">GUARDAR</span>
+                            <span className="btn-text" aria-hidden="true">GUARDAR</span>
                         </Button3Dtext>
                     </div>
                 </div>
@@ -444,14 +452,14 @@ export default function EditGame1() {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
                                     // Disable options greater than 10 if the range is 0-10
                                     const isDisabled = numberRange === '0-10' && num > 10;
+                                    const isSelected = quantity === num;
                                     return (
-                                        <div
+                                        <button
+                                            type="button"
                                             key={num}
-                                            className={`EditGame1-modal-option ${quantity === num ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-                                            tabIndex={isDisabled ? -1 : 0}
-                                            role="button"
-                                            aria-pressed={quantity === num}
-                                            aria-disabled={isDisabled}
+                                            className={`EditGame1-modal-option ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                            aria-label={`${num} opciones${isSelected ? ', seleccionado' : ''}`}
+                                            disabled={isDisabled}
                                             onClick={() => {
                                                 if (!isDisabled) {
                                                     setQuantity(num);
@@ -459,20 +467,13 @@ export default function EditGame1() {
                                                     closeAllModals();
                                                 }
                                             }}
-                                            onKeyDown={(e) => handleKeySelect(e, () => {
-                                                if (!isDisabled) {
-                                                    setQuantity(num);
-                                                    announce(`Cantidad seleccionada: ${num} opciones`);
-                                                    closeAllModals();
-                                                }
-                                            })}
                                         >
                                             {pictogram ? (
-                                                <img src={pictogram} alt={`${num}`} className="EditGame1-modal-number-img" />
+                                                <img src={pictogram} alt="" aria-hidden="true" className="EditGame1-modal-number-img" />
                                             ) : (
-                                                <span className="EditGame1-modal-number-text">{num}</span>
+                                                <span className="EditGame1-modal-number-text" aria-hidden="true">{num}</span>
                                             )}
-                                        </div>
+                                        </button>
                                     );
                                 })}
                             </div>
@@ -496,38 +497,30 @@ export default function EditGame1() {
                                 onClick={closeAllModals}
                                 aria-label="Cerrar selección de rango">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-range-grid">
-                                {RANGE_OPTIONS.map((option) => (
-                                    <div
-                                        key={option.value}
-                                        className={`EditGame1-modal-option large ${numberRange === option.value ? 'selected' : ''}`}
-                                        tabIndex={0}
-                                        role="button"
-                                        aria-pressed={numberRange === option.value}
-                                        onClick={() => {
-                                            setNumberRange(option.value);
-                                            // If the range is 0-10 and the quantity is greater than 10, adjust to 10
-                                            if (option.value === '0-10' && quantity > 10) {
-                                                setQuantity(10);
-                                                announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
-                                            } else {
-                                                announce(`Rango seleccionado: ${option.label}`);
-                                            }
-                                            closeAllModals();
-                                        }}
-                                        onKeyDown={(e) => handleKeySelect(e, () => {
-                                            setNumberRange(option.value);
-                                            if (option.value === '0-10' && quantity > 10) {
-                                                setQuantity(10);
-                                                announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
-                                            } else {
-                                                announce(`Rango seleccionado: ${option.label}`);
-                                            }
-                                            closeAllModals();
-                                        })}
-                                    >
-                                        <span className="EditGame1-modal-range-text">{option.label}</span>
-                                    </div>
-                                ))}
+                                {RANGE_OPTIONS.map((option) => {
+                                    const isSelected = numberRange === option.value;
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={option.value}
+                                            className={`EditGame1-modal-option large ${isSelected ? 'selected' : ''}`}
+                                            aria-label={`${option.label}${isSelected ? ', seleccionado' : ''}`}
+                                            onClick={() => {
+                                                setNumberRange(option.value);
+                                                // If the range is 0-10 and the quantity is greater than 10, adjust to 10
+                                                if (option.value === '0-10' && quantity > 10) {
+                                                    setQuantity(10);
+                                                    announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
+                                                } else {
+                                                    announce(`Rango seleccionado: ${option.label}`);
+                                                }
+                                                closeAllModals();
+                                            }}
+                                        >
+                                            <span className="EditGame1-modal-range-text" aria-hidden="true">{option.label}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -549,56 +542,44 @@ export default function EditGame1() {
                                 onClick={closeAllModals}
                                 aria-label="Cerrar selección de voz">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-voice-grid">
-                                <div
+                                <button
+                                    type="button"
                                     className={`EditGame1-modal-option voice ${voice === 'woman' ? 'selected' : ''}`}
-                                    tabIndex={0}
-                                    role="button"
-                                    aria-pressed={voice === 'woman'}
+                                    aria-label={`Mujer${voice === 'woman' ? ', seleccionado' : ''}`}
                                     onClick={() => {
                                         setVoice('woman');
                                         announce('Voz seleccionada: Mujer');
                                         closeAllModals();
                                     }}
-                                    onKeyDown={(e) => handleKeySelect(e, () => {
-                                        setVoice('woman');
-                                        announce('Voz seleccionada: Mujer');
-                                        closeAllModals();
-                                    })}
                                 >
-                                    <div className="EditGame1-voice-content">
+                                    <div className="EditGame1-voice-content" aria-hidden="true">
                                         <img
                                             src="/assets/pictograms/mujer.png"
-                                            alt="woman"
+                                            alt=""
                                             className="EditGame1-config-button-image"
                                         />
                                         <span className="EditGame1-modal-range-text">Mujer</span>
                                     </div>
-                                </div>
-                                <div
+                                </button>
+                                <button
+                                    type="button"
                                     className={`EditGame1-modal-option voice ${voice === 'man' ? 'selected' : ''}`}
-                                    tabIndex={0}
-                                    role="button"
-                                    aria-pressed={voice === 'man'}
+                                    aria-label={`Hombre${voice === 'man' ? ', seleccionado' : ''}`}
                                     onClick={() => {
                                         setVoice('man');
                                         announce('Voz seleccionada: Hombre');
                                         closeAllModals();
                                     }}
-                                    onKeyDown={(e) => handleKeySelect(e, () => {
-                                        setVoice('man');
-                                        announce('Voz seleccionada: Hombre');
-                                        closeAllModals();
-                                    })}
                                 >
-                                    <div className="EditGame1-voice-content">
+                                    <div className="EditGame1-voice-content" aria-hidden="true">
                                         <img
                                             src="/assets/pictograms/hombre.png"
-                                            alt="man"
+                                            alt=""
                                             className="EditGame1-config-button-image"
                                         />
                                         <span className="EditGame1-modal-range-text">Hombre</span>
                                     </div>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>
