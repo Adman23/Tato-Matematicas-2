@@ -400,6 +400,10 @@ const EditNoiseStudent: React.FC = () => {
           </Button3Dtext>
         </div>
       </div>
+
+      <div aria-live="polite" style={{position: 'absolute', left: '-9999px', height: '1px', width: '1px', overflow: 'hidden'}}>
+        Tema seleccionado: {themes.find(t => t.id === selectedTheme)?.label}. Volumen: {selectedVolume}
+      </div>
         </div>
 
       </IonContent>
