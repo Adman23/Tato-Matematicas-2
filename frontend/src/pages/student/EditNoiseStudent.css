@@ -410,7 +410,7 @@
    Controles en fila horizontal en la parte inferior
    ========================================================================== */
 
-@media (max-height: 810px) {
+@media (max-height: 760px) {
   .container {
     height: auto;
     max-height: none;
@@ -732,7 +732,7 @@
 }
 
 /* Landscape - Ocultar iconos de temas a partir de 430px de altura */
-@media (max-height: 430px) and (orientation: landscape) {
+@media (max-height: 500px) and (orientation: landscape) {
   .icon-circle {
     display: none !important;
   }
@@ -747,7 +747,7 @@
 }
 
 /* Landscape - Si la anchura es menor o igual a 740px, mostrar solo iconos sin botones de feedback */
-@media (max-width: 740px) and (orientation: landscape) {
+@media (max-width: 862px) and (orientation: landscape) {
   .feedback-icons {
     display: none !important;
   }
