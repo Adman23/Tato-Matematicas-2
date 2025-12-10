@@ -79,7 +79,7 @@
 }
 
 /* AJUSTE PARA PANTALLAS MEDIANAS HORIZONTALES (ej: 720x540) */
-@media (min-height: 451px) and (max-height: 600px) and (orientation: landscape) {
+@media (min-height: 451px) and (max-height: 700px) and (orientation: landscape) {
   .st-login-header {
     height: 14vh; min-height: 75px; max-height: 110px;
   }
@@ -391,7 +391,7 @@
 }
 
 /* --- PANTALLAS GRANDES (TABLETS/DESKTOP) --- */
-@media (min-width: 768px) and (min-height: 600px) {
+@media (min-width: 768px) and (min-height: 800px) {
     .st-login-header {
         height: 22vh; min-height: 120px; max-height: 220px;
     }
@@ -408,7 +408,7 @@
 }
 
 /* --- AJUSTE EXTREMO PARA MÓVILES APAISADOS --- */
-@media (max-height: 450px) {
+@media (max-height: 530px) {
     .st-login-header { height: 70px; min-height: 0; margin-bottom: 2px; }
     .st-header-side { width: 110px; }
     .st-button-scale {
