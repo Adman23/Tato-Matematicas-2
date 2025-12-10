@@ -54,7 +54,6 @@
 
 /* Tarjetas de tema */
 .theme-card-editNoiseStudent {
-  --background: transparent;
   --border-width: clamp(4px, 1.2vw, 8px);
   --border-style: solid;
   --border-color: transparent;
