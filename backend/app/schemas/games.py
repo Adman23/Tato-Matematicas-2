@@ -37,7 +37,7 @@ class RoundResult(BaseModel):
     `user_number`/`correct_number` vs `user_order`/`correct_order`).
     """
     round: int
-    numbers: List[int]
+    numbers: Optional[List[int]] = None
     is_correct: bool
     time_seconds: float
 
@@ -47,6 +47,10 @@ class RoundResult(BaseModel):
 
     # Campos para el juego 2: ordenar una secuencia
     correct_order: Optional[List[int]] = None
+    
+    # Campos para los juegos 3 y 4: distribuir o quitar objetos en contenedores
+    bowls_totals: Optional[List[int]] = None
+    chest_total: Optional[int] = None
 
     # Indicadores adicionales usados por el backend al procesar la ronda
     # omissions: número de números que no colocó (dejó sin colocar)

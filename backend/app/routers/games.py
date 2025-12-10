@@ -88,6 +88,11 @@ async def get_game_config(student_id: str, game_key: str):
                 "quantity": 5,  # 5 numbers to order
                 "order": "ascending"  # ascending order
             }
+        if game_key == "distribute_equal" or game_key == "remove_equal":
+            default_settings = {
+                "objects_count": 12,  # 12 objects to distribute
+                "containers_count": 3  # 3 containers
+            }
 
         return GameConfigResponse(
             game_id=game_id,
@@ -335,6 +340,18 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "hints": request.round_result.hints or 0,
                 "total_incorrect": request.round_result.total_incorrect or 0,
                 "omissions": request.round_result.omissions or 0
+            }
+        elif session.get("game_id") == 3 or session.get("game_id") == 4: 
+            # Game 3 & 4: Distribute/Remove equal
+            round_data = {
+                "round": request.round_result.round,
+                "bowls_totals": request.round_result.bowls_totals,
+                "chest_total": request.round_result.chest_total,
+                "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds,
+                "attempts": request.round_result.attempts or 0,
+                "is_final_attempt": request.round_result.is_final_attempt or False,
+                "hints": request.round_result.hints or 0
             }
         else:
             # Unknown game, use generic fields

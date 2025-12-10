@@ -655,6 +655,8 @@ export interface GameConfig {
     voice?: 'woman' | 'man';
     quantity?: number;
     order?: 'ascending' | 'descending';
+    containers_count?: number;
+    objects_count?: number;
   };
 }
 
@@ -695,6 +697,21 @@ export interface RoundResultGame2 {
   total_incorrect: number; // Número de errores (colocaciones incorrectas)
   omissions: number; // Números que no colocó (dejó sin colocar)
 }
+
+/**
+ * Datos de una ronda del juego 34: SumaResta
+ */
+export interface RoundResultGame34 {
+  round: number;
+  bowls_totals: number[]; // Numeros totales de cada bowl
+  chest_total: number;
+  is_correct: boolean;
+  time_seconds: number;
+  is_final_attempt?: boolean;
+  attempts?: number;
+  hints?: number;
+}
+
 
 
 
@@ -828,6 +845,34 @@ export const gamesAPI = {
    * });
    */
   saveRoundResultGame2: async (sessionId: string, roundResult: RoundResultGame2): Promise<void> => {
+    await api.post(`/games/sessions/${sessionId}/round`, {
+      round_result: roundResult
+    });
+  },
+
+  /**
+   * Guarda el resultado de una ronda individual dentro de una sesión.
+   *
+   * Flujo de ejecución:
+   * 1. Envía los datos de la ronda (números, respuesta, corrección, tiempo)
+   * 2. El backend actualiza el campo results.attempts[] en game_sessions
+   * 3. Incrementa contadores de total_correct o total_incorrect según resultado
+   *
+   * @param sessionId - ID de la sesión activa donde guardar
+   * @param roundResult - Objeto con todos los datos de la ronda
+   * @returns Promesa que resuelve cuando se guarda exitosamente
+   *
+   * @example
+   * await gamesAPI.saveRoundResult('session-123', {
+   *   round: 1,
+   *   numbers: [1, 3, 5, 7, 9],
+   *   user_order: [1, 3, 5, 7, 9],
+   *   correct_order: [1, 3, 5, 7, 9],
+   *   is_correct: true,
+   *   time_seconds: 12.5
+   * });
+   */
+  saveRoundResultGame34: async (sessionId: string, roundResult: RoundResultGame34): Promise<void> => {
     await api.post(`/games/sessions/${sessionId}/round`, {
       round_result: roundResult
     });

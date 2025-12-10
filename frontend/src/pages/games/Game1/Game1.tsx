@@ -720,7 +720,7 @@ const Game1: React.FC = () => {
         };
     }, []);
 
-    /**
+/**
   * Resumen funcional:
   * Redirige al dashboard correspondiente según el rol del usuario.
   *
