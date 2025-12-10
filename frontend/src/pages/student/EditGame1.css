@@ -243,7 +243,8 @@
 
 .EditGame1-modal-number-text {
     font-size: 3rem;
-    font-weight: bold;
+    font-weight: var(--tatomaths-weight);
+    font-family: var(--tatomaths-font);
     color: var(--tatomaths-text);
 }
 
@@ -280,7 +281,8 @@
    ======================================== */
 .EditGame1-modal-range-text {
     font-size: 1.6rem;
-    font-weight: bold;
+    font-weight: var(--tatomaths-weight);
+    font-family: var(--tatomaths-font);
     color: var(--tatomaths-text);
     text-align: center;
 }

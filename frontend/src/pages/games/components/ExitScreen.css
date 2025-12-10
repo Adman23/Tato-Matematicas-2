@@ -36,6 +36,8 @@
     margin: 0 0 0.75rem 0;
     font-size: 4rem;
     color: black;
+    font-family: var(--tatomaths-font);
+    font-weight: var(--tatomaths-weight);
 }
 
 

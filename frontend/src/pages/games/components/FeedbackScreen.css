@@ -28,10 +28,11 @@
 .feedback-message {
     flex-shrink: 0;
     font-size: clamp(1.5rem, 3vw, 2.5rem);
-    font-weight: bold;
+    font-weight: var(--tatomaths-weight);
     color: var(--tatomaths-text-bg);
     text-align: center;
     padding: 0 1rem;
+    font-family: var(--tatomaths-font);
 }
 
 

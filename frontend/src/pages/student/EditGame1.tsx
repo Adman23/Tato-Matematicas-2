@@ -356,7 +356,7 @@ export default function EditGame1() {
                                     aria-hidden="true"
                                     className="EditGame1-config-button-image"
                                 />
-                                <span className="modal-range-text" aria-hidden="true">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
+                                <span className="EditGame1-modal-range-text" aria-hidden="true">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
                             </div>
                             {/* Voice Button */}
                             <Button3Dtext
@@ -390,7 +390,7 @@ export default function EditGame1() {
                                         className="EditGame1-config-button-image"
                                     />
                                 ) : (
-                                    <span className="modal-number-text" aria-hidden="true">{quantity}</span>
+                                    <span className="EditGame1-modal-number-text" aria-hidden="true">{quantity}</span>
                                 )}
                             </div>
 
@@ -422,7 +422,7 @@ export default function EditGame1() {
                                     aria-label={`Rango seleccionado: ${getSelectedRangeLabel()}`}
                                 >
                                     <div className="range-chosen" aria-hidden="true">
-                                        <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                                        <span className="EditGame1-modal-range-text">{getSelectedRangeLabel()}</span>
                                     </div>
                                 </div>
                                 {/* Range Button */}

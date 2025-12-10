@@ -21,9 +21,9 @@ interface button3DtextProps extends React.ButtonHTMLAttributes<HTMLButtonElement
  * @param color Background color for the 3D effect
  * @param pressed If true, the button stays in pressed state (for toggle buttons)
  */
-export const Button3Dtext: React.FC<button3DtextProps> = ({ 
-  children, 
-  className = '', 
+export const Button3Dtext: React.FC<button3DtextProps> = ({
+  children,
+  className = '',
   frontClassName = '',
   color = 'var(--bubble-bg)',
   pressed = false,
@@ -118,7 +118,8 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
         /* Clases utilitarias internas */
         .btn-text {
           color: #000000;
-          font-weight: bold;
+          font-weight: var(--tatomaths-weight);
+          font-family: var(--tatomaths-font);
           text-align: center;
           font-size: clamp(10px, 2vw, 24px);
           line-height: 1.2;
@@ -189,8 +190,8 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
         }
       `}</style>
 
-      <button 
-        className={`pushable-button ${pressed ? 'pressed' : ''} ${className}`} 
+      <button
+        className={`pushable-button ${pressed ? 'pressed' : ''} ${className}`}
         type="button"
         {...props} // 3. IMPORTANTE: Aquí pasamos aria-label, disabled, onClick, etc. al elemento DOM real
       >
