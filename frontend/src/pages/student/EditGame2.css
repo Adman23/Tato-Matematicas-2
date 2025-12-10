@@ -1,11 +1,33 @@
+/**
+ * ========================================
+ * EditGame2 Styles - Order Sequence Configuration
+ * ========================================
+ *
+ * Styling for the Game 2 (Order Sequence) configuration page.
+ * This page allows students and teachers to configure game parameters:
+ * - Order: Ascending or Descending
+ * - Quantity: Number of elements to order (3-12)
+ * - Range: Number range (0-10, 0-20, 0-100, 0-1000)
+ * - Accessibility Mode: Different interaction methods
+ *
+ * Layout strategy:
+ * - Responsive flexbox layout that adapts to different screen sizes
+ * - Configuration buttons displayed with value displays above them
+ * - Modal dialogs for selecting options
+ * - Special handling for mobile portrait, tablet, and desktop views
+ */
+
 /* ========================================
     Layout general
    ======================================== */
+
+/* Main content area with custom background */
 .EditGame2-content {
     --background: var(--background-color);
     position: relative;
 }
 
+/* Main wrapper - vertical flex container for all elements */
 .EditGame2-wrapper {
     display: flex;
     flex-direction: column;
@@ -18,6 +40,8 @@
 /* ========================================
     Back Button
    ======================================== */
+
+/* Container for back button - positioned at top left */
 .EditGame2-back-button {
     display: flex;
     flex-direction: row;
@@ -30,6 +54,9 @@
 /* ========================================
     Configuration Buttons
    ======================================== */
+
+/* Main container for all configuration button groups
+ * Each group contains: value display (top) + button (bottom) */
 .EditGame2-config-buttons {
     display: flex;
     justify-content: center;
@@ -41,12 +68,14 @@
     width: 100%;
 }
 
+/* Individual button group container (value + button) */
 .EditGame2-buttons-result {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
 
+/* Shared sizing for both 3D button and value display box */
 .EditGame2-config-button-3d,
 .EditGame2-config-button-value {
     min-width: clamp(120px, 24vw, 160px);
@@ -55,6 +84,7 @@
     height: clamp(130px, 22vw, 180px);
 }
 
+/* Inner content of configuration button (icon + text) */
 .EditGame2-config-button-content {
     display: flex;
     flex-direction: column;
@@ -63,6 +93,7 @@
     padding: 12px;
 }
 
+/* Display box showing currently selected value (above each button) */
 .EditGame2-config-button-value {
     display: flex;
     flex-direction: column;
@@ -75,6 +106,7 @@
     box-sizing: border-box;
 }
 
+/* Text label for accessibility mode selection */
 .EditGame2-accessibility-text {
     font-size: 0.95rem;
     font-weight: 700;
@@ -83,11 +115,13 @@
     line-height: 1.1;
 }
 
+/* Icon for accessibility mode button */
 .EditGame2-accessibility-icon {
     color: #000;
     font-size: clamp(34px, 9vw, 50px);
 }
 
+/* Images/pictograms on configuration buttons */
 .EditGame2-config-button-image {
     width: clamp(70px, 12vw, 100px);
     height: clamp(70px, 12vw, 100px);
@@ -96,8 +130,10 @@
 }
 
 /* ========================================
-    Save Button
+    Save Button & Error Messages
    ======================================== */
+
+/* Container for save button - positioned at bottom right */
 .EditGame2-save-button {
     display: flex;
     flex-direction: row;
@@ -107,6 +143,7 @@
     padding: 20px;
 }
 
+/* Error message banner (shown when validation fails) */
 .EditGame2-error-message {
     background: #ef4444;
     color: white;
@@ -120,8 +157,10 @@
 }
 
 /* ========================================
-    Modales
+    Modal Dialogs
    ======================================== */
+
+/* Modal overlay - darkened background behind modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -136,6 +175,7 @@
     padding: 20px;
 }
 
+/* Modal content box */
 .modal-content {
     background: white;
     border-radius: 24px;
@@ -149,6 +189,7 @@
     border: 5px solid var(--ion-color-primary);
 }
 
+/* Close button (X) in modal - positioned at top right */
 .modal-close-btn {
     position: absolute;
     top: 12px;
@@ -180,29 +221,42 @@
     transform: scale(0.95);
 }
 
-/* Grid de opciones en modales */
+/* ========================================
+    Modal Option Grids
+   ======================================== */
+
+/* Base grid layout for modal options */
 .modal-options-grid {
     display: grid;
     gap: 16px;
     margin-top: 8px;
 }
 
+/* Quantity modal: 4 columns (shows 3-12) */
 .quantity-grid {
     grid-template-columns: repeat(4, 1fr);
 }
 
+/* Range modal: 2 columns (shows 4 range options) */
 .range-grid {
     grid-template-columns: repeat(2, 1fr);
 }
 
+/* Order modal: 2 columns (ascending/descending) */
 .order-grid {
     grid-template-columns: repeat(2, 1fr);
 }
+
+/* Accessibility modal: auto-fit with minimum width */
 .accessibility-grid {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-/* Opciones del modal */
+/* ========================================
+    Modal Option Buttons
+   ======================================== */
+
+/* Individual option button within modal */
 .modal-option {
     background: #f1f5f9;
     border: 4px solid #cbd5e1;
@@ -218,12 +272,14 @@
     text-align: center;
 }
 
+/* Hover state for option buttons */
 .modal-option:hover {
     transform: scale(1.05);
     border-color: #3b82f6;
     background: #e0f2fe;
 }
 
+/* Selected state - highlights the currently chosen option */
 .modal-option.selected {
     background: var(--bubble-bg);
     border-color: var(--ion-color-primary);
@@ -232,6 +288,7 @@
     box-shadow: 0 6px 16px rgba(74, 222, 128, 0.5);
 }
 
+/* Disabled state - for quantity options that exceed range */
 .modal-option.disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -244,17 +301,23 @@
     background: #f1f5f9;
 }
 
+/* Larger option buttons (for range and order modals) */
 .modal-option.large {
     min-height: clamp(120px, 24vh, 170px);
 }
 
-/* Números en modal de cantidad */
+/* ========================================
+    Modal Content - Quantity Options
+   ======================================== */
+
+/* Number pictograms in quantity modal (1-10) */
 .modal-number-img {
     width: 70px;
     height: 70px;
     object-fit: contain;
 }
 
+/* Number text in quantity modal (11-12) */
 .modal-number-text {
     font-size: clamp(2.1rem, 4vw, 2.8rem);
     font-weight: bold;
@@ -266,7 +329,11 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Rangos en modal de rango */
+/* ========================================
+    Modal Content - Range Options
+   ======================================== */
+
+/* Range labels (e.g., "De 0 a 10") */
 .modal-range-text {
     font-size: clamp(1.2rem, 3.2vw, 1.6rem);
     font-weight: bold;
@@ -281,7 +348,11 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Orden en modal de orden */
+/* ========================================
+    Modal Content - Order & Accessibility Options
+   ======================================== */
+
+/* Container for order/accessibility content (icon/arrow + labels) */
 .order-content {
     display: flex;
     flex-direction: column;
@@ -290,12 +361,14 @@
     text-align: center;
 }
 
+/* Main label for order/accessibility options */
 .order-label-large {
     font-size: clamp(1.2rem, 3vw, 1.5rem);
     font-weight: 800;
     color: #1e293b;
 }
 
+/* Subtitle/description for order/accessibility options */
 .order-sublabel {
     font-size: clamp(0.9rem, 2.6vw, 1rem);
     color: #1e293b;
@@ -303,7 +376,23 @@
 }
 
 /* ========================================
-    RESPONSIVE - Móviles (vertical)
+    RESPONSIVE DESIGN
+   ======================================== */
+
+/**
+ * Responsive breakpoints strategy:
+ * - Mobile (≤576px): vertical layout with horizontal button pairs
+ * - Tablet portrait (577-768px): vertical layout with horizontal button pairs
+ * - Tablet portrait large (769-992px): 2x2 grid layout
+ * - Tablet landscape (577-992px): horizontal layout
+ * - Desktop low height (≥993px, ≤600px): compressed horizontal layout
+ * - Desktop medium (≥993px, 601-850px): standard horizontal layout
+ * - Desktop tall (≥993px, ≥851px): spacious horizontal layout
+ * - Large monitors (≥1400px): extra spacing
+ */
+
+/* ========================================
+    RESPONSIVE - Mobile Devices (Portrait)
    ======================================== */
 @media screen and (max-width: 576px) {
     .EditGame2-config-buttons {
@@ -664,10 +753,14 @@
 }
 
 /* ========================================
-    NAVEGACIÓN CON TAB - FOCUS VISIBLE
+    ACCESSIBILITY - KEYBOARD NAVIGATION
    ======================================== */
 
-/* Estilos de focus para opciones del modal (mismo estilo que EditGame1) */
+/**
+ * Focus styles for modal options to support keyboard navigation
+ * Matches the style used in EditGame1 for consistency
+ * Important for users who navigate with Tab key
+ */
 .modal-option:focus {
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
     border: 5px solid black;

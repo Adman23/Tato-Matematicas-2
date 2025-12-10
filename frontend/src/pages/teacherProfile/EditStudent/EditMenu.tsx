@@ -2,7 +2,7 @@
  * @file EditMenu.tsx
  * @description Dashboard / main menu for the edit section for teachers.
  * Provides quick links to edit colors, texts,
- * game configurations, and sounds for one particular student. 
+ * game configurations, and sounds for one particular student.
  * Protects the view by checking authentication context.
  */
 
@@ -130,7 +130,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push(`/student-edit-game2/${id}/${name}`)}
                                 >
                                     Juego 2
                                 </IonButton>
