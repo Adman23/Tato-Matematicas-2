@@ -161,10 +161,10 @@ export default function EditColorsStudent(){
 
           <IonPage>
             <SimpleHeaderUser
-              userName={user?.username || "username"}
-              photoUrl={user?.photo_url}
-              hidden={true}
-            />
+                title="Colores"
+                title_image="/assets/pictograms/editar.png"
+                userName={user?.username || "username"}
+                photoUrl={user?.photo_url} hidden={true} />
 
             <IonContent className="ion-padding EditColorsStudent-Content">
                 <Button3Dtext 

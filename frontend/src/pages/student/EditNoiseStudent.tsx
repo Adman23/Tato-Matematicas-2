@@ -148,10 +148,10 @@ const EditNoiseStudent: React.FC = () => {
   return (
     <IonPage>
       <SimpleHeaderUser
-        userName={user?.username || "username"}
-        photoUrl={user?.photo_url}
-        hidden={true}
-      />
+                title="Sonido"
+                title_image="/assets/pictograms/editar.png"
+                userName={user?.username || "username"}
+                photoUrl={user?.photo_url} hidden={true} />
 
       <IonContent 
         className="ion-padding" 
