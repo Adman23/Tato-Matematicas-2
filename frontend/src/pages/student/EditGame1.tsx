@@ -18,15 +18,16 @@
  */
 
 import { IonContent, IonIcon, IonPage, useIonRouter } from "@ionic/react";
-import { useAuth } from '../../../contexts/AuthContext';
-import { Button3Dtext } from "../../global_components/PushableButtons";
+import { useAuth } from '../../contexts/AuthContext';
+import { Button3Dtext } from "../global_components/PushableButtons";
 import { arrowBack } from "ionicons/icons";
 import { useState, useEffect, useRef } from 'react';
 
 import './EditGame1.css';
-import { gamesAPI, type GameConfig } from "../../../lib/api";
-import SimpleHeaderUser from "../../student/components/SimpleHeaderUser";
-import LoadingSpinner from "../../global_components/LoadingSpinner";
+import { gamesAPI, type GameConfig } from "../../lib/api";
+import SimpleHeaderUser from "../student/components/SimpleHeaderUser";
+import LoadingSpinner from "../global_components/LoadingSpinner";
+import { useParams } from "react-router-dom";
 
 /**
  * Range options available for the game.
@@ -67,6 +68,7 @@ const QUANTITY_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  */
 export default function EditGame1() {
     const { user } = useAuth();
+    const { id, name } = useParams<{ id: string; name: string }>();
     const router = useIonRouter();
 
     const [loading, setLoading] = useState(true);
@@ -75,6 +77,10 @@ export default function EditGame1() {
     const [voice, setVoice] = useState<'woman' | 'man'>('woman');
     const [quantity, setQuantity] = useState<number>(5);
     const [numberRange, setNumberRange] = useState<string>('0-10');
+
+    // State to determine if the range option should be hidden for students
+    // When teacher sets range to '0-10', students cannot modify it
+    const [isRangeLockedForStudent, setIsRangeLockedForStudent] = useState<boolean>(false);
 
     // Modal states
     const [showQuantityModal, setShowQuantityModal] = useState(false);
@@ -172,12 +178,18 @@ export default function EditGame1() {
         try {
             if (!user?.id) return;
 
-            const data = await gamesAPI.getGameConfig(user.id, 'touch_number');
+            const data = await gamesAPI.getGameConfig(id, 'touch_number');
 
             // Load current values
             setVoice(data.settings?.voice || 'woman');
             setQuantity(data.settings?.options_count || 9);
             setNumberRange(data.number_range || '0-10');
+
+            // If the user is a student and the range is '0-10', lock the range option
+            // This means the teacher has configured the range to 0-10 and the student cannot change it
+            if (user?.role !== 'teacher' && data.number_range === '0-10') {
+                setIsRangeLockedForStudent(true);
+            }
 
             setLoading(false);
         } catch (error) {
@@ -204,12 +216,15 @@ export default function EditGame1() {
     const handleSave = async () => {
 
         try {
-            if (!user?.id) return;
+            if (!user?.id || !id) return;
+
+            // Usar el id de la URL (del alumno) para guardar la configuración
+            const targetUserId = id;
 
             const config: GameConfig = {
                 game_id: 0,
                 game_key: 'touch_number',
-                user_id: user.id,
+                user_id: targetUserId,
                 number_range: numberRange,
                 settings: {
                     voice,
@@ -217,13 +232,17 @@ export default function EditGame1() {
                 }
             };
 
-            await gamesAPI.updateGameConfig(user.id, 'touch_number', config);
+            await gamesAPI.updateGameConfig(targetUserId, 'touch_number', config);
 
             // Anunciar que se guardó la configuración
             announce('Configuración guardada correctamente');
 
-            // Return to profile
-            router.push('/student/profile', 'back');
+            // Redirigir según el rol del usuario
+            if (user.role === 'teacher') {
+                router.push(`/student-edit-menu/${id}/${name}`, 'back');
+            } else {
+                router.push('/student/profile', 'back');
+            }
         } catch (error) {
             console.error('Error saving config:', error);
             announce('Error al guardar la configuración');
@@ -305,13 +324,19 @@ export default function EditGame1() {
                     {liveAnnouncement}
                 </div>
 
-                    {/*className="EditGame1-back-button" estaba comentado como clase para el boton*/}
+                {/*className="EditGame1-back-button" estaba comentado como clase para el boton*/}
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
                         <Button3Dtext
-                            onClick={() => router.push('/student/profile', 'back', 'pop')}
+                            onClick={() => {
+                                if (user?.role === 'teacher') {
+                                    router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                                } else {
+                                    router.push('/student/profile', 'back', 'pop');
+                                }
+                            }}
                             aria-label="Volver atrás"
-                            >
+                        >
                             <IonIcon icon={arrowBack} />
                         </Button3Dtext>
                     </div>
@@ -386,33 +411,37 @@ export default function EditGame1() {
                             </Button3Dtext>
                         </div>
 
-                        <div className="EditGame1-buttons-result">
-                            {/* Selected Range */}
-                            <div
-                                className="EditGame1-config-button-value"
-                                role="status"
-                                aria-label={`Rango seleccionado: ${getSelectedRangeLabel()}`}
-                            >
-                                <div className="range-chosen" aria-hidden="true">
-                                    <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                        {/* Only show range option if the student is allowed to modify it */}
+                        {/* If teacher set range to 0-10, hide this option for students */}
+                        {!isRangeLockedForStudent && (
+                            <div className="EditGame1-buttons-result">
+                                {/* Selected Range */}
+                                <div
+                                    className="EditGame1-config-button-value"
+                                    role="status"
+                                    aria-label={`Rango seleccionado: ${getSelectedRangeLabel()}`}
+                                >
+                                    <div className="range-chosen" aria-hidden="true">
+                                        <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                                    </div>
                                 </div>
+                                {/* Range Button */}
+                                <Button3Dtext
+                                    aria-label="Configurar rango"
+                                    className="EditGame1-config-button-3d"
+                                    onClick={() => { setShowRangeModal(true) }}
+                                >
+                                    <div className="EditGame1-config-button-content" aria-hidden="true">
+                                        <img
+                                            src="/assets/pictograms/rango.png"
+                                            alt=""
+                                            className="EditGame1-config-button-image"
+                                        />
+                                        <span className="btn-text">RANGO</span>
+                                    </div>
+                                </Button3Dtext>
                             </div>
-                            {/* Range Button */}
-                            <Button3Dtext
-                                aria-label="Configurar rango"
-                                className="EditGame1-config-button-3d"
-                                onClick={() => { setShowRangeModal(true) }}
-                            >
-                                <div className="EditGame1-config-button-content" aria-hidden="true">
-                                    <img
-                                        src="/assets/pictograms/rango.png"
-                                        alt=""
-                                        className="EditGame1-config-button-image"
-                                    />
-                                    <span className="btn-text">RANGO</span>
-                                </div>
-                            </Button3Dtext>
-                        </div>
+                        )}
                     </div>
 
                     {/* Save Changes Button */}

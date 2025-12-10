@@ -96,7 +96,7 @@ export default function StudentProfile() {
         <IonPage>
             {/* Header */}
             <SimpleHeaderUser title={"PERFIL"} title_image='/assets/pictograms/yo.png'
-            userName={user?.username || "username"} photoUrl={user?.photo_url} hidden={true} />
+                userName={user?.username || "username"} photoUrl={user?.photo_url} hidden={true} />
 
 
             {/* Main Content */}
@@ -123,7 +123,7 @@ export default function StudentProfile() {
                                 </SimpleButton>
 
                                 {/* Edit game_1 */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-game1")}>
+                                <SimpleButton className="big-button" onClick={() => handleDirection(`/student/edit-game1/${user?.id}`)}>
                                     <img
                                         src="/assets/juegosImg/juego1.png"
                                         alt="Ir a editar juego uno"

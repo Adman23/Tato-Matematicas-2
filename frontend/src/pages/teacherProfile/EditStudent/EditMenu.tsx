@@ -51,7 +51,7 @@ export default function EditMenu() {
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
 
-    
+
     // Show spinner while loading
     /*if (loading) {
         return (
@@ -69,12 +69,12 @@ export default function EditMenu() {
     }
 
     const handleHome = () => {
-        router.push('/teacher/profile',"back","replace");
+        router.push('/teacher/profile', "back", "replace");
     }
 
     return (
         <IonPage>
-            <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} onHome={handleHome}/>
+            <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} onHome={handleHome} />
             <IonContent className="ion-padding">
                 <div className="studentEditProfile-dashboard-outer-container">
                     <IonCard className="studentEditProfile-dashboard-card">
@@ -121,7 +121,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push(`/student-edit-game1/${id}/${name}`)}
                                 >
                                     Juego 1
                                 </IonButton>
