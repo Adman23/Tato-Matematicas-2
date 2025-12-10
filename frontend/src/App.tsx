@@ -122,6 +122,8 @@ export default function App() {
                   exact component={EditGame1} />
                 <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
                   exact component={EditGame2} />
+                <PrivateRoute path="/student-edit-game2/:id/:name" allowedRoles={["teacher"]}
+                  exact component={EditGame2} />
                 <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
                   exact component={EditColorsStudent} />
                 <PrivateRoute path="/student/edit-noise" allowedRoles={["student"]}

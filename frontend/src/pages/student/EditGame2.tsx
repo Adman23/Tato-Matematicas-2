@@ -1,24 +1,25 @@
 /**
- * @file EditGame2.tsx
- * @description Pantalla de configuración del Juego 2 para estudiantes.
+ * Edit Game 2: Order Sequence Configuration Page
  *
- * Permite al usuario personalizar los parámetros del Juego 2 (Ordena la Secuencia)
- * antes de jugar. La configuración se guarda en el backend y se aplica al iniciar el juego.
+ * The student (or teacher editing for a student) configures the "Order Sequence" game settings,
+ * including order direction, number of elements, range of numbers, and accessibility mode.
  *
- * Flujo de la pantalla:
- * 1. Carga la configuración actual del usuario desde el backend
- * 2. Muestra 3 botones de configuración (Cantidad, Rango, Orden)
- * 3. Al pulsar cada botón, abre un modal para seleccionar el valor
- * 4. Valida la configuración (cantidad no puede exceder el rango)
- * 5. Guarda la configuración en el backend
- * 6. Vuelve al perfil del estudiante
+ * Functional Summary:
+ * - Load current game configuration on component mount.
+ * - Display buttons to configure order, quantity, range, and accessibility mode.
+ * - Open modals for each configuration option.
+ * - Validate configuration (quantity cannot exceed available numbers in range).
+ * - Save updated configuration to backend and navigate back to appropriate profile.
+ * - For students: if teacher sets range to 0-10, hide range and mode options (locked configuration).
  *
- * Parámetros configurables:
- * - Orden: Ascendente (menor a mayor) o Descendente (mayor a menor)
- * - Cantidad: Número de elementos a ordenar (3-12)
- * - Rango: Rango de números disponibles (0-10, 0-20, 0-100, 0-1000)
+ * @returns {JSX.Element} Game 2 configuration page with selection modals
  *
- * @returns Componente React con UI de configuración
+ * @example
+ * // Usage in app router for students
+ * <Route path="/student/edit-game2" component={EditGame2} />
+ *
+ * // Usage in app router for teachers editing student configuration
+ * <Route path="/student-edit-game2/:id/:name" component={EditGame2} />
  */
 
 import {
@@ -37,8 +38,12 @@ import LoadingSpinner from '../global_components/LoadingSpinner';
 import './EditGame2.css';
 import '../games/components/GameHeader.css';
 import { arrowBack, accessibilityOutline } from 'ionicons/icons';
+import { useParams } from "react-router-dom";
 
-// Opciones de rango (de acuerdo a la DB)
+/**
+ * Range options available for the game.
+ * These correspond to the number ranges stored in the database.
+ */
 const RANGE_OPTIONS = [
   { value: '0-10', label: 'De 0 a 10' },
   { value: '0-20', label: 'De 0 a 20' },
@@ -46,10 +51,20 @@ const RANGE_OPTIONS = [
   { value: '0-1000', label: 'De 0 a 1000' }
 ];
 
-// Opciones de cantidad (3-12)
+/**
+ * Quantity options available for the game.
+ * Allowed range: from 3 to 12 elements to order.
+ * Note: quantity cannot exceed the number of available numbers in the selected range.
+ */
 const QUANTITY_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-// Opciones de accesibilidad
+/**
+ * Accessibility mode options for the game.
+ * Different interaction methods to accommodate various user needs:
+ * - drag_drop: Standard drag & drop + click and Enter key
+ * - drag_follow: Click and the object follows the cursor
+ * - hover_select: Selects by hovering over the target
+ */
 const ACCESSIBILITY_OPTIONS = [
     {
         value: 'drag_drop',
@@ -69,31 +84,39 @@ const ACCESSIBILITY_OPTIONS = [
 ];
 
 /**
- * Componente principal de configuración del Juego 2.
+ * Functional Summary:
+ * Edit Game 2 (Order Sequence) configuration component.
  *
- * Resumen funcional:
- * Interfaz de configuración que permite al estudiante personalizar los parámetros
- * del Juego 2 mediante tres botones principales que abren modales de selección.
+ * Lets users (students or teachers) customize the parameters of the "Order Sequence" game,
+ * including the order direction, the number of elements to order, the range of numbers,
+ * and the accessibility interaction mode.
  *
- * Flujo de ejecución:
- * 1. Carga configuración actual (`loadGameConfig`)
- * 2. Usuario selecciona valores mediante modales
- * 3. Valida la configuración (`validateInputs`)
- * 4. Guarda en backend y vuelve al perfil (`handleSave`)
+ * Execution Flow:
+ * 1. On component mount, loads the current game configuration from the backend.
+ * 2. Displays four main buttons to configure: Order, Quantity, Range, and Mode.
+ * 3. When each button is pressed, a modal with available options opens.
+ * 4. The user selects the desired options and validates them.
+ * 5. Upon saving, the configuration is sent to the backend and the user is redirected.
+ * 6. For students: if teacher sets range to 0-10, Range and Mode options are hidden.
  *
- * Contrato mínimo:
- * - Entradas: acciones del usuario (clicks en botones y opciones)
- * - Salidas: llamada API para guardar configuración
- * - Modos de error: validación de rango vs cantidad
+ * Teacher vs Student behavior:
+ * - Teachers editing a student: can see and modify all options, uses student ID from URL
+ * - Students: can modify all options unless teacher locked range to 0-10
+ * - When range is 0-10 (set by teacher): students cannot see/modify Range and Mode options
  *
- * @returns Componente React con UI de configuración
+ * @returns {JSX.Element} Game 2 configuration page with selection modals
  *
  * @example
+ * // Student editing their own configuration
  * <Route path="/student/edit-game2" component={EditGame2} />
+ *
+ * // Teacher editing student configuration
+ * <Route path="/student-edit-game2/:id/:name" component={EditGame2} />
  */
 export default function EditGame2() {
     const { user } = useAuth();
     const router = useIonRouter();
+    const { id, name } = useParams<{ id: string; name: string }>();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -103,6 +126,10 @@ export default function EditGame2() {
   const [quantity, setQuantity] = useState<number>(5);
   const [numberRange, setNumberRange] = useState<string>('0-10');
     const [accessibilityMode, setAccessibilityMode] = useState<string>('drag_drop');
+
+    // Estado para determinar si las opciones de rango y modo deben ocultarse para estudiantes
+    // Cuando el tutor establece el rango a '0-10', los estudiantes no pueden modificar rango ni modo
+    const [isRangeAndModeLockedForStudent, setIsRangeAndModeLockedForStudent] = useState<boolean>(false);
 
   // Estados de modales
   const [showQuantityModal, setShowQuantityModal] = useState(false);
@@ -119,6 +146,13 @@ export default function EditGame2() {
     /**
      * Focus trapping effect for modals.
      * Keeps Tab navigation inside the modal when it's open.
+     * Allows closing modal with Escape key.
+     *
+     * Execution Flow:
+     * 1. Identifies all focusable elements in the modal
+     * 2. Sets focus to the first element when modal opens
+     * 3. Traps Tab/Shift+Tab navigation within modal boundaries
+     * 4. Listens for Escape key to close modal
      */
     useEffect(() => {
         const isAnyModalOpen = showQuantityModal || showRangeModal || showOrderModal || showAccessibilityModal;
@@ -163,7 +197,19 @@ export default function EditGame2() {
     }, [showQuantityModal, showRangeModal, showOrderModal, showAccessibilityModal]);
 
     /**
-     * Handle keyboard selection for modal options
+     * Functional Summary:
+     * Handle keyboard selection for modal options (accessibility feature).
+     *
+     * Execution Flow:
+     * 1. Listens for Enter or Space key events
+     * 2. Prevents default browser behavior
+     * 3. Executes the provided action (selection callback)
+     *
+     * @param e - Keyboard event
+     * @param action - Callback function to execute on selection
+     *
+     * @example
+     * handleKeySelect(e, () => setQuantity(5));
      */
     const handleKeySelect = useCallback((e: React.KeyboardEvent, action: () => void) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -177,16 +223,21 @@ export default function EditGame2() {
     }, []);
 
   /**
-   * Resumen funcional:
-   * Carga la configuración actual del juego desde el backend y la muestra en la UI.
+   * Functional Summary:
+   * Load the current game configuration from the backend and display it in the UI.
    *
-   * Flujo de ejecución:
-   * 1. Verifica que existe usuario autenticado
-   * 2. Llama a la API para obtener config de 'order_sequence'
-   * 3. Extrae valores de orden, cantidad y rango
-   * 4. Actualiza estados y desactiva spinner de carga
+   * Execution Flow:
+   * 1. Checks if an authenticated user exists
+   * 2. Determines target user ID (from URL for teachers, or current user for students)
+   * 3. Calls the API to get the 'order_sequence' config for the target user
+   * 4. Extracts values for order, quantity, range, and accessibility mode
+   * 5. If user is a student and range is '0-10', locks Range and Mode options
+   * 6. Updates states and disables loading spinner
    *
-   * @returns Promise<void> que resuelve cuando se carga la configuración
+   * Teacher behavior: Loads configuration for the student specified in URL params (id)
+   * Student behavior: Loads their own configuration, may have locked options if teacher set range to 0-10
+   *
+   * @returns {Promise<void>} Promise that resolves when the configuration is loaded
    *
    * @example
    * await loadGameConfig();
@@ -195,13 +246,22 @@ export default function EditGame2() {
         try {
             if (!user?.id) return;
 
-            const data = await gamesAPI.getGameConfig(user.id, 'order_sequence');
+            // Usar el id de la URL (del alumno) o el del usuario actual si no hay id en la URL
+            const targetUserId = id || user.id;
+
+            const data = await gamesAPI.getGameConfig(targetUserId, 'order_sequence');
 
             // Cargar valores actuales
             setOrder(data.settings?.order || 'ascending');
             setQuantity(data.settings?.quantity || 5);
             setNumberRange(data.number_range || '0-10');
             setAccessibilityMode(data.settings?.accessibility_mode || 'drag_drop');
+
+            // Si el usuario es un estudiante y el rango es '0-10', bloquear las opciones de rango y modo
+            // Esto significa que el tutor ha configurado el rango a 0-10 y el estudiante no puede cambiarlo
+            if (user?.role !== 'teacher' && data.number_range === '0-10') {
+                setIsRangeAndModeLockedForStudent(true);
+            }
 
             setLoading(false);
         } catch (error) {
@@ -211,18 +271,23 @@ export default function EditGame2() {
     };
 
   /**
-   * Resumen funcional:
-   * Valida que la cantidad seleccionada sea compatible con el rango de números.
+   * Functional Summary:
+   * Validates that the selected quantity is compatible with the number range.
    *
-   * Flujo de ejecución:
-   * 1. Extrae min y max del rango seleccionado
-   * 2. Calcula el tamaño del rango (números disponibles)
-   * 3. Verifica que la cantidad no exceda el rango
-   * 4. Verifica que la cantidad esté entre 3 y 12
+   * Execution Flow:
+   * 1. Extracts min and max from the selected range (e.g., "0-10" -> min=0, max=10)
+   * 2. Calculates the range size (available numbers)
+   * 3. Verifies that quantity does not exceed the range size
+   * 4. Verifies that quantity is between 3 and 12
+   * 5. Sets error message if validation fails, clears it if validation passes
    *
-   * @returns boolean - true si la configuración es válida, false si no
+   * @returns {boolean} - true if configuration is valid, false otherwise
    *
    * @example
+   * // Range "0-10" has 11 numbers, quantity 12 would fail validation
+   * if (validateInputs()) {
+   *   // Proceed with saving
+   * }
    */
     const validateInputs = (): boolean => {
         const [min, max] = numberRange.split('-').map(Number);
@@ -243,16 +308,23 @@ export default function EditGame2() {
     };
 
   /**
-   * Resumen funcional:
-   * Guarda la configuración validada en el backend y vuelve al perfil.
+   * Functional Summary:
+   * Saves the validated game configuration to the backend and navigates back.
    *
-   * Flujo de ejecución:
-   * 1. Valida la configuración con `validateInputs()`
-   * 2. Construye objeto GameConfig con los valores actuales
-   * 3. Envía la configuración al backend mediante API
-   * 4. Redirige al perfil del estudiante
+   * Execution Flow:
+   * 1. Validates the configuration with `validateInputs()`
+   * 2. Returns early if validation fails
+   * 3. Determines target user ID (from URL for teachers, or current user for students)
+   * 4. Constructs a GameConfig object with current order, quantity, range, and accessibility mode
+   * 5. Sends the configuration to the backend via the API
+   * 6. Redirects based on user role:
+   *    - Teachers: back to student edit menu
+   *    - Students: back to their own profile
    *
-   * @returns Promise<void> que resuelve cuando se guarda la configuración
+   * Teacher behavior: Saves configuration for the student specified in URL params (id)
+   * Student behavior: Saves their own configuration
+   *
+   * @returns {Promise<void>} Promise that resolves when the configuration is saved
    *
    * @example
    * await handleSave();
@@ -264,12 +336,15 @@ export default function EditGame2() {
 
         setSaving(true);
         try {
-            if (!user?.id) return;
+            if (!user?.id || !id && !user?.id) return;
+
+            // Usar el id de la URL (del alumno) para guardar la configuración
+            const targetUserId = id || user.id;
 
             const config: GameConfig = {
                 game_id: 0,
                 game_key: 'order_sequence',
-                user_id: user.id,
+                user_id: targetUserId,
                 number_range: numberRange,
                 settings: {
                     order,
@@ -278,10 +353,14 @@ export default function EditGame2() {
         }
       };
 
-            await gamesAPI.updateGameConfig(user.id, 'order_sequence', config);
+            await gamesAPI.updateGameConfig(targetUserId, 'order_sequence', config);
 
-            // Volver al perfil
-            router.push('/student/profile', 'back');
+            // Redirigir según el rol del usuario
+            if (user.role === 'teacher') {
+                router.push(`/student-edit-menu/${id}/${name}`, 'back');
+            } else {
+                router.push('/student/profile', 'back');
+            }
         } catch (error) {
             console.error('Error saving config:', error);
             setError('Error al guardar la configuración');
@@ -291,13 +370,16 @@ export default function EditGame2() {
     };
 
   /**
-   * Resumen funcional:
-   * Cierra todos los modales de selección.
+   * Functional Summary:
+   * Closes all open selection modals.
    *
-   * @returns void
+   * Execution Flow:
+   * 1. Sets the state of all modals (quantity, range, order, accessibility) to `false`
+   *
+   * @returns {void}
    *
    * @example
-   * closeAllModals();
+   * closeAllModals(); // Closes any open modal
    */
     const closeAllModals = () => {
     setShowQuantityModal(false);
@@ -307,30 +389,66 @@ export default function EditGame2() {
     };
 
   /**
-   * Resumen funcional:
-   * Obtiene el label descriptivo del rango de números seleccionado.
+   * Functional Summary:
+   * Obtains the descriptive label of the currently selected number range.
    *
-   * @returns string - Label del rango (ej: "De 0 a 10") o el valor del rango si no se encuentra
+   * Execution Flow:
+   * 1. Searches in RANGE_OPTIONS for the option that matches the current value of numberRange
+   * 2. Returns the corresponding label or the range value if not found
+   *
+   * @returns {string} Descriptive label of the range (e.g., "De 0 a 10") or the range value if not found
    *
    * @example
-   * getSelectedRangeLabel(); // "De 0 a 10"
+   * // If numberRange === '0-10'
+   * getSelectedRangeLabel(); // Returns "De 0 a 10"
    */
     const getSelectedRangeLabel = () => {
         return RANGE_OPTIONS.find(opt => opt.value === numberRange)?.label || numberRange;
     };
 
+    /**
+     * Functional Summary:
+     * Calculates the size of the currently selected range (number of available numbers).
+     *
+     * @returns {number} Number of available numbers in the range
+     *
+     * @example
+     * // If numberRange === '0-10'
+     * getRangeSize(); // Returns 11 (numbers from 0 to 10 inclusive)
+     */
     const getRangeSize = () => {
         const [min, max] = numberRange.split('-').map(Number);
         return max - min + 1;
     };
 
+    /**
+     * Functional Summary:
+     * Obtains the descriptive label of the currently selected accessibility mode.
+     *
+     * @returns {string} Label of the accessibility mode or 'Accesibilidad' if not found
+     *
+     * @example
+     * getAccessibilityLabel(); // Returns "Arrastrar o Click/Enter"
+     */
     const getAccessibilityLabel = () => {
         return ACCESSIBILITY_OPTIONS.find(opt => opt.value === accessibilityMode)?.label || 'Accesibilidad';
     };
 
+    /**
+     * Functional Summary:
+     * Determines if a quantity option should be disabled based on the current range.
+     *
+     * @param {number} num - The quantity to check
+     * @returns {boolean} True if the quantity exceeds the range size, false otherwise
+     *
+     * @example
+     * // If range is '0-10' (11 numbers available)
+     * isQuantityDisabled(12); // Returns true
+     * isQuantityDisabled(10); // Returns false
+     */
     const isQuantityDisabled = (num: number) => num > getRangeSize();
 
-    // Mostrar spinner mientras carga
+    // Show spinner while loading
     if (loading) {
         return (
             <IonPage>
@@ -343,6 +461,7 @@ export default function EditGame2() {
 
     return (
         <IonPage className="EditGame2-page">
+            {/* Header with game title and user info */}
             <SimpleHeaderUser
                 userName={user?.username || "username"}
                 photoUrl={user?.photo_url}
@@ -353,15 +472,22 @@ export default function EditGame2() {
 
             <IonContent className="EditGame2-content" fullscreen scrollY={false}>
                 <div className="EditGame2-wrapper">
+                    {/* Back button - navigates to student edit menu (teacher) or student profile (student) */}
                     <div className="EditGame2-back-button">
                         <Button3Dtext
-                            onClick={() => router.push('/student/profile', "back", "pop")}
+                            onClick={() => {
+                                if (user?.role === 'teacher') {
+                                    router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                                } else {
+                                    router.push('/student/profile', 'back', 'pop');
+                                }
+                            }}
                             aria-label="Volver atrás">
                             <IonIcon icon={arrowBack} aria-hidden="true" />
                         </Button3Dtext>
                     </div>
 
-                    {/* 3 Botones principales */}
+                    {/* Main configuration buttons (Quantity, Range, Order, Mode) */}
                     <div className="EditGame2-config-buttons">
                         <div className="EditGame2-buttons-result">
                             {/* Cantidad elegida */}
@@ -395,30 +521,34 @@ export default function EditGame2() {
                             </Button3Dtext>
                         </div>
 
-                        <div className="EditGame2-buttons-result">
-                            {/* Rango elegido */}
-                            <div className="EditGame2-config-button-value">
-                                <div className="range-chosen">
-                                    <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                        {/* Solo mostrar la opción de rango si el estudiante tiene permitido modificarla */}
+                        {/* Si el tutor estableció el rango a 0-10, esta opción se oculta para los estudiantes */}
+                        {!isRangeAndModeLockedForStudent && (
+                            <div className="EditGame2-buttons-result">
+                                {/* Rango elegido */}
+                                <div className="EditGame2-config-button-value">
+                                    <div className="range-chosen">
+                                        <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                                    </div>
                                 </div>
+                                {/* Botón Rango */}
+                                <Button3Dtext
+                                    className="EditGame2-config-button-3d"
+                                    onClick={() => { setShowRangeModal(true); setError(''); }}
+                                    tabIndex={0}
+                                    aria-label="Configurar rango de números"
+                                >
+                                    <div className="EditGame2-config-button-content">
+                                        <img
+                                            src="/assets/pictograms/rango.png"
+                                            alt="Rango"
+                                            className="EditGame2-config-button-image"
+                                        />
+                                        <span className="btn-text">RANGO</span>
+                                    </div>
+                                </Button3Dtext>
                             </div>
-                            {/* Botón Rango */}
-                            <Button3Dtext
-                                className="EditGame2-config-button-3d"
-                                onClick={() => { setShowRangeModal(true); setError(''); }}
-                                tabIndex={0}
-                                aria-label="Configurar rango de números"
-                            >
-                                <div className="EditGame2-config-button-content">
-                                    <img
-                                        src="/assets/pictograms/rango.png"
-                                        alt="Rango"
-                                        className="EditGame2-config-button-image"
-                                    />
-                                    <span className="btn-text">RANGO</span>
-                                </div>
-                            </Button3Dtext>
-                        </div>
+                        )}
 
                         <div className="EditGame2-buttons-result">
                             {/* Orden elegido */}
@@ -448,23 +578,27 @@ export default function EditGame2() {
                             </Button3Dtext>
                         </div>
 
-                        <div className="EditGame2-buttons-result">
-                            {/* Accesibilidad elegida */}
-                            <div className="EditGame2-config-button-value">
-                                <span className="EditGame2-accessibility-text">{getAccessibilityLabel()}</span>
-                            </div>
-                            {/* Botón Accesibilidad */}
-                            <Button3Dtext
-                                className="EditGame2-config-button-3d"
-                                onClick={() => { setShowAccessibilityModal(true); setError(''); }}
-                                aria-label="Configurar modo de accesibilidad"
-                            >
-                                <div className="EditGame2-config-button-content">
-                                    <IonIcon icon={accessibilityOutline} className="EditGame2-accessibility-icon" aria-hidden="true" />
-                                    <span className="btn-text">MODO</span>
+                        {/* Solo mostrar la opción de modo de accesibilidad si el estudiante tiene permitido modificarla */}
+                        {/* Si el tutor estableció el rango a 0-10, esta opción se oculta para los estudiantes */}
+                        {!isRangeAndModeLockedForStudent && (
+                            <div className="EditGame2-buttons-result">
+                                {/* Accesibilidad elegida */}
+                                <div className="EditGame2-config-button-value">
+                                    <span className="EditGame2-accessibility-text">{getAccessibilityLabel()}</span>
                                 </div>
-                            </Button3Dtext>
-                        </div>
+                                {/* Botón Accesibilidad */}
+                                <Button3Dtext
+                                    className="EditGame2-config-button-3d"
+                                    onClick={() => { setShowAccessibilityModal(true); setError(''); }}
+                                    aria-label="Configurar modo de accesibilidad"
+                                >
+                                    <div className="EditGame2-config-button-content">
+                                        <IonIcon icon={accessibilityOutline} className="EditGame2-accessibility-icon" aria-hidden="true" />
+                                        <span className="btn-text">MODO</span>
+                                    </div>
+                                </Button3Dtext>
+                            </div>
+                        )}
                     </div>
 
                     {error && (

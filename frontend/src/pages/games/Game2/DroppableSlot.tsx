@@ -1,21 +1,73 @@
 /**
- * DroppableSlot - Espacio individual donde se puede soltar un número
- * ------------------------------------------------------------------
- * Componente que representa una posición individual en la zona de ordenamiento del Juego 2.
- * Puede estar vacío (círculo gris con borde discontinuo) o contener un número.
+ * DroppableSlot - Individual Drop Target Slot (Game 2)
  *
- * Utiliza:
- * - **HTML5 Drag & Drop API** para permitir arrastrar y soltar números.
- * - **Custom Events** para comunicar los drops al componente padre (Game2).
- * - **Ionic Icons** para mostrar feedback visual (✓ correcto, ✗ incorrecto).
- * - Pictogramas locales para números del 0-10 cuando `usePictogram = true`.
+ * Component representing a single position in the Order Sequence game's drop zone.
+ * Can be empty (gray circle with dashed border) or contain a placed number.
  *
- * Estilos aplicados (Game2.css):
- * - `.droppable-slot`: Contenedor del slot (90x90px)
- * - `.empty-slot`: Círculo gris vacío con borde discontinuo
- * - `.number-card-v2`: Círculo azul con número o pictograma
- * - `.number-card-locked`: Números verdes bloqueados (ayuda pre-colocada)
- * - `.feedback-icon`: Iconos de correcto/incorrecto con animación
+ * Functional Summary:
+ * - Renders individual droppable slot for number placement
+ * - Supports multiple interaction modes (drag, click, hover)
+ * - Displays visual feedback for correct/incorrect answers
+ * - Shows pictograms for numbers 0-10 when enabled
+ * - Manages locked slots (pre-placed helper numbers)
+ * - Provides accessibility features (ARIA labels, keyboard navigation)
+ *
+ * Key Features:
+ * - **HTML5 Drag & Drop API**: Traditional drag and drop interaction
+ * - **Click Placement**: Alternative input method for accessibility
+ * - **Hover Placement**: Automatic placement on hover
+ * - **Visual Feedback**: Green checkmark (correct), red X (incorrect)
+ * - **Pictogram Support**: Images for numbers 0-10 from `/assets/numbers/`
+ * - **Locked State**: Green circles for pre-placed helper numbers
+ * - **Accessibility**: ARIA labels, keyboard navigation, screen reader support
+ *
+ * Visual States:
+ * 1. **Empty Slot**: Gray circle with dashed border, accepts drops
+ * 2. **Occupied Slot**: Blue circle with number/pictogram, draggable
+ * 3. **Locked Slot**: Green circle, cannot be dragged or replaced
+ * 4. **Drop Target**: Highlighted when ready to accept drop
+ * 5. **With Feedback**: Shows checkmark or X overlay
+ *
+ * CSS Classes Applied (Game2.css):
+ * - `.droppable-slot`: Main slot container (90x90px)
+ * - `.droppable-slot-target`: Highlighted drop target
+ * - `.empty-slot`: Empty gray circle with dashed border
+ * - `.number-card-v2`: Blue circle with number/pictogram
+ * - `.number-card-locked`: Green locked number (helper)
+ * - `.number-card-pictogram`: Special styling for pictogram mode
+ * - `.feedback-icon`: Animated feedback icons (checkmark/X)
+ * - `.feedback-correct`: Green checkmark overlay
+ * - `.feedback-incorrect`: Red X overlay
+ *
+ * @returns {JSX.Element} Droppable slot with number or empty state
+ *
+ * @example
+ * // Empty slot accepting drops
+ * <DroppableSlot
+ *   id="slot-0"
+ *   index={0}
+ *   number={undefined}
+ *   isDropTarget={true}
+ * />
+ *
+ * @example
+ * // Occupied slot with number 7, showing correct feedback
+ * <DroppableSlot
+ *   id="slot-2"
+ *   index={2}
+ *   number={7}
+ *   isCorrect={true}
+ * />
+ *
+ * @example
+ * // Locked helper slot with pictogram
+ * <DroppableSlot
+ *   id="slot-1"
+ *   index={1}
+ *   number={3}
+ *   usePictogram={true}
+ *   isLocked={true}
+ * />
  */
 
 import React from 'react';
