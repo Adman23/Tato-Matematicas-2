@@ -28,7 +28,6 @@ import { gamesAPI, type GameConfig } from "../../lib/api";
 import SimpleHeaderUser from "../student/components/SimpleHeaderUser";
 import LoadingSpinner from "../global_components/LoadingSpinner";
 import { useParams } from "react-router-dom";
-import SimpleHeaderEdit from "../teacherProfile/EditStudent/components/SimpleHeaderEdit";
 
 /**
  * Range options available for the game.
@@ -250,27 +249,6 @@ export default function EditGame1() {
         }
     };
 
-
-    /**
-    * Functional Summary:
-    * Navigates to the student edit menu page.
-    *
-    * Execution Flow:
-    * 1. Uses the router to push to the student edit menu URL.
-    *
-    * @returns {Promise<void>} Promise that resolves when navigation is complete
-    *
-    * @example
-    * await handleHome();
-    */
-    const handleHome = () => {
-        if (user?.role === 'teacher') {
-            router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
-        } else {
-            router.push('/student/profile', 'back', 'pop');
-        }
-    }
-
     /**
      * Functional Summary:
      * Closes all open selection modals.
@@ -320,15 +298,11 @@ export default function EditGame1() {
 
     return (
         <IonPage className="EditGame1-page">
-            {user?.role === 'teacher' ?
-                <SimpleHeaderEdit studentName={name} Editing={"Editar juego 1"} onHome={handleHome} />
-                :
-                <SimpleHeaderUser
-                    title="Juego 1"
-                    title_image="/assets/pictograms/editar.png"
-                    userName={user?.username || "username"}
-                    photoUrl={user?.photo_url} hidden={true} />
-            }
+            <SimpleHeaderUser
+                title="Juego 1"
+                title_image="/assets/pictograms/editar.png"
+                userName={user?.username || "username"}
+                photoUrl={user?.photo_url} hidden={true} />
             <IonContent className="EditGame1-content">
                 {/* Aria live region for accessibility announcements */}
                 <div
@@ -354,7 +328,13 @@ export default function EditGame1() {
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
                         <Button3Dtext
-                            onClick={handleHome}
+                            onClick={() => {
+                                if (user?.role === 'teacher') {
+                                    router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                                } else {
+                                    router.push('/student/profile', 'back', 'pop');
+                                }
+                            }}
                             aria-label="Volver atrás"
                         >
                             <IonIcon icon={arrowBack} />
@@ -493,10 +473,13 @@ export default function EditGame1() {
                             aria-modal="true"
                             aria-label="Seleccionar cantidad"
                         >
-                            <button
-                                className="EditGame1-modal-close-btn"
+                            <Button3Dtext
                                 onClick={closeAllModals}
-                                aria-label="Cerrar selección de cantidad">✕</button>
+                                className="EditGame1-modal-close-btn"
+                                aria-label="Cerrar selección de cantidad"
+                            >
+                                <IonIcon icon={arrowBack} />
+                            </Button3Dtext>
                             <div className="EditGame1-modal-options-grid EditGame1-quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;

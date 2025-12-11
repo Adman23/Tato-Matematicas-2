@@ -391,7 +391,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                                 <img
                                     src={imgRepetir}
                                 />
-                                <span className="game-control-button-text">
+                                <span className="game-control-button-text" aria-hidden="true">
                                     REPETIR
                                 </span>
                             </Button3Dtext>
@@ -420,7 +420,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                                 <img
                                     src={imgSiguiente}
                                 />
-                                <span className="game-control-button-text">
+                                <span className="game-control-button-text" aria-hidden="true">
                                     SIGUIENTE
                                 </span>
                             </Button3Dtext>
