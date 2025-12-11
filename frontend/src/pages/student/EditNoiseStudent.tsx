@@ -12,6 +12,7 @@ import { Button3Dtext } from '../global_components/PushableButtons';
 import { SimpleButton } from '../global_components/SimpleButton';
 import imgAceptar from '/assets/pictograms/correcto.png';
 import { getAudioPreferences, saveAudioPreferences, type AudioPreferences } from '../../lib/api';
+import LoadingSpinner from "../global_components/LoadingSpinner";
 
 // --- Constantes y Configuraciones Estáticas ---
 const THEMES = [
@@ -40,6 +41,7 @@ const EditNoiseStudent: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState<string>('classic');
   const [selectedVolume, setSelectedVolume] = useState<string>('bajito');
   const [pressedButton, setPressedButton] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   
   const router = useIonRouter();
   const { user } = useAuth();
@@ -125,8 +127,12 @@ const EditNoiseStudent: React.FC = () => {
       .then(prefs => {
         setSelectedTheme(prefs.theme);
         setSelectedVolume(prefs.volume);
+        setLoading(false);
       })
-      .catch(err => console.error('Error cargando audio_preferences:', err));
+      .catch(err => {
+        console.error('Error cargando audio_preferences:', err);
+        setLoading(false);
+      });
   });
 
   const handleSavePreferences = async () => {
@@ -144,6 +150,17 @@ const EditNoiseStudent: React.FC = () => {
   };
 
   const isMuted = selectedVolume === 'silencio';
+
+  // Show spinner while loading
+    if (loading) {
+        return (
+            <IonPage>
+                <IonContent className="ion-padding ion-text-center">
+                    <LoadingSpinner message="Cargando configuración del sonido" />
+                </IonContent>
+            </IonPage >
+        );
+    }
 
   return (
     <IonPage>
