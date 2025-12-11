@@ -91,7 +91,7 @@ async def get_game_config(student_id: str, game_key: str):
         if game_key == "distribute_equal" or game_key == "remove_equal":
             default_settings = {
                 "objects_count": 12,  # 12 objects to distribute
-                "containers_count": 3  # 3 containers
+                "containers_count": 3  # 4 containers
             }
 
         return GameConfigResponse(
