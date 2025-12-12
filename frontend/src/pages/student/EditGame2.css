@@ -23,7 +23,7 @@
 
 /* Main content area with custom background */
 .EditGame2-content {
-    --background: var(--background-color);
+    --background: var(--ion-color-primary-contrast);
     position: relative;
 }
 
@@ -34,7 +34,7 @@
     align-items: center;
     min-height: 100%;
     width: 100%;
-    background-color: var(--background-color);
+    background-color: var(--ion-color-primary-contrast);
 }
 
 /* ========================================
@@ -430,7 +430,7 @@
         padding: 10px;
     }
 
-/* Modales responsive para móvil */
+    /* Modales responsive para móvil */
     .modal-content {
         padding: 56px 16px 24px 16px;
         max-width: 95%;
@@ -767,4 +767,3 @@
     outline: none;
     transform: scale(1.05);
 }
-

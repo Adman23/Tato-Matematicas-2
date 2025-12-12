@@ -16,6 +16,7 @@
     box-sizing: border-box;
     gap: clamp(3rem, 3vw, 1.5rem);
     overflow: hidden;
+    background: var(--ion-color-primary-contrast);
 
     --header-height: clamp(70px, 13vh, 115px);
     ;
