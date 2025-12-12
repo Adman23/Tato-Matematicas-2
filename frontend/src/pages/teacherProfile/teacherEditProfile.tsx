@@ -227,7 +227,10 @@ export default function TeacherEditProfile() {
 
       const payload: any = {};
       if (userName !== targetUser.username) payload.username = userName;
-      if (password) payload.password = password;
+      if (password) {
+        payload.password = password;
+        payload.password_length = password.length
+      }
       if (filenameToSend) payload.photo_url = filenameToSend;
 
       if (Object.keys(payload).length === 0) {
