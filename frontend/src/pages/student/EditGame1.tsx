@@ -473,13 +473,10 @@ export default function EditGame1() {
                             aria-modal="true"
                             aria-label="Seleccionar cantidad"
                         >
-                            <Button3Dtext
-                                onClick={closeAllModals}
+                            <button
                                 className="EditGame1-modal-close-btn"
-                                aria-label="Cerrar selección de cantidad"
-                            >
-                                <IonIcon icon={arrowBack} />
-                            </Button3Dtext>
+                                onClick={closeAllModals}
+                                aria-label="Cerrar selección de cantidad">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
