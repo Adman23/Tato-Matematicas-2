@@ -139,9 +139,9 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push(`/student-edit-game34/3-4/${id}/${name}`)}
                                 >
-                                    Juego 3
+                                    Juego 3 y 4
                                 </IonButton>
 
                                 <IonButton

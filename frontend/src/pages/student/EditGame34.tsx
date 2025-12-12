@@ -210,7 +210,7 @@ export default function EditGame34() {
                 userName={user?.username || "username"}
                 photoUrl={user?.photo_url}
                 hidden={true}
-                title={"JUEGO 3/4"}
+                title={"JUEGO 3 & 4"}
                 title_image="/assets/pictograms/editar.png"
             />
 
