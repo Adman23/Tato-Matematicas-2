@@ -152,14 +152,14 @@ export default function StudentProfile() {
                                     <div className="simple-button-title">SONIDO</div>
                                 </SimpleButton>
 
-                                {/* Edit game_3 */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
+                                {/* Edit game_3 & 4 */}
+                                <SimpleButton className="big-button" onClick={() => handleDirection(`/student/edit-game34/${user?.id}`)}> 
                                     <img
                                         src="/assets/juegosImg/juego3.png"
-                                        alt="Ir a editar juego tres"
+                                        alt="Ir a editar juegos tres y cuatro"
                                         className="simple-button-image"
                                     />
-                                    <div className="simple-button-title">JUEGO 3</div>
+                                    <div className="simple-button-title">JUEGO 3 & 4</div>
                                 </SimpleButton>
 
                                 {/* Edit game_4 */}

@@ -1,0 +1,786 @@
+/**
+ * ========================================
+ * EditGame34 Styles - Classification Game Configuration
+ * ========================================
+ *
+ * Styling for the Game 3/4 (Classification) configuration page.
+ * This page allows students and teachers to configure game parameters:
+ * - Containers: Number of containers (hands/boxes)
+ * - Numbers: With or without numbers (red circle)
+ * - Range: Number range (0-10, 0-20, 0-100, 0-1000)
+ * - Accessibility Mode: Different interaction methods
+ *
+ * Layout strategy:
+ * - Responsive flexbox layout that adapts to different screen sizes
+ * - Configuration buttons displayed with value displays above them
+ * - Modal dialogs for selecting options
+ * - Special handling for mobile portrait, tablet, and desktop views
+ */
+
+/* ========================================
+    Layout general
+   ======================================== */
+
+/* Main content area with custom background */
+.EditGame34-content {
+    --background: var(--ion-color-primary-contrast);
+    position: relative;
+}
+
+/* Main wrapper - vertical flex container for all elements */
+.EditGame34-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    width: 100%;
+    background-color: var(--ion-color-primary-contrast);
+}
+
+/* ========================================
+    Back Button
+   ======================================== */
+
+/* Container for back button - positioned at top left */
+.EditGame34-back-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 20px;
+}
+
+/* ========================================
+    Configuration Buttons
+   ======================================== */
+
+/* Main container for all configuration button groups
+ * Each group contains: value display (top) + button (bottom) */
+.EditGame34-config-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    flex-grow: 1;
+    width: 100%;
+}
+
+/* Individual button group container (value + button) */
+.EditGame34-buttons-result {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Shared sizing for both 3D button and value display box */
+.EditGame34-config-button-3d,
+.EditGame34-config-button-value {
+    min-width: clamp(120px, 24vw, 160px);
+    min-height: clamp(130px, 26vw, 180px);
+    width: clamp(120px, 22vw, 160px);
+    height: clamp(130px, 22vw, 180px);
+}
+
+/* Inner content of configuration button (icon + text) */
+.EditGame34-config-button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+}
+
+/* Display box showing currently selected value (above each button) */
+.EditGame34-config-button-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border: 3px solid var(--bubble-bg);
+    border-radius: 6px;
+    box-sizing: border-box;
+    background: white;
+}
+
+/* Text label for accessibility mode selection (small text in display) */
+.EditGame34-display-text-small {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--tatomaths-text);
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* Images/pictograms on configuration buttons */
+.EditGame34-config-button-image {
+    width: clamp(70px, 12vw, 100px);
+    height: clamp(70px, 12vw, 100px);
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Text labels inside buttons */
+.btn-text {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #475569;
+}
+
+/* ========================================
+    Specific Visuals (Game 3/4 Elements)
+   ======================================== */
+
+/* Large number display (for containers count) */
+.EditGame34-display-number {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: var(--tatomaths-text);
+}
+
+/* Text display (for range) */
+.EditGame34-display-text {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--tatomaths-text);
+    text-align: center;
+    line-height: 1.1;
+    word-break: break-word;
+}
+
+/* Red Circle (Numbers configuration) */
+.EditGame34-preview-circle {
+    width: 60px;
+    height: 60px;
+    background-color: #cf5c5c;
+    border: 3px solid #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+}
+
+.EditGame34-preview-circle.with-number span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #000;
+}
+
+/* Large Red Circle (Inside Modal) */
+.EditGame34-preview-circle.large {
+    width: 90px;
+    height: 90px;
+    border-width: 4px;
+}
+
+.EditGame34-preview-circle.large.with-number span {
+    font-size: 3rem;
+}
+
+/* Hand Images (Containers) */
+.EditGame34-hand-img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    margin-top: 5px;
+}
+
+/* ========================================
+    Save Button & Error Messages
+   ======================================== */
+
+/* Container for save button - positioned at bottom right */
+.EditGame34-save-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Error message banner (shown when validation fails) */
+.EditGame34-error-message {
+    background: #ef4444;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 720px;
+}
+
+/* ========================================
+    Modal Dialogs
+   ======================================== */
+
+/* Modal overlay - darkened background behind modal */
+.EditGame34-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+/* Modal content box */
+.EditGame34-modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: clamp(32px, 3.5vw, 60px) clamp(28px, 3vw, 56px) clamp(28px, 3vw, 56px) clamp(28px, 3vw, 56px);
+    max-width: 700px;
+    width: 100%;
+    max-height: 82vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 5px solid var(--ion-color-primary);
+}
+
+/* Wide modal for Mode selection (3 columns) */
+.EditGame34-modal-content.wide {
+    max-width: 900px;
+}
+
+/* Close button (X) in modal - positioned at top right */
+.EditGame34-modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: white;
+    border: none;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.EditGame34-modal-close-btn:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+.EditGame34-modal-close-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========================================
+    Modal Option Grids
+   ======================================== */
+
+/* Base grid layout for modal options */
+.modal-options-grid {
+    display: grid;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+/* 2 Columns Grid (Used for Containers, Numbers, Range) */
+.EditGame34-options-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+/* 3 Columns Grid (Used for Mode) */
+.EditGame34-options-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+/* ========================================
+    Modal Option Buttons
+   ======================================== */
+
+/* Individual option button within modal */
+.EditGame34-modal-option {
+    background: #f1f5f9;
+    border: 4px solid #cbd5e1;
+    border-radius: 16px;
+    padding: clamp(14px, 2.2vh, 20px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: clamp(90px, 16vh, 140px);
+    position: relative;
+    text-align: center;
+}
+
+/* Hover state for option buttons */
+.EditGame34-modal-option:hover {
+    transform: scale(1.05);
+    border-color: #3b82f6;
+    background: #e0f2fe;
+}
+
+/* Selected state - highlights the currently chosen option */
+.EditGame34-modal-option.selected {
+    background: var(--bubble-bg);
+    border-color: var(--ion-color-primary);
+    border-width: 6px;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.5);
+}
+
+/* Larger option buttons (for range and order modals) */
+.EditGame34-modal-option.large {
+    min-height: clamp(120px, 24vh, 170px);
+}
+
+/* ========================================
+    Modal Content - Text Styles
+   ======================================== */
+
+/* Content wrapper */
+.EditGame34-option-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Labels */
+.EditGame34-label-large {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.EditGame34-label-medium {
+    font-size: clamp(1.2rem, 3.2vw, 1.6rem);
+    font-weight: bold;
+    color: var(--tatomaths-text);
+    text-align: center;
+    line-height: 1.15;
+    word-break: break-word;
+}
+
+.EditGame34-label-sub {
+    font-size: clamp(0.9rem, 2.6vw, 1rem);
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+/* Adjust colors when selected */
+.EditGame34-modal-option.selected .EditGame34-label-large,
+.EditGame34-modal-option.selected .EditGame34-label-medium,
+.EditGame34-modal-option.selected .EditGame34-label-sub {
+    color: black;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+    RESPONSIVE DESIGN
+   ======================================== */
+
+/**
+ * Responsive breakpoints strategy (Copied from EditGame2):
+ * - Mobile (≤576px): vertical layout with horizontal button pairs
+ * - Tablet portrait (577-768px): vertical layout with horizontal button pairs
+ * - Tablet portrait large (769-992px): 2x2 grid layout
+ * - Tablet landscape (577-992px): horizontal layout
+ * - Desktop low height (≥993px, ≤600px): compressed horizontal layout
+ * - Desktop medium (≥993px, 601-850px): standard horizontal layout
+ * - Desktop tall (≥993px, ≥851px): spacious horizontal layout
+ * - Large monitors (≥1400px): extra spacing
+ */
+
+/* ========================================
+    RESPONSIVE - Mobile Devices (Portrait)
+   ======================================== */
+@media screen and (max-width: 576px) {
+    .EditGame34-config-buttons {
+        flex-direction: column;
+        gap: 15px;
+        padding: 10px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(100px, 35vw, 140px);
+        min-height: clamp(50px, 24vw, 200px);
+        width: clamp(100px, 35vw, 150px);
+        height: clamp(50px, 15vw, 200px);
+    }
+
+    .EditGame34-config-button-image {
+        width: clamp(50px, 10vw, 70px);
+        height: clamp(50px, 10vw, 70px);
+    }
+
+    .EditGame34-back-button {
+        padding: 10px;
+    }
+
+    .EditGame34-save-button {
+        padding: 10px;
+    }
+
+    /* Modales responsive para móvil */
+    .EditGame34-modal-content {
+        padding: 56px 16px 24px 16px;
+        max-width: 95%;
+        max-height: 88vh;
+        overflow-y: auto;
+    }
+
+    /* En móvil todo pasa a 1 columna */
+    .EditGame34-options-grid-2col,
+    .EditGame34-options-grid-3col {
+        grid-template-columns: 1fr;
+    }
+
+    .EditGame34-modal-option {
+        min-height: 70px;
+        padding: 12px;
+    }
+
+    .EditGame34-hand-img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .EditGame34-label-large {
+        font-size: 1.4rem;
+    }
+
+    .EditGame34-label-medium {
+        font-size: 1.1rem;
+    }
+
+    .EditGame34-label-sub {
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        line-height: 1.15;
+    }
+
+    .EditGame34-modal-close-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 1.5rem;
+        top: 8px;
+        right: 8px;
+    }
+
+    .EditGame34-save-button {
+        padding: 6px;
+    }
+}
+
+
+/* ========================================
+    RESPONSIVE - Tablets pequeñas (portrait)
+   ======================================== */
+@media screen and (min-width: 577px) and (max-width: 768px) and (orientation: portrait) {
+    .EditGame34-config-buttons {
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(120px, 22vw, 150px);
+        min-height: clamp(120px, 22vw, 150px);
+        width: clamp(120px, 22vw, 150px);
+        height: clamp(120px, 22vw, 150px);
+    }
+
+    .EditGame34-modal-content {
+        padding: 50px 30px 30px 30px;
+        border-radius: 20px;
+    }
+
+    .EditGame34-modal-close-btn {
+        width: 46px;
+        height: 46px;
+        font-size: 1.6rem;
+        top: 10px;
+        right: 10px;
+    }
+}
+
+/* ========================================
+    RESPONSIVE - Tablets grandes (portrait) - 4 en 2x2
+   ======================================== */
+@media screen and (min-width: 769px) and (max-width: 992px) and (orientation: portrait) {
+    .EditGame34-config-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 15px;
+        max-width: 600px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(110px, 18vw, 140px);
+        min-height: clamp(120px, 18vw, 150px);
+        width: clamp(110px, 20vw, 200px);
+        height: clamp(120px, 22vw, 200px);
+    }
+
+    .EditGame34-modal-content {
+        padding: 50px 30px 30px 30px;
+        border-radius: 20px;
+    }
+}
+
+/* ========================================
+    RESPONSIVE - Tablets (landscape)
+   ======================================== */
+@media screen and (min-width: 577px) and (max-width: 992px) and (orientation: landscape) {
+    .EditGame34-config-buttons {
+        flex-direction: row;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(90px, 16vw, 130px);
+        min-height: clamp(90px, 18vh, 130px);
+        width: clamp(90px, 20vw, 200px);
+        height: clamp(90px, 20vh, 200px);
+    }
+
+    .EditGame34-config-button-image {
+        width: clamp(45px, 8vw, 65px);
+        height: clamp(45px, 8vw, 65px);
+    }
+
+    .EditGame34-back-button,
+    .EditGame34-save-button {
+        padding: 10px;
+    }
+
+    .EditGame34-modal-content {
+        padding: 50px 25px 25px 25px;
+        border-radius: 16px;
+    }
+}
+
+/* ========================================
+    RESPONSIVE - Pantallas anchas pero poco altas
+   ======================================== */
+@media screen and (min-width: 993px) and (max-height: 600px) {
+    .EditGame34-config-buttons {
+        flex-direction: row;
+        gap: 15px;
+        padding: 5px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(80px, 12vw, 110px);
+        min-height: clamp(70px, 16vh, 100px);
+        width: clamp(80px, 16vw, 200px);
+        height: clamp(70px, 20vh, 200px);
+    }
+
+    .EditGame34-config-button-image {
+        width: clamp(40px, 7vw, 55px);
+        height: clamp(40px, 7vw, 55px);
+    }
+
+    .EditGame34-config-button-content {
+        gap: 5px;
+        padding: 8px;
+    }
+
+    .EditGame34-back-button,
+    .EditGame34-save-button {
+        padding: 8px;
+    }
+
+    .btn-text {
+        font-size: 0.85rem;
+    }
+
+    .EditGame34-label-medium {
+        font-size: 1.2rem;
+    }
+
+    .EditGame34-display-number {
+        font-size: 2rem;
+    }
+
+    .EditGame34-label-sub {
+        font-size: 0.75rem;
+    }
+}
+
+/* ========================================
+    RESPONSIVE - Portátiles/Desktop (altura media 601-850px)
+   ======================================== */
+@media screen and (min-width: 993px) and (min-height: 601px) and (max-height: 850px) {
+    .EditGame34-config-buttons {
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(110px, 14vw, 140px);
+        min-height: clamp(110px, 15vh, 140px);
+        width: clamp(110px, 16vw, 170px);
+        height: clamp(110px, 20vh, 170px);
+    }
+
+    .EditGame34-config-button-image {
+        width: clamp(55px, 8vw, 70px);
+        height: clamp(55px, 8vw, 70px);
+    }
+
+    .EditGame34-back-button,
+    .EditGame34-save-button {
+        padding: 12px;
+    }
+}
+
+/* ========================================
+    RESPONSIVE - Portátiles/Desktop (altura suficiente >850px)
+   ======================================== */
+@media screen and (min-width: 993px) and (min-height: 851px) {
+    .EditGame34-config-buttons {
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(140px, 18vw, 180px);
+        min-height: clamp(150px, 20vw, 190px);
+        width: clamp(140px, 20vw, 200px);
+        height: clamp(150px, 22vw, 190px);
+    }
+
+    .EditGame34-config-button-image {
+        width: clamp(70px, 10vw, 90px);
+        height: clamp(70px, 10vw, 90px);
+    }
+}
+
+/* ========================================
+    RESPONSIVE - Pantallas muy anchas (grandes monitores)
+   ======================================== */
+@media screen and (min-width: 1400px) and (min-height: 700px) {
+    .EditGame34-config-buttons {
+        flex-direction: row;
+        gap: 35px;
+    }
+
+    .EditGame34-buttons-result {
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .EditGame34-config-button-3d,
+    .EditGame34-config-button-value {
+        min-width: clamp(150px, 13vw, 180px);
+        min-height: clamp(160px, 14vw, 190px);
+        width: clamp(150px, 13vw, 180px);
+        height: clamp(160px, 14vw, 190px);
+    }
+
+    .EditGame34-config-button-image {
+        width: clamp(80px, 7vw, 100px);
+        height: clamp(80px, 7vw, 100px);
+    }
+
+    .btn-text {
+        font-size: 1.1rem;
+    }
+
+    .EditGame34-label-medium {
+        font-size: 1.6rem;
+    }
+
+    .EditGame34-label-sub {
+        font-size: 1rem;
+    }
+}
+
+/* ========================================
+    ACCESSIBILITY - KEYBOARD NAVIGATION
+   ======================================== */
+
+/**
+ * Focus styles for modal options to support keyboard navigation
+ */
+.EditGame34-modal-option:focus {
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+    border: 5px solid black;
+    outline: none;
+    transform: scale(1.05);
+}
