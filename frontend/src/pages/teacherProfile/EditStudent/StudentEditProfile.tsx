@@ -52,9 +52,9 @@ const MIN_USERNAME_LENGTH = 3;                // mínimo de longitud para el nom
 
 const MIN_GRAPHICAL_PASSWORD_LENGTH = 3;      // mínimo de longitud para contraseña gráfica
 const MAX_GRAPHICAL_PASSWORD_LENGTH = 5;      // máximo de longitud para contraseña gráfica
-const MIN_PIN_PASSWORD_LENGTH = 4;            // mínimo de longitud para PIN
-const MAX_PIN_PASSWORD_LENGTH = 10;           // máximo de longitud para PIN
-const MIN_ALPHANUMERIC_PASSWORD_LENGTH = 8;   // mínimo de longitud para contraseña alfanumérica
+const MIN_PIN_PASSWORD_LENGTH = 6;            // mínimo de longitud para PIN
+const MAX_PIN_PASSWORD_LENGTH = 8;            // máximo de longitud para PIN
+const MIN_ALPHANUMERIC_PASSWORD_LENGTH = 6;   // mínimo de longitud para contraseña alfanumérica
 const MAX_ALPHANUMERIC_PASSWORD_LENGTH = 20;  // máximo de longitud para contraseña alfanumérica
 
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
@@ -530,6 +530,9 @@ export default function StudentEditProfile() {
 
       // Refrescamos el usuario en ManagerContext
       await retrieveUser(id);
+
+      closeAvatarModal();
+      if (pictoModalState.visible) closePictoModal();
 
       setIsUpdateSuccess(true);
 
