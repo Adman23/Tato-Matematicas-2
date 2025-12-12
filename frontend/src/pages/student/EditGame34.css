@@ -1,0 +1,314 @@
+/**
+ * ========================================
+ * EditGame34 Styles - Estilos Únicos
+ * ========================================
+ */
+
+.EditGame34-content {
+    --background: var(--ion-color-primary-contrast);
+    position: relative;
+}
+
+.EditGame34-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    width: 100%;
+    background-color: var(--ion-color-primary-contrast);
+}
+
+.EditGame34-back-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 20px;
+}
+
+.EditGame34-config-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.EditGame34-buttons-result {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.EditGame34-config-button-3d,
+.EditGame34-config-button-value {
+    min-width: clamp(120px, 24vw, 160px);
+    min-height: clamp(130px, 26vw, 180px);
+    width: clamp(120px, 22vw, 160px);
+    height: clamp(130px, 22vw, 180px);
+}
+
+.EditGame34-config-button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+}
+
+.EditGame34-config-button-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border: 3px solid var(--bubble-bg);
+    border-radius: 6px;
+    box-sizing: border-box;
+    background: white;
+}
+
+.EditGame34-config-button-image {
+    width: clamp(70px, 12vw, 100px);
+    height: clamp(70px, 12vw, 100px);
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.EditGame34-display-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--tatomaths-text);
+}
+
+.EditGame34-display-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--tatomaths-text);
+    text-align: center;
+}
+
+.EditGame34-display-text-small {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--tatomaths-text);
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* --- Elementos Visuales (Círculo Rojo) --- */
+
+.EditGame34-preview-circle {
+    width: 60px;
+    height: 60px;
+    background-color: #cf5c5c;
+    border: 3px solid #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+}
+
+.EditGame34-preview-circle.with-number span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.EditGame34-preview-circle.large {
+    width: 90px;
+    height: 90px;
+    border-width: 4px;
+}
+
+.EditGame34-preview-circle.large.with-number span {
+    font-size: 3rem;
+}
+
+.EditGame34-hand-img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    margin-top: 5px;
+}
+
+/* --- MODALES --- */
+
+.EditGame34-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.EditGame34-modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 50px 30px 30px 30px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 5px solid var(--ion-color-primary);
+}
+
+.EditGame34-modal-content.wide {
+    max-width: 900px;
+}
+
+.EditGame34-modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* --- Grids (Crucial para el layout) --- */
+
+/* Grid de 2 columnas (Números y Rango) */
+.EditGame34-options-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+/* Grid de 3 columnas (Modo) */
+.EditGame34-options-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+/* --- Botones del Modal --- */
+
+.EditGame34-modal-option {
+    background: white;
+    border: 3px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.EditGame34-modal-option.large {
+    min-height: 150px;
+}
+
+.EditGame34-modal-option.selected {
+    background-color: #a855f7;
+    border-color: #7e22ce;
+    border-width: 4px;
+    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.EditGame34-option-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.EditGame34-modal-option.selected .EditGame34-label-large,
+.EditGame34-modal-option.selected .EditGame34-label-medium,
+.EditGame34-modal-option.selected .EditGame34-label-sub {
+    color: white;
+}
+
+.EditGame34-label-large {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.EditGame34-label-medium {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.EditGame34-label-sub {
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.EditGame34-modal-option:hover:not(.selected) {
+    background-color: #f8fafc;
+    transform: translateY(-2px);
+    border-color: #94a3b8;
+}
+
+.EditGame34-modal-option:focus {
+    outline: none;
+    border-color: black;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.2);
+}
+
+.EditGame34-save-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 20px;
+}
+
+.EditGame34-error-message {
+    background: #ef4444;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    width: 100%;
+    max-width: 720px;
+}
+
+@media screen and (max-width: 576px) {
+    .EditGame34-config-buttons {
+        flex-direction: column;
+    }
+    
+    .EditGame34-buttons-result {
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .EditGame34-options-grid-2col,
+    .EditGame34-options-grid-3col {
+        grid-template-columns: 1fr;
+    }
+}
