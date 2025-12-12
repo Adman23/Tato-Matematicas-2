@@ -3,10 +3,11 @@ import {
   IonContent,
   IonSpinner,
   IonIcon,
+  IonInput,
   useIonRouter,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { arrowBack, arrowForward, person, close } from 'ionicons/icons';
+import { arrowBack, arrowForward, person, close, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { useState, useEffect, type KeyboardEvent } from 'react'; 
 import { authAPI } from '../../lib/api'; 
 import type { Group, User } from '../../lib/api';
@@ -28,9 +29,6 @@ const PICTOGRAMS = [
   { id: 'caballo', name: 'Caballo', image: '/assets/pictograms/caballo.png' },
 ];
 
-const REQUIRED_LENGTH = 3;
-const MAX_LENGTH = REQUIRED_LENGTH;
-
 type GridItem = Group | User;
 type LoginPhase = 'GROUPS' | 'STUDENTS' | 'PASSWORD';
 
@@ -45,10 +43,19 @@ export default function StudentLoginUnified() {
   const [items, setItems] = useState<GridItem[]>([]);
   const [selectedGridItem, setSelectedGridItem] = useState<GridItem | null>(null);
   const [gridPage, setGridPage] = useState(0);
-   
-  const [selectedPictos, setSelectedPictos] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [passwordType, setPasswordType] = useState<'graphical' | 'pin' | 'alphanumeric'>('graphical');    // tipo de contraseña del estudiante
+  const [passwordLength, setPasswordLength] = useState<number>(0);  // longitud de la contraseña del estudiante
+
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);   // donde se almacena la contraseña (tanto para contraseña de tipo gráfica como para contraseña de tipo PIN)
+  const [typedPassword, setTypedPassword] = useState<string>('');   // donde se almacena la contraseña (para contraseña de tipo alfanumérica)
+  
+  const [availableKeys, setAvailableKeys] = useState<string[]>([]); // teclas (las teclas serán pictogramas en el caso de contraseña de tipo gráfica y las teclas serán números en el caso de la contraseña de tipo PIN) disponibles para mostrar (tanto para contraseña de tipo gráfica como para contraseña de tipo PIN)
+
+  const [showAlphanumericPassword, setShowAlphanumericPassword] = useState(false);
   
   // Touch/swipe state
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -94,10 +101,18 @@ export default function StudentLoginUnified() {
   }, [error]);
 
   useEffect(() => {
-    if (currentPhase === 'PASSWORD' && selectedPictos.length === REQUIRED_LENGTH && !loading) {
+    if (currentPhase !== 'PASSWORD') return;
+    if (passwordType === 'alphanumeric') {
+      if (typedPassword.trim().length === passwordLength && !loading) {
         submitLogin();
+      }
+      return;
     }
-  }, [selectedPictos, currentPhase]); 
+    const filled = selectedKeys.filter(k => k !== '');
+    if (filled.length === passwordLength && !loading) {
+      submitLogin();
+    }
+  }, [selectedKeys, typedPassword, currentPhase, passwordType, passwordLength, loading]);
 
   useIonViewWillEnter(() => resetFlow());
 
@@ -105,7 +120,8 @@ export default function StudentLoginUnified() {
     setCurrentPhase('GROUPS');
     setSelectedGroup(null);
     setSelectedStudent(null);
-    setSelectedPictos([]);
+    setSelectedKeys([]);
+    setTypedPassword('');
     setError('');
     loadGroups();
   };
@@ -138,19 +154,19 @@ export default function StudentLoginUnified() {
     setError('');
   };
 
-  const addPicto = (pictogramId: string) => {
+  const addKey = (keyId: string) => {
     if (loading) return;
-    setSelectedPictos(prev => {
+    setSelectedKeys(prev => {
       // Buscar primera posición vacía
       const firstEmptyIndex = prev.findIndex(p => !p);
       if (firstEmptyIndex !== -1) {
         // Hay una posición vacía, llenarla
         const newArray = [...prev];
-        newArray[firstEmptyIndex] = pictogramId;
+        newArray[firstEmptyIndex] = keyId;
         return newArray;
-      } else if (prev.length < MAX_LENGTH) {
+      } else if (prev.length < passwordLength) {
         // No hay vacías pero aún hay espacio, añadir al final
-        return [...prev, pictogramId];
+        return [...prev, keyId];
       }
       // Ya está lleno
       return prev;
@@ -158,9 +174,9 @@ export default function StudentLoginUnified() {
     setError('');
   };
 
-  const removePictoAtIndex = (indexToRemove: number) => {
+  const removeKeyAtIndex = (indexToRemove: number) => {
     if (loading) return; 
-    setSelectedPictos(prev => {
+    setSelectedKeys(prev => {
       const newArray = [...prev];
       newArray[indexToRemove] = ''; // Limpiar esa posición sin mover otros elementos
       return newArray;
@@ -169,47 +185,104 @@ export default function StudentLoginUnified() {
   };
 
   const handleAdvance = async () => {
+
     if (loading) return; 
     setError('');
+
     if (currentPhase === 'GROUPS') {
+
       if (!selectedGridItem) return;
+
       const group = selectedGridItem as Group;
       setSelectedGroup(group);
       setCurrentPhase('STUDENTS');
       loadStudents(String(group.id));
-    } 
+
+    }
+
     else if (currentPhase === 'STUDENTS') {
+
       if (!selectedGridItem) return;
+
       const student = selectedGridItem as User;
       setSelectedStudent(student);
+      
+      const pt = student.password_type as 'graphical' | 'pin' | 'alphanumeric';
+      setPasswordType(pt);
+      
+      const pl = student.password_length!;
+      setPasswordLength(pl);
+
+      // Se preparan las teclas disponibles según tipo de contraseña
+      if (pt === 'pin') {
+        setAvailableKeys(['1','2','3','4','5','6','7','8','9','0']);    // números del 0 al 9
+      } else if (pt === 'alphanumeric') {
+        setAvailableKeys([]);   // para contraseña de tipo alfanumérica el alumno escribirá en un input
+      } else {    // pt === 'graphical'
+        setAvailableKeys(PICTOGRAMS.map(p => p.id));
+      }
+
+      // Se inicializa 'selectedKey's con posiciones vacías (longitud requerida de la contraseña)
+      setSelectedKeys(Array(pl).fill(''));
+      setTypedPassword('');   // para contraseña de tipo alfanumérica el alumno escribirá en un input
+      
       setCurrentPhase('PASSWORD');
-      setSelectedPictos([]); 
+      
     }
+
     else if (currentPhase === 'PASSWORD') {
-        const filledPictos = selectedPictos.filter(p => p !== '');
-        if (filledPictos.length < REQUIRED_LENGTH) {
-            setError('Faltan imágenes'); return;
+
+      // Caso de tipo de contraseña alfanumérica
+      if (passwordType === 'alphanumeric') {
+        if (typedPassword.trim().length < passwordLength) {
+            setError(`La contraseña no está completa. Tiene ${passwordLength} caracteres.`);
+            return;
         }
         await submitLogin();
+        return;
+      }
+        
+      // Caso de tipo de contraseña gráfica o PIN (se ejecutará solo si la contraseña no es de tipo alfanumérica)
+      const filled = selectedKeys.filter(k => k !== '');
+      if (filled.length < passwordLength) {
+        setError('La contraseña no está completa.'); 
+        return;
+      }
+      await submitLogin();
+
     }
+
   };
 
   const submitLogin = async () => {
     if (!selectedStudent || !selectedGroup || loading) return;
     setLoading(true);
     try {
-        const password = selectedPictos.filter(p => p !== '').join('-');
-        await login({
-            group_id: String(selectedGroup.id),
-            username: selectedStudent.username,
-            password: password
-        });
-        setSelectedPictos([]);
-        router.push('/student/dashboard', 'root');
+      let password: string;
+      if (passwordType === 'alphanumeric') {
+          password = typedPassword;
+      } else if (passwordType === 'pin') {
+          password = selectedKeys.filter(p => p !== '').join('');
+      } else {  // passwordType === 'graphical'
+          password = selectedKeys.filter(p => p !== '').join('-');
+      }
+      console.log('Enviando login:', {
+        username: selectedStudent?.username,
+        password
+      });
+      await login({
+          group_id: String(selectedGroup.id),
+          username: selectedStudent.username,
+          password: password
+      });
+      setSelectedKeys([]);
+      setTypedPassword('');
+      router.push('/student/dashboard', 'root');
     } catch (err: any) {
         console.error(err);
-        setError('Clave incorrecta');
-        setSelectedPictos([]);
+        setError('Clave incorrecta.');
+        setSelectedKeys([]);
+        setTypedPassword('');
     } finally {
         setLoading(false);
     }
@@ -219,7 +292,7 @@ export default function StudentLoginUnified() {
     if (loading) return; 
     setError('');
     if (currentPhase === 'PASSWORD') {
-      setCurrentPhase('STUDENTS'); setSelectedPictos([]);
+      setCurrentPhase('STUDENTS'); setSelectedKeys([]); setTypedPassword('');
     } else if (currentPhase === 'STUDENTS') {
       setCurrentPhase('GROUPS'); setSelectedGroup(null); loadGroups(); 
     } else {
@@ -272,6 +345,14 @@ export default function StudentLoginUnified() {
   const emptySlots = loading 
     ? layout.itemsPerPage 
     : Math.max(0, layout.itemsPerPage - visibleItems.length);
+  
+  const isPasswordComplete = (() => {
+    if (passwordType === 'alphanumeric') {
+      return typedPassword.trim().length === passwordLength;
+    }
+    const filled = selectedKeys.filter(k => k !== '');
+    return filled.length === passwordLength;
+  })();
 
   return (
     <IonPage>
@@ -307,7 +388,7 @@ export default function StudentLoginUnified() {
                         {currentPhase === 'PASSWORD' ? (
                             <Button3Dtext 
                                 onClick={handleAdvance} 
-                                disabled={loading || selectedPictos.filter(p => p !== '').length !== REQUIRED_LENGTH}
+                                disabled={loading || !isPasswordComplete}
                                 aria-label="Confirmar contraseña"
                             >
                                 {loading ? <IonSpinner name="dots" /> : <img src="/assets/pictograms/correcto.png" alt="" aria-hidden="true" />}
@@ -406,54 +487,108 @@ export default function StudentLoginUnified() {
                 ) : (
                     /* MODO PASSWORD */
                     <div className="st-pass-layout">
-                         <div className="st-card-wrapper pass-mode st-anim-pop-in">
-                            {error && <div className="st-error-toast" role="alert">{error}</div>}
-                            <div className="st-pass-grid">
-                                {PICTOGRAMS.map((picto) => (
-                                    <button
-                                        key={picto.id}
-                                        className="st-pass-key"
-                                        onClick={() => addPicto(picto.id)}
-                                        disabled={loading || selectedPictos.filter(p => p !== '').length >= MAX_LENGTH}
-                                        aria-label={`Añadir pictograma ${picto.name}`}
-                                    >
-                                        <img src={picto.image} alt="" aria-hidden="true" />
-                                    </button>
-                                ))}
-                            </div>
-                         </div>
 
-                         <div className="st-pass-slots">
-                            {Array.from({ length: REQUIRED_LENGTH }, (_, index) => {
-                                const pid = selectedPictos[index];
-                                const picto = pid ? PICTOGRAMS.find(p => p.id === pid) : null;
+                        {/* Input para contraseña de tipo alfanumérica */}
+                        {passwordType === 'alphanumeric' && (
+                          <div className={`st-pass-alphanumeric ${typedPassword ? 'filled' : ''}`}>
+                            {error && <div className="st-error-toast" role="alert">{error}</div>}
+                            <label htmlFor="typed-pass" className="sr-only">Contraseña</label>
+                            <IonInput
+                              id="typed-pass"
+                              type={showAlphanumericPassword ? 'text' : 'password'}
+                              value={typedPassword}
+                              placeholder="Introduce tu contraseña..."
+                              onIonInput={(e) => setTypedPassword(e.detail.value || '')}
+                            />
+                            <IonIcon
+                              icon={showAlphanumericPassword ? eyeOffOutline : eyeOutline}
+                              onClick={() => setShowAlphanumericPassword(prev => !prev)}
+                              className="st-pass-input-eye-icon"
+                            />
+                          </div>
+                        )}
+
+                        {(passwordType === 'pin' || passwordType === 'graphical') && (
+                          <div className={`st-card-wrapper pass-mode st-anim-pop-in ${passwordType === 'pin' ? 'pin-mode' : ''}`}>
+
+                            {error && <div className="st-error-toast" role="alert">{error}</div>}
+
+                            {/* Grid dinámico para contraseñas de tipo gráfica y PIN */}
+                            {(passwordType === 'graphical' || passwordType === 'pin') && (
+                              <div className={`st-pass-grid ${passwordType === 'pin' ? 'pin-mode' : ''}`}>
+                                  {availableKeys.map((key) => {
+                                      const isGraphical = passwordType === 'graphical';
+                                      const graphical = isGraphical ? PICTOGRAMS.find(p => p.id === key) : null;
+                                      return(
+                                        <button
+                                          key={key}
+                                          className={`st-pass-key ${key === '0' ? 'zero' : ''}`}
+                                          onClick={() => addKey(key)}
+                                          disabled={loading || selectedKeys.filter(p => p !== '').length >= passwordLength}
+                                          aria-label={
+                                            isGraphical 
+                                              ? `Añadir pictograma ${graphical?.name}`
+                                              : `Añadir número ${key}`
+                                          }
+                                        >
+                                          {isGraphical ? (
+                                            <img src={graphical?.image} alt={graphical?.name || ''} aria-hidden="true" />
+                                          ) : (
+                                            <span className="st-pass-key-label">{key}</span>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                              </div>
+                            )}
+
+                          </div>
+                        )}
+
+                        {(passwordType === 'pin' || passwordType === 'graphical') && (
+                          <div className={`st-pass-slots ${passwordType === 'pin' ? 'pin-mode' : ''}`}>
+                            {Array.from({ length: passwordLength }, (_, index) => {
+                                const key = selectedKeys[index];
+                                const graphical = key && passwordType === 'graphical' ? PICTOGRAMS.find(p => p.id === key) : null;
                                 return (
                                     <div 
                                         key={index} 
-                                        className={`st-pass-slot ${picto ? 'filled' : ''}`}
-                                        onClick={() => picto && removePictoAtIndex(index)}
+                                        className={`st-pass-slot ${passwordType === 'pin' ? 'pin-mode' : ''} ${key ? 'filled' : ''}`}
+                                        onClick={() => key && removeKeyAtIndex(index)}
                                         onKeyDown={(e) => {
-                                            if (picto && (e.key === 'Enter' || e.key === ' ')) {
+                                            if (key && (e.key === 'Enter' || e.key === ' ')) {
                                                 e.preventDefault();
-                                                removePictoAtIndex(index);
+                                                removeKeyAtIndex(index);
                                             }
                                         }}
                                         role="button"
-                                        aria-label={picto ? `Eliminar pictograma ${picto.name}` : `Espacio vacío ${index + 1}`}
+                                        aria-label={key 
+                                          ? passwordType === 'graphical' 
+                                              ? `Eliminar pictograma ${graphical?.name}` 
+                                              : `Eliminar número ${key}`
+                                          : `Espacio vacío ${index + 1}`}
                                         tabIndex={0}
                                     >
-                                        {picto ? (
-                                            <>
-                                                <img src={picto.image} alt={picto.name} />
-                                                <div className="st-slot-delete"><IonIcon icon={close} aria-hidden="true" /></div>
-                                            </>
+                                        {key ? (
+                                            passwordType === 'graphical' ? (
+                                                <>
+                                                  <img src={graphical?.image} alt={graphical?.name} />
+                                                  <div className="st-slot-delete"><IonIcon icon={close} aria-hidden="true" /></div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                  <span className="st-slot-key-label">{key}</span>
+                                                  <div className="st-slot-delete"><IonIcon icon={close} aria-hidden="true" /></div>
+                                                </>
+                                            )
                                         ) : (
                                             <span aria-hidden="true">?</span>
                                         )}
                                     </div>
                                 );
                             })}
-                         </div>
+                          </div>
+                        )}
                     </div>
                 )}
             </div>
