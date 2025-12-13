@@ -82,7 +82,7 @@ const Bubble: React.FC<Props> = ({
                 type="button"
                 className={classes}
                 onClick={handleClick}
-                aria-label={`Número ${value}${isSelected ? ', seleccionado' : ''}`}
+                aria-label={`Número ${value}${isSelected ? ', seleccionado' : ', no seleccionado'}`}
                 aria-disabled={disabled || isHinted}
                 disabled={disabled || isHinted}
             >

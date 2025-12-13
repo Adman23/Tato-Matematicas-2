@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 from ..services.supabase import supabase_admin
-from ..dependencies import is_auth_current_user
+# from ..dependencies import is_auth_current_user
 
 from ..schemas.games import (
     GameConfigResponse,
@@ -69,6 +69,7 @@ async def get_game_config(student_id: str, game_key: str):
         # 3. If it exists, return it
         if config_resp.data and len(config_resp.data) > 0:
             config = config_resp.data[0]
+            # La base de datos ya contiene el JSON en 'settings'
             return GameConfigResponse(
                 game_id=game_id,
                 game_key=game_key,
@@ -79,17 +80,32 @@ async def get_game_config(student_id: str, game_key: str):
             )
 
         # 4. If it does not exist, return the default configuration
+        default_settings = {}
+
         if game_key == "touch_number":
             default_settings = {
                 "options_count": 5,  # 5 options to touch
                 "voice": "woman"  # Default female voice
             }
-        if game_key == "order_sequence":
+        elif game_key == "order_sequence":
             default_settings = {
                 "quantity": 5,  # 5 numbers to order
                 "order": "ascending",  # ascending order
                 "accessibility_mode": "drag_drop"  # default drag & drop
             }
+        elif game_key in ["distribute_equal", "remove_equal"]:
+            # --- CORRECCIÓN: Defaults para Juegos 3 y 4 ---
+            # Estos valores se envían dentro del objeto 'settings'
+            default_settings = {
+                "accessibility_mode": "drag_click",
+                "container_count": 2,
+                "requires_operations": False,
+                "object_count": 8
+            }
+        
+        # Si no entra en ninguno (fallback seguro)
+        if not default_settings:
+             default_settings = {}
 
         return GameConfigResponse(
             game_id=game_id,
@@ -151,6 +167,8 @@ async def update_game_config(user_id: str, game_key: str, config_data: Dict[str,
             .execute()
 
         # 3. Prepare configuration data
+        # --- CORRECCIÓN: Guardamos todo dentro de 'settings' en la BD ---
+        # El frontend corregido envía todo empaquetado dentro de config_data['settings']
         config_update = {
             "user_id": user_id,
             "game_id": game_id,

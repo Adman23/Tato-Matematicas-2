@@ -74,4 +74,3 @@ class FinishSessionRequest(BaseModel):
     Finish game session
     """
     total_time_seconds: float
-

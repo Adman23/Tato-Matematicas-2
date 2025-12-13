@@ -59,6 +59,7 @@ import imgTatoFelizDefault from '/assets/Tato/TatoFeliz.png';
 import imgTatoTristeDefault from '/assets/Tato/TatoTriste.png';
 import type { StudentMessage } from '../../../lib/api';
 import { GameControlButton } from '../../global_components/GameControlButton';
+import { Button3Dtext } from '../../global_components/PushableButtons';
 
 
 /**
@@ -293,7 +294,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     // Play themed sound based on user preferences
     useEffect(() => {
         let soundPath: string;
-        
+
         if (audioPreferences?.theme) {
             // Use themed sound based on user preferences
             const soundType = isCorrect ? 'correct' : 'incorrect';
@@ -302,7 +303,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
             // Fallback to default sounds
             soundPath = isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3';
         }
-        
+
         // Apply volume from preferences
         const getVolumeLevel = (volume: string) => {
             switch (volume) {
@@ -313,9 +314,9 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                 default: return 0.6;
             }
         };
-        
+
         const volumeLevel = audioPreferences?.volume ? getVolumeLevel(audioPreferences.volume) : 0.6;
-        
+
         // Set volume and play
         audioManager.setVolume(volumeLevel);
         void audioManager.play(soundPath);
@@ -373,8 +374,9 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     {/* Buttons */}
                     <div className="feedback-button-container">
                         {!isCorrect && onRepeat && (
-                            <GameControlButton
+                            <Button3Dtext
                                 aria-label="Repetir"
+                                className='exit-btn'
                                 onClick={enableHoverMode ? undefined : onRepeat}
                                 onMouseEnter={() => triggerHover(onRepeat)}
                                 onMouseLeave={() => {
@@ -388,19 +390,18 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                             >
                                 <img
                                     src={imgRepetir}
-                                    alt="Repetir"
-                                    className="game-control-button-image"
                                 />
-                                <span className="game-control-button-text">
+                                <span className="game-control-button-text" aria-hidden="true">
                                     REPETIR
                                 </span>
-                            </GameControlButton>
+                            </Button3Dtext>
                         )}
 
                         {/* Mostrar botón "Siguiente" solo si: es correcto O (es incorrecto pero hideNextOnError es false) */}
                         {(isCorrect || !hideNextOnError) && (
-                            <GameControlButton
+                            <Button3Dtext
                                 aria-label="Siguiente"
+                                className='exit-btn'
                                 onClick={
                                     enableHoverMode
                                         ? undefined
@@ -418,13 +419,11 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                             >
                                 <img
                                     src={imgSiguiente}
-                                    alt="Siguiente"
-                                    className="game-control-button-image"
                                 />
-                                <span className="game-control-button-text">
+                                <span className="game-control-button-text" aria-hidden="true">
                                     SIGUIENTE
                                 </span>
-                            </GameControlButton>
+                            </Button3Dtext>
                         )}
                     </div>
                 </div>

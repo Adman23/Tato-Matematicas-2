@@ -138,6 +138,8 @@ export interface User {
   username: string;
   role: Role;
   photo_url?: string;
+  password_type?: PasswordType;
+  password_length?: number;
   group_id?: string;
   group_alias?: string;
 }
@@ -149,6 +151,7 @@ export interface User {
 export interface UserData {
   username: string;
   password_type: PasswordType;
+  password_length: number;
   user_profile: any;
   game_configurations: any;
   reinforcement_messages: any;
@@ -168,6 +171,7 @@ export interface UserComplete {
   photo_url?: string;
   group_id?: string;
   password_type: PasswordType;
+  password_length: number;
   group_alias?: string;
   user_profile: any;
   game_configurations: any;
@@ -191,6 +195,7 @@ export interface AuthResponse {
 export interface RegisterData {
   username: string;
   password: string;
+  password_length: number;
   role: Role;
   photo_url?: string;
 }
@@ -238,6 +243,7 @@ export interface UserUpdatePayload {
   password?: string;
   photo_url?: string;
   password_type?: PasswordType;
+  password_length?: number;
 }
 
 

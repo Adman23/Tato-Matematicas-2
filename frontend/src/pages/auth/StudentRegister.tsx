@@ -40,10 +40,16 @@ const PICTOGRAMS = [
 ];
 
 /**
- * Número máximo de pictogramas permitidos para la contraseña.
+ * Número mínimo de pictogramas permitidos para la contraseña gráfica.
  * @constant
  */
-const MAX_PICTOGRAMS = 3;
+const MIN_GRAPHICAL_PASSWORD_LENGTH = 3;
+
+/**
+ * Número máximo de pictogramas permitidos para la contraseña gráfica.
+ * @constant
+ */
+const MAX_GRAPHICAL_PASSWORD_LENGTH = 5;
 
 /**
  * Avatar por defecto cuando no se selecciona ninguna imagen.
@@ -110,7 +116,7 @@ export default function StudentRegister() {
   const isUserNameLong = userName.trim().length >= 3;
   const isUserNameSpaceless = !userName.includes(' ');
   const isUsernameValid = isUserNameLong && isUserNameSpaceless && isUsernameAvailable === true;
-  const hasExactlyThreePictograms = pictograms.length === 3;
+  const isPasswordLengthValid = (pictograms.length >= MIN_GRAPHICAL_PASSWORD_LENGTH) && (pictograms.length <= MAX_GRAPHICAL_PASSWORD_LENGTH);
   const isAvatarSelected = selectedAvatar !== '';
   const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(DEFAULT_AVATAR);
 
@@ -184,8 +190,8 @@ export default function StudentRegister() {
       errorMsg = 'El nombre de usuario no puede contener espacios.';
     } else if (isUsernameAvailable === false) {
       errorMsg = 'El nombre de usuario ya está en uso.';
-    } else if (!hasExactlyThreePictograms) {
-      errorMsg = 'Debes seleccionar exactamente 3 pictogramas.';
+    } else if (!isPasswordLengthValid) {
+      errorMsg = `Debes seleccionar entre ${MIN_GRAPHICAL_PASSWORD_LENGTH} y ${MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas.`;
     } else if (!isAvatarSelected) {
       errorMsg = 'Debes seleccionar una imagen de perfil.';
     }
@@ -200,6 +206,7 @@ export default function StudentRegister() {
     try {
       setIsLoading(true);
       const password = pictograms.join('-');
+      const passwordLength = pictograms.length;
       let photoUrl = DEFAULT_AVATAR;
 
       if (avatarOptions.some(a => a.id === selectedAvatar)) {
@@ -213,6 +220,7 @@ export default function StudentRegister() {
       await authAPI.register({
         username: userName,
         password: password,
+        password_length: passwordLength,
         role: "student",
         photo_url: photoUrl, 
       });
@@ -261,16 +269,16 @@ export default function StudentRegister() {
   const selectPictogram = (id: string) => {
     const newPictograms = [...pictograms, id];
     setPictograms(newPictograms);
-    if (newPictograms.length >= MAX_PICTOGRAMS) {
+    if (newPictograms.length >= MAX_GRAPHICAL_PASSWORD_LENGTH) {
       closePictoModal();
     }
   };
 
   const handleAddPictogram = () => {
-    if (pictograms.length < MAX_PICTOGRAMS) {
+    if (pictograms.length < MAX_GRAPHICAL_PASSWORD_LENGTH) {
       openPictoModal();
     } else {
-      setToastMessage(`Máximo ${MAX_PICTOGRAMS} pictogramas permitidos`);
+      setToastMessage(`Máximo ${MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas permitidos`);
       setToastColor('danger');
       setIsToastOpen(true);
     }
@@ -385,8 +393,8 @@ export default function StudentRegister() {
       errorMsg = 'El nombre de usuario no puede contener espacios.';
     } else if (isUsernameAvailable === false) {
       errorMsg = 'El nombre de usuario ya está en uso.';
-    } else if (!hasExactlyThreePictograms) {
-      errorMsg = 'Debes seleccionar exactamente 3 pictogramas.';
+    } else if (!isPasswordLengthValid) {
+      errorMsg = `Debes seleccionar entre ${MIN_GRAPHICAL_PASSWORD_LENGTH} y ${MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas.`;
     } else if (!isAvatarSelected) {
       errorMsg = 'Debes seleccionar una imagen de perfil.';
     }
@@ -452,7 +460,7 @@ export default function StudentRegister() {
                 );
               })}
               <div 
-                className={`student-register-pictogram-add ${pictograms.length >= MAX_PICTOGRAMS ? 'disabled' : ''}`} 
+                className={`student-register-pictogram-add ${pictograms.length >= MAX_GRAPHICAL_PASSWORD_LENGTH ? 'disabled' : ''}`} 
                 onClick={handleAddPictogram}
               >
                 <IonIcon icon={addOutline} />
@@ -466,7 +474,7 @@ export default function StudentRegister() {
             </IonButton>
             <IonButton
               className={`student-register-confirm-button ${
-                !isUsernameValid || !hasExactlyThreePictograms || !isAvatarSelected 
+                !isUsernameValid || !isPasswordLengthValid || !isAvatarSelected 
                   ? 'student-register-confirm-button--disabled' 
                   : ''
               }`}
@@ -509,7 +517,7 @@ export default function StudentRegister() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="student-register-picto-picker-header">
-                <h3>Selecciona 3 pictogramas</h3>
+                <h3>Selecciona entre {MIN_GRAPHICAL_PASSWORD_LENGTH} y {MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas</h3>
                 <IonButton fill="clear" size="small" onClick={closePictoModal}>
                   Cerrar
                 </IonButton>
