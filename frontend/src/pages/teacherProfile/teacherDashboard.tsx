@@ -10,6 +10,7 @@ import { useManager } from '../../contexts/ManagerContext';
 import SimpleHeaderUser from '../student/components/SimpleHeaderUser';
 import { SimpleButton } from '../global_components/SimpleButton';
 import '../student/Dashboard.css';
+import LoadingSpinner from '../global_components/LoadingSpinner';
 
 export default function TutorDashboard() {
   const { user } = useAuth();
@@ -21,14 +22,14 @@ export default function TutorDashboard() {
   if (loadingUser || loadingUsers) {
     return (
       <IonPage>
-        <IonContent className="ion-padding ion-text-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <IonSpinner name="crescent" />
+        <IonContent className="ion-padding ion-text-center">
+          <LoadingSpinner message="Cargando menú de juegos" />
         </IonContent>
-      </IonPage>
+      </IonPage >
     );
   }
 
-  
+
   /*
   // Redirigir si no hay usuario autenticado o no es tutor
   if (!user || user.role !== 'teacher') {
@@ -38,19 +39,19 @@ export default function TutorDashboard() {
 
   return (
     <IonPage>
-      <SimpleHeaderUser 
-        userName={user?.username || "username"} 
+      <SimpleHeaderUser
+        userName={user?.username || "username"}
         photoUrl={user?.photo_url}
       />
 
       <IonContent className="student-dashboard-content">
         {loadingUser || loadingUsers ? (
-          <div 
-            style={{ 
-              height: '100%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center' 
+          <div
+            style={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             <IonSpinner name="crescent" />
