@@ -7,18 +7,7 @@
 import React from 'react';
 import BaseGame34 from './baseGame34';
 import type { GameConfig } from '../../../lib/api';
-import { gamesAPI } from '../../../lib/api';
-
-type NumberItem = {
-    id: string;
-    value: number;
-};
-
-type Container = {
-    id: string;
-    type: 'bowl' | 'chest';
-    numbers: NumberItem[];
-};
+import type { NumberItem, Container } from './baseGame34';
 
 const Game4: React.FC = () => {
     
@@ -79,14 +68,14 @@ const Game4: React.FC = () => {
             
             bowls.push({
                 id: `bowl-${i + 1}`,
-                type: 'bowl' as const, // Cast explícito
+                type: 'bowl' as const, 
                 numbers: bowlNumbers
             });
         }
         
         const containers: Container[] = [
             ...bowls,
-            { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers } // Cast explícito
+            // { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers } //!!Removed the chest container
         ];
 
         return {

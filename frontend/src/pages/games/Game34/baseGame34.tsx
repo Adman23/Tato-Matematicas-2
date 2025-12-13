@@ -35,23 +35,43 @@ const imgFlecha = '/assets/juegosImg/flecha.png';
 const TOTAL_ROUNDS = 5;
 const SHOW_DEBUG_ZONES = false;
 
-type NumberItem = {
+
+
+/**
+ * @brief Type to introduce in the containers.
+ */
+export type NumberItem = {
     id: string;
     value: number;
 };
 
-type Container = {
+/**
+ * @brief Type to introduce in the containers.
+ * Each container has a unique ID, a type (bowl or chest), and contains an array of numbers.
+ * 
+ * !! chest is deprecated
+ * -> We had it before to distinguish between bowls and chest, but now there is only a total objective
+ * 
+ */
+export type Container = {
     id: string;
     type: 'bowl' | 'chest';
     numbers: NumberItem[];
 };
 
+/**
+ * @brief Type of data generated for each round.
+ * Its used by each round generator to save the data in the state of the game.
+ */
 type RoundData = {
     containers: Container[];
     topZone: NumberItem[];
-    targetTotal: number; // Total objetivo del chest
+    targetTotal: number;
 };
 
+/**
+ * @brief Props for the BaseGame34 component.
+ */
 type BaseGame34Props = {
     gameKey: 'distribute_equal' | 'remove_equal';
     gameTitle: string;
@@ -180,7 +200,6 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
 
 
     const checkAnswer = async () => {
-        // Validación común: todos los bowls deben tener el mismo total que el chest
         const bowls = containers.filter(c => c.type === 'bowl');
         const correct = bowls.every(bowl => {
             const bowlTotal = bowl.numbers.reduce((acc, n) => acc + n.value, 0);
@@ -381,6 +400,31 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                             onBackClick={() => setShowExitConfirm(true)}
                         />
                         <div className="base-game34-container">
+                            
+                            <div
+                                style={{
+                                    border: '3px solid var(--ion-primary-color)',
+                                    borderRadius: '20px',
+                                    padding: '18px 40px',
+                                    background: '#e0f7fa',
+                                    color: '#023047',
+                                    fontWeight: 700,
+                                    fontSize: '2rem',
+                                    margin: '0 auto 28px auto',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                                    maxWidth: '420px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                Objetivo:&nbsp;
+                                <span style={{ color: 'var(--ion-primary-color)', fontSize: '2.2rem', marginLeft: 8 }}>
+                                    {targetTotal}
+                                </span>
+                            </div>
+                            
                             <ContainerBlock
                                 key={`zone-${currentRound}`}
                                 type="zone"

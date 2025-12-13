@@ -7,30 +7,25 @@
 import React from 'react';
 import BaseGame34 from './baseGame34';
 import type { GameConfig } from '../../../lib/api';
-
-type NumberItem = {
-    id: string;
-    value: number;
-};
-
-type Container = {
-    id: string;
-    type: 'bowl' | 'chest';
-    numbers: NumberItem[];
-};
+import type { NumberItem, Container } from './baseGame34';
 
 const Game3: React.FC = () => {
     
+    /** 
+     * @brief Helper to create number items with unique IDs
+     */
     const createNumberItem = (value: number): NumberItem => ({
         id: `num-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         value
     });
 
     /**
-     * Genera los datos de una ronda para el Juego 3.
-     * Objetivo: Los bowls empiezan vacíos y el estudiante debe añadir números para igualar el chest.
+     * @brief Generates the round data for Game 3
      */
     const generateRoundData = (config: GameConfig) => {
+
+        console.log('Generating round data for Game 3 with config:', config);
+
         const [min, max] = config.number_range.split('-').map(Number);
         
         const actualMin = Math.max(1, min);
@@ -41,7 +36,7 @@ const Game3: React.FC = () => {
         console.log(config.settings?.objects_count, objectsCount);
         
         const targetTotal = generateBiasedRandomInRange(actualMin, max);
-        const chestNumbers = [targetTotal].map(createNumberItem);
+        // const chestNumbers = [targetTotal].map(createNumberItem);
         
         // Límite superior: ningún número puede ser >= targetTotal
         const maxNumberValue = targetTotal - 1;
@@ -106,7 +101,7 @@ const Game3: React.FC = () => {
         
         const containers: Container[] = [
             ...bowls,
-            { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers } // Cast explícito
+            // { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers } // !! Removed the chest container
         ];
 
         return {
@@ -116,18 +111,23 @@ const Game3: React.FC = () => {
         };
     };
 
+
+    
     /**
-     * Función auxiliar para regenerar con un target específico
+     * @brief Helper - Generates round data with a specific target total
+     * @param config Game configuration of the user
+     * @param target Target total number for the chest
+     * @returns Round data with specified target
      */
     const generateRoundDataWithTarget = (config: GameConfig, target: number) => {
-        const [min, max] = config.number_range.split('-').map(Number);
+        const [min, _] = config.number_range.split('-').map(Number);
         const actualMin = Math.max(1, min);
         const containersCount = config.settings?.containers_count || 2;
         const objectsCount = config.settings?.objects_count || 8;
         
 
         const targetTotal = target;
-        const chestNumbers = [targetTotal].map(createNumberItem);
+        // const chestNumbers = [targetTotal].map(createNumberItem);
         const maxNumberValue = targetTotal - 1;
         
         const bowls: Container[] = [];
@@ -157,8 +157,9 @@ const Game3: React.FC = () => {
         
         topZoneNumbers.sort(() => Math.random() - 0.5);
         
-        return {
-            containers: [...bowls, { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers }],
+        {/*, { id: 'chest-1', type: 'chest' as const, type: 'chest' as const, numbers: chestNumbers } */}
+        return { 
+            containers: [...bowls],
             topZone: topZoneNumbers,
             targetTotal
         };
@@ -213,9 +214,11 @@ const Game3: React.FC = () => {
         return parts;
     };
 
+    
     /**
      * Divide un total en varios números aleatorios.
      */
+    /*
     const divideIntoNumbers = (total: number, minCount: number, maxCount: number, minVal: number, maxVal: number): NumberItem[] => {
         if (total <= 0) return [];
         
@@ -240,6 +243,7 @@ const Game3: React.FC = () => {
         
         return numbers.map(val => createNumberItem(val));
     };
+    */
 
 
     return (
