@@ -340,7 +340,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
         return (
             <IonPage>
                 <IonContent>
-                    <div className='Game1-spinner'>
+                    <div className='Game-spinner'>
                         <LoadingSpinner message={`Cargando ${gameTitle}`} />
                     </div>
                 </IonContent>
@@ -401,31 +401,17 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                         />
                         <div className="base-game34-container">
                             
-                            <div
-                                style={{
-                                    border: '3px solid var(--ion-primary-color)',
-                                    borderRadius: '20px',
-                                    padding: '18px 40px',
-                                    background: '#e0f7fa',
-                                    color: '#023047',
-                                    fontWeight: 700,
-                                    fontSize: '2rem',
-                                    margin: '0 auto 28px auto',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-                                    maxWidth: '420px',
-                                    textAlign: 'center'
-                                }}
-                            >
-                                Objetivo:&nbsp;
-                                <span style={{ color: 'var(--ion-primary-color)', fontSize: '2.2rem', marginLeft: 8 }}>
+                            {/* Total number target */}
+                            <div className="base-game34-objective">
+                                OBJETIVO:&nbsp;
+                                <span className="base-game34-objective-value">
                                     {targetTotal}
                                 </span>
                             </div>
-                            
+
+                            {/* Top zone for extra numbers */}                        
                             <ContainerBlock
+                                className="base-game34-top-zone"
                                 key={`zone-${currentRound}`}
                                 type="zone"
                                 numbers={numbersInTopZone}
@@ -435,6 +421,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                 onGlobalDragEnd={handleDragEnd}
                                 onExternalDrop={() => handleZoneExternalDrop()}
                             />
+                            {/* Main section with all the bowls */}
                             <div className="base-game34-main-section">
                                 {containers.map(container => (
                                     <ContainerBlock
@@ -453,6 +440,8 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                     />
                                 ))}
                             </div>
+
+                            {/* Buttons section */}
                             <div className="base-game34-buttons-container">
                                 <GameControlButton onClick={() => { /* instrucciones */ }}>
                                     <img src="/assets/juegosImg/instrucciones.png" alt="Instrucciones" className="game-control-button-image" />

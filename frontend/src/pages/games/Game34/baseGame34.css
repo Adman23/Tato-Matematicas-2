@@ -1,161 +1,198 @@
-/* Renombrar game4- a base-game34- */
-.Game1-spinner {
+/**
+ * baseGame34.css
+ * Styles fot the games 3 and 4
+ */
+
+
+/* ========================================
+    MAIN STYLES
+   ======================================== */
+
+/* Spinner shared by the other games (we should have a shared file for all the games) */
+.Game-spinner {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
+/* Container for the entire game page */
 .base-game34-container {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - var(--header-height, 115px));
-    height: calc(100dvh - var(--header-height, 115px));
-    overflow: hidden;
-    gap: clamp(0.5rem, 1.5vh, 1rem);
-    width: 100%;
-    padding: clamp(0.5rem, 2vh, 1.5rem);
-    box-sizing: border-box;
+    gap: clamp(0.4rem, 1vh, 0.8rem);
+    
     background: var(--ion-color-primary-contrast, #fff);
-    --top-zone-height: clamp(70px, 12vh, 120px);
-    --buttons-min-height: clamp(48px, 6vh, 96px);
-    --layout-gap: clamp(0.5rem, 1.5vh, 1rem);
+    height: calc(100vh - clamp(70px, 13vh, 115px));
+    width: 100vw;
+    padding: clamp(0.2rem, 0.7vh, 0.45rem) clamp(0.2rem, 1vw, 0.7rem);
+
+    overflow: hidden !important;
+    /* Zone heights to control all the sections */
+    --target-total-height: clamp(10px, 1vh, 70px);
+    --min-top-zone-height:      clamp(5vw, 10vw, 140px);
+    --max-top-zone-height:      clamp(10vw, 20vw, 280px);
+    --buttons-min-height:   clamp(38px, 5vh, 60px);
+    --layout-gap:           clamp(0.3rem, 1vh, 0.7rem);
 }
 
-.base-game34-main-section {
-    flex: 1;
-    display: grid;
+
+/* Objective box at the top */
+.base-game34-objective {
+    border-radius: 16px;
+    padding: 5px 10px;
+    background: var(--bubble-selected-bg);
+
+    margin-left: auto;
+    margin-right: auto;
+
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
     align-items: center;
-    justify-items: center;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 320px;
+    min-height: var(--target-total-height);
+    text-align: center;
+}
+.base-game34-objective-value {
+    color: var(--ion-primary-color);
+    font-size: 1.4rem;
+    margin-left: 6px;
+}
+
+
+
+/* Container for the top zone */
+
+
+.base-game34-top-zone {
+    display: flex;
+    flex: 0 1 auto; 
+    margin-bottom: clamp(0.2rem, 0.7vh, 0.45rem);
+    overflow: hidden !important;
+}
+
+
+/* Main section where the bowls are placed */
+.base-game34-main-section {
+    flex: 1 1 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     grid-auto-rows: 1fr;
-    height: 100%;
     min-height: 0;
-    gap: clamp(0.6rem, 2vw, 1.5rem);
-    padding: clamp(0.25rem, 1vw, 1rem);
-    overflow: hidden;
-    max-height: calc(100% - var(--top-zone-height) - var(--layout-gap) - var(--buttons-min-height));
+    gap: clamp(0.4rem, 1vw, 1rem);
+    padding: 1.9em 0 1.9em 0; /* Padding superior e inferior base */
+    /* Si quieres mantener el padding lateral, usa: padding: 1.2em clamp(0.1rem, 0.5vw, 0.5rem); */
+    overflow: hidden !important;
+    max-height: 100%;
     align-content: stretch;
     place-items: center;
-    height: auto;
-    max-height: none;
 }
 
+/* Ajuste: solo la parte visual crece, pero el .container-total (número abajo) queda fuera del stretch */
+.base-game34-main-section .container-block {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    box-sizing: border-box;
+}
+
+.base-game34-main-section .container-visual,
+.base-game34-main-section .container-bg,
+.base-game34-main-section .container-zone {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    height: auto !important;
+    box-sizing: border-box;
+}
+
+.base-game34-main-section .container-content {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    box-sizing: border-box;
+}
+
+/* El número abajo (container-total) NO debe crecer, solo ocupar su espacio natural */
+.base-game34-main-section .container-total {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin-top: 0.3em !important;
+}
+
+/* Container for the control buttons at the bottom */
 .base-game34-buttons-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: clamp(0.8rem, 2.5vw, 2.5rem);
+    gap: clamp(0.5rem, 1.5vw, 1.2rem);
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
     padding: 0;
-    margin-top: auto;
     min-height: var(--buttons-min-height);
-    flex-wrap: wrap;
     position: static;
-    z-index: auto;
 }
 
-.base-game34-buttons-container .game-control-button {
-    min-width: 48px !important;
-    min-height: 48px !important;
-    width: clamp(56px, 11vw, 150px) !important;
-    height: clamp(56px, 11vw, 150px) !important;
-    flex-shrink: 0;
+
+
+/* Evitar overflow horizontal en todo el layout */
+html, body, #root, .base-game34-container {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
 }
 
-.base-game34-buttons-container .game-control-button .game-control-button-image {
-    width: 68%;
-    height: auto;
-}
 
-.base-game34-buttons-container .game-control-button .game-control-button-text {
-    font-size: clamp(0.7rem, 1.7vw, 1rem);
-    line-height: 1.1;
-    text-align: center;
-    white-space: normal;
-    word-break: break-word;
-}
 
-/* ...existing responsive media queries with base-game34- prefix... */
-@media (max-width: 1024px) and (orientation: portrait) {
+/* 
+@media (max-width: 600px), (max-height: 600px) {
     .base-game34-container {
-        --top-zone-height: clamp(64px, 11vh, 110px);
-        --buttons-min-height: clamp(48px, 6vh, 94px);
-        gap: clamp(0.45rem, 1.4vh, 0.9rem);
-        padding: clamp(0.25rem, 0.9vh, 0.7rem);
-        padding-bottom: calc(var(--buttons-min-height) + clamp(8px, 1.8vh, 16px));
+        padding: clamp(0.1rem, 0.5vh, 0.2rem) clamp(0.1rem, 0.5vw, 0.2rem);
+        gap: clamp(0.15rem, 0.5vh, 0.3rem);
+        --target-total-height: clamp(36px, 5vh, 48px);
+        --top-zone-height: clamp(36px, 6vh, 52px);
+        --buttons-min-height: clamp(28px, 4vh, 44px);
+        overflow: hidden !important;
+    }
+    .base-game34-objective {
+        font-size: 1rem;
+        padding: 6px 10px;
+        min-height: var(--target-total-height);
+        max-width: 220px;
+    }
+    .base-game34-objective-value {
+        font-size: 1.1rem;
+        margin-left: 4px;
     }
     .base-game34-main-section {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        grid-template-rows: auto auto;
-        max-height: calc(100% - var(--top-zone-height) - var(--buttons-min-height) - var(--layout-gap));
-        gap: clamp(0.4rem, 1.6vh, 0.9rem);
-        padding: clamp(0.15rem, 0.9vh, 0.5rem);
-        overflow: auto;
-    }
-    .base-game34-buttons-container {
-        min-height: clamp(44px, 6vh, 90px);
-        gap: clamp(0.4rem, 1.8vw, 1.2rem);
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: clamp(0.2rem, 0.7vw, 0.5rem);
+        padding: clamp(0.05rem, 0.3vw, 0.2rem);
+        overflow: hidden !important;
     }
     .base-game34-buttons-container .game-control-button {
-        width: clamp(52px, 16vw, 120px) !important;
-        height: clamp(52px, 16vw, 120px) !important;
-    }
-}
-
-@media (max-width: 600px) and (orientation: portrait) {
-    .base-game34-container {
-        padding: clamp(0.2rem, 0.7vh, 0.45rem);
-        gap: clamp(0.25rem, 0.8vh, 0.5rem);
-        --top-zone-height: clamp(44px, 7.5vh, 76px);
-        --buttons-min-height: clamp(40px, 5vh, 80px);
-        padding-bottom: calc(var(--buttons-min-height) + clamp(8px, 2vh, 18px));
-    }
-    .base-game34-main-section {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(3, auto);
-        gap: clamp(0.3rem, 1.1vh, 0.6rem);
-        padding: clamp(0.15rem, 0.6vh, 0.35rem);
-        max-height: calc(100% - var(--top-zone-height) - var(--buttons-min-height) - var(--layout-gap));
-        overflow: auto;
-    }
-    .base-game34-buttons-container {
-        min-height: var(--buttons-min-height);
-        gap: clamp(0.3rem, 1.2vw, 0.8rem);
-    }
-    .base-game34-buttons-container .game-control-button {
-        width: clamp(50px, 20vw, 104px) !important;
-        height: clamp(50px, 20vw, 104px) !important;
-    }
-}
-
-@media (orientation: landscape) and (max-height: 600px) {
-    .base-game34-container {
-        --top-zone-height: clamp(48px, 10vh, 78px);
-        --buttons-min-height: clamp(42px, 5vh, 84px);
-        gap: clamp(0.3rem, 1.1vh, 0.6rem);
-        padding: clamp(0.15rem, 0.7vh, 0.45rem);
-        padding-bottom: calc(var(--buttons-min-height) + clamp(6px, 1.6vh, 14px));
-    }
-    .base-game34-main-section {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        max-height: calc(100% - var(--top-zone-height) - var(--buttons-min-height) - var(--layout-gap));
-        gap: clamp(0.3rem, 1.2vw, 0.8rem);
-        padding: clamp(0.15rem, 0.8vh, 0.45rem);
-        overflow: auto;
-    }
-    .base-game34-buttons-container {
-        min-height: var(--buttons-min-height);
-        gap: clamp(0.35rem, 1.3vw, 0.9rem);
-    }
-    .base-game34-buttons-container .game-control-button {
-        width: clamp(50px, 14vh, 110px) !important;
-        height: clamp(50px, 14vh, 110px) !important;
+        width: clamp(32px, 13vw, 60px) !important;
+        height: clamp(32px, 13vw, 60px) !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
     }
     .base-game34-buttons-container .game-control-button .game-control-button-text {
-        font-size: clamp(0.64rem, 1.9vh, 0.9rem);
+        font-size: clamp(0.6rem, 1vw, 0.8rem);
+    }
+    .base-game34-top-zone {
+        flex: 0 1 auto; 
+        min-height: var(--target-total-height);
+        max-height: var(--top-zone-height, 52px);
+        overflow: hidden !important;
     }
 }
+*/

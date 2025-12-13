@@ -13,10 +13,10 @@
     --border-radius: 7px;
 
     margin: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    min-width: 0;
-    min-height: 0;
+    width: 120px !important;
+    height: 120px !important;
+    min-width: 60px;
+    min-height: 60px;
     border: 3px solid #000;
     border-radius: 7px;
     outline: none;
@@ -91,11 +91,18 @@
     margin: 0;
     padding: 0;
     line-height: 1.1;
+    max-width: 100%;
+    display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
     flex-shrink: 0;
+}
+
+.game-control-button-text:has(+ .game-control-button-image),
+.game-control-button-text.too-long {
+    display: none !important;
 }
 
 .game-control-button-image {
@@ -130,4 +137,38 @@
 .game-control-button:disabled:focus {
     transform: none;
     filter: none;
+}
+
+.base-game34-buttons-container .game-control-button {
+    min-width: 60px !important;
+    min-height: 60px !important;
+    width: clamp(70px, 14vw, 130px) !important;
+    height: clamp(70px, 14vw, 130px) !important;
+    font-size: 1.1rem;
+}
+
+.base-game34-buttons-container .game-control-button .game-control-button-image {
+    width: 60%;
+    height: auto;
+}
+
+.base-game34-buttons-container .game-control-button .game-control-button-text {
+    font-size: clamp(0.65rem, 1.2vw, 0.95rem);
+    line-height: 1.1;
+    text-align: center;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Responsive: aún más compacto en móviles */
+@media (max-width: 600px), (max-height: 600px) {
+    .base-game34-buttons-container .game-control-button {
+        width: clamp(48px, 18vw, 90px) !important;
+        height: clamp(48px, 18vw, 90px) !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+    }
+    .base-game34-buttons-container .game-control-button .game-control-button-text {
+        font-size: clamp(0.6rem, 1vw, 0.8rem);
+    }
 }

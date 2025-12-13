@@ -99,8 +99,9 @@ const DraggableNumber: React.FC<DraggableNumberProps> = ({
             role={isDisabled ? undefined : 'button'}
             aria-disabled={isDisabled}
         >
-            {/* Usamos Bubble para la apariencia, pasándole flags relevantes */}
+            {/* We use the bubble from game one to maintain consistent appearance */}
             <Bubble
+                className="draggable-number-bubble"
                 value={number}
                 usePictogram={false}
                 isSelected={false}

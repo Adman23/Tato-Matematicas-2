@@ -121,7 +121,12 @@
     height: auto;
 }
 
-/* Small-screen adjustments remain neutral */
-@media (max-width: 768px) {
-    .draggable-number { }
+/* Additional class for the bubble to control the size */
+.draggable-number-bubble {
+    width: clamp(48px, 7vw, 110px);
+    height: clamp(48px, 7vw, 110px);
+}
+
+.draggable-number .nm-number-value {
+    font-size: clamp(1vw, 3vw, 5vw);
 }
