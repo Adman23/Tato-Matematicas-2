@@ -101,7 +101,7 @@ async def get_student(student_id: str):
     Get all configuration and related information of a specific student.
 
     This endpoint returns the complete data of a student, including their
-    basic info (id, username, photo, group) and related data from other
+    basic info (id, username, photo, group, password type and password length) and related data from other
     tables such as `user_profiles`, `reinforcement_messages`, and 
     `game_configurations`.
 
@@ -122,6 +122,7 @@ async def get_student(student_id: str):
             - photo_url (str): Public photo URL (or default avatar if missing).
             - group_id (str | None): ID of the group the student belongs to.
             - password_type (str): Type of password for the student.
+            - password_length (int): Length of the password.
             - role (str): Always "student".
             - user_profile (dict): One-to-one relation data from `user_profiles`.
             - game_configuration (dict): One-to-one relation data from `game_configurations`.
@@ -142,6 +143,7 @@ async def get_student(student_id: str):
                         photo_url,
                         group_id,
                         password_type,
+                        password_length,
                         user_profiles!user_id(
                             id,
                         ),
@@ -177,6 +179,7 @@ async def get_student(student_id: str):
                                 .get_public_url(resp.data[0].get("photo_url")) or DEFAULT_AVATAR,
                 "group_id": resp.data[0].get("group_id"),
                 "password_type": resp.data[0].get("password_type"),
+                "password_length": resp.data[0].get("password_length"),
                 "role": "student",
                 "user_profile": resp.data[0].get("user_profiles")[0] ,
                 "game_configuration": resp.data[0].get("game_configurations")[0] ,

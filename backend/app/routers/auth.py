@@ -40,6 +40,8 @@ async def register( data: RegisterRequest,
             - username (str): Username of the new user (should be unique).
             - password (str): Password.
             - role (str): "teacher" "student" "admin" -> Last one should be rare.
+            - photo_url (str): URL of the student's photo (if any).
+            - password_length (int): Length of the password.
 
     Raises:
         HTTPException: Username exists or error while creating the user(`400 BAD REQUEST`).
@@ -66,6 +68,7 @@ async def register( data: RegisterRequest,
                 "role": data.role,
                 "photo_url": data.photo_url,
                 "password_type": password_type,
+                "password_length": data.password_length,
                 # Add other user metadata for public.users tuple
             }
         })
@@ -76,7 +79,8 @@ async def register( data: RegisterRequest,
             username=data.username,
             role=data.role,
             photo_url=supabase_admin.storage.from_("user_photo").get_public_url(data.photo_url) or None,
-            password_type=password_type
+            password_type=password_type,
+            password_length=data.password_length
         )
 
     except HTTPException:
@@ -224,6 +228,7 @@ async def login(data: LoginRequest):
                 "photo_url": supabase_admin.storage.from_("user_photo")\
                                 .get_public_url(response_user_public.data[0].get("photo_url")) or None,
                 "password_type": response_user_public.data[0].get("password_type"),
+                "password_length": response_user_public.data[0].get("password_length"),
                 "notes": response_user_profile.data[0].get("notes"),
                 "text_preferences": response_user_profile.data[0].get("text_preferences"),
                 "audio_preferences": response_user_profile.data[0].get("audio_preferences"),
@@ -243,6 +248,7 @@ async def login(data: LoginRequest):
                 "role": response_user_public.data[0]["role"],
                 "photo_url": response_user_public.data[0].get("photo_url"),
                 "password_type": response_user_public.data[0].get("password_type"),
+                "password_length": response_user_public.data[0].get("password_length"),
             }
             return AuthResponse(
                 access_token=auth_response.session.access_token,
@@ -484,11 +490,12 @@ async def get_students_by_group(group_id: int):
             - username (str): Username extracted from the email.
             - photo_url (str): URL of the student's photo (if any).
             - password_type (str): Type of password (graphical, PIN or alphanumeric) used by the student.
+            - password_length (int): Length of the password.
     """
     try:
         # Get students from public.users (id and photo_url)
         resp = supabase_admin.table("users") \
-                            .select("id, photo_url") \
+                            .select("id, photo_url, password_type, password_length") \
                             .eq("group_id", group_id) \
                             .eq("role", "student") \
                             .execute()
@@ -556,7 +563,8 @@ async def get_students_by_group(group_id: int):
                 "id": user_id,
                 "username": username,
                 "photo_url": photo_url,
-                "password_type": user_data.get("password_type")
+                "password_type": user_data.get("password_type"),
+                "password_length": user_data.get("password_length")
             })
 
         return students
@@ -624,6 +632,7 @@ async def login_student(data: StudentLoginRequest):
                 "role": "student",
                 "photo_url": response_user.data[0].get("photo_url"),
                 "password_type": response_user.data[0].get("password_type"),
+                "password_length": response_user.data[0].get("password_length"),
                 "notes": response_profile.data[0].get("notes"),
                 "text_preferences": response_profile.data[0].get("text_preferences"),
                 "audio_preferences": response_profile.data[0].get("audio_preferences"),
@@ -643,6 +652,7 @@ async def login_student(data: StudentLoginRequest):
                 "role": "student",
                 "photo_url": response_user.data[0].get("photo_url"),
                 "password_type": response_user.data[0].get("password_type"),
+                "password_length": response_user.data[0].get("password_length"),
             }
             return StudentAuthResponse(
                 access_token=auth_response.session.access_token,

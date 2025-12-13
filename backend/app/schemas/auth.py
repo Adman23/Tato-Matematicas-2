@@ -21,6 +21,7 @@ class RegisterRequest(BaseModel):
     password: str
     role: str = "student"  # Default is student
     photo_url: str | None = None  # Optional photo URL, it has to be uploaded previously to a storage
+    password_length: int  # Length of the password
 
     class Config:
         json_schema_extra = {
@@ -28,7 +29,8 @@ class RegisterRequest(BaseModel):
                 "username": "username",
                 "password": "password123", 
                 "role": "tutor",
-                "photo_url": "https://example.com/photo.jpg"
+                "photo_url": "https://example.com/photo.jpg",
+                "password_length": 4
             }
         }
 
@@ -64,6 +66,7 @@ class User(BaseModel):
     role: str
     photo_url: str | None = None
     password_type: str | None = None
+    password_length: int | None = None
 
     class Config:
         from_attributes = True
@@ -122,7 +125,8 @@ class StudentBasicInfo(BaseModel):
     id: str
     username: str
     photo_url: str | None = None
-    password_type: str | None = None
+    password_type: str
+    password_length: int
 
     class Config:
         from_attributes = True
@@ -174,4 +178,5 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
     photo_url: Optional[str] = None
     password_type: Optional[str] = None
+    password_length: Optional[int] = None
     # user_profile: dict | None = None (Para este caso específico no lo usaremos, pero puede estar)
