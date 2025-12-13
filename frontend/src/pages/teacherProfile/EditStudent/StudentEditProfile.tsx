@@ -52,7 +52,7 @@ const MIN_USERNAME_LENGTH = 3;                // mínimo de longitud para el nom
 
 const MIN_GRAPHICAL_PASSWORD_LENGTH = 3;      // mínimo de longitud para contraseña gráfica
 const MAX_GRAPHICAL_PASSWORD_LENGTH = 5;      // máximo de longitud para contraseña gráfica
-const MIN_PIN_PASSWORD_LENGTH = 6;            // mínimo de longitud para PIN
+const MIN_PIN_PASSWORD_LENGTH = 4;            // mínimo de longitud para PIN
 const MAX_PIN_PASSWORD_LENGTH = 8;            // máximo de longitud para PIN
 const MIN_ALPHANUMERIC_PASSWORD_LENGTH = 6;   // mínimo de longitud para contraseña alfanumérica
 const MAX_ALPHANUMERIC_PASSWORD_LENGTH = 20;  // máximo de longitud para contraseña alfanumérica
@@ -176,6 +176,15 @@ export default function StudentEditProfile() {
   const handleHome = () => {
     router.push(`/student-edit-menu/${id}/${name}`);
   }
+
+
+  // Normaliza el PIN para enviarlo a Supabase, 
+  // de forma que se asegure que Supabase recibe al menos 6 caracteres que es el mínimo permitido
+  const normalizePinForSupabase = (pinPassword: string) => {
+
+    return pinPassword.split('').join('-');  // ejemplo: '1234' -> '1-2-3-4'
+
+  };
 
 
   // Cargamos los datos actuales del estudiante
@@ -511,7 +520,11 @@ export default function StudentEditProfile() {
       if (isUserNameChanged) payload.username = userName;
       if (photoUrl) payload.photo_url = photoUrl;
       if (isPasswordChanged) {
-        payload.password = Array.isArray(newPassword) ? newPassword.join('-') : newPassword;
+        if (passwordType === 'pin') {
+          payload.password = normalizePinForSupabase(newPassword as string);
+        } else {
+          payload.password = Array.isArray(newPassword) ? newPassword.join('-') : newPassword;
+        }
         payload.password_type = passwordType;
         payload.password_length = Array.isArray(newPassword)
           ? newPassword.length

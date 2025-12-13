@@ -63,6 +63,15 @@ export default function StudentLoginUnified() {
   
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
+
+
+  // Normaliza el PIN para enviarlo a Supabase
+  const normalizePinForSupabase = (pinPassword: string) => {
+
+    return pinPassword.split('').join('-');  // ejemplo: '1234' -> '1-2-3-4'
+
+  };
+  
    
   const getLayoutConfig = () => {
     const w = window.innerWidth;
@@ -262,14 +271,10 @@ export default function StudentLoginUnified() {
       if (passwordType === 'alphanumeric') {
           password = typedPassword;
       } else if (passwordType === 'pin') {
-          password = selectedKeys.filter(p => p !== '').join('');
+          password = normalizePinForSupabase(selectedKeys.filter(p => p !== '').join(''));
       } else {  // passwordType === 'graphical'
           password = selectedKeys.filter(p => p !== '').join('-');
       }
-      console.log('Enviando login:', {
-        username: selectedStudent?.username,
-        password
-      });
       await login({
           group_id: String(selectedGroup.id),
           username: selectedStudent.username,
