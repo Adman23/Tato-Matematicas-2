@@ -132,7 +132,8 @@ export default function EditGame1() {
                 setQuantity(data.settings?.options_count || 9);
                 setNumberRange(data.number_range || '0-10');
 
-                if (user?.role !== 'teacher' && data.number_range === '0-10') {
+                // Si es estudiante, rango 0-10 Y el tutor fue quien modificó, bloquear
+                if (user?.role !== 'teacher' && data.number_range === '0-10' && data.last_modified_by === 'teacher') {
                     setIsRangeLockedForStudent(true);
                 }
             }
@@ -157,13 +158,14 @@ export default function EditGame1() {
             // CORRECCIÓN: Definir el ID objetivo
             const targetUserId = id || user?.id;
 
-            if (!targetUserId) return;
+            if (!targetUserId || !user) return;
 
             const config: GameConfig = {
                 game_id: 0,
                 game_key: 'touch_number',
                 user_id: targetUserId, // Usamos targetUserId
                 number_range: numberRange,
+                last_modified_by: user.role === 'teacher' ? 'teacher' : 'student',
                 settings: {
                     voice,
                     options_count: quantity
