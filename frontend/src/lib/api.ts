@@ -692,6 +692,7 @@ export interface GameConfig {
   game_key: string;
   user_id: string;
   number_range: string;
+  last_modified_by?: 'teacher' | 'student';
   settings: {
     options_count?: number;
     voice?: 'woman' | 'man';
