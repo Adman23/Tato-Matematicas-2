@@ -1,7 +1,15 @@
+/* =============================================================================
+   CSS Styles for Exit Screen Component
+   ========================================================================== */
+
+
+/* ========================================
+    Layout general
+   ======================================== */
 .game-header-exit-overlay {
     position: fixed;
     inset: 0;
-    background: #fff;
+    background: var(--ion-color-primary-contrast);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10,7 +18,7 @@
 }
 
 .game-header-exit-card {
-    background: #fff;
+    background: var(--ion-color-primary-contrast);
     width: 100%;
     height: 100%;
     padding: 3rem;
@@ -28,8 +36,14 @@
     margin: 0 0 0.75rem 0;
     font-size: 4rem;
     color: black;
+    font-family: var(--tatomaths-font);
+    font-weight: var(--tatomaths-weight);
 }
 
+
+/* ========================================
+    Buttons
+   ======================================== */
 .game-header-exit-actions {
     display: flex;
     flex-direction: row;
@@ -44,6 +58,10 @@
     height: 180px;
 }
 
+
+/* ========================================
+    Responsive Adjustments
+   ======================================== */
 @media (max-height: 720px) {
 
     .exit-btn {

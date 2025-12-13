@@ -29,18 +29,14 @@ import imgSonido from '/assets/pictograms/escucha.png';
 import imgJuego from '/assets/juegosImg/juegoX.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
 import imgPista from '/assets/juegosImg/lupa.png';
-
-
-// Flecha desde assets
-const imgFlecha = '/assets/juegosImg/flecha.png';
+import imgFlecha from '/assets/juegosImg/flecha.png';
 
 import BubblesZone from './BubblesZone';
 import audioManager from '../../../lib/AudioManager';
 import ResultsScreen from '../components/ResultsScreen';
 import { GameControlButton } from '../../global_components/GameControlButton';
 import LoadingSpinner from '../../global_components/LoadingSpinner';
-
-// (Now using NumberPictogram component which resolves pictogram path for 0-10)
+import { getAudioPreferences, type AudioPreferences } from '../../../lib/api';
 
 const TOTAL_ROUNDS = 5;
 
@@ -88,6 +84,7 @@ const Game1: React.FC = () => {
     const [loadingMessages, setLoadingMessages] = useState(true);
     const [config, setConfig] = useState<GameConfig | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
+    const [audioPreferences, setAudioPreferences] = useState<AudioPreferences | undefined>();
 
     // Game states
     const [currentRound, setCurrentRound] = useState(1);
@@ -107,7 +104,6 @@ const Game1: React.FC = () => {
     const [Messages, setMessages] = useState<StudentMessage[]>([]);
 
     // UI states
-    const [showFeedback, setShowFeedback] = useState(false);
     const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
     const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
     const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
@@ -130,6 +126,24 @@ const Game1: React.FC = () => {
     const [totalErrorsMade, setTotalErrorsMade] = useState(0);
     const [roundTimes, setRoundTimes] = useState<number[]>([]); // Tiempos por ronda
 
+    // Accessibility announcement state
+    const [liveAnnouncement, setLiveAnnouncement] = useState<string>('');
+
+    /**
+     * Function to make accessible announcements using aria-live.
+     * Waits for the current announcement to finish before announcing the change.
+     * 
+     * @param message - Message to announce
+     */
+    const announce = (message: string) => {
+        // Clear first to force re-announcement if it's the same message
+        setLiveAnnouncement('');
+        // Small delay to ensure screen reader detects the change for accessibility announcements (aria-live)
+        setTimeout(() => {
+            setLiveAnnouncement(message);
+        }, 100);
+    };
+
 
     // Determine if pictograms should be used (only for range 0-10)
     const usePictograms = config?.number_range === '0-10';
@@ -143,7 +157,6 @@ const Game1: React.FC = () => {
 
         setGameFinished(false);
         setCurrentRound(1);
-        setShowFeedback(false);
         setSessionId(null);
         setSelectedNumber(null);
         setUsedNumbers([]);
@@ -211,12 +224,22 @@ const Game1: React.FC = () => {
                 ...data,
                 number_range: data.number_range || '0-10',
                 settings: {
-                    options_count: data.settings?.options_count || 6,
+                    options_count: data.settings?.options_count || 9,
                     voice: data.settings?.voice || 'woman'
                 }
             };
 
             setConfig(validatedConfig);
+
+            // Load audio preferences
+            try {
+                const audioPrefs = await getAudioPreferences(currentUser.id);
+                setAudioPreferences(audioPrefs);
+            } catch (err) {
+                console.error('Error loading audio preferences:', err);
+                // Use defaults if error
+            }
+
             setLoadingGame(false);
         } catch (error) {
             console.error('Error loading game config:', error);
@@ -228,7 +251,7 @@ const Game1: React.FC = () => {
                 user_id: currentUser?.id || '',
                 number_range: '0-10',
                 settings: {
-                    options_count: 6,
+                    options_count: 9,
                     voice: 'woman'
                 }
             };
@@ -370,13 +393,15 @@ const Game1: React.FC = () => {
         setUsedNumbers(prev => [...prev, roundNumber]);
         setAvailableNumbers(poolNumbers);
         console.log('Generated round', currentRound, 'with numbers:', poolNumbers);
-        setShowFeedback(false);
         setRoundStartTime(Date.now());
         setAttemptsCount(0);
         setHintsUsed([]);
         setHintsCount(0);
         setSelectedNumber(null);
         setListeningAudio(false);
+
+        // Announce new round for screen readers
+        announce(`Ronda ${currentRound} de ${TOTAL_ROUNDS}. Escucha el número y selecciona la opción correcta.`);
     };
 
 
@@ -386,7 +411,7 @@ const Game1: React.FC = () => {
      * Marks an incorrect option as a hint for the student.
      *
      * Execution flow.
-     * - If `showFeedback` is active or there is no current number, does nothing.
+     * - If `showFeedbackScreen` is active or there is no current number, does nothing.
      * - Searches for an available incorrect option that has not been marked and adds it to `hintsUsed`.
      *
      * @returns void
@@ -394,8 +419,8 @@ const Game1: React.FC = () => {
      * useHint();
      */
     const useHint = () => {
-        // No hints when feedback is shown
-        if (showFeedback) return;
+        // No hints when feedback screen is shown
+        if (showFeedbackScreen) return;
 
         // Do not allow hints if there is no current number
         if (currentNumber === null) return;
@@ -421,6 +446,10 @@ const Game1: React.FC = () => {
         setHintsCount(prev => prev + 1);
         setTotalHintsUsed(prev => prev + 1);
         console.log(`Pista usada: se ha deshabilitado el número ${hintNumber}`);
+
+        // Anunciar pista para lectores de pantalla
+        const remainingHints = availableIncorrectNumbers.length;
+        announce(`Pista usada. Se ha eliminado una opción incorrecta. ${remainingHints > 0 ? `Quedan ${remainingHints} pistas disponibles.` : 'No quedan más pistas.'}`);
     };
 
     /**
@@ -451,6 +480,13 @@ const Game1: React.FC = () => {
         // Store if answer is correct and show feedback screen
         setIsCorrectAnswer(correct);
         setShowFeedbackScreen(true);
+
+        // Anunciar resultado para lectores de pantalla
+        if (correct) {
+            announce(`¡Correcto! Has seleccionado el número ${selectedNumber}.`);
+        } else {
+            announce(`Incorrecto. Has seleccionado el número ${selectedNumber}.`);
+        }
 
         // Save in the backend
         if (sessionId && correct) {
@@ -488,11 +524,13 @@ const Game1: React.FC = () => {
      */
     const repeatExercise = () => {
         setAttemptsCount(prev => prev + 1);
-        setShowFeedback(false);
         setShowFeedbackScreen(false);
         setHintsUsed([]);
         setRoundStartTime(Date.now());
         setSelectedNumber(null);
+
+        // Anunciar repetición para lectores de pantalla
+        announce(`Intentando de nuevo. Ronda ${currentRound} de ${TOTAL_ROUNDS}.`);
     }
 
     /**
@@ -578,6 +616,9 @@ const Game1: React.FC = () => {
         }
 
         setGameFinished(true);
+
+        // Anunciar fin del juego para lectores de pantalla
+        announce(`¡Juego completado! Has acertado ${totalNumbersCorrect} de ${TOTAL_ROUNDS} rondas.`);
     };
 
 
@@ -687,7 +728,7 @@ const Game1: React.FC = () => {
             return files;
         };
 
-        // Play files sequentially using AudioManager
+        // Play files sequentially using AudioManager with medium volume (essential for gameplay)
         const playFilesSequentially = async (files: string[]) => {
             if (!files || files.length === 0) return;
 
@@ -696,7 +737,11 @@ const Game1: React.FC = () => {
             try {
                 const base = useWomanVoice ? '/assets/sounds/woman/' : '/assets/sounds/man/';
                 const paths = files.map(f => `${base}${f}`);
-                await audioManager.playSequential(paths);
+                // Always use medium volume (1) for number pronunciation, regardless of user preferences
+                // This is essential for gameplay in the "Asociar Números" game
+                await audioManager.playSequentialWithVolume(paths, 1);
+                // Anunciar después de reproducir el audio para no solaparse
+                announce('Número reproducido. Selecciona tu respuesta.');
             } finally {
                 setListeningAudio(false);
             }
@@ -807,6 +852,7 @@ const Game1: React.FC = () => {
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}
                 onRepeat={repeatExercise}
+                audioPreferences={audioPreferences}
             />
         );
     }
@@ -814,6 +860,26 @@ const Game1: React.FC = () => {
     return (
         <IonPage>
             <IonContent className="game1-content">
+                {/* Aria live region for accessibility announcements */}
+                <div
+                    aria-live="polite"
+                    aria-atomic="true"
+                    className="sr-only"
+                    style={{
+                        position: 'absolute',
+                        width: '1px',
+                        height: '1px',
+                        padding: 0,
+                        margin: '-1px',
+                        overflow: 'hidden',
+                        clip: 'rect(0, 0, 0, 0)',
+                        whiteSpace: 'nowrap',
+                        border: 0
+                    }}
+                >
+                    {liveAnnouncement}
+                </div>
+
                 {gameFinished ? (
                     <ResultsScreen
                         totalRounds={TOTAL_ROUNDS}
@@ -827,6 +893,7 @@ const Game1: React.FC = () => {
                         headerPictogramArrow={imgFlecha}
                         headerPictogram2={imgJuego}
                         elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
+                        audioPreferences={audioPreferences}
                     />
                 ) : showExitConfirm ? (
                     <ExitScreen
@@ -857,7 +924,7 @@ const Game1: React.FC = () => {
                                 availableNumbers={availableNumbers}
                                 selectedNumber={selectedNumber}
                                 setSelectedNumber={setSelectedNumber}
-                                showFeedback={showFeedback}
+                                showFeedback={showFeedbackScreen}
                                 currentNumber={currentNumber}
                                 usePictograms={usePictograms}
                                 hintsUsed={hintsUsed}
@@ -868,59 +935,67 @@ const Game1: React.FC = () => {
                             <div className="game1-buttons-container">
                                 {/* Listen button */}
                                 <GameControlButton
+                                    aria-label="Escuchar número"
                                     disabled={listeningAudio}
                                     onClick={() => speakNumber(currentNumber)}
                                 >
                                     <img
                                         src={imgSonido}
-                                        alt="Escuchar"
+                                        alt=""
+                                        aria-hidden="true"
                                         className="game-control-button-image"
                                     />
-                                    <span className="game-control-button-text">
+                                    <span className="game-control-button-text" aria-hidden="true">
                                         ESCUCHAR
                                     </span>
                                 </GameControlButton>
 
                                 {/* Video button - always visible on the left */}
                                 <GameControlButton
+                                    aria-label="Ver tutorial en video"
                                     onClick={openVideoModal}
                                 >
                                     <img
                                         src={imgInstrucciones}
-                                        alt="Video de ayuda"
+                                        alt=""
+                                        aria-hidden="true"
                                         className="game-control-button-image"
                                     />
-                                    <span className="game-control-button-text">
-                                        INSTRUCCIONES
+                                    <span className="game-control-button-text" aria-hidden="true">
+                                        TUTORIAL
                                     </span>
                                 </GameControlButton>
 
                                 {/* Hint button */}
                                 <GameControlButton
+                                    aria-label="Usar pista"
                                     onClick={useHint}
                                     disabled={hintsUsed.length >= availableNumbers.length - 1}
                                 >
                                     <img
                                         src={imgPista}
-                                        alt="Pista"
+                                        alt=""
+                                        aria-hidden="true"
                                         className="game-control-button-image"
                                     />
-                                    <span className="game-control-button-text">
+                                    <span className="game-control-button-text" aria-hidden="true">
                                         PISTA
                                     </span>
                                 </GameControlButton>
 
                                 {/* Accept/Check button */}
                                 <GameControlButton
+                                    aria-label="Comprobar respuesta"
                                     onClick={checkAnswer}
                                     disabled={selectedNumber === null}
                                 >
                                     <img
                                         src={imgAceptar}
-                                        alt="Comprobar"
+                                        alt=""
+                                        aria-hidden="true"
                                         className="game-control-button-image"
                                     />
-                                    <span className="game-control-button-text">
+                                    <span className="game-control-button-text" aria-hidden="true">
                                         ACEPTAR
                                     </span>
                                 </GameControlButton>
@@ -935,7 +1010,10 @@ const Game1: React.FC = () => {
                 {showVideoModal && (
                     <div className="game1-video-modal-overlay" onClick={closeVideoModal}>
                         <div className="game1-video-modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="game1-video-close-button" onClick={closeVideoModal}>
+                            <button
+                                className="game1-video-close-button"
+                                onClick={closeVideoModal}
+                                aria-label="Cerrar video tutorial">
                                 ✕
                             </button>
                             <video

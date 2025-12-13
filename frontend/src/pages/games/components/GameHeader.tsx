@@ -12,7 +12,7 @@
  *
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { IonIcon, IonText } from '@ionic/react';
 import './GameHeader.css';
 import { Button3Dtext } from '../../global_components/PushableButtons';
@@ -29,6 +29,8 @@ import { arrowBack } from 'ionicons/icons';
  * @property {number} currentRound - Número de ronda actual (1-based, ej: 1, 2, 3...)
  * @property {number} totalRounds - Total de rondas del juego (ej: 5 para "1/5")
  * @property {() => void} [onBackClick] - Callback al pulsar el botón de volver atrás
+ * @property {() => void} [onBackHover] - Callback al mantener hover sobre el botón de volver atrás
+ * @property {boolean} [enableHoverMode] - Si true, requiere 800ms de hover antes de activar
  */
 interface GameHeaderProps {
   title: string;
@@ -38,6 +40,8 @@ interface GameHeaderProps {
   currentRound: number;
   totalRounds: number;
   onBackClick?: () => void;
+  onBackHover?: () => void;
+  enableHoverMode?: boolean;
 }
 
 /**
@@ -66,14 +70,49 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   pictogram2,
   currentRound,
   totalRounds,
-  onBackClick
+  onBackClick,
+  onBackHover,
+  enableHoverMode = false
 }) => {
+  const hoverTimerRef = useRef<number | null>(null);
+
+  const handleHoverAction = () => {
+    if (!enableHoverMode || !onBackHover) return;
+
+    // Limpiar timer anterior si existe
+    if (hoverTimerRef.current) {
+      window.clearTimeout(hoverTimerRef.current);
+    }
+
+    // Crear nuevo timer con delay de 800ms
+    hoverTimerRef.current = window.setTimeout(() => {
+      onBackHover();
+      hoverTimerRef.current = null;
+    }, 800);
+  };
+
+  const clearHoverTimer = () => {
+    if (hoverTimerRef.current) {
+      window.clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  };
+
+  const handleClick = () => {
+    // En modo hover, ignorar clicks
+    if (enableHoverMode) return;
+    onBackClick?.();
+  };
 
   return (
     <>
       <div className="game-header-component">
         <Button3Dtext
-          onClick={onBackClick}
+          onClick={handleClick}
+          onMouseEnter={handleHoverAction}
+          onMouseLeave={clearHoverTimer}
+          onFocus={enableHoverMode ? handleHoverAction : undefined}
+          onBlur={enableHoverMode ? clearHoverTimer : undefined}
           aria-label="Salir del juego">
           <IonIcon icon={arrowBack} />
         </Button3Dtext>

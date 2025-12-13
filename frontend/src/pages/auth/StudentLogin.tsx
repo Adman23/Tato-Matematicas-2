@@ -17,6 +17,10 @@ import { Button3Dtext } from '../global_components/PushableButtons';
 
 import './StudentLogin.css';
 
+/**
+ * Pictogramas disponibles para la autenticación visual de estudiantes.
+ * @constant
+ */
 const PICTOGRAMS = [
   { id: 'perro', name: 'Perro', image: '/assets/pictograms/perro.png' },
   { id: 'gato', name: 'Gato', image: '/assets/pictograms/gato.png' },
@@ -29,9 +33,34 @@ const PICTOGRAMS = [
   { id: 'caballo', name: 'Caballo', image: '/assets/pictograms/caballo.png' },
 ];
 
+/**
+ * Tipo de elemento que puede aparecer en la grid (grupo o usuario).
+ * @typedef GridItem
+ */
 type GridItem = Group | User;
+
+/**
+ * Fases del proceso de inicio de sesión del estudiante.
+ * @typedef LoginPhase
+ */
 type LoginPhase = 'GROUPS' | 'STUDENTS' | 'PASSWORD';
 
+/**
+ * Componente de inicio de sesión unificado para estudiantes.
+ * 
+ * @remarks
+ * Implementa un flujo de 3 fases:
+ * 1. GROUPS - Selección del grupo del estudiante
+ * 2. STUDENTS - Selección del estudiante dentro del grupo
+ * 3. PASSWORD - Autenticación mediante pictogramas visuales
+ * 
+ * @component
+ * 
+ * @example
+ * ```tsx
+ * <StudentLoginUnified />
+ * ```
+ */
 export default function StudentLoginUnified() {
   const router = useIonRouter();
   const { login } = useAuth(); 

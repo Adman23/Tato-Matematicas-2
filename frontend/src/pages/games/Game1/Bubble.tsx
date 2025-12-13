@@ -78,27 +78,20 @@ const Bubble: React.FC<Props> = ({
 
     return (
         <div className="nm-number-wrapper">
-            <div
+            <button
+                type="button"
                 className={classes}
                 onClick={handleClick}
-                role="button"
-                aria-pressed={isSelected}
+                aria-label={`Número ${value}${isSelected ? ', seleccionado' : ', no seleccionado'}`}
                 aria-disabled={disabled || isHinted}
-                tabIndex={disabled || isHinted ? -1 : 0}
-                onKeyDown={(e) => {
-                    if (disabled || isHinted) return;
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        handleClick();
-                        e.preventDefault();
-                    }
-                }}
+                disabled={disabled || isHinted}
             >
                 {pictogramSrc ? (
-                    <img src={pictogramSrc} alt={`Pictograma número ${value}`} className="nm-pictogram-image" />
+                    <img src={pictogramSrc} alt="" aria-hidden="true" className="nm-pictogram-image" />
                 ) : (
-                    <span className="nm-number-value">{value}</span>
+                    <span className="nm-number-value" aria-hidden="true">{value}</span>
                 )}
-            </div>
+            </button>
         </div>
     );
 };

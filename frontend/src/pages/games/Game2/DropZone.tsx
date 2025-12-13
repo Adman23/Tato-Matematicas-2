@@ -1,23 +1,54 @@
 /**
- * DropZone - Zona donde el usuario ordena los números
- * -----------------------------------------------------
- * Componente contenedor que renderiza todos los slots (DroppableSlot) donde
- * el usuario debe colocar los números en el orden correcto.
+ * DropZone - Order Sequence Drop Area Component (Game 2)
  *
- * Utiliza:
- * - **DroppableSlot** para cada posición individual
- * - **Array.from** para crear slots con posiciones fijas
- * - **Set<number>** para identificar índices bloqueados (números de ayuda)
+ * Container component that renders all slots (DroppableSlot) where the user must
+ * place numbers in the correct order. This is the main drop target area for the
+ * Order Sequence game.
  *
- * Responsabilidades:
- * - Renderizar el número correcto de slots según la configuración
- * - Calcular feedback (correcto/incorrecto) para cada slot
- * - Pasar props adecuadas a cada DroppableSlot (número, locked, feedback)
- * - Mantener posiciones fijas para evitar reordenamiento visual
+ * Functional Summary:
+ * - Renders a fixed number of droppable slots based on game configuration
+ * - Calculates visual feedback (correct/incorrect) for each occupied slot
+ * - Manages locked slots (pre-placed helper numbers)
+ * - Supports multiple interaction modes: drag & drop, click, hover
+ * - Maintains fixed slot positions to prevent visual reordering
  *
- * Estilos aplicados (Game2.css):
- * - `.drop-zone-section-v2`: Contenedor principal
- * - `.drop-zone-v2`: Zona con display flex, gap, padding y sombra
+ * Key Features:
+ * - **Fixed Positions**: Uses Array.from to create stable slot array
+ * - **Locked Indices**: Tracks pre-placed helper numbers (Set<number>)
+ * - **Dynamic Feedback**: Compares placed numbers with correct order
+ * - **Drop Target**: Identifies first empty slot for drag operations
+ * - **Accessibility**: Supports keyboard navigation and multiple input methods
+ *
+ * Interaction Modes:
+ * 1. **Drag & Drop**: Traditional drag and drop (default)
+ * 2. **Click Placement**: Click number then click slot
+ * 3. **Hover Placement**: Hover over slot to place number
+ *
+ * CSS Classes Applied (Game2.css):
+ * - `.drop-zone-section-v2`: Main container section
+ * - `.drop-zone-v2`: Drop zone with flex layout, gap, padding, and shadow
+ *
+ * @returns {JSX.Element} Drop zone with array of droppable slots
+ *
+ * @example
+ * // Basic usage with 5 slots, some numbers placed
+ * <DropZone
+ *   numbers={[3, undefined, 7, 1, undefined]}
+ *   correctOrder={[1, 3, 5, 7, 9]}
+ *   showFeedback={false}
+ *   totalSlots={5}
+ *   usePictogram={false}
+ *   lockedIndices={new Set([2])}  // index 2 is locked
+ * />
+ *
+ * @example
+ * // With feedback enabled after checking
+ * <DropZone
+ *   numbers={[1, 3, 5, 7, 9]}
+ *   correctOrder={[1, 3, 5, 7, 9]}
+ *   showFeedback={true}
+ *   totalSlots={5}
+ * />
  */
 
 import React from 'react';
@@ -48,43 +79,57 @@ interface DropZoneProps {
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent, targetIndex: number) => void;
   feedbackType?: 'correct' | 'incorrect' | null;
+  onSlotClick?: (targetIndex: number) => void;
+  onSlotKeyDown?: (e: React.KeyboardEvent, targetIndex: number) => void;
+  enableClickPlacement?: boolean;
+  onSlotHover?: (targetIndex: number) => void;
+  enableHoverPlacement?: boolean;
 }
 
 /**
- * Componente DropZone - Contenedor de slots para ordenamiento de números.
+ * Functional Summary:
+ * DropZone component - Container for number ordering slots.
  *
- * Flujo de renderizado:
- * 1. Crea array de `totalSlots` elementos con Array.from
- * 2. Para cada índice:
- *    - Obtiene el número en esa posición (numbers[index])
- *    - Verifica si es un índice bloqueado (ayuda pre-colocada)
- *    - Calcula feedback si `showFeedback = true`:
- *      - isCorrect: número coincide con correctOrder[index]
- *      - isIncorrect: número no coincide con correctOrder[index]
- * 3. Renderiza DroppableSlot con todas las props calculadas
+ * Execution Flow:
+ * 1. Calculates first empty slot index (firstEmptyIndex) for drop target
+ * 2. Creates array of `totalSlots` elements using Array.from for fixed positions
+ * 3. For each slot index:
+ *    a. Retrieves number at that position (numbers[index])
+ *    b. Checks if index is locked (pre-placed helper number)
+ *    c. Calculates feedback if `showFeedback = true`:
+ *       - isCorrect: number matches correctOrder[index]
+ *       - isIncorrect: number doesn't match correctOrder[index]
+ *    d. Determines if this slot is the drop target (first empty slot)
+ * 4. Renders DroppableSlot with all calculated props
+ * 5. Returns container div with all slots in fixed positions
  *
- * Lógica de feedback:
- * - Solo se aplica cuando `showFeedback = true` (después de check)
- * - Solo para slots con número (no undefined)
- * - Compara `numbers[index]` con `correctOrder[index]`
+ * Feedback Logic:
+ * - Only applied when `showFeedback = true` (after user checks answer)
+ * - Only for occupied slots (number !== undefined)
+ * - Compares `numbers[index]` with `correctOrder[index]`
+ * - Visual indicators: green checkmark (correct), red X (incorrect)
  *
- * @param props - Propiedades del componente (ver DropZoneProps)
- * @returns Zona de ordenamiento con todos los slots
+ * Drop Target Logic:
+ * - First empty slot (undefined) receives `isDropTarget = true`
+ * - Enables visual highlighting for drag operations
+ * - Prevents dropping in non-target slots
+ *
+ * @param {DropZoneProps} props - Component properties (see DropZoneProps interface)
+ * @returns {JSX.Element} Ordering zone with all droppable slots
  *
  * @example
- * // Zona de 5 slots, números [3, undefined, 7, 1, undefined]
- * // Orden correcto [1, 3, 5, 7, 9], sin feedback
+ * // Zone with 5 slots, partially filled
  * <DropZone
  *   numbers={[3, undefined, 7, 1, undefined]}
  *   correctOrder={[1, 3, 5, 7, 9]}
  *   showFeedback={false}
  *   totalSlots={5}
  *   usePictogram={false}
- *   lockedIndices={new Set([2])}  // índice 2 bloqueado
+ *   lockedIndices={new Set([2])}  // index 2 locked
  * />
  *
  * @example
- * // Zona con feedback activo mostrando correcto/incorrecto
+ * // Zone with feedback showing correct/incorrect
  * <DropZone
  *   numbers={[1, 3, 5, 7, 9]}
  *   correctOrder={[1, 3, 5, 7, 9]}
@@ -101,7 +146,12 @@ const DropZone: React.FC<DropZoneProps> = ({
   lockedIndices = new Set(),
   onDragOver,
   onDrop,
-  feedbackType = null
+  feedbackType = null,
+  onSlotClick,
+  onSlotKeyDown,
+  enableClickPlacement = false,
+  onSlotHover,
+  enableHoverPlacement = false
 }) => {
   // Calcular el primer índice vacío UNA SOLA VEZ, fuera del loop
   const firstEmptyIndex = numbers.findIndex(n => n === undefined);
@@ -138,6 +188,11 @@ const DropZone: React.FC<DropZoneProps> = ({
         onDragOver={onDragOver}
         onDrop={onDrop}
         feedbackType={feedbackType}
+        onClickSlot={onSlotClick}
+        onKeyDownSlot={onSlotKeyDown}
+        enableClickPlacement={enableClickPlacement}
+        onHoverSlot={onSlotHover}
+        enableHoverPlacement={enableHoverPlacement}
       />
     );
   });

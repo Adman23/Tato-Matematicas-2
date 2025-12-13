@@ -635,14 +635,50 @@ export async function getImages(): Promise<Record<string, string>> {
   return response.data;
 }
 
+/**
+ * @brief envía a la base de datos los nuevos colores 
+ * @param user_id id del usuario configurado
+ * @param palette paleta de colores a guardar
+ */
 export async function saveColorPalette (user_id: string, palette: any): Promise<void>  {
 
   await api.post(`/user/${user_id}/update_color_preferences`, palette);
 }
 
+/**
+ * @brief obtiene los colores empleados por un usuario
+ * @param userId el usuario que se consulta
+ * @returns una paleta de colores
+ */
 export async function getColorPreferences(userId: string) {
 
   const res = await api.get(`/user/${userId}/color_preferences`);
+  return res.data;
+}
+
+/**
+ * @brief envía a la base de datos la nueva fuente
+ * @param user_id id del usuario configurado
+ * @param text_configuration fuente y peso del texto, a guardar
+ */
+export async function saveFont (user_id: string, text_configuration: any): Promise<void>  {
+
+  await api.post(`/user/${user_id}/update_text_preferences`, text_configuration);
+}
+
+// === AUDIO PREFERENCES ===
+
+export interface AudioPreferences {
+  theme: 'classic' | 'digital' | 'zen' | 'juego';
+  volume: 'silencio' | 'bajito' | 'medio' | 'alto';
+}
+
+export async function saveAudioPreferences(user_id: string, preferences: AudioPreferences): Promise<void> {
+  await api.post(`/user/${user_id}/update_audio_preferences`, preferences);
+}
+
+export async function getAudioPreferences(userId: string): Promise<AudioPreferences> {
+  const res = await api.get(`/user/${userId}/audio_preferences`);
   return res.data;
 }
 
@@ -661,6 +697,7 @@ export interface GameConfig {
     voice?: 'woman' | 'man';
     quantity?: number;
     order?: 'ascending' | 'descending';
+    accessibility_mode?: string;
   };
 }
 

@@ -2,7 +2,7 @@
  * @file EditMenu.tsx
  * @description Dashboard / main menu for the edit section for teachers.
  * Provides quick links to edit colors, texts,
- * game configurations, and sounds for one particular student. 
+ * game configurations, and sounds for one particular student.
  * Protects the view by checking authentication context.
  */
 
@@ -51,7 +51,7 @@ export default function EditMenu() {
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
 
-    
+
     // Show spinner while loading
     /*if (loading) {
         return (
@@ -69,12 +69,12 @@ export default function EditMenu() {
     }
 
     const handleHome = () => {
-        router.push('/teacher/profile',"back","replace");
+        router.push('/teacher/profile', "back", "replace");
     }
 
     return (
         <IonPage>
-            <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} onHome={handleHome}/>
+            <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} onHome={handleHome} />
             <IonContent className="ion-padding">
                 <div className="studentEditProfile-dashboard-outer-container">
                     <IonCard className="studentEditProfile-dashboard-card">
@@ -112,7 +112,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => ""}
+                                    onClick={() => router.push(`/student-edit-text/${id}/${name}`)}
                                 >
                                     Texto
                                 </IonButton>
@@ -121,7 +121,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push(`/student-edit-game1/${id}/${name}`)}
                                 >
                                     Juego 1
                                 </IonButton>
@@ -130,7 +130,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push(`/student-edit-game2/${id}/${name}`)}
                                 >
                                     Juego 2
                                 </IonButton>
@@ -139,9 +139,9 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push(`/student-edit-game34/3-4/${id}/${name}`)}
                                 >
-                                    Juego 3
+                                    Juego 3 y 4
                                 </IonButton>
 
                                 <IonButton

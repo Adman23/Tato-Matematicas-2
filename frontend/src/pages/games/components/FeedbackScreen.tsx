@@ -40,7 +40,7 @@
  * />
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
     IonContent,
     IonPage
@@ -51,6 +51,7 @@ import './FeedbackScreen.css';
 import GameHeader from './GameHeader';
 import ExitScreen from './ExitScreen';
 import audioManager from '../../../lib/AudioManager';
+import type { AudioPreferences } from '../../../lib/api';
 
 import imgSiguienteDefault from '/assets/juegosImg/siguiente.png';
 import imgRepetirDefault from '/assets/juegosImg/volver.png';
@@ -58,6 +59,7 @@ import imgTatoFelizDefault from '/assets/Tato/TatoFeliz.png';
 import imgTatoTristeDefault from '/assets/Tato/TatoTriste.png';
 import type { StudentMessage } from '../../../lib/api';
 import { GameControlButton } from '../../global_components/GameControlButton';
+import { Button3Dtext } from '../../global_components/PushableButtons';
 
 
 /**
@@ -78,6 +80,7 @@ import { GameControlButton } from '../../global_components/GameControlButton';
  * @param onNext - Callback called when the "Next" button is pressed.
  * @param onHomeClick - Callback called when the home button is pressed.
  * @param onRepeat - Optional callback to repeat the hint when the answer is incorrect.
+ * @param enableHoverMode - If true, hovering over buttons triggers the same actions (accessibility).
  *
  * @returns `FeedbackScreenProps` type used by the component.
  */
@@ -98,6 +101,8 @@ interface FeedbackScreenProps {
     onHomeClick: () => void;
     onRepeat?: () => void;
     hideNextOnError?: boolean; // Si es true, oculta el botón "Siguiente" cuando hay error
+    audioPreferences?: AudioPreferences; // Preferencias de audio del usuario
+    enableHoverMode?: boolean;
 }
 
 /**
@@ -125,10 +130,40 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
     onNext,
     onHomeClick,
     onRepeat,
-    hideNextOnError = false
+    hideNextOnError = false,
+    audioPreferences,
+    enableHoverMode = false
 }) => {
     // Estado para mostrar la pantalla de confirmación de salida
     const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const hoverTimer = useRef<number | null>(null);
+    const HOVER_DELAY = 800;
+
+    const handleKeyActivate = (e: React.KeyboardEvent, action: () => void) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            action();
+        }
+    };
+
+    const triggerHover = (action?: () => void) => {
+        if (!enableHoverMode || !action) return;
+        if (hoverTimer.current) {
+            window.clearTimeout(hoverTimer.current);
+        }
+        hoverTimer.current = window.setTimeout(() => {
+            hoverTimer.current = null;
+            action();
+        }, HOVER_DELAY);
+    };
+
+    useEffect(() => {
+        return () => {
+            if (hoverTimer.current) {
+                window.clearTimeout(hoverTimer.current);
+            }
+        };
+    }, []);
 
 
     /**
@@ -256,12 +291,34 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
         }
     };
 
-    // Play selected message sound (if present) or fallback to default correct/incorrect sound
+    // Play themed sound based on user preferences
     useEffect(() => {
-        const soundPath = selectedMessage && selectedMessage.sound_url
-            ? "/assets/sounds/" + selectedMessage.sound_url
-            : (isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3');
+        let soundPath: string;
 
+        if (audioPreferences?.theme) {
+            // Use themed sound based on user preferences
+            const soundType = isCorrect ? 'correct' : 'incorrect';
+            soundPath = `/assets/sounds/${soundType}_${audioPreferences.theme}.mp3`;
+        } else {
+            // Fallback to default sounds
+            soundPath = isCorrect ? '/assets/sounds/correct.mp3' : '/assets/sounds/incorrect.mp3';
+        }
+
+        // Apply volume from preferences
+        const getVolumeLevel = (volume: string) => {
+            switch (volume) {
+                case 'silencio': return 0;
+                case 'bajito': return 0.3;
+                case 'medio': return 0.6;
+                case 'alto': return 1.0;
+                default: return 0.6;
+            }
+        };
+
+        const volumeLevel = audioPreferences?.volume ? getVolumeLevel(audioPreferences.volume) : 0.6;
+
+        // Set volume and play
+        audioManager.setVolume(volumeLevel);
         void audioManager.play(soundPath);
 
         return () => {
@@ -269,7 +326,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                 audioManager.stop();
             } catch (e) { /* ignore */ }
         };
-    }, [selectedMessage?.sound_url, isCorrect]);
+    }, [isCorrect, audioPreferences]);
 
     // Si se muestra la confirmación de salida, renderizar ExitScreen
     if (showExitConfirm) {
@@ -277,6 +334,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
             <ExitScreen
                 confirmExit={onHomeClick}
                 cancelExit={() => setShowExitConfirm(false)}
+                enableHoverMode={enableHoverMode}
             />
         );
     }
@@ -293,6 +351,7 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     currentRound={currentRound}
                     totalRounds={totalRounds}
                     onBackClick={() => setShowExitConfirm(true)}
+                    onBackHover={enableHoverMode ? () => triggerHover(() => setShowExitConfirm(true)) : undefined}
                 />
 
                 {/* Feedback screen */}
@@ -315,34 +374,56 @@ const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
                     {/* Buttons */}
                     <div className="feedback-button-container">
                         {!isCorrect && onRepeat && (
-                            <GameControlButton
-                                onClick={onRepeat}
+                            <Button3Dtext
+                                aria-label="Repetir"
+                                className='exit-btn'
+                                onClick={enableHoverMode ? undefined : onRepeat}
+                                onMouseEnter={() => triggerHover(onRepeat)}
+                                onMouseLeave={() => {
+                                    if (hoverTimer.current) {
+                                        window.clearTimeout(hoverTimer.current);
+                                        hoverTimer.current = null;
+                                    }
+                                }}
+                                onKeyDown={(e) => handleKeyActivate(e, onRepeat)}
+                                tabIndex={0}
                             >
                                 <img
                                     src={imgRepetir}
-                                    alt="Repetir"
-                                    className="game-control-button-image"
                                 />
-                                <span className="game-control-button-text">
+                                <span className="game-control-button-text" aria-hidden="true">
                                     REPETIR
                                 </span>
-                            </GameControlButton>
+                            </Button3Dtext>
                         )}
 
                         {/* Mostrar botón "Siguiente" solo si: es correcto O (es incorrecto pero hideNextOnError es false) */}
                         {(isCorrect || !hideNextOnError) && (
-                            <GameControlButton
-                                onClick={() => { incrementMessageIndex(); onNext(); }}
+                            <Button3Dtext
+                                aria-label="Siguiente"
+                                className='exit-btn'
+                                onClick={
+                                    enableHoverMode
+                                        ? undefined
+                                        : () => { incrementMessageIndex(); onNext(); }
+                                }
+                                onMouseEnter={() => triggerHover(() => { incrementMessageIndex(); onNext(); })}
+                                onMouseLeave={() => {
+                                    if (hoverTimer.current) {
+                                        window.clearTimeout(hoverTimer.current);
+                                        hoverTimer.current = null;
+                                    }
+                                }}
+                                onKeyDown={(e) => handleKeyActivate(e, () => { incrementMessageIndex(); onNext(); })}
+                                tabIndex={0}
                             >
                                 <img
                                     src={imgSiguiente}
-                                    alt="Siguiente"
-                                    className="game-control-button-image"
                                 />
-                                <span className="game-control-button-text">
+                                <span className="game-control-button-text" aria-hidden="true">
                                     SIGUIENTE
                                 </span>
-                            </GameControlButton>
+                            </Button3Dtext>
                         )}
                     </div>
                 </div>

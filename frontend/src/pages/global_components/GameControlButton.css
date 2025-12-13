@@ -71,6 +71,7 @@
     border-radius: 7px;
 }
 
+
 .game-control-button-content {
     width: 100%;
     height: 100%;
@@ -84,7 +85,8 @@
 
 .game-control-button-text {
     font-size: clamp(0.7rem, 1.8vw, 1.1rem);
-    font-weight: 700;
+    font-weight: var(--tatomaths-weight);
+    font-family: var(--tatomaths-font);
     color: var(--tatomaths-text, #000);
     text-align: center;
     margin: 0;

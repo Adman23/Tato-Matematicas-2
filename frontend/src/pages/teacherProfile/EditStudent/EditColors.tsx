@@ -362,7 +362,7 @@ export default function EditColor() {
 
                     {showToast && (
                         <div className="SuccessEditColor" >
-                        Cambios guardados correctamente ✔️
+                        Cambios guardados correctamente 
                         </div>
                     )}
                 </IonContent>

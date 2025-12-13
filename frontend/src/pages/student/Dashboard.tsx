@@ -40,20 +40,20 @@ export default function StudentDashboard() {
   return (
     <IonPage>
 
-      
-      <SimpleHeaderUser title={"JUEGOS"} title_image='/assets/pictograms/juegos.png' 
-                        userName={user?.username || "username"} photoUrl={user?.photo_url} />
 
-      <IonContent className="student-dashboard-content">
+      <SimpleHeaderUser title={"JUEGOS"} title_image='/assets/pictograms/juegos.png'
+        userName={user?.username || "username"} photoUrl={user?.photo_url} />
+
+      <IonContent className="student-dashboard-content" fullscreen scrollY={false}>
         {loadingUser ? (
           // --- ESTADO DE CARGA ---
           // Usamos un div contenedor para centrar, no el IonContent directamente
-          <div 
-            style={{ 
-              height: '100%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center' 
+          <div
+            style={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             <IonSpinner name="crescent" />
@@ -63,7 +63,7 @@ export default function StudentDashboard() {
             <div className="games-container">
               <SimpleButton onClick={() => router.push('/game/game1')}>
                 <img src="/assets/juegosImg/juego1.png" alt="Juego 1" className="simple-button-image" />
-                <div className="simple-button-title">Toca el numero que suena</div>
+                <div className="simple-button-title">Toca el número que suena</div>
               </SimpleButton>
 
               <SimpleButton onClick={() => router.push('/game/game2')}>
