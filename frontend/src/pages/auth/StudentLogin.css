@@ -383,33 +383,6 @@
     height: 80%; 
     object-fit: contain; 
 }
-.st-slot-delete { 
-    position: absolute; 
-    top: -8px;
-    right: -8px;
-    width: 28px;
-    height: 28px;
-    background: #dc2626;
-    border: 3px solid white;
-    border-radius: 50%;
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    color: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    pointer-events: none;
-    z-index: 10;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.st-pass-slot.filled:hover .st-slot-delete {
-    transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6);
-}
-.st-slot-delete ion-icon {
-    font-size: 1.3rem;
-    width: 1.3rem;
-    height: 1.3rem;
-}
 
 /* --- NUEVO TOAST CENTRADO CON ANIMACIÓN SHAKE --- */
 .st-card-wrapper.pass-mode .st-error-toast,
@@ -646,11 +619,6 @@
     font-size: clamp(1.0rem, 3.5vh, 2.25rem);
   }
 
-  .st-slot-delete { 
-    width: clamp(1px, 7vh, 25px);
-    height: clamp(1px, 7vh, 25px);
-  }
-
 }
 
 @media (max-height: 850px) {
@@ -672,11 +640,6 @@
     width: clamp(10px, 7vh, 80px);
     height: clamp(10px, 7vh, 80px);
     font-size: clamp(1.0rem, 3.5vh, 2.25rem);
-  }
-
-  .st-slot-delete { 
-    width: clamp(1px, 7vh, 25px);
-    height: clamp(1px, 7vh, 25px);
   }
 
 }

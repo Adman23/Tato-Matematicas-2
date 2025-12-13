@@ -7,7 +7,7 @@ import {
   useIonRouter,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { arrowBack, arrowForward, person, close, eyeOutline, eyeOffOutline } from 'ionicons/icons';
+import { arrowBack, arrowForward, person, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { useState, useEffect, type KeyboardEvent } from 'react'; 
 import { authAPI } from '../../lib/api'; 
 import type { Group, User } from '../../lib/api';
@@ -573,12 +573,10 @@ export default function StudentLoginUnified() {
                                             passwordType === 'graphical' ? (
                                                 <>
                                                   <img src={graphical?.image} alt={graphical?.name} />
-                                                  <div className="st-slot-delete"><IonIcon icon={close} aria-hidden="true" /></div>
                                                 </>
                                             ) : (
                                                 <>
                                                   <span className="st-slot-key-label">{key}</span>
-                                                  <div className="st-slot-delete"><IonIcon icon={close} aria-hidden="true" /></div>
                                                 </>
                                             )
                                         ) : (
