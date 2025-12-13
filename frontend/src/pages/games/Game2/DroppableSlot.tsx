@@ -69,6 +69,11 @@ interface DroppableSlotProps {
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent, targetIndex: number) => void;
   feedbackType?: 'correct' | 'incorrect' | null;
+  onClickSlot?: (targetIndex: number) => void;
+  onKeyDownSlot?: (e: React.KeyboardEvent, targetIndex: number) => void;
+  enableClickPlacement?: boolean;
+  onHoverSlot?: (targetIndex: number) => void;
+  enableHoverPlacement?: boolean;
 }
 
 /**
@@ -132,7 +137,12 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
   isDropTarget = false,
   onDragOver,
   onDrop,
-  feedbackType = null
+  feedbackType = null,
+  onClickSlot,
+  onKeyDownSlot,
+  enableClickPlacement = false,
+  onHoverSlot,
+  enableHoverPlacement = false
 }) => {
   // Clase CSS del slot
   let slotClass = 'droppable-slot';
@@ -160,6 +170,22 @@ const DroppableSlot: React.FC<DroppableSlotProps> = ({
           onDrop?.(e, index);
         }
       }}
+      onClick={() => {
+        if (enableClickPlacement && isDropTarget) {
+          onClickSlot?.(index);
+        }
+      }}
+      onKeyDown={(e) => {
+        if (enableClickPlacement && isDropTarget) {
+          onKeyDownSlot?.(e, index);
+        }
+      }}
+      onMouseEnter={() => {
+        if (enableHoverPlacement && isDropTarget) {
+          onHoverSlot?.(index);
+        }
+      }}
+      tabIndex={enableClickPlacement && isDropTarget ? 0 : -1}
     >
       {number !== undefined ? (
         <div className={cardClass}>

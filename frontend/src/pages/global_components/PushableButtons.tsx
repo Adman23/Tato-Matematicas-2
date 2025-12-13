@@ -6,6 +6,7 @@ interface button3DtextProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   frontClassName?: string;
   children: React.ReactNode;
   color?: string;
+  pressed?: boolean; // Estado toggle para mantener presionado
   // 'disabled' y 'onClick' ya vienen incluidos en ButtonHTMLAttributes, no hace falta re-declararlos obligatoriamente,
   // pero podemos dejarlos si queremos tipado explícito o JSDoc específico.
 }
@@ -18,12 +19,14 @@ interface button3DtextProps extends React.ButtonHTMLAttributes<HTMLButtonElement
  * @param className if you need to add more css to the button container
  * @param frontClassName if you need to add classes specifically to the front face
  * @param color Background color for the 3D effect
+ * @param pressed If true, the button stays in pressed state (for toggle buttons)
  */
 export const Button3Dtext: React.FC<button3DtextProps> = ({ 
   children, 
   className = '', 
   frontClassName = '',
   color = 'var(--bubble-bg)',
+  pressed = false,
   ...props // 2. Capturamos el resto de props (incluyendo aria-label, disabled, onClick)
 }) => {
 
@@ -154,6 +157,31 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
           transform: translateY(2px);
           filter: blur(2px);
         }
+
+        /* Estado pressed para botones toggle */
+        .pushable-button.pressed .front {
+          transform: translateY(-2px) !important;
+          filter: none !important;
+        }
+
+        .pushable-button.pressed .shadow {
+          transform: translateY(2px) !important;
+          filter: blur(2px) !important;
+        }
+
+        .pushable-button.pressed .edge {
+          filter: brightness(0.85);
+        }
+
+        .pushable-button.pressed:hover .front {
+          transform: translateY(-2px) !important;
+          filter: none !important;
+        }
+
+        .pushable-button.pressed:hover .shadow {
+          transform: translateY(2px) !important;
+          filter: blur(2px) !important;
+        }
         
         .pushable-button:focus:not(:focus-visible) {
           outline: none;
@@ -161,7 +189,7 @@ export const Button3Dtext: React.FC<button3DtextProps> = ({
       `}</style>
 
       <button 
-        className={`pushable-button ${className}`} 
+        className={`pushable-button ${pressed ? 'pressed' : ''} ${className}`} 
         type="button"
         {...props} // 3. IMPORTANTE: Aquí pasamos aria-label, disabled, onClick, etc. al elemento DOM real
       >

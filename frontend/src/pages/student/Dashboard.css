@@ -5,24 +5,28 @@
 /* Main container for student dashboard */
 .student-dashboard-content {
     --background: var(--ion-color-primary-contrast);
-    height: 100%;
+    min-height: 100vh;
     overflow: hidden !important;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 0;
 }
 
 /* Games container - Responsive grid with adaptive values */
 .games-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: clamp(0.5rem, 2vw, 1.5rem);
-    width: min(90vw, 800px);
-    max-width: 90vw;
-    margin: clamp(1rem, 4vh, 3rem) auto;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    width: min(90vw, 820px);
+    max-width: 100%;
+    margin: 0 auto;
     background: transparent;
-    padding: clamp(0.5rem, 2vw, 1rem);
+    padding: clamp(0.75rem, 2vw, 1.25rem);
     align-items: stretch;
+    justify-items: stretch;
+    box-sizing: border-box;
 }
 
 
@@ -35,6 +39,12 @@
     position: relative;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 3vw, 2rem);
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .dashboard-section::before {
@@ -76,7 +86,7 @@
     .games-container {
         gap: 0.75rem;
         padding: 0.75rem;
-        width: 90vw;
+        width: 92vw;
         margin: 1rem auto;
     }
 }

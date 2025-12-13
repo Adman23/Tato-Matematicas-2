@@ -21,8 +21,42 @@ import HeaderTeacherItem from './components/HeaderTeacherItem';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
 
+/**
+ * Avatar por defecto cuando no se selecciona ninguna imagen.
+ * @constant
+ */
 const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
+/**
+ * Componente de edición de perfil de profesor.
+ * 
+ * @remarks
+ * Permite a los profesores editar su propio perfil o a los administradores editar
+ * el perfil de cualquier profesor.
+ * 
+ * Funcionalidades:
+ * - Edición de nombre de usuario
+ * - Cambio de contraseña (opcional)
+ * - Cambio de avatar
+ * - Validación de contraseñas coincidentes
+ * - Toggle de visibilidad de contraseña
+ * - Cierre de sesión al cambiar contraseña propia
+ * 
+ * Modos de operación:
+ * - Profesor editando su propio perfil (sin userId en URL)
+ * - Admin editando perfil de profesor (con userId en URL)
+ * 
+ * @component
+ * 
+ * @example
+ * ```tsx
+ * // Profesor editando su propio perfil
+ * <TeacherEditProfile />
+ * 
+ * // Admin editando perfil de profesor específico
+ * <Route path="/teacher/edit/:userId" component={TeacherEditProfile} />
+ * ```
+ */
 export default function TeacherEditProfile() {
   const router = useIonRouter();
   const { userId } = useParams<{ userId?: string }>();
