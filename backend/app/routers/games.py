@@ -75,6 +75,7 @@ async def get_game_config(student_id: str, game_key: str):
                 game_key=game_key,
                 user_id=student_id,
                 number_range=config.get("number_range", "0-10"),
+                last_modified_by=config.get("last_modified_by"),
                 settings=config.get("settings", {})
             )
 
@@ -111,6 +112,7 @@ async def get_game_config(student_id: str, game_key: str):
             game_key=game_key,
             user_id=student_id,
             number_range="0-10",
+            last_modified_by='teacher',
             settings=default_settings
         )
 
@@ -171,6 +173,7 @@ async def update_game_config(user_id: str, game_key: str, config_data: Dict[str,
             "user_id": user_id,
             "game_id": game_id,
             "number_range": config_data.get("number_range", "0-10"),
+            "last_modified_by": config_data.get("last_modified_by", "teacher"),
             "settings": config_data.get("settings", {})
         }
 
@@ -206,6 +209,7 @@ async def update_game_config(user_id: str, game_key: str, config_data: Dict[str,
             game_key=game_key,
             user_id=user_id,
             number_range=config_update["number_range"],
+            last_modified_by=config_update.get("last_modified_by"),
             settings=config_update["settings"]
         )
 

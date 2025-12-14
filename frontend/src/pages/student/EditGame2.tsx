@@ -55,6 +55,7 @@ const RANGE_OPTIONS = [
  * Quantity options available for the game.
  * Allowed range: from 3 to 12 elements to order.
  * Note: quantity cannot exceed the number of available numbers in the selected range.
+ * For range 0-10, only quantities 3-10 are allowed (11 and 12 are disabled).
  */
 const QUANTITY_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -128,7 +129,8 @@ export default function EditGame2() {
     const [accessibilityMode, setAccessibilityMode] = useState<string>('drag_drop');
 
     // Estado para determinar si las opciones de rango y modo deben ocultarse para estudiantes
-    // Cuando el tutor establece el rango a '0-10', los estudiantes no pueden modificar rango ni modo
+    // NUNCA se bloquea - el alumno siempre puede editar desde su perfil
+    // Solo se bloquean las cantidades 11 y 12 cuando el rango es 0-10 (restricción lógica)
     const [isRangeAndModeLockedForStudent, setIsRangeAndModeLockedForStudent] = useState<boolean>(false);
 
   // Estados de modales
@@ -231,11 +233,11 @@ export default function EditGame2() {
    * 2. Determines target user ID (from URL for teachers, or current user for students)
    * 3. Calls the API to get the 'order_sequence' config for the target user
    * 4. Extracts values for order, quantity, range, and accessibility mode
-   * 5. If user is a student and range is '0-10', locks Range and Mode options
+   * 5. If student AND range 0-10 AND teacher was last modifier, lock range/mode
    * 6. Updates states and disables loading spinner
    *
    * Teacher behavior: Loads configuration for the student specified in URL params (id)
-   * Student behavior: Loads their own configuration, may have locked options if teacher set range to 0-10
+   * Student behavior: Loads own configuration, may be locked if teacher set 0-10
    *
    * @returns {Promise<void>} Promise that resolves when the configuration is loaded
    *
@@ -257,9 +259,8 @@ export default function EditGame2() {
             setNumberRange(data.number_range || '0-10');
             setAccessibilityMode(data.settings?.accessibility_mode || 'drag_drop');
 
-            // Si el usuario es un estudiante y el rango es '0-10', bloquear las opciones de rango y modo
-            // Esto significa que el tutor ha configurado el rango a 0-10 y el estudiante no puede cambiarlo
-            if (user?.role !== 'teacher' && data.number_range === '0-10') {
+            // Si es estudiante, rango 0-10 Y el tutor fue quien modificó, bloquear
+            if (user?.role !== 'teacher' && data.number_range === '0-10' && data.last_modified_by === 'teacher') {
                 setIsRangeAndModeLockedForStudent(true);
             }
 
@@ -315,14 +316,12 @@ export default function EditGame2() {
    * 1. Validates the configuration with `validateInputs()`
    * 2. Returns early if validation fails
    * 3. Determines target user ID (from URL for teachers, or current user for students)
-   * 4. Constructs a GameConfig object with current order, quantity, range, and accessibility mode
+   * 4. Constructs a GameConfig object with last_modified_by set appropriately
    * 5. Sends the configuration to the backend via the API
-   * 6. Redirects based on user role:
-   *    - Teachers: back to student edit menu
-   *    - Students: back to their own profile
+   * 6. Redirects based on user role
    *
-   * Teacher behavior: Saves configuration for the student specified in URL params (id)
-   * Student behavior: Saves their own configuration
+   * Teacher behavior: Sets last_modified_by = 'teacher'
+   * Student behavior: Sets last_modified_by = 'student'
    *
    * @returns {Promise<void>} Promise that resolves when the configuration is saved
    *
@@ -346,6 +345,7 @@ export default function EditGame2() {
                 game_key: 'order_sequence',
                 user_id: targetUserId,
                 number_range: numberRange,
+                last_modified_by: user.role === 'teacher' ? 'teacher' : 'student',
                 settings: {
                     order,
                     quantity,

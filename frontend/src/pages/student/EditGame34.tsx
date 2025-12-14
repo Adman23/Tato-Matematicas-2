@@ -114,7 +114,8 @@ export default function EditGame34() {
                 setShowNumbers(settings.requires_operations ?? false);
                 setAccessibilityMode(settings.accessibility_mode || 'drag_click');
 
-                if (user?.role !== 'teacher' && data.number_range === '0-10') {
+                // Si es estudiante, rango 0-10 Y el tutor fue quien modificó, bloquear
+                if (user?.role !== 'teacher' && data.number_range === '0-10' && data.last_modified_by === 'teacher') {
                     setIsRangeLockedForStudent(true);
                 }
             }
