@@ -63,4 +63,5 @@
     height: 36px;
     --padding-start: 0;
     --padding-end: 0;
+    z-index: 100;
 }

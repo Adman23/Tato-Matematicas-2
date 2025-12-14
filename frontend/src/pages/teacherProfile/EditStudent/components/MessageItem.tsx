@@ -1,9 +1,10 @@
 import React from 'react';
 import { IonItem } from '@ionic/react';
 import './MessageItem.css';
+import type { StudentMessage } from '../../../../lib/api';
 
 interface Props {
-    message: string
+    message: StudentMessage
 }
 
 const StudentItem: React.FC<Props> = ({
@@ -13,7 +14,7 @@ const StudentItem: React.FC<Props> = ({
 
         <IonItem lines="none">
             <div className="message-item-content">
-                <div className="message-item-text">{message}</div>
+                <div className="message-item-text">{message.text_message}</div>
             </div>
         </IonItem>
     );
