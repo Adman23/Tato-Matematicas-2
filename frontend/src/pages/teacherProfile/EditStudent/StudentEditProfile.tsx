@@ -95,7 +95,7 @@ export default function StudentEditProfile() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pictoPickerRef = useRef<HTMLDivElement>(null);
-  const repeatPictoPickerRef = useRef<HTMLDivElement>(null);
+  /*const repeatPictoPickerRef = useRef<HTMLDivElement>(null);*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
   const avatarPickerRef = useRef<HTMLDivElement>(null);
   const formCardRef = useRef<HTMLDivElement>(null);
   
@@ -113,12 +113,12 @@ export default function StudentEditProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [newPassword, setNewPassword] = useState<string | string[]>('');
-  const [repeatNewPassword, setRepeatNewPassword] = useState<string | string[]>('');
+  /*const [repeatNewPassword, setRepeatNewPassword] = useState<string | string[]>('');*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showRepeatNewPassword, setShowRepeatNewPassword] = useState(false);
+  /*const [showRepeatNewPassword, setShowRepeatNewPassword] = useState(false);*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
-  const [isPasswordMatch, setIsPasswordMatch] = useState<boolean | null>(null);
+  /*const [isPasswordMatch, setIsPasswordMatch] = useState<boolean | null>(null);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   const isEmptyPassword = (val: string | string[]): boolean => {
     if (!val) return true;
@@ -129,7 +129,7 @@ export default function StudentEditProfile() {
 
   const [pictoModalState, setPictoModalState] = useState<{
     visible: boolean;
-    target: 'newGraphicalPassword' | 'repeatNewGraphicalPassword' | null;
+    target: 'newGraphicalPassword' | 'repeatNewGraphicalPassword' | null; // incluye 'repeatNewGraphicalPassword' por posible compatibilidad futura; actualmente la funcionalidad de repetición de contraseña está desactivada y comentada por si se necesitara en el futuro
   }>({ visible: false, target: null });
 
   const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -169,8 +169,8 @@ export default function StudentEditProfile() {
     studentUser &&
     (isUserNameChanged || isAvatarChanged || isPasswordChanged) &&
     isUserNameFilled &&
-    isAvatarSelected &&
-    (!isPasswordChanged ? true : !isEmptyPassword(repeatNewPassword));
+    isAvatarSelected; /*&&
+    (!isPasswordChanged ? true : !isEmptyPassword(repeatNewPassword));*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   const router = useIonRouter();
   const handleHome = () => {
@@ -225,13 +225,13 @@ export default function StudentEditProfile() {
 
         if (data.password_type === 'graphical') {
           setNewPassword([]);
-          setRepeatNewPassword([]);
+          /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
         } else {
           setNewPassword('');
-          setRepeatNewPassword('');
+          /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
         }
 
-        setIsPasswordMatch(null);
+        /*setIsPasswordMatch(null);*/   // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
       } catch (err) {
         console.error(err);
@@ -254,10 +254,10 @@ export default function StudentEditProfile() {
 
     if (passwordType === 'graphical') {
       setNewPassword([]);
-      setRepeatNewPassword([]);
+      /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     } else {
       setNewPassword('');
-      setRepeatNewPassword('');
+      /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     }
       
     setShowAvatarModal(false);
@@ -342,19 +342,19 @@ export default function StudentEditProfile() {
 
     if (passwordType === 'graphical') {
       setNewPassword([]);
-      setRepeatNewPassword([]);
+      /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     } else {
       setNewPassword('');
-      setRepeatNewPassword('');
+      /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     }
 
-    setIsPasswordMatch(null);
+    /*setIsPasswordMatch(null);*/   // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   }, [passwordType]);
 
 
   // Actualizamos el estado de repetición de contraseña
-  useEffect(() => {
+  /*useEffect(() => {
 
     if (isEmptyPassword(newPassword) || isEmptyPassword(repeatNewPassword)) {
       setIsPasswordMatch(null);
@@ -365,7 +365,7 @@ export default function StudentEditProfile() {
     let normalizedRepeatNewPassword = Array.isArray(repeatNewPassword) ? repeatNewPassword.join('-') : repeatNewPassword;
     setIsPasswordMatch(normalizeNewPassword === normalizedRepeatNewPassword);
 
-  }, [newPassword, repeatNewPassword]);
+  }, [newPassword, repeatNewPassword]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
 
   // Validación completa para cada tipo de contraseña
@@ -478,8 +478,8 @@ export default function StudentEditProfile() {
     (
       !isPasswordChanged ||
       (
-        validatePassword(newPassword, passwordType).length === 0 &&
-        isPasswordMatch !== false
+        validatePassword(newPassword, passwordType).length === 0 /*&&
+        isPasswordMatch !== false*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
       )
     );
 
@@ -509,8 +509,8 @@ export default function StudentEditProfile() {
     }
 
     // Verificación de coincidencia de nueva contraseña con su repetición
-    if ((isPasswordChanged) && (isPasswordMatch === false))
-      errors.push('La contraseña repetida no coincide con la nueva que has introducido.');
+    /*if ((isPasswordChanged) && (isPasswordMatch === false))
+      errors.push('La contraseña repetida no coincide con la nueva que has introducido.');*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
     if (errors.length > 0) {
       setToastMessage(errors.join('\n'));
@@ -588,10 +588,10 @@ export default function StudentEditProfile() {
 
     if (passwordType === 'graphical') {
       setNewPassword([]);
-      setRepeatNewPassword([]);
+      /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     } else {
       setNewPassword('');
-      setRepeatNewPassword('');
+      /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     }
       
     history.goBack();
@@ -623,18 +623,19 @@ export default function StudentEditProfile() {
       setNewPassword(newGraphicalPassword);
       if (newGraphicalPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH) 
         closePictoModal();
-    } else {
+    } /*else {
       const repeatNewGraphicalPassword = [...(repeatNewPassword as string[]), id];
       setRepeatNewPassword(repeatNewGraphicalPassword);
       if (repeatNewGraphicalPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH) 
         closePictoModal();
-    }
+    }*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
   };
 
 
   const handleAddPictogram = (target: 'newGraphicalPassword' | 'repeatNewGraphicalPassword') => {
     if (passwordType !== 'graphical') return;
-    const current = target === 'newGraphicalPassword' ? newPassword : repeatNewPassword;
+    const current = newPassword;
+    /*const current = target === 'newGraphicalPassword' ? newPassword : repeatNewPassword;*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     const length = Array.isArray(current) ? current.length : 0;   // comprobamos si es array o no por seguridad (queremos asegurarnos de nuevo que es array, es decir, que estamos ante una contraseña gráfica)
     if (length < MAX_GRAPHICAL_PASSWORD_LENGTH) {
       openPictoModal(target);
@@ -651,11 +652,11 @@ export default function StudentEditProfile() {
       setNewPassword(current =>
         Array.isArray(current) ? current.filter((_, i) => i !== index) : current  // comprobamos si es array o no por seguridad (queremos asegurarnos de nuevo que es array, es decir, que estamos ante una contraseña gráfica)
       );
-    } else {
+    } /*else {
       setRepeatNewPassword(current =>
         Array.isArray(current) ? current.filter((_, i) => i !== index) : current  // comprobamos si es array o no por seguridad (queremos asegurarnos de nuevo que es array, es decir, que estamos ante una contraseña gráfica)
       );
-    }
+    }*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
   };
 
 
@@ -712,7 +713,8 @@ export default function StudentEditProfile() {
 
   const updatePictoModalPosition = useCallback(() => {
     if (!pictoModalState.visible) return;
-    const targetRef = pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef.current : repeatPictoPickerRef.current;
+    const targetRef = pictoPickerRef.current;
+    /*const targetRef = pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef.current : repeatPictoPickerRef.current;*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     if (!targetRef || !formCardRef.current) return;
     const cardRect = formCardRef.current.getBoundingClientRect();
     const modalWidth = 300;
@@ -979,7 +981,8 @@ export default function StudentEditProfile() {
                         ))}
                       </ul>
                     </div>
-
+                    
+                    {/*
                     <div className="studentEditProfile-field-wrapper">
                       <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
                       <div className="studentEditProfile-input-with-icon">
@@ -1006,6 +1009,7 @@ export default function StudentEditProfile() {
                         />
                       </div>
                     </div>
+                    */} {/* Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro */}
                   </>
                 )}
 
@@ -1037,7 +1041,8 @@ export default function StudentEditProfile() {
                         ))}
                       </ul>
                     </div>
-
+                    
+                    {/*
                     <div className="studentEditProfile-field-wrapper">
                       <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
                       <div className="studentEditProfile-pictogram-container">
@@ -1058,6 +1063,7 @@ export default function StudentEditProfile() {
                         </div>
                       </div>
                     </div>
+                    */} {/* Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro */}
                   </>
                 )}
 
@@ -1115,7 +1121,8 @@ export default function StudentEditProfile() {
       {pictoModalState.visible && createPortal(
         <div className="studentEditProfile-picto-picker-overlay" onClick={closePictoModal}>
           <div
-            ref={pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef : repeatPictoPickerRef}
+            ref={pictoPickerRef}
+            /*ref={pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef : repeatPictoPickerRef}*/ //Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
             className={`studentEditProfile-picto-picker-custom ${
               pictoModalState.visible ? 'studentEditProfile-picto-picker-visible' : ''
             }`}
