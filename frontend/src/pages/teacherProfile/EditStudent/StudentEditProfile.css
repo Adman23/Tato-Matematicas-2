@@ -111,6 +111,10 @@
   gap: 0.6rem;
 }
 
+.studentEditProfile-avatar-section .studentEditProfile-field-label {
+  text-align: center;
+}
+
 .studentEditProfile-avatar-preview {
   width: 6rem;
   height: 6rem;
@@ -184,30 +188,6 @@
 .required-star {
   font-weight: bold;
   color: var(--ion-color-danger);
-}
-
-.studentEditProfile-avatar-select-field {
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 100px;
-  padding: 0.5rem 1rem;
-  width: 100%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 45px;
-  box-sizing: border-box;
-  font-size: 1rem;
-  color: #333;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: background-color 0.2s;
-}
-
-.studentEditProfile-avatar-select-field:hover {
-  background: rgba(255, 255, 255, 0.75);
 }
 
 .studentEditProfile-input-item {
@@ -426,16 +406,18 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1001;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .studentEditProfile-avatar-picker {
   background: white;
-  border-radius: 24px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -456,17 +438,19 @@
    ========================================================================== */
 
 .studentEditProfile-picto-picker-header {
-  padding: 16px;
+  padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #eee;
+  flex-shrink: 0;
 }
 
 .studentEditProfile-picto-picker-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: #333;
+  font-weight: 600;
 }
 
 .studentEditProfile-picto-grid {
@@ -485,18 +469,28 @@
   align-items: center;
   cursor: pointer;
   text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  transition: background-color 0.2s;
+  width: 100%;
+  position: relative;
+}
+
+.studentEditProfile-picto-option:hover {
+  background-color: #f5f5f5;
 }
 
 .studentEditProfile-picto-option ion-img {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   object-fit: contain;
-  margin-bottom: 4px;
 }
 
 .studentEditProfile-picto-option span {
-  font-size: 12px;
+  font-size: 0.85rem;
   color: #333;
+  word-break: break-word;
+  font-weight: 500;
 }
 
 

@@ -16,7 +16,6 @@ import {
   IonIcon,
   IonToast,
   IonImg,
-  IonText,
   useIonViewWillEnter,  // para detectar cuando se entre
   useIonViewDidLeave,   // para detectar cuando se salga
   IonCard,
@@ -775,26 +774,6 @@ export default function StudentEditProfile() {
   }, [showAvatarModal, updateAvatarModalPosition]);
 
 
-  const getAvatarDisplayName = () => {
-    
-    const avatar = avatarOptions.find(a => (a.id === selectedAvatar) || (a.imageUrl === selectedAvatar));
-
-    if (avatar) {
-      return avatar.name;
-    }
-
-    if (fileInputRef.current?.files?.[0]) {
-      return `Avatar personalizado de ${userName}`;
-    }
-
-    return 'Seleccionar imagen...';
-
-  };
-
-
-  const avatarDisplayName = getAvatarDisplayName();
-
-
   const handleConfirmClick = () => {
     handleSubmit();
   };
@@ -855,6 +834,11 @@ export default function StudentEditProfile() {
 
                 {/* Avatar */}
                 <div className="studentEditProfile-avatar-section">
+                  <div className="studentEditProfile-field-wrapper">
+                    <div className="studentEditProfile-field-label">
+                      Cambiar avatar
+                    </div>
+                  </div>
                   <div className="studentEditProfile-avatar-preview"
                     onClick={openAvatarModal}
                   >
@@ -867,14 +851,6 @@ export default function StudentEditProfile() {
                     ) : (
                       <IonIcon icon={personOutline} className="studentEditProfile-avatar-icon" />
                     )}
-                  </div>
-                  <div className="studentEditProfile-field-wrapper">
-                    <div className="studentEditProfile-field-label">
-                      Cambiar avatar <span className="required-star">*</span>
-                    </div>
-                    <div className="studentEditProfile-avatar-select-field" onClick={openAvatarModal}>
-                      <IonText>{avatarDisplayName}</IonText>
-                    </div>
                   </div>
                 </div>
                 
