@@ -164,7 +164,7 @@ export default function StudentEditProfile() {
 
   // Determina si el formulario tiene datos cambiados respecto a los datos actuales y si tiene los campos obligatorios rellenados.
   // Se usa únicamente para controlar la habilitación/visibilidad del botón "Guardar cambios".
-  // No realiza validaciones completas (formatos de nombre de usuario y contraseña), pues las validaciones estrictas (formatos de nombre de usuario y contraseña) ya se aplican dentrro de 'handleSubmit'.
+  // No realiza validaciones completas (formatos de nombre de usuario y contraseña), pues las validaciones estrictas (formatos de nombre de usuario y contraseña) ya se aplican dentro de 'handleSubmit' y en 'isFormValid'.
   const isFormReadyForSubmit =
     studentUser &&
     (isUserNameChanged || isAvatarChanged || isPasswordChanged) &&
@@ -465,6 +465,23 @@ export default function StudentEditProfile() {
     return passwordRules;
 
   };
+
+
+  // Determina si el formulario cumple con los formatos de nombre de usuario y contraseña.
+  // Se usa únicamente para controlar la visibilidad del botón "Guardar cambios".
+  // Todas estas validaciones de formatos de nombre de usuario y contraseña se aplican también dentro de 'handleSubmit' para que se muestren los mensajes de error correspondientes al pulsar el botón cuando corresponda.
+  const isFormValid =
+    isUserNameLong && 
+    isUserNameSpaceless &&
+    (isUsernameAvailable !== false || !isUserNameLong || !isUserNameSpaceless) &&
+    isAvatarSelected &&
+    (
+      !isPasswordChanged ||
+      (
+        validatePassword(newPassword, passwordType).length === 0 &&
+        isPasswordMatch !== false
+      )
+    );
 
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -1052,7 +1069,11 @@ export default function StudentEditProfile() {
               <IonButton 
                 expand="block"
                 className={`studentEditProfile-confirm-button ${
-                  !isFormReadyForSubmit ? 'studentEditProfile-confirm-button--disabled' : ''
+                  !isFormReadyForSubmit
+                    ? 'studentEditProfile-confirm-button--disabled'
+                    : !isFormValid
+                      ? 'studentEditProfile-confirm-button--visually-disabled'
+                      : ''
                 }`}
                 disabled={!isFormReadyForSubmit}
                 onClick={handleConfirmClick}
