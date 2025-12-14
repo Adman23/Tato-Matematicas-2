@@ -45,6 +45,10 @@ const PICTOGRAMS = [
   { id: 'tortuga', name: 'Tortuga', image: '/assets/pictograms/tortuga.png' },
   { id: 'león', name: 'León', image: '/assets/pictograms/león.png' },
   { id: 'elefante', name: 'Elefante', image: '/assets/pictograms/elefante.png' },
+  { id: 'pez', name: 'Pez', image: '/assets/pictograms/pez.png' },
+  { id: 'pinguino', name: 'Pinguino', image: '/assets/pictograms/pinguino.png' },
+  { id: 'flamenco', name: 'Flamenco', image: '/assets/pictograms/flamenco.png' },
+  { id: 'caballo', name: 'Caballo', image: '/assets/pictograms/caballo.png' },
 ];
 
 const MIN_USERNAME_LENGTH = 3;                // mínimo de longitud para el nombre de usuario
@@ -711,27 +715,19 @@ export default function StudentEditProfile() {
   
 
   const updatePictoModalPosition = useCallback(() => {
-    if (!pictoModalState.visible) return;
-    const targetRef = pictoPickerRef.current;
-    /*const targetRef = pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef.current : repeatPictoPickerRef.current;*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
-    if (!targetRef || !formCardRef.current) return;
+
+    if (!pictoModalState.visible || !formCardRef.current || !pictoPickerRef.current) return;
+
     const cardRect = formCardRef.current.getBoundingClientRect();
-    const modalWidth = 300;
-    const modalHeight = Math.min(cardRect.height, 460);
-    const spacing = 20;
-    let top = cardRect.top + window.scrollY + (cardRect.height - modalHeight) / 2;
-    top = Math.max(spacing, Math.min(top, window.innerHeight + window.scrollY - modalHeight - spacing));
-    let left = cardRect.right + spacing;
-    left = Math.min(left, window.innerWidth + window.scrollX - modalWidth - spacing);
-    Object.assign(targetRef.style, {
-      position: 'fixed',
-      top: `${top}px`,
-      left: `${left}px`,
-      width: `${modalWidth}px`,
-      height: `${modalHeight}px`,
-      overflowY: 'auto',
-      zIndex: '1001',
-    });
+    const modal = pictoPickerRef.current;
+
+    modal.style.position = 'fixed';
+    modal.style.left = `${cardRect.left + window.scrollX}px`;
+    modal.style.top = `${cardRect.top + window.scrollY}px`;
+    modal.style.width = `${cardRect.width / 2}px`;
+    modal.style.height = `${cardRect.height}px`;
+    modal.style.zIndex = '1002';
+
   }, [pictoModalState]);
 
 
@@ -748,16 +744,22 @@ export default function StudentEditProfile() {
 
 
   const updateAvatarModalPosition = useCallback(() => {
-    if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
-      const cardRect = formCardRef.current.getBoundingClientRect();
-      const modal = avatarPickerRef.current;
-      modal.style.position = 'fixed';
-      modal.style.left = `${cardRect.left + window.scrollX}px`;
-      modal.style.top = `${cardRect.top + window.scrollY}px`;
-      modal.style.width = `${cardRect.width}px`;
-      modal.style.height = `${cardRect.height}px`;
-      modal.style.zIndex = '1002';
-    }
+
+    if (!showAvatarModal || !formCardRef.current || !avatarPickerRef.current) return;
+
+    const cardRect = formCardRef.current.getBoundingClientRect();
+    const modal = avatarPickerRef.current;
+
+    const modalWidth = cardRect.width / 2;
+    const modalHeight = cardRect.height;
+
+    modal.style.position = 'fixed';
+    modal.style.top = `${cardRect.top + window.scrollY}px`;
+    modal.style.left = `${cardRect.left + window.scrollX + modalWidth}px`; // mitad derecha
+    modal.style.width = `${modalWidth}px`;
+    modal.style.height = `${modalHeight}px`;
+    modal.style.zIndex = '1002';
+
   }, [showAvatarModal]);
 
 
@@ -1095,7 +1097,7 @@ export default function StudentEditProfile() {
       {/* Modales */}
 
       {pictoModalState.visible && createPortal(
-        <div className="studentEditProfile-picto-picker-overlay" onClick={closePictoModal}>
+        <div className="studentEditProfile-picker-overlay" onClick={closePictoModal}>
           <div
             ref={pictoPickerRef}
             /*ref={pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef : repeatPictoPickerRef}*/ //Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
@@ -1117,7 +1119,9 @@ export default function StudentEditProfile() {
                   className="studentEditProfile-picto-option"
                   onClick={() => selectPictogram(picto.id)}
                 >
-                  <IonImg src={picto.image} alt={picto.name} />
+                  <div className="studentEditProfile-picto-image-container">
+                    <IonImg src={picto.image} alt={picto.name} />
+                  </div>
                   <span>{picto.name}</span>
                 </div>
               ))}
@@ -1128,7 +1132,7 @@ export default function StudentEditProfile() {
       )}
     
       {showAvatarModal && createPortal(
-        <div className="studentEditProfile-avatar-picker-overlay" onClick={closeAvatarModal}>
+        <div className="studentEditProfile-picker-overlay" onClick={closeAvatarModal}>
           <div
             ref={avatarPickerRef}
             className={`studentEditProfile-avatar-picker ${
