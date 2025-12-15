@@ -58,7 +58,6 @@ import imgRepetirDefault from '/assets/juegosImg/volver.png';
 import imgTatoFelizDefault from '/assets/Tato/TatoFeliz.png';
 import imgTatoTristeDefault from '/assets/Tato/TatoTriste.png';
 import type { StudentMessage } from '../../../lib/api';
-import { GameControlButton } from '../../global_components/GameControlButton';
 import { Button3Dtext } from '../../global_components/PushableButtons';
 
 

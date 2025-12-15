@@ -1,6 +1,6 @@
 /**
  * Edit Game 1: Touch Number Configuration Page
- * * CORRECCIÓN: Se ha añadido la lógica para usar user.id si no hay id en la URL.
+ *
  */
 
 import { IonContent, IonIcon, IonPage, useIonRouter } from "@ionic/react";
