@@ -5,7 +5,8 @@ import {
     IonInput,
     IonButton,
     IonIcon,
-    useIonRouter
+    useIonRouter,
+    IonToast
 
 } from '@ionic/react';
 import { add } from 'ionicons/icons';
@@ -31,6 +32,31 @@ export default function EditMessages() {
     const [newReinforcementMessage, setNewReinforcementMessage] = useState<string>('');
     const [loadingMessages, setLoadingMessages] = useState<boolean>(true);
     const [isAddingMessage, setIsAddingMessage] = useState<boolean>(false);
+    const [showToast, setShowToast] = useState<boolean>(false);
+    const [toastMessage, setToastMessage] = useState<string>('');
+    const [toastColor, setToastColor] = useState<'success' | 'danger'>('success');
+
+    /**
+     * Normaliza un texto para comparación: quita tildes, mayúsculas y signos de puntuación
+     */
+    const normalizeTextForComparison = (text: string): string => {
+        return text
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Quita tildes
+            .replace(/[¡!¿?.,;:'"()]/g, '')  // Quita signos de puntuación
+            .trim();
+    };
+
+    /**
+     * Comprueba si un mensaje ya existe en la lista (ignorando mayúsculas, tildes y puntuación)
+     */
+    const messageExists = (newMessage: string, existingMessages: StudentMessage[]): boolean => {
+        const normalizedNew = normalizeTextForComparison(newMessage);
+        return existingMessages.some(msg =>
+            normalizeTextForComparison(msg.text_message) === normalizedNew
+        );
+    };
 
     /**
      * Normaliza los mensajes crudos del backend a StudentMessage[]
@@ -93,7 +119,25 @@ export default function EditMessages() {
 
 
     const handleAddPositiveMessage = async () => {
-        if (!newPositiveMessage.trim() || !id || isAddingMessage) return;
+        if (!newPositiveMessage.trim()) {
+            setToastMessage('El mensaje no puede estar vacío');
+            setToastColor('danger');
+            setShowToast(true);
+            return;
+        }
+
+        if (!id || isAddingMessage) {
+            return;
+        }
+
+        // Verificar si el mensaje ya existe (ignorando mayúsculas, tildes y puntuación)
+        if (messageExists(newPositiveMessage, messagesPositive)) {
+            setToastMessage('Este mensaje ya existe (o es similar a uno existente)');
+            setToastColor('danger');
+            setShowToast(true);
+            setNewPositiveMessage('');
+            return;
+        }
 
         setIsAddingMessage(true);
         try {
@@ -108,22 +152,47 @@ export default function EditMessages() {
                 text_message: newPositiveMessage.trim(),
             };
             setMessagesPositive([...messagesPositive, newMessage]);
+            setToastMessage('¡Mensaje añadido correctamente!');
+            setToastColor('success');
+            setShowToast(true);
             setNewPositiveMessage('');
         } catch (error: any) {
             console.error('Error adding positive message:', error);
             // Si el mensaje ya está asignado al estudiante (409 Conflict)
             if (error.response?.status === 409) {
-                alert('Este mensaje ya está asignado a este estudiante');
+                setToastMessage('Este mensaje ya está asignado a este estudiante');
+                setNewPositiveMessage('');
             } else {
-                alert('Error al añadir el mensaje');
+                setToastMessage('Error al añadir el mensaje');
+                setNewPositiveMessage('');
             }
+            setToastColor('danger');
+            setShowToast(true);
         } finally {
             setIsAddingMessage(false);
         }
     };
 
     const handleAddReinforcementMessage = async () => {
-        if (!newReinforcementMessage.trim() || !id || isAddingMessage) return;
+        if (!newReinforcementMessage.trim()) {
+            setToastMessage('El mensaje no puede estar vacío');
+            setToastColor('danger');
+            setShowToast(true);
+            return;
+        }
+
+        if (!id || isAddingMessage) {
+            return;
+        }
+
+        // Verificar si el mensaje ya existe (ignorando mayúsculas, tildes y puntuación)
+        if (messageExists(newReinforcementMessage, messagesReinforcement)) {
+            setToastMessage('Este mensaje ya existe (o es similar a uno existente)');
+            setToastColor('danger');
+            setShowToast(true);
+            setNewReinforcementMessage('');
+            return;
+        }
 
         setIsAddingMessage(true);
         try {
@@ -139,14 +208,19 @@ export default function EditMessages() {
             };
             setMessagesReinforcement([...messagesReinforcement, newMessage]);
             setNewReinforcementMessage('');
+            setToastMessage('¡Mensaje añadido correctamente!');
+            setToastColor('success');
+            setShowToast(true);
         } catch (error: any) {
             console.error('Error adding reinforcement message:', error);
             // Si el mensaje ya está asignado al estudiante (409 Conflict)
             if (error.response?.status === 409) {
-                alert('Este mensaje ya está asignado a este estudiante');
+                setToastMessage('Este mensaje ya está asignado a este estudiante');
             } else {
-                alert('Error al añadir el mensaje');
+                setToastMessage('Error al añadir el mensaje');
             }
+            setToastColor('danger');
+            setShowToast(true);
         } finally {
             setIsAddingMessage(false);
         }
@@ -184,7 +258,13 @@ export default function EditMessages() {
                                     <IonInput
                                         placeholder="Añadir mensaje..."
                                         value={newPositiveMessage}
-                                        onIonChange={(e) => setNewPositiveMessage(e.detail.value || '')}
+                                        onIonInput={(e) => setNewPositiveMessage(e.detail.value || '')}
+                                        onKeyUp={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleAddPositiveMessage();
+                                            }
+                                        }}
                                         className="edit-messages-input"
                                     />
                                     <IonButton
@@ -212,7 +292,13 @@ export default function EditMessages() {
                                     <IonInput
                                         placeholder="Añadir mensaje..."
                                         value={newReinforcementMessage}
-                                        onIonChange={(e) => setNewReinforcementMessage(e.detail.value || '')}
+                                        onIonInput={(e) => setNewReinforcementMessage(e.detail.value || '')}
+                                        onKeyUp={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleAddReinforcementMessage();
+                                            }
+                                        }}
                                         className="edit-messages-input"
                                     />
                                     <IonButton
@@ -229,6 +315,14 @@ export default function EditMessages() {
 
                     </div>
                 )}
+                <IonToast className='edit-messages-toast'
+                    isOpen={showToast}
+                    onDidDismiss={() => setShowToast(false)}
+                    message={toastMessage}
+                    duration={2000}
+                    position="bottom"
+                    color={toastColor}
+                />
             </IonContent>
         </IonPage>
     )
