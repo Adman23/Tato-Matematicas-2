@@ -180,13 +180,15 @@ export default function StudentEditProfile() {
     router.push(`/student-edit-menu/${id}/${name}`);
   }
 
+  // Normaliza el nombre de usuario, 
+  // eliminando tildes y transformando mayúsculas en minúsculas
+  const normalizeUsername = (value: string) =>
+    value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
   // Normaliza el PIN para enviarlo a Supabase, 
   // de forma que se asegure que Supabase recibe al menos 6 caracteres que es el mínimo permitido
   const normalizePinForSupabase = (pinPassword: string) => {
-
     return pinPassword.split('').join('-');  // ejemplo: '1234' -> '1-2-3-4'
-
   };
 
 
@@ -278,7 +280,7 @@ export default function StudentEditProfile() {
       return;
     }
 
-    if (trimmed === studentUser?.username) {
+    if (!isUserNameChanged) {
       setIsUsernameAvailable(true);
       return;
     }
@@ -500,7 +502,7 @@ export default function StudentEditProfile() {
       errors.push('El nombre de usuario no puede contener espacios.');
 
     if (isUsernameAvailable === false && isUserNameLong && isUserNameSpaceless) 
-      errors.push('Este nombre de usuario ya está actualmente en uso por otra persona.');
+      errors.push('Este nombre de usuario ya está actualmente en uso.');
 
     if (!isAvatarSelected) 
       errors.push('Debes seleccionar una imagen de perfil.');
@@ -866,7 +868,7 @@ export default function StudentEditProfile() {
                       className="studentEditProfile-input-item"
                       placeholder="Escribir aquí..."
                       value={userName}
-                      onIonInput={(e) => setUserName(e.detail.value || '')}
+                      onIonInput={(e) => setUserName(normalizeUsername(e.detail.value || ''))}
                     />
                     <IonIcon
                       icon={isUsernameValid ? checkmarkOutline : closeOutline}
