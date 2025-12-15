@@ -14,7 +14,10 @@
 
 /* Botón principal */
 .simple-button {
-    --background: transparent;
+    --background: #ffffff;
+    --background-activated: #ffffff;
+    --background-focused: #ffffff;
+    --background-hover: #ffffff;
     --border-width: clamp(4px, 1.2vw, 8px);
     --border-style: solid;
     --border-radius: clamp(8px, 1vw, 16px);
@@ -93,7 +96,8 @@
 /* Texto debajo de la imagen */
 .simple-button-title {
     font-size: clamp(0.7rem, 2vw, 1.2rem);
-    font-weight: 600;
+    font-family: var(--tatomaths-font);
+    font-weight: var(--tatomaths-weight);
     color: var(--tatomaths-text);
     text-align: center;
     margin: 0;

@@ -96,7 +96,7 @@ export default function StudentProfile() {
         <IonPage>
             {/* Header */}
             <SimpleHeaderUser title={"PERFIL"} title_image='/assets/pictograms/yo.png'
-            userName={user?.username || "username"} photoUrl={user?.photo_url} hidden={true} />
+                userName={user?.username || "username"} photoUrl={user?.photo_url} hidden={true} />
 
 
             {/* Main Content */}
@@ -123,7 +123,7 @@ export default function StudentProfile() {
                                 </SimpleButton>
 
                                 {/* Edit game_1 */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-game1")}>
+                                <SimpleButton className="big-button" onClick={() => handleDirection(`/student/edit-game1/${user?.id}`)}>
                                     <img
                                         src="/assets/juegosImg/juego1.png"
                                         alt="Ir a editar juego uno"
@@ -152,14 +152,14 @@ export default function StudentProfile() {
                                     <div className="simple-button-title">SONIDO</div>
                                 </SimpleButton>
 
-                                {/* Edit game_3 */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
+                                {/* Edit game_3 & 4 */}
+                                <SimpleButton className="big-button" onClick={() => handleDirection(`/student/edit-game34/${user?.id}`)}> 
                                     <img
                                         src="/assets/juegosImg/juego3.png"
-                                        alt="Ir a editar juego tres"
+                                        alt="Ir a editar juegos tres y cuatro"
                                         className="simple-button-image"
                                     />
-                                    <div className="simple-button-title">JUEGO 3</div>
+                                    <div className="simple-button-title">JUEGO 3 & 4</div>
                                 </SimpleButton>
 
                                 {/* Edit game_4 */}

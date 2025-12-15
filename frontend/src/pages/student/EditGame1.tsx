@@ -1,32 +1,19 @@
 /**
  * Edit Game 1: Touch Number Configuration Page
  *
- * The student configures the "Touch Number" game settings,
- * including audio voice, number of options, and number range.
- *
- * Functional Summary:
- * - Load current game configuration on component mount.
- * - Display buttons to configure voice, quantity, and range.
- * - Open modals for each configuration option.
- * - Save updated configuration to backend and navigate back to student profile.
- *
- * @returns {JSX.Element} Game 1 configuration page with selection modals
- *
- * @example
- * // Usage in app router
- * <Route path="/student/edit-game1" component={EditGame1} />   
  */
 
 import { IonContent, IonIcon, IonPage, useIonRouter } from "@ionic/react";
-import { useAuth } from '../../../contexts/AuthContext';
-import { Button3Dtext } from "../../global_components/PushableButtons";
+import { useAuth } from '../../contexts/AuthContext';
+import { Button3Dtext } from "../global_components/PushableButtons";
 import { arrowBack } from "ionicons/icons";
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import './EditGame1.css';
-import { gamesAPI, type GameConfig } from "../../../lib/api";
-import SimpleHeaderUser from "../../student/components/SimpleHeaderUser";
-import LoadingSpinner from "../../global_components/LoadingSpinner";
+import { gamesAPI, type GameConfig } from "../../lib/api";
+import SimpleHeaderUser from "../student/components/SimpleHeaderUser";
+import LoadingSpinner from "../global_components/LoadingSpinner";
+import { useParams } from "react-router-dom";
 
 /**
  * Range options available for the game.
@@ -40,33 +27,13 @@ const RANGE_OPTIONS = [
 
 /**
  * Quantity options available for the game.
- * Allowed range: from 1 to 12 options.
  */
 const QUANTITY_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-/**
- * Functional Summary:
- * Edit Game 1 (Touch Number) configuration component.
- * 
- * Lets users customize the parameters of the "Touch Number" game,
- * including the audio voice, the number of options displayed, and the range
- * of numbers to practice.
- * 
- * Execution Flow:
- * 1. On component mount, loads the current game configuration from the backend.
- * 2. Displays three main buttons to configure: Voice, Quantity, and Range.
- * 3. When each button is pressed, a modal with available options opens.
- * 4. The user selects the desired options and saves the changes.
- * 5. Upon saving, the configuration is sent to the backend and the user is redirected to the student profile.
- * 
- * @returns {JSX.Element} Game 1 configuration page with selection modals
- * 
- * @example
- * // Usage in app router
- * <Route path="/student/edit-game1" component={EditGame1} />
- */
 export default function EditGame1() {
     const { user } = useAuth();
+    // Obtenemos parámetros (pueden ser undefined si entra un alumno directamente)
+    const { id, name } = useParams<{ id: string; name: string }>();
     const router = useIonRouter();
 
     const [loading, setLoading] = useState(true);
@@ -76,6 +43,9 @@ export default function EditGame1() {
     const [quantity, setQuantity] = useState<number>(5);
     const [numberRange, setNumberRange] = useState<string>('0-10');
 
+    // State to determine if the range option should be hidden for students
+    const [isRangeLockedForStudent, setIsRangeLockedForStudent] = useState<boolean>(false);
+
     // Modal states
     const [showQuantityModal, setShowQuantityModal] = useState(false);
     const [showRangeModal, setShowRangeModal] = useState(false);
@@ -84,12 +54,6 @@ export default function EditGame1() {
     // Accessibility announcement state
     const [liveAnnouncement, setLiveAnnouncement] = useState<string>('');
 
-    /**
-     * Function to make accessible announcements using aria-live.
-     * Waits for the current announcement to finish before announcing the change.
-     * 
-     * @param message - Message to announce
-     */
     const announce = (message: string) => {
         setLiveAnnouncement('');
         setTimeout(() => {
@@ -102,7 +66,6 @@ export default function EditGame1() {
 
     /**
      * Focus trapping effect for modals.
-     * Keeps Tab navigation inside the modal when it's open.
      */
     useEffect(() => {
         const isAnyModalOpen = showQuantityModal || showRangeModal || showVoiceModal;
@@ -116,7 +79,6 @@ export default function EditGame1() {
         const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
 
-        // Focus first element when modal opens
         setTimeout(() => firstElement?.focus(), 0);
 
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -128,13 +90,11 @@ export default function EditGame1() {
             if (e.key !== 'Tab') return;
 
             if (e.shiftKey) {
-                // Shift + Tab
                 if (document.activeElement === firstElement) {
                     e.preventDefault();
                     lastElement?.focus();
                 }
             } else {
-                // Tab
                 if (document.activeElement === lastElement) {
                     e.preventDefault();
                     firstElement?.focus();
@@ -146,137 +106,98 @@ export default function EditGame1() {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [showQuantityModal, showRangeModal, showVoiceModal]);
 
-    /**
-     * Handle keyboard selection for modal options
-     */
-    const handleKeySelect = useCallback((e: React.KeyboardEvent, action: () => void) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            action();
-        }
-    }, []);
-
-    /**
-     * 
-     */
     useEffect(() => {
         loadGameConfig();
     }, []);
 
     /**
-     * Functional Summary:
-     * Load the current game configuration from the backend and display it in the UI.
-     *
-     * Execution Flow:
-     * 1. Checks if an authenticated user exists
-     * 2. Calls the API to get the 'touch_number' config
-     * 3. Extracts voice, quantity, and range values
-     * 4. Updates states and disables loading spinner
-     *
-     * @returns {Promise<void>} Promise that resolves when the configuration is loaded
-     *
-     * @example
-     * await loadGameConfig();
+     * Load the current game configuration
      */
     const loadGameConfig = async () => {
         try {
-            if (!user?.id) return;
+            // CORRECCIÓN: Definir el ID objetivo (URL o Usuario actual)
+            const targetUserId = id || user?.id;
 
-            const data = await gamesAPI.getGameConfig(user.id, 'touch_number');
+            if (!targetUserId) {
+                // Si no hay usuario logueado ni ID en url, salimos
+                return;
+            }
 
-            // Load current values
-            setVoice(data.settings?.voice || 'woman');
-            setQuantity(data.settings?.options_count || 9);
-            setNumberRange(data.number_range || '0-10');
+            // Usamos targetUserId en lugar de id
+            const data = await gamesAPI.getGameConfig(targetUserId, 'touch_number');
 
+            if (data) {
+                // Load current values
+                setVoice(data.settings?.voice || 'woman');
+                setQuantity(data.settings?.options_count || 9);
+                setNumberRange(data.number_range || '0-10');
+
+                // Si es estudiante, rango 0-10 Y el tutor fue quien modificó, bloquear
+                if (user?.role !== 'teacher' && data.number_range === '0-10' && data.last_modified_by === 'teacher') {
+                    setIsRangeLockedForStudent(true);
+                }
+            }
             setLoading(false);
-        } catch (error) {
-            console.error('Error loading game config:', error);
-            setLoading(false);
+        } catch (error: any) {
+            // Manejo de error 404 (config no encontrada, usar defaults)
+            if (error.response && error.response.status === 404) {
+                console.log('No existe configuración previa, usando valores por defecto.');
+                setLoading(false);
+            } else {
+                console.error('Error loading game config:', error);
+                setLoading(false);
+            }
         }
     };
 
     /**
-     * Functional Summary:
-     * Saves the game configuration to the backend and navigates to the student profile.
-     *
-     * Execution Flow:
-     * 1. Checks if an authenticated user exists
-     * 2. Constructs a GameConfig object with the current voice, quantity, and range values
-     * 3. Sends the configuration to the backend via the API
-     * 4. Redirects to the student profile after successful save
-     *
-     * @returns {Promise<void>} Promise that resolves when the configuration is saved
-     *
-     * @example
-     * await handleSave();
+     * Saves the game configuration
      */
     const handleSave = async () => {
-
         try {
-            if (!user?.id) return;
+            // CORRECCIÓN: Definir el ID objetivo
+            const targetUserId = id || user?.id;
+
+            if (!targetUserId || !user) return;
 
             const config: GameConfig = {
                 game_id: 0,
                 game_key: 'touch_number',
-                user_id: user.id,
+                user_id: targetUserId, // Usamos targetUserId
                 number_range: numberRange,
+                last_modified_by: user.role === 'teacher' ? 'teacher' : 'student',
                 settings: {
                     voice,
                     options_count: quantity
                 }
             };
 
-            await gamesAPI.updateGameConfig(user.id, 'touch_number', config);
+            await gamesAPI.updateGameConfig(targetUserId, 'touch_number', config);
 
-            // Anunciar que se guardó la configuración
             announce('Configuración guardada correctamente');
 
-            // Return to profile
-            router.push('/student/profile', 'back');
+            // Redirigir según el rol del usuario Y si hay parámetros en la URL
+            if (user?.role === 'teacher' && id && name) {
+                router.push(`/student-edit-menu/${id}/${name}`, 'back');
+            } else {
+                router.push('/student/profile', 'back');
+            }
         } catch (error) {
             console.error('Error saving config:', error);
             announce('Error al guardar la configuración');
         }
     };
 
-    /**
-     * Functional Summary:
-     * Closes all open selection modals.
-     *
-     * Execution Flow:
-     * 1. Sets the state of all modals (quantity, range, voice) to `false`
-     *
-     * @returns {void}
-     *
-     * @example
-     * closeAllModals(); // Closes any open modal
-     */
     const closeAllModals = () => {
         setShowQuantityModal(false);
         setShowRangeModal(false);
         setShowVoiceModal(false);
     };
 
-    /**
-     * Functional Summary:
-     * Obtains the descriptive label of the currently selected number range.
-     *
-     * Execution Flow:
-     * 1. Searches in RANGE_OPTIONS for the option that matches the current value of numberRange
-     * 2. Returns the corresponding label or the range value if not found
-     *
-     * @returns {string} Descriptive label of the range (e.g., "From 0 to 10") or the range value if not found
-     *
-     * @example
-     * // If numberRange === '0-10'
-     * getSelectedRangeLabel(); // Returns "From 0 to 10"
-     */
     const getSelectedRangeLabel = () => {
         return RANGE_OPTIONS.find(opt => opt.value === numberRange)?.label || numberRange;
     };
 
-    // Show spinner while loading
     if (loading) {
         return (
             <IonPage>
@@ -295,7 +216,6 @@ export default function EditGame1() {
                 userName={user?.username || "username"}
                 photoUrl={user?.photo_url} hidden={true} />
             <IonContent className="EditGame1-content">
-                {/* Aria live region for accessibility announcements */}
                 <div
                     aria-live="polite"
                     aria-atomic="true"
@@ -318,9 +238,15 @@ export default function EditGame1() {
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
                         <Button3Dtext
-                            onClick={() => router.push('/student/dashboard', "back", "pop")}
+                            onClick={() => {
+                                if (user?.role === 'teacher' && id && name) {
+                                    router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                                } else {
+                                    router.push('/student/profile', 'back', 'pop');
+                                }
+                            }}
                             aria-label="Volver atrás"
-                            className="EditGame1-back-button">
+                        >
                             <IonIcon icon={arrowBack} />
                         </Button3Dtext>
                     </div>
@@ -329,13 +255,18 @@ export default function EditGame1() {
                     <div className="EditGame1-config-buttons">
                         <div className="EditGame1-buttons-result">
                             {/* Selected Voice */}
-                            <div className="EditGame1-config-button-value">
+                            <div
+                                className="EditGame1-config-button-value"
+                                role="status"
+                                aria-label={`Voz seleccionada: ${voice === 'woman' ? 'Mujer' : 'Hombre'}`}
+                            >
                                 <img
                                     src={voice === 'woman' ? '/assets/pictograms/mujer.png' : '/assets/pictograms/hombre.png'}
-                                    alt={voice === 'woman' ? 'Mujer' : 'Hombre'}
+                                    alt=""
+                                    aria-hidden="true"
                                     className="EditGame1-config-button-image"
                                 />
-                                <span className="modal-range-text">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
+                                <span className="EditGame1-modal-range-text" aria-hidden="true">{voice === 'woman' ? 'Mujer' : 'Hombre'}</span>
                             </div>
                             {/* Voice Button */}
                             <Button3Dtext
@@ -343,10 +274,10 @@ export default function EditGame1() {
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowVoiceModal(true) }}
                             >
-                                <div className="EditGame1-config-button-content">
+                                <div className="EditGame1-config-button-content" aria-hidden="true">
                                     <img
                                         src={"/assets/pictograms/voz.png"}
-                                        alt="Voz"
+                                        alt=""
                                         className="EditGame1-config-button-image"
                                     />
                                     <span className="btn-text">VOZ</span>
@@ -356,15 +287,20 @@ export default function EditGame1() {
 
                         <div className="EditGame1-buttons-result">
                             {/* Selected Quantity */}
-                            <div className="EditGame1-config-button-value">
+                            <div
+                                className="EditGame1-config-button-value"
+                                role="status"
+                                aria-label={`Cantidad seleccionada: ${quantity} opciones`}
+                            >
                                 {quantity <= 10 ? (
                                     <img
                                         src={`/assets/numbers/${quantity}.png`}
-                                        alt={`Número ${quantity}`}
+                                        alt=""
+                                        aria-hidden="true"
                                         className="EditGame1-config-button-image"
                                     />
                                 ) : (
-                                    <span className="modal-number-text">{quantity}</span>
+                                    <span className="EditGame1-modal-number-text" aria-hidden="true">{quantity}</span>
                                 )}
                             </div>
 
@@ -374,10 +310,10 @@ export default function EditGame1() {
                                 className="EditGame1-config-button-3d"
                                 onClick={() => { setShowQuantityModal(true) }}
                             >
-                                <div className="EditGame1-config-button-content">
+                                <div className="EditGame1-config-button-content" aria-hidden="true">
                                     <img
                                         src="/assets/pictograms/cantidad.png"
-                                        alt="Cantidad"
+                                        alt=""
                                         className="EditGame1-config-button-image"
                                     />
                                     <span className="btn-text">CANTIDAD</span>
@@ -385,44 +321,54 @@ export default function EditGame1() {
                             </Button3Dtext>
                         </div>
 
-                        <div className="EditGame1-buttons-result">
-                            {/* Selected Range */}
-                            <div className="EditGame1-config-button-value">
-                                <div className="range-chosen">
-                                    <span className="modal-range-text">{getSelectedRangeLabel()}</span>
+                        {/* Only show range option if the student is allowed to modify it */}
+                        {!isRangeLockedForStudent && (
+                            <div className="EditGame1-buttons-result">
+                                {/* Selected Range */}
+                                <div
+                                    className="EditGame1-config-button-value"
+                                    role="status"
+                                    aria-label={`Rango seleccionado: ${getSelectedRangeLabel()}`}
+                                >
+                                    <div className="range-chosen" aria-hidden="true">
+                                        <span className="EditGame1-modal-range-text">{getSelectedRangeLabel()}</span>
+                                    </div>
                                 </div>
+                                {/* Range Button */}
+                                <Button3Dtext
+                                    aria-label="Configurar rango"
+                                    className="EditGame1-config-button-3d"
+                                    onClick={() => { setShowRangeModal(true) }}
+                                >
+                                    <div className="EditGame1-config-button-content" aria-hidden="true">
+                                        <img
+                                            src="/assets/pictograms/rango.png"
+                                            alt=""
+                                            className="EditGame1-config-button-image"
+                                        />
+                                        <span className="btn-text">RANGO</span>
+                                    </div>
+                                </Button3Dtext>
                             </div>
-                            {/* Range Button */}
-                            <Button3Dtext
-                                aria-label="Configurar rango"
-                                className="EditGame1-config-button-3d"
-                                onClick={() => { setShowRangeModal(true) }}
-                            >
-                                <div className="EditGame1-config-button-content">
-                                    <img
-                                        src="/assets/pictograms/rango.png"
-                                        alt="Rango"
-                                        className="EditGame1-config-button-image"
-                                    />
-                                    <span className="btn-text">RANGO</span>
-                                </div>
-                            </Button3Dtext>
-                        </div>
+                        )}
                     </div>
 
                     {/* Save Changes Button */}
                     <div className="EditGame1-save-button">
-                        <Button3Dtext onClick={handleSave}>
+                        <Button3Dtext
+                            aria-label="Guardar cambios"
+                            onClick={handleSave}
+                        >
                             <img
                                 src="/assets/pictograms/correctoS.png"
-                                alt="Guardar cambios"
+                                alt=""
+                                aria-hidden="true"
                                 className="EditGame1-config-button-image"
                             />
-                            <span className="btn-text">GUARDAR</span>
+                            <span className="btn-text" aria-hidden="true">GUARDAR</span>
                         </Button3Dtext>
                     </div>
                 </div>
-
 
                 {/* MODAL: Quantity */}
                 {showQuantityModal && (
@@ -442,16 +388,15 @@ export default function EditGame1() {
                             <div className="EditGame1-modal-options-grid EditGame1-quantity-grid">
                                 {QUANTITY_OPTIONS.map((num) => {
                                     const pictogram = num <= 10 ? `/assets/numbers/${num}.png` : null;
-                                    // Disable options greater than 10 if the range is 0-10
                                     const isDisabled = numberRange === '0-10' && num > 10;
+                                    const isSelected = quantity === num;
                                     return (
-                                        <div
+                                        <button
+                                            type="button"
                                             key={num}
-                                            className={`EditGame1-modal-option ${quantity === num ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-                                            tabIndex={isDisabled ? -1 : 0}
-                                            role="button"
-                                            aria-pressed={quantity === num}
-                                            aria-disabled={isDisabled}
+                                            className={`EditGame1-modal-option ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                            aria-label={`${num} opciones${isSelected ? ', seleccionado' : ''}`}
+                                            disabled={isDisabled}
                                             onClick={() => {
                                                 if (!isDisabled) {
                                                     setQuantity(num);
@@ -459,20 +404,13 @@ export default function EditGame1() {
                                                     closeAllModals();
                                                 }
                                             }}
-                                            onKeyDown={(e) => handleKeySelect(e, () => {
-                                                if (!isDisabled) {
-                                                    setQuantity(num);
-                                                    announce(`Cantidad seleccionada: ${num} opciones`);
-                                                    closeAllModals();
-                                                }
-                                            })}
                                         >
                                             {pictogram ? (
-                                                <img src={pictogram} alt={`${num}`} className="EditGame1-modal-number-img" />
+                                                <img src={pictogram} alt="" aria-hidden="true" className="EditGame1-modal-number-img" />
                                             ) : (
-                                                <span className="EditGame1-modal-number-text">{num}</span>
+                                                <span className="EditGame1-modal-number-text" aria-hidden="true">{num}</span>
                                             )}
-                                        </div>
+                                        </button>
                                     );
                                 })}
                             </div>
@@ -496,38 +434,29 @@ export default function EditGame1() {
                                 onClick={closeAllModals}
                                 aria-label="Cerrar selección de rango">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-range-grid">
-                                {RANGE_OPTIONS.map((option) => (
-                                    <div
-                                        key={option.value}
-                                        className={`EditGame1-modal-option large ${numberRange === option.value ? 'selected' : ''}`}
-                                        tabIndex={0}
-                                        role="button"
-                                        aria-pressed={numberRange === option.value}
-                                        onClick={() => {
-                                            setNumberRange(option.value);
-                                            // If the range is 0-10 and the quantity is greater than 10, adjust to 10
-                                            if (option.value === '0-10' && quantity > 10) {
-                                                setQuantity(10);
-                                                announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
-                                            } else {
-                                                announce(`Rango seleccionado: ${option.label}`);
-                                            }
-                                            closeAllModals();
-                                        }}
-                                        onKeyDown={(e) => handleKeySelect(e, () => {
-                                            setNumberRange(option.value);
-                                            if (option.value === '0-10' && quantity > 10) {
-                                                setQuantity(10);
-                                                announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
-                                            } else {
-                                                announce(`Rango seleccionado: ${option.label}`);
-                                            }
-                                            closeAllModals();
-                                        })}
-                                    >
-                                        <span className="EditGame1-modal-range-text">{option.label}</span>
-                                    </div>
-                                ))}
+                                {RANGE_OPTIONS.map((option) => {
+                                    const isSelected = numberRange === option.value;
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={option.value}
+                                            className={`EditGame1-modal-option large ${isSelected ? 'selected' : ''}`}
+                                            aria-label={`${option.label}${isSelected ? ', seleccionado' : ''}`}
+                                            onClick={() => {
+                                                setNumberRange(option.value);
+                                                if (option.value === '0-10' && quantity > 10) {
+                                                    setQuantity(10);
+                                                    announce(`Rango seleccionado: ${option.label}. La cantidad se ha ajustado a 10.`);
+                                                } else {
+                                                    announce(`Rango seleccionado: ${option.label}`);
+                                                }
+                                                closeAllModals();
+                                            }}
+                                        >
+                                            <span className="EditGame1-modal-range-text" aria-hidden="true">{option.label}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -549,56 +478,44 @@ export default function EditGame1() {
                                 onClick={closeAllModals}
                                 aria-label="Cerrar selección de voz">✕</button>
                             <div className="EditGame1-modal-options-grid EditGame1-voice-grid">
-                                <div
+                                <button
+                                    type="button"
                                     className={`EditGame1-modal-option voice ${voice === 'woman' ? 'selected' : ''}`}
-                                    tabIndex={0}
-                                    role="button"
-                                    aria-pressed={voice === 'woman'}
+                                    aria-label={`Mujer${voice === 'woman' ? ', seleccionado' : ''}`}
                                     onClick={() => {
                                         setVoice('woman');
                                         announce('Voz seleccionada: Mujer');
                                         closeAllModals();
                                     }}
-                                    onKeyDown={(e) => handleKeySelect(e, () => {
-                                        setVoice('woman');
-                                        announce('Voz seleccionada: Mujer');
-                                        closeAllModals();
-                                    })}
                                 >
-                                    <div className="EditGame1-voice-content">
+                                    <div className="EditGame1-voice-content" aria-hidden="true">
                                         <img
                                             src="/assets/pictograms/mujer.png"
-                                            alt="woman"
+                                            alt=""
                                             className="EditGame1-config-button-image"
                                         />
                                         <span className="EditGame1-modal-range-text">Mujer</span>
                                     </div>
-                                </div>
-                                <div
+                                </button>
+                                <button
+                                    type="button"
                                     className={`EditGame1-modal-option voice ${voice === 'man' ? 'selected' : ''}`}
-                                    tabIndex={0}
-                                    role="button"
-                                    aria-pressed={voice === 'man'}
+                                    aria-label={`Hombre${voice === 'man' ? ', seleccionado' : ''}`}
                                     onClick={() => {
                                         setVoice('man');
                                         announce('Voz seleccionada: Hombre');
                                         closeAllModals();
                                     }}
-                                    onKeyDown={(e) => handleKeySelect(e, () => {
-                                        setVoice('man');
-                                        announce('Voz seleccionada: Hombre');
-                                        closeAllModals();
-                                    })}
                                 >
-                                    <div className="EditGame1-voice-content">
+                                    <div className="EditGame1-voice-content" aria-hidden="true">
                                         <img
                                             src="/assets/pictograms/hombre.png"
-                                            alt="man"
+                                            alt=""
                                             className="EditGame1-config-button-image"
                                         />
                                         <span className="EditGame1-modal-range-text">Hombre</span>
                                     </div>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -17,6 +17,7 @@ class GameConfigResponse(BaseModel):
     game_key: str
     user_id: str
     number_range: str
+    last_modified_by: Optional[str] = None
     settings: Dict[str, Any]
 
 
@@ -77,4 +78,3 @@ class FinishSessionRequest(BaseModel):
     Finish game session
     """
     total_time_seconds: float
-

@@ -138,6 +138,8 @@ export interface User {
   username: string;
   role: Role;
   photo_url?: string;
+  password_type?: PasswordType;
+  password_length?: number;
   group_id?: string;
   group_alias?: string;
 }
@@ -149,6 +151,7 @@ export interface User {
 export interface UserData {
   username: string;
   password_type: PasswordType;
+  password_length: number;
   user_profile: any;
   game_configurations: any;
   reinforcement_messages: any;
@@ -168,6 +171,7 @@ export interface UserComplete {
   photo_url?: string;
   group_id?: string;
   password_type: PasswordType;
+  password_length: number;
   group_alias?: string;
   user_profile: any;
   game_configurations: any;
@@ -191,6 +195,7 @@ export interface AuthResponse {
 export interface RegisterData {
   username: string;
   password: string;
+  password_length: number;
   role: Role;
   photo_url?: string;
 }
@@ -238,6 +243,7 @@ export interface UserUpdatePayload {
   password?: string;
   photo_url?: string;
   password_type?: PasswordType;
+  password_length?: number;
 }
 
 
@@ -373,7 +379,7 @@ export const authAPI = {
   },
 
 
-  
+
   /**
    * Cerrar sesión del usuario actual.
    * Limpia tokens y perfil del almacenamiento local.
@@ -460,7 +466,7 @@ export const teacherAPI = {
    * @brief Get the students of a teacher
    * @returns List of students
    */
-  fetchStudentsByTeacher: async(): Promise<User[]> => {
+  fetchStudentsByTeacher: async (): Promise<User[]> => {
     const response = await api.get<User[]>("/teacher/students");
     return response.data;
   }
@@ -499,7 +505,7 @@ export const teacherAPI = {
       }
     ]
  */
-export async function fetchAllNonAdmin(){
+export async function fetchAllNonAdmin() {
   const response = await api.get("/admin/all_users");
   return response.data
 }
@@ -629,15 +635,35 @@ export async function getImages(): Promise<Record<string, string>> {
   return response.data;
 }
 
-export async function saveColorPalette (user_id: string, palette: any): Promise<void>  {
+/**
+ * @brief envía a la base de datos los nuevos colores 
+ * @param user_id id del usuario configurado
+ * @param palette paleta de colores a guardar
+ */
+export async function saveColorPalette(user_id: string, palette: any): Promise<void> {
 
   await api.post(`/user/${user_id}/update_color_preferences`, palette);
 }
 
+/**
+ * @brief obtiene los colores empleados por un usuario
+ * @param userId el usuario que se consulta
+ * @returns una paleta de colores
+ */
 export async function getColorPreferences(userId: string) {
 
   const res = await api.get(`/user/${userId}/color_preferences`);
   return res.data;
+}
+
+/**
+ * @brief envía a la base de datos la nueva fuente
+ * @param user_id id del usuario configurado
+ * @param text_configuration fuente y peso del texto, a guardar
+ */
+export async function saveFont(user_id: string, text_configuration: any): Promise<void> {
+
+  await api.post(`/user/${user_id}/update_text_preferences`, text_configuration);
 }
 
 // === AUDIO PREFERENCES ===
@@ -666,6 +692,7 @@ export interface GameConfig {
   game_key: string;
   user_id: string;
   number_range: string;
+  last_modified_by?: 'teacher' | 'student';
   settings: {
     options_count?: number;
     voice?: 'woman' | 'man';
@@ -937,6 +964,59 @@ export interface StudentMessage {
   icon_url?: string | null;
   sound_url?: string | null;
 }
+
+/**
+ * Data required to add a new message to a student.
+ */
+export interface AddMessageData {
+  text_message: string;
+  type: 'positive' | 'reinforcement';
+  icon_url?: string | null;
+  sound_url?: string | null;
+}
+
+/**
+ * Response returned when a message is successfully added to a student.
+ */
+export interface AddMessageResponse {
+  message: string;
+  message_id: string;
+  reinforcement_message_id: string;
+}
+
+/**
+ * Student message management endpoints.
+ */
+export const studentMessageAPI = {
+  /**
+   * Add a message to a specific student.
+   * 
+   * This function:
+   * 1. Checks if the message already exists in the messages table.
+   * 2. Creates the message if it doesn't exist.
+   * 3. Assigns the message to the student.
+   * 
+   * @param studentId - The unique identifier (UUID) of the student.
+   * @param messageData - The message data to add.
+   * @returns Promise<AddMessageResponse>: Contains message_id and reinforcement_message_id.
+   * 
+   * @throws Error if the message is empty, type is invalid, student not found, 
+   *         or message is already assigned to the student.
+   * 
+   * @example
+   * const response = await studentMessageAPI.addMessage('student-uuid', {
+   *   text_message: '¡Muy bien!',
+   *   type: 'positive'
+   * });
+   */
+  addMessage: async (studentId: string, messageData: AddMessageData): Promise<AddMessageResponse> => {
+    const response = await api.post<AddMessageResponse>(
+      `/student/${encodeURIComponent(studentId)}/message`,
+      messageData
+    );
+    return response.data;
+  }
+};
 
 
 /**

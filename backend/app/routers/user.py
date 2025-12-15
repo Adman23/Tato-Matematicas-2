@@ -94,11 +94,13 @@ async def get_user_data(user_id: str):
 
 	Uses the id passed to return the basic info of a user, this includes:
 	user:{
-		id:       		"string_with_the_id",         		not null
-		username: 		"email without the @",        		not null
-		role:     		"student, admin or teacher",  		not null
-		photo_url:		"url of the photo associated", 		can be null
-		password_type:	"graphical, pin, or alphanumeric",	not null
+		id:       			"string_with_the_id",         								not null
+		username: 			"email without the @",        								not null
+		role:     			"student, admin or teacher",  								not null
+		photo_url:			"url of the photo associated", 								can be null
+		password_type:		"graphical, pin, or alphanumeric",							not null
+		password_length:	"Number of characters (for alphanumeric/PIN passwords) 
+          					or number of pictograms (for graphical passwords)",	not null
 		user_profile
 		game_configurations
 		reinforcemente_messages
@@ -123,7 +125,7 @@ async def get_user_data(user_id: str):
 		# Fetch all the extra info of the user
 		# Fetch user's direct relations (keep it simple to avoid complex nested selects)
 		resp = supabase_admin.table("users") \
-				.select("group_id, password_type,\
+				.select("group_id, password_type, password_length,\
 						user_profiles!user_id(\
 							id,\
 							text_preferences,\
@@ -174,6 +176,7 @@ async def get_user_data(user_id: str):
 						role=user.role,
 						photo_url=user.photo_url or DEFAULT_AVATAR,
                   password_type = resp.data.get("password_type"),
+                  password_length = resp.data.get("password_length"),
 						group_id=resp.data.get("group_id") or None,
 						user_profile=resp.data.get("user_profiles"),
 						game_configurations=resp.data.get("game_configurations"),
@@ -268,14 +271,18 @@ async def update_user(
                     )
                 raise e
 
-        # 3. ACTUALIZAR DB PÚBLICA (foto y tipo de contraseña)
+
+        # 3. ACTUALIZAR DB PÚBLICA (foto, tipo de contraseña y longitud de contraseña)
         public_updates = {}
         if payload.photo_url:
             public_updates["photo_url"] = payload.photo_url
 
         if payload.password_type:
             public_updates["password_type"] = payload.password_type
-
+         
+        if payload.password_length is not None:
+            public_updates["password_length"] = payload.password_length
+         
         if public_updates:
             supabase_admin.table("users") \
                 .update(public_updates) \
@@ -285,7 +292,7 @@ async def update_user(
         # 4. CONSTRUIR RESPUESTA
         resp = supabase_admin.table("users") \
             .select(
-                "id, role, photo_url, group_id, password_type, "
+                "id, role, photo_url, group_id, password_type, password_length, "
                 "user_profiles!user_id(*), "
                 "game_configurations!user_id(*)"
             ) \
@@ -328,6 +335,7 @@ async def update_user(
             role=user_data_db["role"],
             photo_url=user_data_db.get("photo_url"),
             password_type=user_data_db.get("password_type"),
+            password_length=user_data_db.get("password_length"),
             group_id=user_data_db.get("group_id"),
             user_profile=u_profile,
             game_configurations=user_data_db.get("game_configurations") or [],
@@ -468,3 +476,25 @@ async def get_audio_preferences(user_id: str):
             status_code=500,
             detail=f"Error retrieving audio preferences: {str(e)}"
         )
+
+@router.post("/{user_id}/update_text_preferences")
+async def update_text_preferences(user_id: str, text_preferences: dict):
+    """
+    Actualiza la paleta de colores de un usuario.
+    """
+    try:
+        update = supabase_admin.table("user_profiles")\
+            .update({"text_preferences": text_preferences})\
+            .eq("user_id", user_id)\
+            .execute()
+
+        print("Datos guardados:", update.data)  # debería mostrar la fila actualizada
+        return {"message": "Text preferences updated", "saved": text_preferences}
+
+    except Exception as e:
+        print("Excepción capturada:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating text preferences: {str(e)}"
+        )
+    
