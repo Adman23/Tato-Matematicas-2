@@ -3,6 +3,9 @@
    ========================================================================== */
 
 
+/* ========================================
+    Messages Columns Flex
+   ======================================== */
 .edit-messages-columns {
     display: flex;
     flex-direction: row;
@@ -13,6 +16,10 @@
     height: calc(100% - 60px);
 }
 
+
+/* ========================================
+    Column Flex
+   ======================================== */
 .edit-messages-column {
     display: flex;
     flex-direction: column;
@@ -25,7 +32,6 @@
 }
 
 .edit-messages-table {
-
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -34,6 +40,10 @@
     height: 50vh;
 }
 
+
+/* ========================================
+    Messages items
+   ======================================== */
 .edit-messages-items {
     border: 3px solid var(--ion-color-primary);
     overflow-y: auto;
@@ -43,6 +53,10 @@
     position: relative;
 }
 
+
+/* ========================================
+    Input
+   ======================================== */
 .edit-messages-input-container {
     display: flex;
     flex-direction: row;
@@ -60,6 +74,10 @@
     --padding-end: 50px;
 }
 
+
+/* ========================================
+    Buttom
+   ======================================== */
 .edit-messages-add-btn {
     position: absolute;
     right: 5px;
@@ -71,11 +89,19 @@
     z-index: 100;
 }
 
+
+/* ========================================
+    Toast
+   ======================================== */
 .edit-messages-toast {
     font-size: 24px;
     text-align: center;
 }
 
+
+/* ========================================
+    Responsive Adjustements
+   ======================================== */
 @media (max-width: 767px) {
     .edit-messages-columns {
         flex-direction: column;
