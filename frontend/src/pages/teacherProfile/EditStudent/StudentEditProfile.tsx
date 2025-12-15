@@ -92,7 +92,7 @@ export default function StudentEditProfile() {
 
   
   const history = useHistory();
-  const { users, retrieveUser } = useManager();
+  const { retrieveUser } = useManager();
   const { user } = useAuth();
   const { id, name } = useParams<{ id: string; name: string }>();
 
@@ -201,14 +201,10 @@ export default function StudentEditProfile() {
 
         if (!id) throw new Error('Falta el ID del estudiante.');
         if (!name) throw new Error('Falta el nombre del estudiante.');
-        
-        let userEntry = users.get(id);
 
-        if (!userEntry || !userEntry.data) {
-          await retrieveUser(id);
-          userEntry = users.get(id);
-        }
+        const userEntry = await retrieveUser(id);
 
+        // Validaciones después de cargar
         if (!userEntry || !userEntry.data) {
           throw new Error('Datos del estudiante no disponibles.');
         }
@@ -218,9 +214,8 @@ export default function StudentEditProfile() {
         if (userEntry.user.role !== 'student') {
           throw new Error('El usuario no es un estudiante.');
         }
-        
-        const user = userEntry.user;
-        const data = userEntry.data;
+
+        const { user, data } = userEntry;
       
         setStudentUser(user);
         setUserName(user.username || '');
@@ -563,8 +558,37 @@ export default function StudentEditProfile() {
       // Actualizamos el nombre de usuario, la foto de perfil, la contraseña y el tipo de contraseña del estudiante
       await userAPI.updateUser(id, payload);
 
-      // Refrescamos el usuario en ManagerContext
-      await retrieveUser(id);
+      // Refrescamos el usuario en ManagerContext y obtenemos los datos
+      const updatedEntry = await retrieveUser(id);
+
+      // Validaciones después de cargar
+      if (!updatedEntry || !updatedEntry.data) {
+        throw new Error('Datos del estudiante no disponibles.');
+      }
+      const updatedName = userName;
+      if (updatedEntry.user.username !== updatedName) {
+        throw new Error('El nombre del estudiante no coincide.');
+      }
+      if (updatedEntry.user.role !== 'student') {
+        throw new Error('El usuario no es un estudiante.');
+      }
+      console.log(updatedEntry.user.username);
+
+      // Actualizamos los estados locales para reflejar los cambios inmediatamente
+      const { user, data } = updatedEntry;
+      setStudentUser(user);
+      setUserName(user.username || '');
+      setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
+      setSelectedAvatar(user.photo_url || '');
+      setPasswordType(data.password_type || 'graphical');
+      if (data.password_type === 'graphical') {
+        setNewPassword([]);
+        /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
+      } else {
+        setNewPassword('');
+        /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
+      }
+      /*setIsPasswordMatch(null);*/   // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
       closeAvatarModal();
       if (pictoModalState.visible) closePictoModal();
