@@ -671,8 +671,8 @@ export interface GameConfig {
     voice?: 'woman' | 'man';
     quantity?: number;
     order?: 'ascending' | 'descending';
-    containers_count?: number;
-    objects_count?: number;
+    container_count?: number;
+    object_count?: number;
     accessibility_mode?: string;
   };
 }

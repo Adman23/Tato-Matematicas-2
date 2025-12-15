@@ -153,46 +153,9 @@ html, body, #root, .base-game34-container {
 
 
 
-/* 
 @media (max-width: 600px), (max-height: 600px) {
     .base-game34-container {
-        padding: clamp(0.1rem, 0.5vh, 0.2rem) clamp(0.1rem, 0.5vw, 0.2rem);
-        gap: clamp(0.15rem, 0.5vh, 0.3rem);
-        --target-total-height: clamp(36px, 5vh, 48px);
-        --top-zone-height: clamp(36px, 6vh, 52px);
-        --buttons-min-height: clamp(28px, 4vh, 44px);
-        overflow: hidden !important;
+        height: calc(100vh - clamp(70px, 9vh, 115px));
     }
-    .base-game34-objective {
-        font-size: 1rem;
-        padding: 6px 10px;
-        min-height: var(--target-total-height);
-        max-width: 220px;
-    }
-    .base-game34-objective-value {
-        font-size: 1.1rem;
-        margin-left: 4px;
-    }
-    .base-game34-main-section {
-        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-        gap: clamp(0.2rem, 0.7vw, 0.5rem);
-        padding: clamp(0.05rem, 0.3vw, 0.2rem);
-        overflow: hidden !important;
-    }
-    .base-game34-buttons-container .game-control-button {
-        width: clamp(32px, 13vw, 60px) !important;
-        height: clamp(32px, 13vw, 60px) !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
-    }
-    .base-game34-buttons-container .game-control-button .game-control-button-text {
-        font-size: clamp(0.6rem, 1vw, 0.8rem);
-    }
-    .base-game34-top-zone {
-        flex: 0 1 auto; 
-        min-height: var(--target-total-height);
-        max-height: var(--top-zone-height, 52px);
-        overflow: hidden !important;
-    }
+    
 }
-*/

@@ -21,70 +21,66 @@ const Game3: React.FC = () => {
 
     /**
      * @brief Generates the round data for Game 3
+     * @param config Game configuration of the user
+     * @returns Round data including containers, top zone numbers, target total, and solution
      */
     const generateRoundData = (config: GameConfig) => {
 
-        console.log('Generating round data for Game 3 with config:', config);
-
+        // Get the number range from the config
         const [min, max] = config.number_range.split('-').map(Number);
         
+        // Control if the min is less than 1, we dont want 0 for these games
         const actualMin = Math.max(1, min);
-        const containersCount = config.settings?.containers_count || 2;
-        const objectsCount = config.settings?.objects_count || 8;
 
-        
-        console.log(config.settings?.objects_count, objectsCount);
-        
+        // Get the other settings from config
+        let containersCount = config.settings?.container_count || 2;
+        let objectsCount = config.settings?.object_count || 8;
+        // To ensure we dont have 4 objects with 4 containers
+        if (objectsCount <= containersCount) {
+            objectsCount = containersCount + 4;
+        } // To ensure we dont have 4 objects with 3 containers
+        else if (objectsCount <= containersCount + 1) {
+            objectsCount = containersCount + 5;
+        }
+
         const targetTotal = generateBiasedRandomInRange(actualMin, max);
-        // const chestNumbers = [targetTotal].map(createNumberItem);
-        
-        // Límite superior: ningún número puede ser >= targetTotal
         const maxNumberValue = targetTotal - 1;
-        
-        // Si el límite es menor que el mínimo, ajustar
         if (maxNumberValue < actualMin) {
-            console.warn(`Target ${targetTotal} es demasiado bajo, ajustando...`);
-            // Regenerar con un target más alto
             const newTarget = Math.max(actualMin + 2, Math.floor((max - actualMin) * 0.7) + actualMin);
             return generateRoundDataWithTarget(config, newTarget);
         }
-        
         const bowls: Container[] = [];
         for (let i = 0; i < containersCount; i++) {
             bowls.push({
                 id: `bowl-${i + 1}`,
-                type: 'bowl' as const, // Cast explícito
+                type: 'bowl' as const,
                 numbers: []
             });
         }
-        
         const topZoneNumbers: NumberItem[] = [];
-        
-        // Generar soluciones válidas para cada contenedor
+        const solution: { [bowlId: string]: string[] } = {};
+
+        // Definir minParts y maxParts aquí para que estén disponibles
+        const minParts = 2;
+        const maxParts = Math.max(2, Math.floor(objectsCount / containersCount));
         for (let i = 0; i < containersCount; i++) {
-            const partsCount = Math.floor(Math.random() * 2) + 1;
-            const parts = divideNumberIntoParts(targetTotal, partsCount, actualMin, maxNumberValue);
-            parts.forEach(val => topZoneNumbers.push(createNumberItem(val)));
+            const parts = divideNumberIntoParts(targetTotal, minParts, maxParts, actualMin, maxNumberValue);
+            const ids: string[] = [];
+            parts.forEach(val => {
+                const item = createNumberItem(val);
+                topZoneNumbers.push(item);
+                ids.push(item.id);
+            });
+            solution[`bowl-${i + 1}`] = ids;
         }
+        console.log("Generated solution:", solution);
         
-        // Añadir números adicionales hasta objectsCount
+        // Add additional numbers up to objectsCount
         const remaining = objectsCount - topZoneNumbers.length;
         
         for (let i = 0; i < remaining; i++) {
-            if (Math.random() < 0.3 && topZoneNumbers.length < objectsCount) {
-                // Añadir otra solución válida
-                const partsCount = Math.floor(Math.random() * 2) + 1;
-                const parts = divideNumberIntoParts(targetTotal, partsCount, actualMin, maxNumberValue);
-                parts.forEach(val => {
-                    if (topZoneNumbers.length < objectsCount) {
-                        topZoneNumbers.push(createNumberItem(val));
-                    }
-                });
-            } else {
-                // Distractor: número entre actualMin y maxNumberValue
-                const distractor = Math.floor(Math.random() * (maxNumberValue - actualMin + 1)) + actualMin;
-                topZoneNumbers.push(createNumberItem(distractor));
-            }
+            const distractor = Math.floor(Math.random() * (maxNumberValue - actualMin + 1)) + actualMin;
+            topZoneNumbers.push(createNumberItem(distractor));
         }
         
         // Asegurar exactamente objectsCount números
@@ -99,15 +95,13 @@ const Game3: React.FC = () => {
         
         topZoneNumbers.sort(() => Math.random() - 0.5);
         
-        const containers: Container[] = [
-            ...bowls,
-            // { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers } // !! Removed the chest container
-        ];
+        const containers: Container[] = [...bowls,];
 
         return {
             containers,
             topZone: topZoneNumbers,
-            targetTotal
+            targetTotal,
+            solution
         };
     };
 
@@ -122,52 +116,57 @@ const Game3: React.FC = () => {
     const generateRoundDataWithTarget = (config: GameConfig, target: number) => {
         const [min, _] = config.number_range.split('-').map(Number);
         const actualMin = Math.max(1, min);
-        const containersCount = config.settings?.containers_count || 2;
-        const objectsCount = config.settings?.objects_count || 8;
-        
-
+        let containersCount = config.settings?.container_count || 2;
+        let objectsCount = config.settings?.object_count || 8;
+        if (objectsCount <= containersCount) {
+            objectsCount = containersCount + 4;
+        }
         const targetTotal = target;
-        // const chestNumbers = [targetTotal].map(createNumberItem);
         const maxNumberValue = targetTotal - 1;
-        
         const bowls: Container[] = [];
         for (let i = 0; i < containersCount; i++) {
             bowls.push({ id: `bowl-${i + 1}`, type: 'bowl' as const, numbers: [] });
         }
-        
+        const minParts = 2;
+        const maxParts = Math.max(2, Math.floor(objectsCount / containersCount));
         const topZoneNumbers: NumberItem[] = [];
-        
+        const solution: { [bowlId: string]: string[] } = {};
         for (let i = 0; i < containersCount; i++) {
-            const partsCount = Math.floor(Math.random() * 2) + 1;
-            const parts = divideNumberIntoParts(targetTotal, partsCount, actualMin, maxNumberValue);
-            parts.forEach(val => topZoneNumbers.push(createNumberItem(val)));
+            const parts = divideNumberIntoParts(targetTotal, minParts, maxParts, actualMin, maxNumberValue);
+            const ids: string[] = [];
+            parts.forEach(val => {
+                const item = createNumberItem(val);
+                topZoneNumbers.push(item);
+                ids.push(item.id);
+            });
+            solution[`bowl-${i + 1}`] = ids;
         }
-        
         const remaining = objectsCount - topZoneNumbers.length;
         for (let i = 0; i < remaining; i++) {
             const distractor = Math.floor(Math.random() * (maxNumberValue - actualMin + 1)) + actualMin;
             topZoneNumbers.push(createNumberItem(distractor));
         }
-        
         while (topZoneNumbers.length > objectsCount) topZoneNumbers.pop();
         while (topZoneNumbers.length < objectsCount) {
             const filler = Math.floor(Math.random() * (maxNumberValue - actualMin + 1)) + actualMin;
             topZoneNumbers.push(createNumberItem(filler));
         }
-        
         topZoneNumbers.sort(() => Math.random() - 0.5);
-        
-        {/*, { id: 'chest-1', type: 'chest' as const, type: 'chest' as const, numbers: chestNumbers } */}
         return { 
             containers: [...bowls],
             topZone: topZoneNumbers,
-            targetTotal
+            targetTotal,
+            solution
         };
     };
 
     /**
-     * Genera un número aleatorio con distribución sesgada hacia valores altos.
-     * Usa distribución normal desplazada.
+     * @USAGE Get a random target total number
+     * 
+     * @brief Generates a biased random number within a range, favoring higher values.
+     * @param min Minimum value of the range.
+     * @param max Maximum value of the range.
+     * @returns A biased random number between min and max.
      */
     const generateBiasedRandomInRange = (min: number, max: number): number => {
         const range = max - min;
@@ -188,63 +187,75 @@ const Game3: React.FC = () => {
     };
 
     /**
-     * Divide un número total en varias partes que sumen ese total.
+     * @USAGE Divide the total number into parts to get the numbers to divide in the bowls
+     * 
+     * @brief Divides a total number into a specified count of parts within given min and max bounds.
+     * @param total The total number to divide.
+     * @param partsCount The number of parts to divide into.
+     * @param min Minimum value for each part.
+     * @param max Maximum value for each part.
+     * @returns An array of numbers representing the divided parts.
      */
-    const divideNumberIntoParts = (total: number, partsCount: number, min: number, max: number): number[] => {
-        if (total <= 0 || partsCount <= 0) return [];
-        
+    // Divide a number into a random number of parts between minParts and maxParts
+    const divideNumberIntoParts = (
+        total: number,
+        minParts: number,
+        maxParts: number,
+        min: number,
+        max: number
+    ): number[] => {
+        if (total <= 0 || minParts > maxParts) return [];
         const parts: number[] = [];
         let remaining = total;
-        
+        const partsCount = Math.max(minParts, Math.min(maxParts, Math.floor(Math.random() * (maxParts - minParts + 1)) + minParts));
         for (let i = 0; i < partsCount - 1; i++) {
             const maxPossible = Math.min(max, remaining - (partsCount - i - 1) * min);
             const minPossible = Math.max(min, remaining - (partsCount - i - 1) * max);
-            
             if (minPossible > maxPossible) break;
-            
             const part = Math.floor(Math.random() * (maxPossible - minPossible + 1)) + minPossible;
             parts.push(part);
             remaining -= part;
         }
-        
         if (remaining >= min && remaining <= max) {
             parts.push(remaining);
         }
-        
         return parts;
     };
 
     
     /**
-     * Divide un total en varios números aleatorios.
+     * @brief Provides a hint by moving one correct number from the top zone to its bowl.
+     * @param gameState 
+     * @param setContainers 
+     * @param setTopZone 
+     * @returns 
      */
-    /*
-    const divideIntoNumbers = (total: number, minCount: number, maxCount: number, minVal: number, maxVal: number): NumberItem[] => {
-        if (total <= 0) return [];
-        
-        const count = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
-        const numbers: number[] = [];
-        let remaining = total;
-        
-        for (let i = 0; i < count - 1; i++) {
-            const maxPossible = Math.min(maxVal, remaining - (count - i - 1) * minVal);
-            const minPossible = Math.max(minVal, remaining - (count - i - 1) * maxVal);
-            
-            if (minPossible > maxPossible) break;
-            
-            const num = Math.floor(Math.random() * (maxPossible - minPossible + 1)) + minPossible;
-            numbers.push(num);
-            remaining -= num;
+    const useHint = (gameState: {
+        containers: Container[],
+        topZone: NumberItem[],
+        solution: { [bowlId: string]: string[] }
+    }, setContainers: React.Dispatch<React.SetStateAction<Container[]>>, setTopZone: React.Dispatch<React.SetStateAction<NumberItem[]>>) => {
+        // Busca el siguiente número de la solución que aún está en la topZone y muévelo al bowl correcto
+        for (const bowl of gameState.containers) {
+            const neededIds = gameState.solution[bowl.id] || [];
+            for (const numId of neededIds) {
+                // Si el número está en la zona superior, muévelo al bowl
+                const idx = gameState.topZone.findIndex(n => n.id === numId);
+                if (idx !== -1) {
+                    const number = gameState.topZone[idx];
+                    setTopZone(prev => prev.filter(n => n.id !== numId));
+                    setContainers(prev =>
+                        prev.map(c =>
+                            c.id === bowl.id
+                                ? { ...c, numbers: [...c.numbers, number] }
+                                : c
+                        )
+                    );
+                    return; // Solo mueve uno por pista
+                }
+            }
         }
-        
-        if (remaining >= minVal && remaining <= maxVal) {
-            numbers.push(remaining);
-        }
-        
-        return numbers.map(val => createNumberItem(val));
     };
-    */
-
 
     return (
         <BaseGame34
@@ -253,6 +264,7 @@ const Game3: React.FC = () => {
             gameImage="/assets/juegosImg/game34/cuenco.png"
             headerImage="/assets/juegosImg/juego3.png"
             generateRoundData={generateRoundData}
+            useHint={useHint}
         />
     );
 };

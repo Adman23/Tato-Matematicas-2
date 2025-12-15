@@ -16,6 +16,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useUserData } from '../../../contexts/UserContext';
 import { gamesAPI } from '../../../lib/api';
 import type { GameConfig, StudentMessage } from '../../../lib/api';
+import { getAudioPreferences, type AudioPreferences } from '../../../lib/api';
 
 // Imports from components of the games
 import GameHeader from '../components/GameHeader';
@@ -59,15 +60,6 @@ export type Container = {
     numbers: NumberItem[];
 };
 
-/**
- * @brief Type of data generated for each round.
- * Its used by each round generator to save the data in the state of the game.
- */
-type RoundData = {
-    containers: Container[];
-    topZone: NumberItem[];
-    targetTotal: number;
-};
 
 /**
  * @brief Props for the BaseGame34 component.
@@ -77,8 +69,22 @@ type BaseGame34Props = {
     gameTitle: string;
     gameImage: string;
     headerImage: string;
-    // generateRoundData no recibe roundNumber
-    generateRoundData: (config: GameConfig) => RoundData;
+    generateRoundData: (config: GameConfig) => {
+        containers: Container[];
+        topZone: NumberItem[];
+        targetTotal: number;
+        solution: { [bowlId: string]: string[] }; // bowlId -> array of NumberItem ids that solve it
+    };
+    // Cambia la firma para aceptar una función de pista con acceso al estado y setters
+    useHint: (
+        gameState: {
+            containers: Container[],
+            topZone: NumberItem[],
+            solution: { [bowlId: string]: string[] }
+        },
+        setContainers: React.Dispatch<React.SetStateAction<Container[]>>,
+        setTopZone: React.Dispatch<React.SetStateAction<NumberItem[]>>
+    ) => void;
 };
 
 const BaseGame34: React.FC<BaseGame34Props> = ({
@@ -87,42 +93,57 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
     gameImage,
     headerImage,
     generateRoundData,
+    useHint,
 }) => {
     const {user} = useAuth();
     const { loadingUser } = useUserData();
     const router = useIonRouter();
     
     const sessionCreatedRef = useRef(false);
-    const [loadingGame, setLoadingGame] = useState(true);
+
+    // State variable to show loading spinner while game config is being fetched
+    const [loadingGame, setLoadingGame] = useState(true); 
+
+    // Config variables
     const [config, setConfig] = useState<GameConfig | null>(null);
+    const [audioPreferences, setAudioPreferences] = useState<AudioPreferences | undefined>();
+
+    // Game state variables
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [currentRound, setCurrentRound] = useState(1);
-    const [hintsCount, setHintsCount] = useState(0);
-    const [attemptsCount, setAttemptsCount] = useState(0);
-    const [Messages, setMessages] = useState<StudentMessage[]>([]);
-    const [showFeedback, setShowFeedback] = useState(false);
-    const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
     const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
-    const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
-    const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
+    const [containers, setContainers] = useState<Container[]>([]);
+    const [topZone, setTopZone] = useState<NumberItem[]>([]);
+    const [draggedItem, setDraggedItem] = useState<{ id: string; value: number } | null>(null);
+    const [targetTotal, setTargetTotal] = useState<number>(0);
+    const [solution, setSolution] = useState<{ [bowlId: string]: string[] }>({});
+
+    // Feedback messages
+    const [Messages, setMessages] = useState<StudentMessage[]>([]);
+
+    // Feedback screen (end of round)
+    const [showFeedbackScreen, setShowFeedbackScreen] = useState(false);
+
+    // Video modal
     const [showVideoModal, setShowVideoModal] = useState(false);
     const videoRef = useRef<HTMLVideoElement | null>(null);
+
+    // Game end and results
+    const [hintsCount, setHintsCount] = useState(0);
+    const [totalHintsUsed, setTotalHintsUsed] = useState(0);
+    const [attemptsCount, setAttemptsCount] = useState(0);
+    const [roundStartTime, setRoundStartTime] = useState<number>(Date.now());
+    const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
     const [gameFinished, setGameFinished] = useState(false);
     const [showExitConfirm, setShowExitConfirm] = useState(false);
     const [totalRoundsCorrect, setTotalRoundsCorrect] = useState(0);
-    const [totalHintsUsed, setTotalHintsUsed] = useState(0);
     const [totalErrorsMade, setTotalErrorsMade] = useState(0);
     const [roundTimes, setRoundTimes] = useState<number[]>([]);
-    const [containers, setContainers] = useState<Container[]>([]);
-    const [numbersInTopZone, setNumbersInTopZone] = useState<NumberItem[]>([]);
-    const [draggedItem, setDraggedItem] = useState<{ id: string; value: number } | null>(null);
-    const [targetTotal, setTargetTotal] = useState<number>(0);
 
     useEffect(() => {
         sessionCreatedRef.current = false;
         setGameFinished(false);
         setCurrentRound(1);
-        setShowFeedback(false);
         setSessionId(null);
         loadGameConfig();
         setGameStartTime(Date.now());
@@ -167,6 +188,16 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                 settings: { ...data.settings || {} }
             };
             setConfig(validatedConfig);
+
+            // Load audio preferences
+            try {
+                const audioPrefs = await getAudioPreferences(user.id);
+                setAudioPreferences(audioPrefs);
+            } catch (err) {
+                console.error('Error loading audio preferences:', err);
+                // Use defaults if error
+            }
+
             setLoadingGame(false);
         } catch (error) {
             console.error('Error loading game config:', error);
@@ -193,9 +224,9 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
         const roundData = generateRoundData(config);
         
         setContainers(roundData.containers);
-        setNumbersInTopZone(roundData.topZone);
+        setTopZone(roundData.topZone);
         setTargetTotal(roundData.targetTotal);
-        setShowFeedback(false);
+        setSolution(roundData.solution);
     };
 
 
@@ -208,15 +239,21 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
         
         setIsCorrectAnswer(correct);
         setShowFeedbackScreen(true);
+
+        console.log(`Total Rounds correct: ${totalRoundsCorrect}`);
+        console.log(`Total Errors made: ${totalErrorsMade}`);
         
 
         if (sessionId) {
-            console.log(sessionId)    
             const timeSeconds = (Date.now() - roundStartTime) / 1000;
+            setRoundTimes(prev => [...prev, timeSeconds]);
             if (correct) {
-                setRoundTimes(prev => [...prev, timeSeconds]);
                 setTotalRoundsCorrect(prev => prev + 1);
             }
+            else {
+                setTotalErrorsMade(prev => prev + 1);
+            }
+
             try {
                 // Calcular totales de cada bowl
                 const bowlsTotals = bowls.map(bowl => 
@@ -225,7 +262,6 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                 
                 // chest_total es el targetTotal (objetivo)
                 const chestTotal = targetTotal;
-                console.log("currentRound", currentRound);
 
                 await gamesAPI.saveRoundResultGame34(sessionId, {
                     round: currentRound,
@@ -257,7 +293,6 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
     const advanceToNextRound = async () => {
         const timeSeconds = (Date.now() - roundStartTime) / 1000;
         if (sessionId) {
-            setTotalErrorsMade(prev => prev + 1);
             setRoundTimes(prev => [...prev, timeSeconds]);
         }
         setShowFeedbackScreen(false);
@@ -270,7 +305,6 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
 
     const repeatExercise = () => {
         setAttemptsCount(prev => prev + 1);
-        setShowFeedback(false);
         setShowFeedbackScreen(false);
         setRoundStartTime(Date.now());
     };
@@ -300,14 +334,14 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
         e.dataTransfer.effectAllowed = 'move';
     };
 
-    const handleDragEnd = (e: React.DragEvent) => {
+    const handleDragEnd = () => {
         setDraggedItem(null);
     };
 
     const handleContainerExternalDrop = (containerId: string) => {
         if (!draggedItem) return;
         // Elimina el número de todos los contenedores y la top zone
-        setNumbersInTopZone(prev => prev.filter(item => item.id !== draggedItem.id));
+        setTopZone(prev => prev.filter(item => item.id !== draggedItem.id));
         setContainers(prev => prev.map(container => ({
             ...container,
             numbers: container.numbers.filter(item => item.id !== draggedItem.id)
@@ -325,14 +359,27 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
     const handleZoneExternalDrop = () => {
         if (!draggedItem) return;
         // Elimina el número de todos los contenedores y la top zone
-        setNumbersInTopZone(prev => prev.filter(item => item.id !== draggedItem.id));
+        setTopZone(prev => prev.filter(item => item.id !== draggedItem.id));
         setContainers(prev => prev.map(container => ({
             ...container,
             numbers: container.numbers.filter(item => item.id !== draggedItem.id)
         })));
         // Añade el número a la top zone
-        setNumbersInTopZone(prev => [...prev, draggedItem]);
+        setTopZone(prev => [...prev, draggedItem]);
         setDraggedItem(null);
+    };
+
+    // Nueva función de pista
+    const handleHint = () => {
+        useHint(
+            {
+                containers,
+                topZone,
+                solution
+            },
+            setContainers,
+            setTopZone
+        );
     };
 
     if (!user) return <Redirect to="/student/login" />;
@@ -362,6 +409,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                 onNext={advanceToNextRound}
                 onHomeClick={handleEarlyExit}
                 onRepeat={repeatExercise}
+                audioPreferences={audioPreferences}
             />
         );
     }
@@ -375,13 +423,14 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                         totalHints={totalHintsUsed}
                         totalErrors={totalErrorsMade}
                         totalNumbersCorrect={totalRoundsCorrect}
-                        totalNumbersRequired={5}
+                        totalNumbersRequired={TOTAL_ROUNDS}
                         onHomeClick={exitToDashboard} 
                         headerTitle={gameTitle}
                         headerPictogram1={headerImage}
                         headerPictogramArrow={imgFlecha}
                         headerPictogram2={gameImage}
                         elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
+                        audioPreferences={audioPreferences}
                     />
                 ) : showExitConfirm ? (
                     <ExitScreen
@@ -414,7 +463,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                 className="base-game34-top-zone"
                                 key={`zone-${currentRound}`}
                                 type="zone"
-                                numbers={numbersInTopZone}
+                                numbers={topZone}
                                 roundKey={currentRound} // Añadido
                                 showDebugZones={SHOW_DEBUG_ZONES}
                                 onGlobalDragStart={handleDragStart}
@@ -447,7 +496,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                     <img src="/assets/juegosImg/instrucciones.png" alt="Instrucciones" className="game-control-button-image" />
                                     <span className="game-control-button-text">INSTRUCCIONES</span>
                                 </GameControlButton>
-                                <GameControlButton onClick={() => { /* pista */ }}>
+                                <GameControlButton onClick={() => {handleHint(); setHintsCount(prev => prev + 1); setTotalHintsUsed(prev => prev + 1);}}>
                                     <img src="/assets/juegosImg/lupa.png" alt="Pista" className="game-control-button-image" />
                                     <span className="game-control-button-text">PISTA</span>
                                 </GameControlButton>

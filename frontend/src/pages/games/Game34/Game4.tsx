@@ -10,7 +10,6 @@ import type { GameConfig } from '../../../lib/api';
 import type { NumberItem, Container } from './baseGame34';
 
 const Game4: React.FC = () => {
-    
     const createNumberItem = (value: number): NumberItem => ({
         id: `num-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         value
@@ -18,142 +17,180 @@ const Game4: React.FC = () => {
 
     /**
      * Genera los datos de una ronda para el Juego 4.
-     * Objetivo: Los bowls tienen números que deben reducirse para igualar el chest.
-     * El total de números en todos los bowls debe ser exactamente objectsCount.
+     * Cada solución tiene entre 3 y (object_count/container_count) objetos (mínimo 2 si es menor que 3).
+     * Siempre hay que quitar al menos un número, preferiblemente más de uno.
      */
-    const generateRoundData = (config: GameConfig) => {
+    const generateRoundData = (config: GameConfig): {
+        containers: Container[];
+        topZone: NumberItem[];
+        targetTotal: number;
+        solution: { [bowlId: string]: string[] };
+    } => {
         const [min, max] = config.number_range.split('-').map(Number);
         const actualMin = Math.max(1, min);
-        const containersCount = config.settings?.containers_count || 2;
-        const objectsCount = config.settings?.objects_count || 8;
-        
+
+        let containersCount = config.settings?.container_count || 2;
+        let objectsCount = config.settings?.object_count || 8;
+        if (objectsCount <= containersCount) {
+            objectsCount = containersCount + 4;
+        } else if (objectsCount <= containersCount + 1) {
+            objectsCount = containersCount + 5;
+        }
+
         const targetTotal = generateBiasedRandomInRange(actualMin, max);
-        const chestNumbers = [targetTotal].map(createNumberItem);
-        
-        // Límite superior: ningún número puede ser >= targetTotal
         const maxNumberValue = targetTotal - 1;
-        
-        // Validar que es posible generar números
         if (maxNumberValue < actualMin) {
-            console.warn(`Target ${targetTotal} es demasiado bajo para Game4, ajustando...`);
             const newTarget = Math.max(actualMin + 3, Math.floor((max - actualMin) * 0.7) + actualMin);
             return generateRoundDataWithTarget(config, newTarget, actualMin, max, containersCount, objectsCount);
         }
-        
-        // Calcular distribución de números por bowl
+
         const numbersPerBowl = Math.floor(objectsCount / containersCount);
         const extraNumbers = objectsCount % containersCount;
-        
+
         const bowls: Container[] = [];
-        
+        const solution: { [bowlId: string]: string[] } = {};
+
+        const minParts = 3;
+        const maxParts = Math.max(3, Math.floor(objectsCount / containersCount));
+        const exactlyTwoPerBowl = objectsCount / containersCount === 2;
+
         for (let i = 0; i < containersCount; i++) {
-            const countForThisBowl = numbersPerBowl + (i < extraNumbers ? 1 : 0);
-            
-            // El bowl debe sumar más que el target
-            // Calculamos cuánto exceso queremos (entre 3 y 8)
-            const excess = Math.floor(Math.random() * 6) + 3;
-            const bowlTarget = targetTotal + excess;
-            
-            // Generar números que:
-            // 1. Sumen bowlTarget
-            // 2. Cada número sea < targetTotal
-            // 3. Al quitar algunos, se pueda llegar a targetTotal
-            const bowlNumbers = generateRemovableNumbers(
-                bowlTarget,
-                targetTotal,
-                countForThisBowl,
-                actualMin,
-                maxNumberValue
-            );
-            
+            let bowlNumberItems: NumberItem[] = [];
+            let keepIds: string[] = [];
+
+            if (exactlyTwoPerBowl) {
+                // One solution, one to remove
+                const solutionValue = targetTotal;
+                let removableValue;
+                do {
+                    removableValue = Math.floor(Math.random() * (maxNumberValue - actualMin + 1)) + actualMin;
+                } while (removableValue === solutionValue);
+
+                const solutionItem = createNumberItem(solutionValue);
+                const removableItem = createNumberItem(removableValue);
+                bowlNumberItems = [solutionItem, removableItem].sort(() => Math.random() - 0.5);
+                keepIds = [solutionItem.id];
+            } else {
+                // To ensure we dont have 4 objects with 4 containers
+                if (objectsCount <= containersCount) {
+                    objectsCount = containersCount + 4;
+                } // To ensure we dont have 4 objects with 3 containers
+                else if (objectsCount <= containersCount + 1) {
+                    objectsCount = containersCount + 5;
+                }
+
+                const countForThisBowl = Math.max(2, numbersPerBowl + (i < extraNumbers ? 1 : 0));
+                let solutionParts: number;
+                if (countForThisBowl === 2) {
+                    solutionParts = 1;
+                } else {
+                    solutionParts = Math.max(
+                        2,
+                        Math.min(
+                            maxParts,
+                            Math.min(countForThisBowl - 1, Math.floor(Math.random() * (maxParts - minParts + 1)) + minParts)
+                        )
+                    );
+                }
+                const keepParts = divideNumberIntoParts(
+                    targetTotal,
+                    solutionParts,
+                    solutionParts,
+                    actualMin,
+                    maxNumberValue
+                );
+                const removableCount = countForThisBowl - keepParts.length;
+                let removableParts: number[] = [];
+                if (removableCount > 0) {
+                    if (countForThisBowl === 2) {
+                        let val;
+                        do {
+                            val = Math.floor(Math.random() * (maxNumberValue - actualMin + 1)) + actualMin;
+                        } while (val === keepParts[0]);
+                        removableParts = [val];
+                    } else {
+                        const minExcess = removableCount * actualMin;
+                        const maxExcess = removableCount * maxNumberValue;
+                        const excess = Math.max(minExcess, Math.floor(Math.random() * (maxExcess - minExcess + 1)) + minExcess);
+                        removableParts = divideNumberIntoParts(
+                            excess,
+                            removableCount,
+                            removableCount,
+                            actualMin,
+                            maxNumberValue
+                        );
+                    }
+                }
+                const allNumbers = [...removableParts, ...keepParts];
+                allNumbers.sort(() => Math.random() - 0.5);
+                bowlNumberItems = allNumbers.map(createNumberItem);
+                keepIds = [];
+                let idx = 0;
+                let keepPartsCopy = [...keepParts];
+                for (const val of allNumbers) {
+                    if (keepPartsCopy.includes(val)) {
+                        keepIds.push(bowlNumberItems[idx].id);
+                        keepPartsCopy.splice(keepPartsCopy.indexOf(val), 1);
+                    }
+                    idx++;
+                }
+            }
+
             bowls.push({
                 id: `bowl-${i + 1}`,
-                type: 'bowl' as const, 
-                numbers: bowlNumbers
+                type: 'bowl' as const,
+                numbers: bowlNumberItems
             });
+            solution[`bowl-${i + 1}`] = keepIds;
         }
-        
-        const containers: Container[] = [
-            ...bowls,
-            // { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers } //!!Removed the chest container
-        ];
+        const containers: Container[] = [...bowls];
 
         return {
             containers,
             topZone: [] as NumberItem[],
-            targetTotal
+            targetTotal,
+            solution
         };
     };
 
-    /**
-     * Genera números para un bowl que:
-     * - Suman bowlTotal
-     * - Cada número < maxValue
-     * - Existen combinaciones que permiten llegar a targetTotal quitando números
-     */
-    const generateRemovableNumbers = (
-        bowlTotal: number,
-        targetTotal: number,
-        count: number,
+    // Divide un número en un número de partes entre minParts y maxParts, cada parte entre min y max
+    const divideNumberIntoParts = (
+        total: number,
+        minParts: number,
+        maxParts: number,
         min: number,
-        maxValue: number
-    ): NumberItem[] => {
-        const excess = bowlTotal - targetTotal;
-        
-        // Generar números que sumen el excess (estos se podrán quitar)
-        const removableCount = Math.min(count - 1, Math.floor(Math.random() * 2) + 1);
-        const removableParts = divideNumberIntoParts(excess, removableCount, min, Math.min(maxValue, excess));
-        
-        // Generar números que sumen el targetTotal (estos se quedarán)
-        const keepCount = count - removableCount;
-        const keepParts = divideNumberIntoParts(targetTotal, keepCount, min, maxValue);
-        
-        // Combinar ambos grupos
-        const allNumbers = [...removableParts, ...keepParts];
-        
-        // Mezclar
-        allNumbers.sort(() => Math.random() - 0.5);
-        
-        return allNumbers.map(createNumberItem);
-    };
-
-    /**
-     * Divide un número en partes asegurando que cada parte sea menor que maxValue
-     */
-    const divideNumberIntoParts = (total: number, partsCount: number, min: number, maxValue: number): number[] => {
-        if (total <= 0 || partsCount <= 0) return [];
-        
+        max: number
+    ): number[] => {
+        if (total <= 0 || minParts > maxParts) return [];
         const parts: number[] = [];
         let remaining = total;
-        
+        const partsCount = Math.max(minParts, Math.min(maxParts, Math.floor(Math.random() * (maxParts - minParts + 1)) + minParts));
         for (let i = 0; i < partsCount - 1; i++) {
-            const maxPossible = Math.min(maxValue, remaining - (partsCount - i - 1) * min);
-            const minPossible = Math.max(min, remaining - (partsCount - i - 1) * maxValue);
-            
-            if (minPossible > maxPossible) {
-                // Distribuir uniformemente lo que queda
-                const avg = Math.floor(remaining / (partsCount - i));
-                parts.push(Math.max(min, Math.min(maxValue, avg)));
-                remaining -= parts[parts.length - 1];
-                continue;
-            }
-            
+            const maxPossible = Math.min(max, remaining - (partsCount - i - 1) * min);
+            const minPossible = Math.max(min, remaining - (partsCount - i - 1) * max);
+            if (minPossible > maxPossible) break;
             const part = Math.floor(Math.random() * (maxPossible - minPossible + 1)) + minPossible;
             parts.push(part);
             remaining -= part;
         }
-        
-        // Último número
-        if (remaining >= min && remaining <= maxValue) {
+        if (remaining >= min && remaining <= max) {
             parts.push(remaining);
-        } else {
-            parts.push(Math.max(min, Math.min(maxValue, remaining)));
         }
-        
         return parts;
     };
 
-    // Función auxiliar para regenerar con target específico
+    const generateBiasedRandomInRange = (min: number, max: number): number => {
+        const range = max - min;
+        const u1 = Math.random();
+        const u2 = Math.random();
+        const normalRandom = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+        const biasedValue = 0.7 + (normalRandom * 0.15);
+        const clampedValue = Math.max(0, Math.min(1, biasedValue));
+        const result = Math.round(min + (clampedValue * range));
+        return Math.max(min, Math.min(max, result));
+    };
+
+    // Si usas generateRoundDataWithTarget, asegúrate de que también devuelva 'solution'
     const generateRoundDataWithTarget = (
         config: GameConfig,
         target: number,
@@ -161,55 +198,50 @@ const Game4: React.FC = () => {
         max: number,
         containersCount: number,
         objectsCount: number
-    ) => {
-        const targetTotal = target;
-        const chestNumbers = [targetTotal].map(createNumberItem);
-        const maxNumberValue = targetTotal - 1;
-        
-        const numbersPerBowl = Math.floor(objectsCount / containersCount);
-        const extraNumbers = objectsCount % containersCount;
-        
-        const bowls: Container[] = [];
-        
-        for (let i = 0; i < containersCount; i++) {
-            const countForThisBowl = numbersPerBowl + (i < extraNumbers ? 1 : 0);
-            const excess = Math.floor(Math.random() * 6) + 3;
-            const bowlTarget = targetTotal + excess;
-            
-            const bowlNumbers = generateRemovableNumbers(
-                bowlTarget,
-                targetTotal,
-                countForThisBowl,
-                actualMin,
-                maxNumberValue
-            );
-            
-            bowls.push({ id: `bowl-${i + 1}`, type: 'bowl' as const, numbers: bowlNumbers });
-        }
-        
-        return {
-            containers: [...bowls, { id: 'chest-1', type: 'chest' as const, numbers: chestNumbers }],
-            topZone: [] as NumberItem[],
-            targetTotal
-        };
+    ): {
+        containers: Container[];
+        topZone: NumberItem[];
+        targetTotal: number;
+        solution: { [bowlId: string]: string[] };
+    } => {
+        // ...igual que arriba, puedes reutilizar el mismo algoritmo...
+        return generateRoundData({
+            ...config,
+            settings: {
+                ...config.settings,
+                container_count: containersCount,
+                object_count: objectsCount
+            },
+            number_range: `${actualMin}-${max}`
+        });
     };
 
-    /**
-     * Genera un número aleatorio con distribución sesgada hacia valores altos.
-     */
-    const generateBiasedRandomInRange = (min: number, max: number): number => {
-        const range = max - min;
-        
-        const u1 = Math.random();
-        const u2 = Math.random();
-        const normalRandom = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-        
-        const biasedValue = 0.7 + (normalRandom * 0.15);
-        const clampedValue = Math.max(0, Math.min(1, biasedValue));
-        
-        const result = Math.round(min + (clampedValue * range));
-        
-        return Math.max(min, Math.min(max, result));
+    // Hint: move a removable number (not in solution) to the top zone (only one per hint)
+    const useHint = (
+        gameState: {
+            containers: Container[],
+            topZone: NumberItem[],
+            solution: { [bowlId: string]: string[] }
+        },
+        setContainers: React.Dispatch<React.SetStateAction<Container[]>>,
+        setTopZone: React.Dispatch<React.SetStateAction<NumberItem[]>>
+    ) => {
+        for (const bowl of gameState.containers) {
+            const keepIds = gameState.solution[bowl.id] || [];
+            // Find a number in the bowl that is NOT in the solution (should be removed)
+            const toRemove = bowl.numbers.find(n => !keepIds.includes(n.id));
+            if (toRemove) {
+                setContainers(prev =>
+                    prev.map(c =>
+                        c.id === bowl.id
+                            ? { ...c, numbers: c.numbers.filter(n => n.id !== toRemove.id) }
+                            : c
+                    )
+                );
+                setTopZone(prev => [...prev, toRemove]);
+                return; // Only move one per hint
+            }
+        }
     };
 
     return (
@@ -219,6 +251,7 @@ const Game4: React.FC = () => {
             gameImage="/assets/juegosImg/game34/cuenco.png"
             headerImage="/assets/juegosImg/juego4.png"
             generateRoundData={generateRoundData}
+            useHint={useHint}
         />
     );
 };
