@@ -464,6 +464,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                         headerPictogram2={gameImage}
                         elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
                         audioPreferences={audioPreferences}
+                        game_id={34}
                     />
                 ) : showExitConfirm ? (
                     <ExitScreen
