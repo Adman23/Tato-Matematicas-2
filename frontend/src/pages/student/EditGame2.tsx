@@ -467,7 +467,7 @@ export default function EditGame2() {
                 photoUrl={user?.photo_url}
                 hidden={true}
                 title={"JUEGO 2"}
-                title_image="/assets/juegosImg/juego2.png"
+                title_image="/assets/pictograms/editar.png"
             />
 
             <IonContent className="EditGame2-content" fullscreen scrollY={false}>
