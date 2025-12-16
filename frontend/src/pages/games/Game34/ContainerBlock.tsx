@@ -234,17 +234,30 @@ const ContainerBlock: React.FC<Props> = ({
                     ))}
                 </div>
             </div>
-            {!isZone && <div className="container-total">
-                <span className="container-total-text">
-                    {mathExpression.operation && (
-                        <>
-                            <span style={{ opacity: 0.9, fontSize: '1em',  }}>{mathExpression.operation}</span>
-                            <span style={{ opacity: 0.9, fontWeight: 900, fontSize: '1.05em', margin: '0 clamp(0.1rem, 0.5vw, 0.3rem)' }}>=</span>
-                        </>
-                    )}
-                    <span style={{ color: 'var(--ion-color-primary)', fontWeight: 900, fontSize: '1.15em' }}>{mathExpression.result}</span>
-                </span>
-            </div>}
+            {!isZone && (
+                <div className="container-total">
+                    {/* Cambiamos span por div para mejor comportamiento de bloque interno, 
+                        aunque con flexbox span funciona igual, div es semánticamente más seguro para layout */}
+                    <div className="container-total-text">
+                        {mathExpression.operation && (
+                            <>
+                                {/* Aplicamos la clase que permite elipsis */}
+                                <span className="total-operation" title={mathExpression.operation}>
+                                    {mathExpression.operation}
+                                </span>
+                                
+                                {/* Signo igual fijo */}
+                                <span className="total-equals">=</span>
+                            </>
+                        )}
+                        
+                        {/* Resultado siempre visible */}
+                        <span className="total-result">
+                            {mathExpression.result}
+                        </span>
+                    </div>
+                </div>
+            )}
         </div>
         );
 };

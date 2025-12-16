@@ -83,26 +83,55 @@
     margin-top: clamp(0.2rem, 0.5vh, 0.4rem);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 2px solid rgba(0, 0, 0, 0.08);
-    width: fit-content; /* Se ajusta al contenido */
     max-width: 100%; /* No exceder el ancho del contenedor padre */
     align-self: center; /* Centrar horizontalmente */
     overflow:hidden;
-
-
 }
 
 .container-total-text {
-    font-size: clamp(1rem, 2vw, 1.3rem); /* Reduced font size */
+    font-size: clamp(1rem, 2vw, 1.3rem);
     font-weight: 700;
     color: #2c3e50;
     letter-spacing: 0.05em;
     text-align: center;
     line-height: 1.1;
+    
+    /* CONFIGURACIÓN FLEX PARA ELIPSIS */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.2rem, 0.5vw, 0.3,5rem); /* Reduced gap */
-    flex-wrap: ellipsis;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap; /* Fuerza una sola línea */
+    overflow: hidden;    /* Oculta lo que se salga */
+}
+
+/* Clase nueva para la operación larga (la que debe cortarse) */
+.total-operation {
+    flex: 0 1 auto;      /* 0 grow, 1 shrink (se encoge), auto basis */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;        /* CRUCIAL: permite que un hijo flex se encoja más allá de su contenido */
+    opacity: 0.9;
+    font-size: 1em;
+}
+
+/* Clase nueva para el signo igual */
+.total-equals {
+    flex: 0 0 auto; /* No se encoge, no crece */
+    opacity: 0.9;
+    font-weight: 900;
+    font-size: 1.05em;
+    margin: 0 clamp(0.1rem, 0.5vw, 0.3rem);
+}
+
+/* Clase nueva para el resultado final */
+.total-result {
+    flex: 0 0 auto; /* No se encoge, siempre visible */
+    color: var(--ion-color-primary);
+    font-weight: 900;
+    font-size: 1.15em;
 }
 
 
