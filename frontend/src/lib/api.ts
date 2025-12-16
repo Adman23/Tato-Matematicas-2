@@ -722,7 +722,6 @@ export interface RoundResultGame1 {
   correct_number: number | null;
   is_correct: boolean;
   time_seconds: number;
-  is_final_attempt?: boolean;
   attempts?: number;
   hints?: number;
 }
@@ -751,7 +750,6 @@ export interface RoundResultGame34 {
   chest_total: number;
   is_correct: boolean;
   time_seconds: number;
-  is_final_attempt?: boolean;
   attempts?: number;
   hints?: number;
 }

@@ -95,14 +95,14 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
     generateRoundData,
     useHint,
 }) => {
-    const {user} = useAuth();
+    const { user } = useAuth();
     const { loadingUser } = useUserData();
     const router = useIonRouter();
-    
+
     const sessionCreatedRef = useRef(false);
 
     // State variable to show loading spinner while game config is being fetched
-    const [loadingGame, setLoadingGame] = useState(true); 
+    const [loadingGame, setLoadingGame] = useState(true);
 
     // Config variables
     const [config, setConfig] = useState<GameConfig | null>(null);
@@ -153,7 +153,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
         ];
         setMessages(defaultMessages);
         return () => { sessionCreatedRef.current = false; };
-    },[]);
+    }, []);
 
     useEffect(() => {
         if (config && !sessionId && !sessionCreatedRef.current) {
@@ -215,14 +215,14 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
 
     const generateRound = () => {
         if (!config) return;
-        
+
         setAttemptsCount(0);
         setHintsCount(0);
         setRoundStartTime(Date.now());
-        
+
         // Llamar a la función personalizada de cada juego
         const roundData = generateRoundData(config);
-        
+
         setContainers(roundData.containers);
         setTopZone(roundData.topZone);
         setTargetTotal(roundData.targetTotal);
@@ -236,13 +236,13 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
             const bowlTotal = bowl.numbers.reduce((acc, n) => acc + n.value, 0);
             return bowlTotal === targetTotal;
         });
-        
+
         setIsCorrectAnswer(correct);
         setShowFeedbackScreen(true);
 
         console.log(`Total Rounds correct: ${totalRoundsCorrect}`);
         console.log(`Total Errors made: ${totalErrorsMade}`);
-        
+
 
         if (sessionId) {
             const timeSeconds = (Date.now() - roundStartTime) / 1000;
@@ -254,26 +254,28 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                 setTotalErrorsMade(prev => prev + 1);
             }
 
-            try {
-                // Calcular totales de cada bowl
-                const bowlsTotals = bowls.map(bowl => 
-                    bowl.numbers.reduce((acc, n) => acc + n.value, 0)
-                );
-                
-                // chest_total es el targetTotal (objetivo)
-                const chestTotal = targetTotal;
+            if (correct) {
+                try {
+                    // Calcular totales de cada bowl
+                    const bowlsTotals = bowls.map(bowl =>
+                        bowl.numbers.reduce((acc, n) => acc + n.value, 0)
+                    );
 
-                await gamesAPI.saveRoundResultGame34(sessionId, {
-                    round: currentRound,
-                    bowls_totals: bowlsTotals,
-                    chest_total: chestTotal,
-                    is_correct: correct,
-                    time_seconds: timeSeconds,
-                    attempts: attemptsCount,
-                    hints: hintsCount
-                });
-            } catch (error) {
-                console.error('Error saving round:', error);
+                    // chest_total es el targetTotal (objetivo)
+                    const chestTotal = targetTotal;
+
+                    await gamesAPI.saveRoundResultGame34(sessionId, {
+                        round: currentRound,
+                        bowls_totals: bowlsTotals,
+                        chest_total: chestTotal,
+                        is_correct: correct,
+                        time_seconds: timeSeconds,
+                        attempts: attemptsCount,
+                        hints: hintsCount
+                    });
+                } catch (error) {
+                    console.error('Error saving round:', error);
+                }
             }
         }
     };
@@ -296,6 +298,37 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
             setRoundTimes(prev => [...prev, timeSeconds]);
         }
         setShowFeedbackScreen(false);
+
+        const bowls = containers.filter(c => c.type === 'bowl');
+        const correct = bowls.every(bowl => {
+            const bowlTotal = bowl.numbers.reduce((acc, n) => acc + n.value, 0);
+            return bowlTotal === targetTotal;
+        });
+
+        if (sessionId && !correct) {
+            try {
+                // Calcular totales de cada bowl
+                const bowlsTotals = bowls.map(bowl =>
+                    bowl.numbers.reduce((acc, n) => acc + n.value, 0)
+                );
+
+                // chest_total es el targetTotal (objetivo)
+                const chestTotal = targetTotal;
+
+                await gamesAPI.saveRoundResultGame34(sessionId, {
+                    round: currentRound,
+                    bowls_totals: bowlsTotals,
+                    chest_total: chestTotal,
+                    is_correct: false,
+                    time_seconds: timeSeconds,
+                    attempts: attemptsCount,
+                    hints: hintsCount
+                });
+            } catch (error) {
+                console.error('Error saving round:', error);
+            }
+        }
+
         if (currentRound < TOTAL_ROUNDS) {
             setCurrentRound(prev => prev + 1);
         } else {
@@ -424,7 +457,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                         totalErrors={totalErrorsMade}
                         totalNumbersCorrect={totalRoundsCorrect}
                         totalNumbersRequired={TOTAL_ROUNDS}
-                        onHomeClick={exitToDashboard} 
+                        onHomeClick={exitToDashboard}
                         headerTitle={gameTitle}
                         headerPictogram1={headerImage}
                         headerPictogramArrow={imgFlecha}
@@ -449,7 +482,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                             onBackClick={() => setShowExitConfirm(true)}
                         />
                         <div className="base-game34-container">
-                            
+
                             {/* Total number target */}
                             <div className="base-game34-objective">
                                 OBJETIVO:&nbsp;
@@ -458,7 +491,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                 </span>
                             </div>
 
-                            {/* Top zone for extra numbers */}                        
+                            {/* Top zone for extra numbers */}
                             <ContainerBlock
                                 className="base-game34-top-zone"
                                 key={`zone-${currentRound}`}
@@ -482,7 +515,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                         onGlobalDragStart={handleDragStart}
                                         onGlobalDragEnd={handleDragEnd}
                                         onExternalDrop={
-                                            container.type === 'bowl' 
+                                            container.type === 'bowl'
                                                 ? () => handleContainerExternalDrop(container.id)
                                                 : undefined
                                         }
@@ -496,7 +529,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                     <img src="/assets/juegosImg/instrucciones.png" alt="Instrucciones" className="game-control-button-image" />
                                     <span className="game-control-button-text">INSTRUCCIONES</span>
                                 </GameControlButton>
-                                <GameControlButton onClick={() => {handleHint(); setHintsCount(prev => prev + 1); setTotalHintsUsed(prev => prev + 1);}}>
+                                <GameControlButton onClick={() => { handleHint(); setHintsCount(prev => prev + 1); setTotalHintsUsed(prev => prev + 1); }}>
                                     <img src="/assets/juegosImg/lupa.png" alt="Pista" className="game-control-button-image" />
                                     <span className="game-control-button-text">PISTA</span>
                                 </GameControlButton>
