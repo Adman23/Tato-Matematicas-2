@@ -33,7 +33,7 @@ TATO MATEMÁTICAS 2 es una aplicación web educativa que facilita el aprendizaje
 |:---:|---------|------------|:----:|
 | **Administrador** | `admin` | `admin123` | Texto |
 | **Profesor** | `profesora` | `profesora123` | Texto |
-| **Profesor** | `ramon` | `ramon123` | Texto |
+| **Estudiante** | `ramon` | `ramon123` | Texto |
 | **Estudiante** | `manuel` | `perro-gato-tortuga` | Pictogramas |
 | **Estudiante** | `pepe` | `1234` | Numérico |
 
