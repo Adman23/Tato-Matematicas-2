@@ -139,6 +139,7 @@ import { Button3Dtext } from '../../global_components/PushableButtons';
  * @property {number} [elapsedTime] - Tiempo transcurrido en segundos (default: 0)
  * @property {AudioPreferences} [audioPreferences] - Preferencias de audio del usuario (tema, volumen)
  * @property {boolean} [enableHoverMode] - Si activar navegación automática al hacer hover (default: false)
+ * @property {number} game_id - ID del juego actual
  */
 interface ResultsScreenProps {
   totalRounds: number;
@@ -154,6 +155,7 @@ interface ResultsScreenProps {
   elapsedTime?: number;
   audioPreferences?: AudioPreferences;
   enableHoverMode?: boolean;
+  game_id: number;
 }
 
 /**
@@ -246,7 +248,8 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   headerPictogram2,
   elapsedTime = 0,
   audioPreferences,
-  enableHoverMode = false
+  enableHoverMode = false,
+  game_id
 }) => {
   // Calcular aciertos netos restando las pistas (mínimo 0)
   // Si el alumno usa 2 pistas de 10 correctas, aciertos netos = 8
@@ -296,12 +299,17 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
    * calculateStars() // 1 (20%)
    */
   const calculateStars = () => {
-    const percentage = (netCorrect / totalNumbersRequired) * 100;
-    if (percentage >= 90) return 5;
-    if (percentage >= 75) return 4;
-    if (percentage >= 50) return 3;
-    if (percentage >= 25) return 2;
-    return 1;
+    if (game_id === 1) {
+      return totalNumbersCorrect
+    }
+    else {
+      const percentage = (netCorrect / totalNumbersRequired) * 100;
+      if (percentage >= 90) return 5;
+      if (percentage >= 75) return 4;
+      if (percentage >= 50) return 3;
+      if (percentage >= 25) return 2;
+      return 1;
+    }
   };
 
   const stars = calculateStars();
@@ -404,7 +412,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
             <div className="stat-row">
               <IonIcon icon={checkmarkCircle} className="stat-icon stat-icon-green" />
               <span className="stat-label">Aciertos:</span>
-              <span className="stat-value">{netCorrect}</span>
+              <span className="stat-value">{(game_id === 1 ? totalNumbersCorrect : netCorrect)}</span>
             </div>
 
             <div className="stat-row">
