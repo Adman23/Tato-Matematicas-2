@@ -103,7 +103,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/link-profiles')}
+                                    onClick={() => router.push(`/student-edit-noise/${id}/${name}`)}
                                 >
                                     Sonidos
                                 </IonButton>
@@ -157,7 +157,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
+                                    onClick={() => router.push(`/student-edit-messages/${id}/${name}`)}
                                 >
                                     Mensajes
                                 </IonButton>

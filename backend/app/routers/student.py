@@ -4,6 +4,8 @@ Endpoints: /student/all
 """
 from fastapi import APIRouter, HTTPException, status, Depends
 from datetime import datetime, timedelta, timezone
+from pydantic import BaseModel
+from typing import Optional
 import jwt
 
 from ..services.supabase import supabase
@@ -193,4 +195,152 @@ async def get_student(student_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting the student"
+        )
+
+
+class AddMessageRequest(BaseModel):
+    """
+    Schema for adding a message to a student.
+    """
+    text_message: str
+    type: str  # 'positive' or 'reinforcement'
+    icon_url: Optional[str] = None
+    sound_url: Optional[str] = None
+
+
+@router.post("/{student_id}/message", summary="Adds a message to a student")
+async def add_message_to_student(student_id: str, message_data: AddMessageRequest):
+    """
+    Add a message to a specific student.
+
+    This endpoint performs the following steps:
+    1. Checks if the message already exists in the `messages` table (by text_message and type).
+    2. If it doesn't exist, creates the message in the `messages` table.
+    3. Assigns the message to the student in the `reinforcement_messages` table.
+
+    Args:
+        student_id (str): The unique identifier (UUID) of the student.
+        message_data (AddMessageRequest): The message data containing:
+            - text_message (str): The text content of the message.
+            - type (str): The type of message ('positive' or 'reinforcement').
+            - icon_url (str, optional): URL of the icon associated with the message.
+            - sound_url (str, optional): URL of the sound associated with the message.
+
+    Raises:
+        HTTPException:
+            - 400 BAD REQUEST: If the message type is invalid.
+            - 404 NOT FOUND: If the student does not exist.
+            - 409 CONFLICT: If the message is already assigned to this student.
+            - 500 INTERNAL SERVER ERROR: If an unexpected error occurs.
+
+    Returns:
+        dict: A dictionary containing:
+            - message (str): Success message.
+            - message_id (str): The ID of the message (new or existing).
+            - reinforcement_message_id (str): The ID of the assignment in `reinforcement_messages`.
+    """
+    try:
+        # Validate that message is not empty
+        if not message_data.text_message or not message_data.text_message.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Message text cannot be empty"
+            )
+
+        # Validate message type
+        valid_types = ['positive', 'reinforcement']
+        if message_data.type not in valid_types:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid message type. Must be one of: {valid_types}"
+            )
+
+        # Check if student exists
+        student_resp = supabase_admin.table("users") \
+            .select("id") \
+            .eq("id", student_id) \
+            .eq("role", "student") \
+            .execute()
+
+        if not student_resp.data or len(student_resp.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found"
+            )
+
+        # Step 1: Check if the message already exists in the messages table
+        existing_message_resp = supabase_admin.table("messages") \
+            .select("id") \
+            .eq("text_message", message_data.text_message) \
+            .eq("type", message_data.type) \
+            .execute()
+
+        message_id = None
+
+        if existing_message_resp.data and len(existing_message_resp.data) > 0:
+            # Message already exists, use existing ID
+            message_id = existing_message_resp.data[0].get("id")
+        else:
+            # Step 2: Create the message in the messages table
+            new_message = {
+                "text_message": message_data.text_message,
+                "type": message_data.type,
+                "icon_url": message_data.icon_url,
+                "sound_url": message_data.sound_url
+            }
+
+            create_message_resp = supabase_admin.table("messages") \
+                .insert(new_message) \
+                .execute()
+
+            if not create_message_resp.data or len(create_message_resp.data) == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Error creating the message"
+                )
+
+            message_id = create_message_resp.data[0].get("id")
+
+        # Step 3: Check if the message is already assigned to this student
+        existing_assignment_resp = supabase_admin.table("reinforcement_messages") \
+            .select("id") \
+            .eq("user_id", student_id) \
+            .eq("message_id", message_id) \
+            .execute()
+
+        if existing_assignment_resp.data and len(existing_assignment_resp.data) > 0:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="This message is already assigned to this student"
+            )
+
+        # Step 4: Assign the message to the student in reinforcement_messages
+        assignment_data = {
+            "user_id": student_id,
+            "message_id": message_id
+        }
+
+        assignment_resp = supabase_admin.table("reinforcement_messages") \
+            .insert(assignment_data) \
+            .execute()
+
+        if not assignment_resp.data or len(assignment_resp.data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error assigning the message to the student"
+            )
+
+        return {
+            "message": "Message added successfully to the student",
+            "message_id": message_id,
+            "reinforcement_message_id": assignment_resp.data[0].get("id")
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error adding message to student"
         )
