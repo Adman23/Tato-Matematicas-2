@@ -1133,7 +1133,7 @@ export default function StudentEditProfile() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="studentEditProfile-picto-picker-header">
-              <h3>Selecciona un pictograma</h3>
+              <h3>Selecciona entre {MIN_GRAPHICAL_PASSWORD_LENGTH} y {MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas</h3>
               <IonButton fill="clear" size="small" onClick={closePictoModal}>
                 Cerrar
               </IonButton>
