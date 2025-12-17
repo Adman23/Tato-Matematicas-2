@@ -53,6 +53,7 @@ export default function EditMessages() {
     const { user } = useAuth();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
+    const { role } = useParams<{ role: string }>();
     const router = useIonRouter();
 
     const [messagesPositive, setMessagesPositive] = useState<StudentMessage[]>([]);
@@ -361,7 +362,7 @@ export default function EditMessages() {
      * <SimpleHeaderEdit onHome={handleHome} />
      */
     const handleHome = () => {
-        router.push(`/student-edit-menu/${id}/${name}`);
+        router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
     }
 
     if (!user) {

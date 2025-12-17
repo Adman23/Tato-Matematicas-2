@@ -156,8 +156,8 @@ export default function EditGame1() {
      * Handles navigation back to the appropriate page
      */
     const handleHome = () => {
-        if (user?.role === 'teacher' && id && name) {
-            router.push(`/student-edit-menu/${id}/${name}`, 'back');
+        if (user?.role === 'teacher' && id && name && role) {
+            router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back');
         } else {
             router.push('/student/profile', 'back');
         }

@@ -119,6 +119,7 @@ export default function EditGame2() {
     const { user } = useAuth();
     const router = useIonRouter();
     const { id, name } = useParams<{ id?: string; name?: string }>();
+    const { role } = useParams<{ role?: string }>();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -358,7 +359,7 @@ export default function EditGame2() {
 
             // Redirigir según el rol del usuario
             if (user.role === 'teacher') {
-                router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
             } else {
                 router.push('/student/profile', 'back');
             }
@@ -467,7 +468,7 @@ export default function EditGame2() {
             <SimpleHeaderEdit
                 studentName={name}
                 Editing={"Editar Juego 2"}
-                onHome={() => router.push(`/student-edit-menu/${id}/${name}`)}
+                onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop')}
             />
             ) : (
             <SimpleHeaderUser

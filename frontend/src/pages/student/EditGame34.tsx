@@ -55,6 +55,7 @@ export default function EditGame34() {
     const { user } = useAuth();
     const router = useIonRouter();
     const { id, name } = useParams<{ id?: string; name?: string }>();
+    const { role } = useParams<{ role?: string }>();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -219,11 +220,11 @@ export default function EditGame34() {
     return (
         <IonPage className="EditGame34-page">
             {/* Cabecera para edición por profesor */}
-            {id && name ? (
+            {id && name && role? (
             <SimpleHeaderEdit
                 studentName={name}
                 Editing={"Editar Juego 3/4"}
-                onHome={() => router.push(`/student-edit-menu/${id}/${name}`)}
+                onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`)}
             />
             ) : (
             <SimpleHeaderUser

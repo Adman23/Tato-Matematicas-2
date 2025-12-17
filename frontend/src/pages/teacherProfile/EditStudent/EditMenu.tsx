@@ -114,7 +114,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push(`/student-edit-noise/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-noise/${id}/${name}/${role}`)}
                                 >
                                     Sonidos
                                 </IonButton>
@@ -123,7 +123,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push(`/student-edit-text/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-text/${id}/${name}/${role}`)}
                                 >
                                     Texto
                                 </IonButton>
@@ -132,7 +132,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push(`/student-edit-game1/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-game1/${id}/${name}/${role}`)}
                                 >
                                     Juego 1
                                 </IonButton>
@@ -141,7 +141,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push(`/student-edit-game2/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-game2/${id}/${name}/${role}`)}
                                 >
                                     Juego 2
                                 </IonButton>
@@ -150,7 +150,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push(`/student-edit-game34/3-4/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-game34/3-4/${id}/${name}/${role}`)}
                                 >
                                     Juego 3 y 4
                                 </IonButton>
@@ -159,16 +159,7 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push('/admin-dashboard/groups-management')}
-                                >
-                                    Juego 4
-                                </IonButton>
-
-                                <IonButton
-                                    className='studentEditProfile-dashboard-button'
-                                    expand="block"
-                                    fill="clear"
-                                    onClick={() => router.push(`/student-edit-messages/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-messages/${id}/${name}/${role}`)}
                                 >
                                     Mensajes
                                 </IonButton>

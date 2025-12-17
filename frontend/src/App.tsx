@@ -120,21 +120,21 @@ export default function App() {
                   exact component={StudentProfile} />
                 <PrivateRoute path="/student/edit-game1/:id" allowedRoles={["student"]}
                   exact component={EditGame1} />
-                <PrivateRoute path="/student-edit-game1/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-game1/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditGame1} />
                 <PrivateRoute path="/student/edit-game2" allowedRoles={["student"]}
                   exact component={EditGame2} />
-                <PrivateRoute path="/student-edit-game2/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-game2/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditGame2} />
                 <PrivateRoute path="/student/edit-game34/:id" allowedRoles={["student"]}
                   exact component={EditGame34} />
-                <PrivateRoute path="/student-edit-game34/:gameNumber/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-game34/:gameNumber/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditGame34} />
                 <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
                   exact component={EditColorsStudent} />
                 <PrivateRoute path="/student/edit-noise" allowedRoles={["student"]}
                   exact component={EditNoiseStudent} />
-                <PrivateRoute path="/student-edit-noise/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-noise/:id/:name/:role" allowedRoles={["teacher"]}
                     exact component={EditNoiseStudent} />
                 <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]}
                   exact component={TutorDashboard} />
@@ -166,7 +166,7 @@ export default function App() {
                   exact component={EditColor} />
                 <PrivateRoute path="/student-edit-text/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditText} />
-                <PrivateRoute path="/student-edit-messages/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-messages/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditMessages} />
                 <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
                 <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]}

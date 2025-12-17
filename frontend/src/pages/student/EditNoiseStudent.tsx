@@ -45,6 +45,7 @@ const EditNoiseStudent: React.FC = () => {
   const [pressedButton, setPressedButton] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { id, name } = useParams<{ id?: string; name?: string }>();
+  const { role } = useParams<{ role?: string}>();
   
   const router = useIonRouter();
   const { user } = useAuth();
@@ -172,7 +173,7 @@ const EditNoiseStudent: React.FC = () => {
         <SimpleHeaderEdit
           studentName={name}
           Editing={"Editar Sonidos"}
-          onHome={() => router.push(`/student-edit-menu/${id}/${name}`)}
+          onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop')}
         />
       ) : (
         <SimpleHeaderUser
@@ -196,7 +197,7 @@ const EditNoiseStudent: React.FC = () => {
         <Button3Dtext
             onClick={() => {
                 if (user?.role === 'teacher' && id && name) {
-                    router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                    router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
                 } else {
                     router.push('/student/profile', 'back', 'pop');
                 }
