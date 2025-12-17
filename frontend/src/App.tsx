@@ -134,6 +134,8 @@ export default function App() {
                   exact component={EditColorsStudent} />
                 <PrivateRoute path="/student/edit-noise" allowedRoles={["student"]}
                   exact component={EditNoiseStudent} />
+                <PrivateRoute path="/student-edit-noise/:id/:name" allowedRoles={["teacher"]}
+                    exact component={EditNoiseStudent} />
                 <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]}
                   exact component={TutorDashboard} />
                 <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]}

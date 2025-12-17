@@ -1418,6 +1418,7 @@ const Game2: React.FC = () => {
             elapsedTime={Math.round(roundTimes.reduce((acc, time) => acc + time, 0))}
             audioPreferences={audioPreferences}
             enableHoverMode={isHoverSelectMode}
+            game_id={2}
           />
         ) : showExitConfirm ? (
           <ExitScreen
@@ -1428,20 +1429,20 @@ const Game2: React.FC = () => {
         ) : (
           <>
             {/* Header */}
-              <GameHeader
-                title="Ordenar Nº"
-                pictogram1={imgOrdenar}
-                pictogramArrow={imgFlecha}
-                pictogram2={imgJuego}
-                currentRound={currentRound}
-                totalRounds={TOTAL_ROUNDS}
-                onBackClick={() => {
-                  resetHoverState();
-                  setShowExitConfirm(true);
-                }}
-                onBackHover={() => setShowExitConfirm(true)}
-                enableHoverMode={isHoverSelectMode}
-              />
+            <GameHeader
+              title="Ordenar Nº"
+              pictogram1={imgOrdenar}
+              pictogramArrow={imgFlecha}
+              pictogram2={imgJuego}
+              currentRound={currentRound}
+              totalRounds={TOTAL_ROUNDS}
+              onBackClick={() => {
+                resetHoverState();
+                setShowExitConfirm(true);
+              }}
+              onBackHover={() => setShowExitConfirm(true)}
+              enableHoverMode={isHoverSelectMode}
+            />
 
             {/* Wrapper principal */}
             <div className="game2-main-wrapper">
@@ -1568,65 +1569,65 @@ const Game2: React.FC = () => {
                 </div>
               </div>
 
-                {/* Botones de control */}
-                <div className="check-button-container" onMouseEnter={resetHoverState}>
-                  {/* Botón de pistas (Tato) */}
-                  <GameControlButton
-                    onMouseEnter={() => runHoverAction(useHint)}
-                    onMouseLeave={() => {
-                      if (actionHoverTimer) {
-                        window.clearTimeout(actionHoverTimer);
-                        setActionHoverTimer(null);
-                      }
-                    }}
-                    onFocus={resetHoverState}
-                    onClick={() => hoverOrClick(useHint)}
-                    disabled={availableNumbers.every(n => n === undefined)}
-                  >
-                    <img
-                      src={imgPista}
-                      alt=""
-                      aria-hidden="true"
-                      className="game-control-button-image"
-                    />
-                    <span className="game-control-button-text">
-                      PISTA
-                    </span>
-                  </GameControlButton>
+              {/* Botones de control */}
+              <div className="check-button-container" onMouseEnter={resetHoverState}>
+                {/* Botón de pistas (Tato) */}
+                <GameControlButton
+                  onMouseEnter={() => runHoverAction(useHint)}
+                  onMouseLeave={() => {
+                    if (actionHoverTimer) {
+                      window.clearTimeout(actionHoverTimer);
+                      setActionHoverTimer(null);
+                    }
+                  }}
+                  onFocus={resetHoverState}
+                  onClick={() => hoverOrClick(useHint)}
+                  disabled={availableNumbers.every(n => n === undefined)}
+                >
+                  <img
+                    src={imgPista}
+                    alt=""
+                    aria-hidden="true"
+                    className="game-control-button-image"
+                  />
+                  <span className="game-control-button-text">
+                    PISTA
+                  </span>
+                </GameControlButton>
 
-                  {/* Indicador de orden */}
-                  <div className="order-indicator">
-                    <span className="order-icon">
-                      {config?.settings.order === 'ascending' ? '↑' : '↓'}
-                    </span>
-                    <span className="order-text">
-                      {config?.settings.order === 'ascending' ? 'Ascendente' : 'Descendente'}
-                    </span>
-                  </div>
-
-                  {/* Botón de instrucciones/tutorial */}
-                  <GameControlButton
-                    onMouseEnter={() => runHoverAction(openVideoModal)}
-                    onMouseLeave={() => {
-                      if (actionHoverTimer) {
-                        window.clearTimeout(actionHoverTimer);
-                        setActionHoverTimer(null);
-                      }
-                    }}
-                    onFocus={resetHoverState}
-                    onClick={() => hoverOrClick(openVideoModal)}
-                  >
-                    <img
-                      src={imgInstrucciones}
-                      alt=""
-                      aria-hidden="true"
-                      className="game-control-button-image"
-                    />
-                    <span className="game-control-button-text">
-                      INSTRUCCIONES
-                    </span>
-                  </GameControlButton>
+                {/* Indicador de orden */}
+                <div className="order-indicator">
+                  <span className="order-icon">
+                    {config?.settings.order === 'ascending' ? '↑' : '↓'}
+                  </span>
+                  <span className="order-text">
+                    {config?.settings.order === 'ascending' ? 'Ascendente' : 'Descendente'}
+                  </span>
                 </div>
+
+                {/* Botón de instrucciones/tutorial */}
+                <GameControlButton
+                  onMouseEnter={() => runHoverAction(openVideoModal)}
+                  onMouseLeave={() => {
+                    if (actionHoverTimer) {
+                      window.clearTimeout(actionHoverTimer);
+                      setActionHoverTimer(null);
+                    }
+                  }}
+                  onFocus={resetHoverState}
+                  onClick={() => hoverOrClick(openVideoModal)}
+                >
+                  <img
+                    src={imgInstrucciones}
+                    alt=""
+                    aria-hidden="true"
+                    className="game-control-button-image"
+                  />
+                  <span className="game-control-button-text">
+                    INSTRUCCIONES
+                  </span>
+                </GameControlButton>
+              </div>
             </div>
 
             {/* Video Modal */}
