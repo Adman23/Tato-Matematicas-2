@@ -15,4 +15,11 @@
     padding: 15px 15px;
     border-bottom: 1px solid gray;
     gap: 15px;
+    background-color: var(--ion-color-primary-contrast);
+    font-size: var(--tatomaths-font);
+}
+
+.messageitem-Item{
+
+    --background: var(--ion-color-primary-contrast);
 }

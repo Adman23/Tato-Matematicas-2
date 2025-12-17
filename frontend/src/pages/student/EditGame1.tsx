@@ -35,6 +35,7 @@ export default function EditGame1() {
     const { user } = useAuth();
     // Obtenemos parámetros (pueden ser undefined si entra un alumno directamente)
     const { id, name } = useParams<{ id: string; name: string }>();
+    const { role } = useParams<{ role: string }>();
     const router = useIonRouter();
 
     const [loading, setLoading] = useState(true);
@@ -155,8 +156,8 @@ export default function EditGame1() {
      * Handles navigation back to the appropriate page
      */
     const handleHome = () => {
-        if (user?.role === 'teacher' && id && name) {
-            router.push(`/student-edit-menu/${id}/${name}`, 'back');
+        if (user?.role === 'teacher' && id && name && role) {
+            router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back');
         } else {
             router.push('/student/profile', 'back');
         }
@@ -248,6 +249,7 @@ export default function EditGame1() {
 
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
+                        {user?.role === 'student' && (
                         <Button3Dtext
                             onClick={() => {
                                 if (user?.role === 'teacher' && id && name) {
@@ -259,7 +261,7 @@ export default function EditGame1() {
                             aria-label="Volver atrás"
                         >
                             <IonIcon icon={arrowBack} />
-                        </Button3Dtext>
+                        </Button3Dtext>)}
                     </div>
 
                     {/* 3 Main Buttons */}

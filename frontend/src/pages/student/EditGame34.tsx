@@ -55,6 +55,7 @@ export default function EditGame34() {
     const { user } = useAuth();
     const router = useIonRouter();
     const { id, name } = useParams<{ id?: string; name?: string }>();
+    const { role } = useParams<{ role?: string }>();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -219,11 +220,11 @@ export default function EditGame34() {
     return (
         <IonPage className="EditGame34-page">
             {/* Cabecera para edición por profesor */}
-            {id && name ? (
+            {id && name && role? (
             <SimpleHeaderEdit
                 studentName={name}
                 Editing={"Editar Juego 3/4"}
-                onHome={() => router.push(`/student-edit-menu/${id}/${name}`)}
+                onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`)}
             />
             ) : (
             <SimpleHeaderUser
@@ -238,6 +239,7 @@ export default function EditGame34() {
             <IonContent className="EditGame34-content" fullscreen scrollY={false}>
                 <div className="EditGame34-wrapper">
                     <div className="EditGame34-back-button">
+                        {user?.role === 'student' && (
                         <Button3Dtext
                             onClick={() => {
                                 if (user?.role === 'teacher' && id && name) {
@@ -248,7 +250,7 @@ export default function EditGame34() {
                             }}
                             aria-label="Volver atrás">
                             <IonIcon icon={arrowBack} aria-hidden="true" />
-                        </Button3Dtext>
+                        </Button3Dtext>)}
                     </div>
 
                     <div className="EditGame34-config-buttons">

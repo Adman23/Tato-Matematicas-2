@@ -113,7 +113,9 @@ const GameHeader: React.FC<GameHeaderProps> = ({
           onMouseLeave={clearHoverTimer}
           onFocus={enableHoverMode ? handleHoverAction : undefined}
           onBlur={enableHoverMode ? clearHoverTimer : undefined}
-          aria-label="Salir del juego">
+          aria-label="Salir del juego"
+          color={'var(--button-profile-bg)'}>
+          
           <IonIcon icon={arrowBack} />
         </Button3Dtext>
         <div className="game-header-center">

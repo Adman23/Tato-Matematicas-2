@@ -8,12 +8,13 @@ import {
   IonAvatar,
   useIonRouter
 } from '@ionic/react';
-import { homeOutline } from 'ionicons/icons';
+import { arrowBack } from 'ionicons/icons';
 import './HeaderTeacherItem.css';
 
 interface Props {
   teacherName: string;
   teacherAvatar: string;
+  onEditClick?: () => void;
   onLogoutClick?: () => void;
 }
 
@@ -21,13 +22,15 @@ interface Props {
 const HeaderItem: React.FC<Props> = ({
   teacherName,
   teacherAvatar,
+  onEditClick,
   onLogoutClick,
 }) => {
   const router = useIonRouter();
 
-  const handleEditClick = () => {
-    router.push('/teacheredit/profile');
-  };
+  /*const handleEditClick = () => {
+    router.push('/student-edit-menu/${user.id}/${user.username}')
+    //router.push('/teacheredit/profile');
+  };*/
 
   const handleHomeClick = () => {
     router.push('/teacher/dashboard');
@@ -41,7 +44,7 @@ const HeaderItem: React.FC<Props> = ({
         <div className="container-teacherProfile">
           
           <IonButton className="homeButton-teacherProfile" onClick={handleHomeClick}>
-            <IonIcon slot="icon-only" md={homeOutline} />
+            <IonIcon slot="icon-only" md={arrowBack} />
           </IonButton>
 
           <IonAvatar className="profileAvatar-teacherProfile">
@@ -56,7 +59,7 @@ const HeaderItem: React.FC<Props> = ({
             </div>
 
             <IonButtons slot="end" className="actionButtons-teacherProfile">
-              <IonButton className="editButton-teacherProfile" onClick={handleEditClick}>
+              <IonButton className="editButton-teacherProfile" onClick={onEditClick}>
                 Editar
               </IonButton>
               <IonButton className="logoutButton-teacherProfile" onClick={onLogoutClick}>
