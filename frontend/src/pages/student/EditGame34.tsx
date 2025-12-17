@@ -18,12 +18,14 @@ import {
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { gamesAPI } from '../../lib/api';
-import SimpleHeaderUser from '../student/components/SimpleHeaderUser';
+import SimpleHeaderUser from './components/SimpleHeaderUser';
+import SimpleHeaderEdit from '../teacherProfile/EditStudent/components/SimpleHeaderEdit';
 import { Button3Dtext } from '../global_components/PushableButtons';
 import LoadingSpinner from '../global_components/LoadingSpinner';
 import './EditGame34.css';
 import { arrowBack } from 'ionicons/icons';
 import { useParams } from "react-router-dom";
+
 
 // --- Constantes y Opciones ---
 
@@ -52,7 +54,7 @@ const GAME_KEY_4 = 'remove_equal';
 export default function EditGame34() {
     const { user } = useAuth();
     const router = useIonRouter();
-    const { id, name } = useParams<{ id: string; name: string }>();
+    const { id, name } = useParams<{ id?: string; name?: string }>();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -216,13 +218,22 @@ export default function EditGame34() {
 
     return (
         <IonPage className="EditGame34-page">
-            <SimpleHeaderUser
-                userName={user?.username || "username"}
-                photoUrl={user?.photo_url}
-                hidden={true}
-                title={"JUEGO 3 & 4"}
-                title_image="/assets/pictograms/editar.png"
+            {/* Cabecera para edición por profesor */}
+            {id && name ? (
+            <SimpleHeaderEdit
+                studentName={name}
+                Editing={"Editar Juego 3/4"}
+                onHome={() => router.push(`/student-edit-menu/${id}/${name}`)}
             />
+            ) : (
+            <SimpleHeaderUser
+                title="JUEGO 3 & 4"
+                title_image="/assets/pictograms/editar.png"
+                userName={user?.username || "username"}
+                photoUrl={user?.photo_url} hidden={true}
+            />
+            )}
+
 
             <IonContent className="EditGame34-content" fullscreen scrollY={false}>
                 <div className="EditGame34-wrapper">
