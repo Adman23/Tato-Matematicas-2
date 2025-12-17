@@ -259,13 +259,13 @@ async def add_message_to_student(student_id: str, message_data: AddMessageReques
         student_resp = supabase_admin.table("users") \
             .select("id") \
             .eq("id", student_id) \
-            .eq("role", "student") \
+            .in_("role", ["student", "teacher"]) \
             .execute()
 
         if not student_resp.data or len(student_resp.data) == 0:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student not found"
+                detail="User not found"
             )
 
         # Step 1: Check if the message already exists in the messages table
@@ -342,5 +342,5 @@ async def add_message_to_student(student_id: str, message_data: AddMessageReques
         print(str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error adding message to student"
+            detail=f"Error adding message to user"
         )
