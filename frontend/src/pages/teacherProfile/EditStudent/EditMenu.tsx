@@ -50,6 +50,7 @@ export default function EditMenu() {
     //const { id, name } = useParams();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
+    const { role } = useParams<{ role: string }>();
 
 
     // Show spinner while loading
@@ -72,6 +73,15 @@ export default function EditMenu() {
         router.push('/teacher/profile', "back", "replace");
     }
 
+    const handleEdit = () =>{
+
+        if(role === "teacher"){
+            router.push(`/teacheredit/profile/${id}/${name}`);
+        }else{
+            router.push(`/student-edit-profile/${id}/${name}`);
+        }
+    }
+
     return (
         <IonPage>
             <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} onHome={handleHome} />
@@ -85,16 +95,17 @@ export default function EditMenu() {
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     type="submit"
-                                    onClick={() => router.push(`/student-edit-profile/${id}/${name}`)}
+                                    onClick={handleEdit}
                                 >
-                                    Datos del alumno
+                                    Datos del {role === "teacher" ? "profesor" : "alumno"}
+
                                 </IonButton>
 
                                 <IonButton
                                     className='studentEditProfile-dashboard-button'
                                     expand="block"
                                     fill="clear"
-                                    onClick={() => router.push(`/student-edit-color/${id}/${name}`)}
+                                    onClick={() => router.push(`/student-edit-color/${id}/${name}/${role}`)}
                                 >
                                     Colores
                                 </IonButton>

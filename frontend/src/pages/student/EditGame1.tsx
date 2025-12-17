@@ -34,6 +34,7 @@ export default function EditGame1() {
     const { user } = useAuth();
     // Obtenemos parámetros (pueden ser undefined si entra un alumno directamente)
     const { id, name } = useParams<{ id: string; name: string }>();
+    const { role } = useParams<{ role: string }>();
     const router = useIonRouter();
 
     const [loading, setLoading] = useState(true);
@@ -178,9 +179,9 @@ export default function EditGame1() {
 
             // Redirigir según el rol del usuario Y si hay parámetros en la URL
             if (user?.role === 'teacher' && id && name) {
-                router.push(`/student-edit-menu/${id}/${name}`, 'back');
+                router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
             } else {
-                router.push('/student/profile', 'back');
+                router.push('/student/profile', 'back', 'pop');
             }
         } catch (error) {
             console.error('Error saving config:', error);

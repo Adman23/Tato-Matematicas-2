@@ -4,7 +4,7 @@
 .header-editStudentProfile{
   display: flex;
   align-items: bottom;
-  height: 130px;
+  height: clamp(90px, 12vh, 130px);
 }
 
 
@@ -13,7 +13,7 @@
    ======================================== */
 .toolbar-header-editStudentProfile {
   --background: var(--ion-color-primary);
-  height: 130px;
+  height: clamp(90px, 12vh, 130px);
   display: flex;
   align-items: center;
   padding: 0px 30px;

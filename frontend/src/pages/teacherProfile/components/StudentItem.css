@@ -2,6 +2,7 @@
 .student-item {
   --padding-start: 12px;
   --inner-padding-end: 12px;
+  --background: var(--ion-color-primary-contrast);
 }
 
 /* Contenedor interno: aquí sí hacemos el layout flex horizontal */
@@ -12,6 +13,7 @@
   width: 100%;
   padding: 15px 15px;
   border-bottom: 1px solid gray;
+  background-color: var(--ion-color-primary-contrast);
 }
 
 /* Avatar */
@@ -61,7 +63,7 @@
 .student-item__icons ion-icon{
 
   color: var(--ion-color-primary);
-  background-color: white;
+  background-color: var(--ion-color-primary-contrast);;
   width: 30px;
   height: 30px;
   box-shadow: none;
@@ -69,7 +71,7 @@
 }
 
 ion-button.StudentItem_perfilProfesor_Button {
-  background: white;   
+  background: var(--ion-color-primary-contrast);;   
   border: 2px solid var(--ion-color-primary);
   border-radius: 10px;
   box-shadow: none;

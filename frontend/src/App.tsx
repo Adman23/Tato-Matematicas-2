@@ -140,7 +140,7 @@ export default function App() {
                   exact component={TeacherProfilePage} />
                 <PrivateRoute path="/teacher/edit-profile/:userId" allowedRoles={["admin"]}
                   exact component={TeacherEditProfile} />
-                <PrivateRoute path="/teacheredit/profile" allowedRoles={["teacher"]}
+                <PrivateRoute path="/teacheredit/profile/:id/:name" allowedRoles={["teacher"]}
                   exact component={TeacherEditProfile} />
                 <PrivateRoute path="/teacher/register" allowedRoles={["admin"]}
                   exact component={TeacherRegister} />
@@ -158,11 +158,11 @@ export default function App() {
                   exact component={GroupsManagement} />
                 <PrivateRoute path="/admin/register-confirmation/:tipo" allowedRoles={["admin"]}
                   component={RegisterConfirmation} exact />
-                <PrivateRoute path="/student-edit-menu/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-menu/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditMenu} />
-                <PrivateRoute path="/student-edit-color/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-color/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditColor} />
-                <PrivateRoute path="/student-edit-text/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-text/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditText} />
                 <PrivateRoute path="/student-edit-messages/:id/:name" allowedRoles={["teacher"]}
                   exact component={EditMessages} />

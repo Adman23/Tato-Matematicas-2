@@ -357,7 +357,7 @@ export default function EditGame2() {
 
             // Redirigir según el rol del usuario
             if (user.role === 'teacher') {
-                router.push(`/student-edit-menu/${id}/${name}`, 'back');
+                router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
             } else {
                 router.push('/student/profile', 'back');
             }

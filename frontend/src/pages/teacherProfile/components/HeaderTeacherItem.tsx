@@ -14,6 +14,7 @@ import './HeaderTeacherItem.css';
 interface Props {
   teacherName: string;
   teacherAvatar: string;
+  onEditClick?: () => void;
   onLogoutClick?: () => void;
 }
 
@@ -21,13 +22,15 @@ interface Props {
 const HeaderItem: React.FC<Props> = ({
   teacherName,
   teacherAvatar,
+  onEditClick,
   onLogoutClick,
 }) => {
   const router = useIonRouter();
 
-  const handleEditClick = () => {
-    router.push('/teacheredit/profile');
-  };
+  /*const handleEditClick = () => {
+    router.push('/student-edit-menu/${user.id}/${user.username}')
+    //router.push('/teacheredit/profile');
+  };*/
 
   const handleHomeClick = () => {
     router.push('/teacher/dashboard');
@@ -56,7 +59,7 @@ const HeaderItem: React.FC<Props> = ({
             </div>
 
             <IonButtons slot="end" className="actionButtons-teacherProfile">
-              <IonButton className="editButton-teacherProfile" onClick={handleEditClick}>
+              <IonButton className="editButton-teacherProfile" onClick={onEditClick}>
                 Editar
               </IonButton>
               <IonButton className="logoutButton-teacherProfile" onClick={onLogoutClick}>

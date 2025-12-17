@@ -143,6 +143,8 @@ export default function EditColorsStudent() {
 
       setAriaMessage('Paleta guardada correctamente');
 
+      router.push('/student/profile', 'back');
+
       console.log("Paleta guardada correctamente!", customPalette);
     } catch (err) {
       console.error("Error al guardar la paleta", err);
