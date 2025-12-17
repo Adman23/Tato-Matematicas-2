@@ -34,7 +34,7 @@ interface ManagerUserEntry {
 interface ManagerContextType {
   users: Map<string, ManagerUserEntry>;
   loadingUsers: boolean;
-  retrieveUser: (user_id: string) => void;
+  retrieveUser: (user_id: string) => Promise<ManagerUserEntry>;
   /*
   loadUsers: (managerId: string) => Promise<void>;
   addUser: (user: User) => void;
@@ -138,45 +138,51 @@ export const ManagerProvider: React.FC<{ children: ReactNode, manager_id: string
   /**
    * @brief This function is used to retrieve data of a user (user in the list)
    *        From the page, it should check if the data is null, and then if its null
-   *        call this function
+   *        call this function.
    * 
-   * @param user The user to retrieve the data from, is not an id to easy access to the map
+   * @param user_id ID of the user whose data is being retrieved.
+   * 
+   * @returns Promise that resolves to a ManagerUserEntry object containing the user's data.
    */
-  const retrieveUser = async(user_id: string) =>{
-      setLoading(true);
-      const userData = await userAPI.fetchUserData(user_id);
-      setUsers(prevUsers => {
-              const newMap = new Map(prevUsers);
-              
-              const user: User = {
-                  id: userData.id,
-                  username: userData.username,
-                  role: userData.role,
-                  photo_url: userData.photo_url,
-                  group_id: userData.group_id,
-                  group_alias: userData.group_alias,
-              }
-              const data: UserData = {
-                  username: userData.username,
-                  password_type: userData.password_type,
-                  password_length: userData.password_length,
-                  user_profile: userData.user_profile,
-                  game_configurations: userData.game_configurations,
-                  reinforcement_messages: userData.reinforcement_messages,
-              }
+  const retrieveUser = async(user_id: string): Promise<ManagerUserEntry> => {
 
-              newMap.set(userData.id, { 
-                  user: user, 
-                  data: data 
-              });
+    setLoading(true);
 
-              // Actualizamos el localStorage
-              localStorage.setItem(`user_list_${manager_id}`, JSON.stringify(Array.from(newMap.entries())));
-              
-              return newMap;
-          });
-      setLoading(false);
-  }
+    const userData = await userAPI.fetchUserData(user_id);
+
+    const prevEntry = users.get(user_id); // para mantener 'group_alias' si la API no lo devuelve
+
+    const updatedEntry: ManagerUserEntry = {
+      user: {
+        id: userData.id,
+        username: userData.username,
+        role: userData.role,
+        photo_url: userData.photo_url,
+        group_id: userData.group_id,
+        group_alias: userData.group_alias ?? prevEntry?.user.group_alias,
+      },
+      data: {
+        username: userData.username,
+        password_type: userData.password_type,
+        password_length: userData.password_length,
+        user_profile: userData.user_profile,
+        game_configurations: userData.game_configurations,
+        reinforcement_messages: userData.reinforcement_messages,
+      }
+    };
+
+    setUsers(prevUsers => {
+      const newMap = new Map(prevUsers);
+      newMap.set(user_id, updatedEntry);
+      localStorage.setItem(`user_list_${manager_id}`, JSON.stringify(Array.from(newMap.entries())));
+      return newMap;
+    });
+
+    setLoading(false);
+    
+    return updatedEntry;
+
+  };
 
   return (
       <ManagerContext.Provider 

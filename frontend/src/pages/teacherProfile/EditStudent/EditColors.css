@@ -1,7 +1,10 @@
 /*======================================
   Css for Edit Color component
 ========================================*/
+.ContentEditColorTeacher{
 
+  --background: var(--ion-color-primary-contrast);
+}
 /*======================================
   Container for each section
 ========================================*/
@@ -25,6 +28,8 @@
     margin-bottom: 18px;
     font-weight: bold;
     font-size: 22px;
+    font-family: var(--tatomaths-font);
+    color: var(--tatomaths-text);
 }
 
 /*======================================

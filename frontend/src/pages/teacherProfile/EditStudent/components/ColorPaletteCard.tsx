@@ -55,7 +55,6 @@ const ColorPaletteCard: React.FC<Props> = ({
         <IonCard   onClick={() => onClick?.(palette)} tabIndex={0} 
             role='switch'
             aria-label={paletteDescriptions[palette.id]}
-            aria-checked = {isSelected}
             onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                     onClick?.(palette);

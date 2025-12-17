@@ -17,9 +17,9 @@ import { createPortal } from 'react-dom';
 
 // Importación de tipos y APIs
 import { authAPI, uploadImage, getImages, userAPI, type User } from '../../lib/api';
-import HeaderTeacherItem from './components/HeaderTeacherItem';
 import SimpleHeaderAdmin from '../admin/components/SimpleHeaderAdmin';
 import { useAuth } from '../../contexts/AuthContext';
+import SimpleHeaderEdit from './EditStudent/components/SimpleHeaderEdit';
 
 /**
  * Avatar por defecto cuando no se selecciona ninguna imagen.
@@ -60,7 +60,15 @@ const DEFAULT_AVATAR = "https://ionicframework.com/docs/img/demos/avatar.svg";
 export default function TeacherEditProfile() {
   const router = useIonRouter();
   const { userId } = useParams<{ userId?: string }>();
-  const { user, logout, updateUser } = useAuth();
+  const { user,  updateUser } = useAuth();
+
+  const { id } = useParams<{ id: string }>();
+  const { name } = useParams<{ name: string }>();
+
+
+  const handleHome = () => {
+    router.push(`/student-edit-menu/${id}/${name}/teacher`, "back", "pop");
+  }
   
   const isEditingAsAdmin = !!userId && user?.role === 'admin';
   const [teacherData, setTeacherData] = useState<User | null>(null);
@@ -315,11 +323,6 @@ export default function TeacherEditProfile() {
     router.goBack();
   };
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/', 'none', 'replace');
-  };
-
   const showFeedback = (msg: string, color: 'success' | 'danger' | 'warning') => {
     setToastMessage(msg); setToastColor(color); setShowToast(true);
   };
@@ -360,15 +363,11 @@ export default function TeacherEditProfile() {
   const displayUser = targetUser || user;
 
   return (
-    <IonPage style={{ backgroundColor: '#f4f5f8' }}>
+    <IonPage>
       {isEditingAsAdmin ? (
         <SimpleHeaderAdmin adminName={user?.username || 'Admin'} />
       ) : (
-        <HeaderTeacherItem
-          teacherName={user?.username || 'Profesor'}
-          teacherAvatar={user?.photo_url || DEFAULT_AVATAR}
-          onLogoutClick={handleLogout}
-        />
+        <SimpleHeaderEdit studentName={name} Editing={"Editar datos profesor"} onHome={handleHome} />
       )}
 
       <IonContent className="teacher-edit-profile-content" scrollY={!loadingTeacher}>

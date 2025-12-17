@@ -14,6 +14,7 @@ import { gamesAPI, type GameConfig } from "../../lib/api";
 import SimpleHeaderUser from "../student/components/SimpleHeaderUser";
 import LoadingSpinner from "../global_components/LoadingSpinner";
 import { useParams } from "react-router-dom";
+import SimpleHeaderEdit from "../teacherProfile/EditStudent/components/SimpleHeaderEdit";
 
 /**
  * Range options available for the game.
@@ -34,6 +35,7 @@ export default function EditGame1() {
     const { user } = useAuth();
     // Obtenemos parámetros (pueden ser undefined si entra un alumno directamente)
     const { id, name } = useParams<{ id: string; name: string }>();
+    const { role } = useParams<{ role: string }>();
     const router = useIonRouter();
 
     const [loading, setLoading] = useState(true);
@@ -151,6 +153,17 @@ export default function EditGame1() {
     };
 
     /**
+     * Handles navigation back to the appropriate page
+     */
+    const handleHome = () => {
+        if (user?.role === 'teacher' && id && name && role) {
+            router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back');
+        } else {
+            router.push('/student/profile', 'back');
+        }
+    };
+
+    /**
      * Saves the game configuration
      */
     const handleSave = async () => {
@@ -175,13 +188,8 @@ export default function EditGame1() {
             await gamesAPI.updateGameConfig(targetUserId, 'touch_number', config);
 
             announce('Configuración guardada correctamente');
+            handleHome();
 
-            // Redirigir según el rol del usuario Y si hay parámetros en la URL
-            if (user?.role === 'teacher' && id && name) {
-                router.push(`/student-edit-menu/${id}/${name}`, 'back');
-            } else {
-                router.push('/student/profile', 'back');
-            }
         } catch (error) {
             console.error('Error saving config:', error);
             announce('Error al guardar la configuración');
@@ -210,11 +218,15 @@ export default function EditGame1() {
 
     return (
         <IonPage className="EditGame1-page">
-            <SimpleHeaderUser
-                title="Juego 1"
-                title_image="/assets/pictograms/editar.png"
-                userName={user?.username || "username"}
-                photoUrl={user?.photo_url} hidden={true} />
+            {user?.role === 'student' ? (
+                <SimpleHeaderUser
+                    title="JUEGO 1"
+                    title_image="/assets/pictograms/editar.png"
+                    userName={user?.username || "username"}
+                    photoUrl={user?.photo_url} hidden={true} />
+            ) : (
+                <SimpleHeaderEdit studentName={name} Editing={"Editar Juego 1"} onHome={handleHome} />
+            )}
             <IonContent className="EditGame1-content">
                 <div
                     aria-live="polite"
@@ -237,6 +249,7 @@ export default function EditGame1() {
 
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
+                        {user?.role === 'student' && (
                         <Button3Dtext
                             onClick={() => {
                                 if (user?.role === 'teacher' && id && name) {
@@ -248,7 +261,7 @@ export default function EditGame1() {
                             aria-label="Volver atrás"
                         >
                             <IonIcon icon={arrowBack} />
-                        </Button3Dtext>
+                        </Button3Dtext>)}
                     </div>
 
                     {/* 3 Main Buttons */}

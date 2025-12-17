@@ -16,7 +16,6 @@ import {
   IonIcon,
   IonToast,
   IonImg,
-  IonText,
   useIonViewWillEnter,  // para detectar cuando se entre
   useIonViewDidLeave,   // para detectar cuando se salga
   IonCard,
@@ -46,6 +45,10 @@ const PICTOGRAMS = [
   { id: 'tortuga', name: 'Tortuga', image: '/assets/pictograms/tortuga.png' },
   { id: 'león', name: 'León', image: '/assets/pictograms/león.png' },
   { id: 'elefante', name: 'Elefante', image: '/assets/pictograms/elefante.png' },
+  { id: 'pez', name: 'Pez', image: '/assets/pictograms/pez.png' },
+  { id: 'pinguino', name: 'Pinguino', image: '/assets/pictograms/pinguino.png' },
+  { id: 'flamenco', name: 'Flamenco', image: '/assets/pictograms/flamenco.png' },
+  { id: 'caballo', name: 'Caballo', image: '/assets/pictograms/caballo.png' },
 ];
 
 const MIN_USERNAME_LENGTH = 3;                // mínimo de longitud para el nombre de usuario
@@ -89,13 +92,13 @@ export default function StudentEditProfile() {
 
   
   const history = useHistory();
-  const { users, retrieveUser } = useManager();
+  const { retrieveUser } = useManager();
   const { user } = useAuth();
   const { id, name } = useParams<{ id: string; name: string }>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pictoPickerRef = useRef<HTMLDivElement>(null);
-  const repeatPictoPickerRef = useRef<HTMLDivElement>(null);
+  /*const repeatPictoPickerRef = useRef<HTMLDivElement>(null);*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
   const avatarPickerRef = useRef<HTMLDivElement>(null);
   const formCardRef = useRef<HTMLDivElement>(null);
   
@@ -113,12 +116,12 @@ export default function StudentEditProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [newPassword, setNewPassword] = useState<string | string[]>('');
-  const [repeatNewPassword, setRepeatNewPassword] = useState<string | string[]>('');
+  /*const [repeatNewPassword, setRepeatNewPassword] = useState<string | string[]>('');*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showRepeatNewPassword, setShowRepeatNewPassword] = useState(false);
+  /*const [showRepeatNewPassword, setShowRepeatNewPassword] = useState(false);*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
-  const [isPasswordMatch, setIsPasswordMatch] = useState<boolean | null>(null);
+  /*const [isPasswordMatch, setIsPasswordMatch] = useState<boolean | null>(null);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   const isEmptyPassword = (val: string | string[]): boolean => {
     if (!val) return true;
@@ -129,7 +132,7 @@ export default function StudentEditProfile() {
 
   const [pictoModalState, setPictoModalState] = useState<{
     visible: boolean;
-    target: 'newGraphicalPassword' | 'repeatNewGraphicalPassword' | null;
+    target: 'newGraphicalPassword' | 'repeatNewGraphicalPassword' | null; // incluye 'repeatNewGraphicalPassword' por posible compatibilidad futura; actualmente la funcionalidad de repetición de contraseña está desactivada y comentada por si se necesitara en el futuro
   }>({ visible: false, target: null });
 
   const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -164,26 +167,28 @@ export default function StudentEditProfile() {
 
   // Determina si el formulario tiene datos cambiados respecto a los datos actuales y si tiene los campos obligatorios rellenados.
   // Se usa únicamente para controlar la habilitación/visibilidad del botón "Guardar cambios".
-  // No realiza validaciones completas (formatos de nombre de usuario y contraseña), pues las validaciones estrictas (formatos de nombre de usuario y contraseña) ya se aplican dentrro de 'handleSubmit'.
+  // No realiza validaciones completas (formatos de nombre de usuario y contraseña), pues las validaciones estrictas (formatos de nombre de usuario y contraseña) ya se aplican dentro de 'handleSubmit' y en 'isFormValid'.
   const isFormReadyForSubmit =
     studentUser &&
     (isUserNameChanged || isAvatarChanged || isPasswordChanged) &&
     isUserNameFilled &&
-    isAvatarSelected &&
-    (!isPasswordChanged ? true : !isEmptyPassword(repeatNewPassword));
+    isAvatarSelected; /*&&
+    (!isPasswordChanged ? true : !isEmptyPassword(repeatNewPassword));*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   const router = useIonRouter();
   const handleHome = () => {
     router.push(`/student-edit-menu/${id}/${name}`);
   }
 
+  // Normaliza el nombre de usuario, 
+  // eliminando tildes y transformando mayúsculas en minúsculas
+  const normalizeUsername = (value: string) =>
+    value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
   // Normaliza el PIN para enviarlo a Supabase, 
   // de forma que se asegure que Supabase recibe al menos 6 caracteres que es el mínimo permitido
   const normalizePinForSupabase = (pinPassword: string) => {
-
     return pinPassword.split('').join('-');  // ejemplo: '1234' -> '1-2-3-4'
-
   };
 
 
@@ -196,14 +201,10 @@ export default function StudentEditProfile() {
 
         if (!id) throw new Error('Falta el ID del estudiante.');
         if (!name) throw new Error('Falta el nombre del estudiante.');
-        
-        let userEntry = users.get(id);
 
-        if (!userEntry || !userEntry.data) {
-          await retrieveUser(id);
-          userEntry = users.get(id);
-        }
+        const userEntry = await retrieveUser(id);
 
+        // Validaciones después de cargar
         if (!userEntry || !userEntry.data) {
           throw new Error('Datos del estudiante no disponibles.');
         }
@@ -213,9 +214,8 @@ export default function StudentEditProfile() {
         if (userEntry.user.role !== 'student') {
           throw new Error('El usuario no es un estudiante.');
         }
-        
-        const user = userEntry.user;
-        const data = userEntry.data;
+
+        const { user, data } = userEntry;
       
         setStudentUser(user);
         setUserName(user.username || '');
@@ -225,13 +225,13 @@ export default function StudentEditProfile() {
 
         if (data.password_type === 'graphical') {
           setNewPassword([]);
-          setRepeatNewPassword([]);
+          /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
         } else {
           setNewPassword('');
-          setRepeatNewPassword('');
+          /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
         }
 
-        setIsPasswordMatch(null);
+        /*setIsPasswordMatch(null);*/   // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
       } catch (err) {
         console.error(err);
@@ -254,10 +254,10 @@ export default function StudentEditProfile() {
 
     if (passwordType === 'graphical') {
       setNewPassword([]);
-      setRepeatNewPassword([]);
+      /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     } else {
       setNewPassword('');
-      setRepeatNewPassword('');
+      /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     }
       
     setShowAvatarModal(false);
@@ -275,7 +275,7 @@ export default function StudentEditProfile() {
       return;
     }
 
-    if (trimmed === studentUser?.username) {
+    if (!isUserNameChanged) {
       setIsUsernameAvailable(true);
       return;
     }
@@ -342,19 +342,19 @@ export default function StudentEditProfile() {
 
     if (passwordType === 'graphical') {
       setNewPassword([]);
-      setRepeatNewPassword([]);
+      /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     } else {
       setNewPassword('');
-      setRepeatNewPassword('');
+      /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     }
 
-    setIsPasswordMatch(null);
+    /*setIsPasswordMatch(null);*/   // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
   }, [passwordType]);
 
 
   // Actualizamos el estado de repetición de contraseña
-  useEffect(() => {
+  /*useEffect(() => {
 
     if (isEmptyPassword(newPassword) || isEmptyPassword(repeatNewPassword)) {
       setIsPasswordMatch(null);
@@ -365,7 +365,7 @@ export default function StudentEditProfile() {
     let normalizedRepeatNewPassword = Array.isArray(repeatNewPassword) ? repeatNewPassword.join('-') : repeatNewPassword;
     setIsPasswordMatch(normalizeNewPassword === normalizedRepeatNewPassword);
 
-  }, [newPassword, repeatNewPassword]);
+  }, [newPassword, repeatNewPassword]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
 
   // Validación completa para cada tipo de contraseña
@@ -467,6 +467,23 @@ export default function StudentEditProfile() {
   };
 
 
+  // Determina si el formulario cumple con los formatos de nombre de usuario y contraseña.
+  // Se usa únicamente para controlar la visibilidad del botón "Guardar cambios".
+  // Todas estas validaciones de formatos de nombre de usuario y contraseña se aplican también dentro de 'handleSubmit' para que se muestren los mensajes de error correspondientes al pulsar el botón cuando corresponda.
+  const isFormValid =
+    isUserNameLong && 
+    isUserNameSpaceless &&
+    (isUsernameAvailable !== false || !isUserNameLong || !isUserNameSpaceless) &&
+    isAvatarSelected &&
+    (
+      !isPasswordChanged ||
+      (
+        validatePassword(newPassword, passwordType).length === 0 /*&&
+        isPasswordMatch !== false*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
+      )
+    );
+
+
   const handleSubmit = async (e?: React.FormEvent) => {
 
     e?.preventDefault();
@@ -480,7 +497,7 @@ export default function StudentEditProfile() {
       errors.push('El nombre de usuario no puede contener espacios.');
 
     if (isUsernameAvailable === false && isUserNameLong && isUserNameSpaceless) 
-      errors.push('Este nombre de usuario ya está actualmente en uso por otra persona.');
+      errors.push('Este nombre de usuario ya está actualmente en uso.');
 
     if (!isAvatarSelected) 
       errors.push('Debes seleccionar una imagen de perfil.');
@@ -492,8 +509,8 @@ export default function StudentEditProfile() {
     }
 
     // Verificación de coincidencia de nueva contraseña con su repetición
-    if ((isPasswordChanged) && (isPasswordMatch === false))
-      errors.push('La contraseña repetida no coincide con la nueva que has introducido.');
+    /*if ((isPasswordChanged) && (isPasswordMatch === false))
+      errors.push('La contraseña repetida no coincide con la nueva que has introducido.');*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
     if (errors.length > 0) {
       setToastMessage(errors.join('\n'));
@@ -541,8 +558,37 @@ export default function StudentEditProfile() {
       // Actualizamos el nombre de usuario, la foto de perfil, la contraseña y el tipo de contraseña del estudiante
       await userAPI.updateUser(id, payload);
 
-      // Refrescamos el usuario en ManagerContext
-      await retrieveUser(id);
+      // Refrescamos el usuario en ManagerContext y obtenemos los datos
+      const updatedEntry = await retrieveUser(id);
+
+      // Validaciones después de cargar
+      if (!updatedEntry || !updatedEntry.data) {
+        throw new Error('Datos del estudiante no disponibles.');
+      }
+      const updatedName = userName;
+      if (updatedEntry.user.username !== updatedName) {
+        throw new Error('El nombre del estudiante no coincide.');
+      }
+      if (updatedEntry.user.role !== 'student') {
+        throw new Error('El usuario no es un estudiante.');
+      }
+      console.log(updatedEntry.user.username);
+
+      // Actualizamos los estados locales para reflejar los cambios inmediatamente
+      const { user, data } = updatedEntry;
+      setStudentUser(user);
+      setUserName(user.username || '');
+      setAvatarPreview(user.photo_url || DEFAULT_AVATAR);
+      setSelectedAvatar(user.photo_url || '');
+      setPasswordType(data.password_type || 'graphical');
+      if (data.password_type === 'graphical') {
+        setNewPassword([]);
+        /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
+      } else {
+        setNewPassword('');
+        /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
+      }
+      /*setIsPasswordMatch(null);*/   // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
 
       closeAvatarModal();
       if (pictoModalState.visible) closePictoModal();
@@ -571,10 +617,10 @@ export default function StudentEditProfile() {
 
     if (passwordType === 'graphical') {
       setNewPassword([]);
-      setRepeatNewPassword([]);
+      /*setRepeatNewPassword([]);*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     } else {
       setNewPassword('');
-      setRepeatNewPassword('');
+      /*setRepeatNewPassword('');*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     }
       
     history.goBack();
@@ -606,18 +652,19 @@ export default function StudentEditProfile() {
       setNewPassword(newGraphicalPassword);
       if (newGraphicalPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH) 
         closePictoModal();
-    } else {
+    } /*else {
       const repeatNewGraphicalPassword = [...(repeatNewPassword as string[]), id];
       setRepeatNewPassword(repeatNewGraphicalPassword);
       if (repeatNewGraphicalPassword.length >= MAX_GRAPHICAL_PASSWORD_LENGTH) 
         closePictoModal();
-    }
+    }*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
   };
 
 
   const handleAddPictogram = (target: 'newGraphicalPassword' | 'repeatNewGraphicalPassword') => {
     if (passwordType !== 'graphical') return;
-    const current = target === 'newGraphicalPassword' ? newPassword : repeatNewPassword;
+    const current = newPassword;
+    /*const current = target === 'newGraphicalPassword' ? newPassword : repeatNewPassword;*/  // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
     const length = Array.isArray(current) ? current.length : 0;   // comprobamos si es array o no por seguridad (queremos asegurarnos de nuevo que es array, es decir, que estamos ante una contraseña gráfica)
     if (length < MAX_GRAPHICAL_PASSWORD_LENGTH) {
       openPictoModal(target);
@@ -634,11 +681,11 @@ export default function StudentEditProfile() {
       setNewPassword(current =>
         Array.isArray(current) ? current.filter((_, i) => i !== index) : current  // comprobamos si es array o no por seguridad (queremos asegurarnos de nuevo que es array, es decir, que estamos ante una contraseña gráfica)
       );
-    } else {
+    } /*else {
       setRepeatNewPassword(current =>
         Array.isArray(current) ? current.filter((_, i) => i !== index) : current  // comprobamos si es array o no por seguridad (queremos asegurarnos de nuevo que es array, es decir, que estamos ante una contraseña gráfica)
       );
-    }
+    }*/ // Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
   };
 
 
@@ -694,26 +741,19 @@ export default function StudentEditProfile() {
   
 
   const updatePictoModalPosition = useCallback(() => {
-    if (!pictoModalState.visible) return;
-    const targetRef = pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef.current : repeatPictoPickerRef.current;
-    if (!targetRef || !formCardRef.current) return;
+
+    if (!pictoModalState.visible || !formCardRef.current || !pictoPickerRef.current) return;
+
     const cardRect = formCardRef.current.getBoundingClientRect();
-    const modalWidth = 300;
-    const modalHeight = Math.min(cardRect.height, 460);
-    const spacing = 20;
-    let top = cardRect.top + window.scrollY + (cardRect.height - modalHeight) / 2;
-    top = Math.max(spacing, Math.min(top, window.innerHeight + window.scrollY - modalHeight - spacing));
-    let left = cardRect.right + spacing;
-    left = Math.min(left, window.innerWidth + window.scrollX - modalWidth - spacing);
-    Object.assign(targetRef.style, {
-      position: 'fixed',
-      top: `${top}px`,
-      left: `${left}px`,
-      width: `${modalWidth}px`,
-      height: `${modalHeight}px`,
-      overflowY: 'auto',
-      zIndex: '1001',
-    });
+    const modal = pictoPickerRef.current;
+
+    modal.style.position = 'fixed';
+    modal.style.left = `${cardRect.left + window.scrollX}px`;
+    modal.style.top = `${cardRect.top + window.scrollY}px`;
+    modal.style.width = `${cardRect.width / 2}px`;
+    modal.style.height = `${cardRect.height}px`;
+    modal.style.zIndex = '1002';
+
   }, [pictoModalState]);
 
 
@@ -730,16 +770,22 @@ export default function StudentEditProfile() {
 
 
   const updateAvatarModalPosition = useCallback(() => {
-    if (showAvatarModal && formCardRef.current && avatarPickerRef.current) {
-      const cardRect = formCardRef.current.getBoundingClientRect();
-      const modal = avatarPickerRef.current;
-      modal.style.position = 'fixed';
-      modal.style.left = `${cardRect.left + window.scrollX}px`;
-      modal.style.top = `${cardRect.top + window.scrollY}px`;
-      modal.style.width = `${cardRect.width}px`;
-      modal.style.height = `${cardRect.height}px`;
-      modal.style.zIndex = '1002';
-    }
+
+    if (!showAvatarModal || !formCardRef.current || !avatarPickerRef.current) return;
+
+    const cardRect = formCardRef.current.getBoundingClientRect();
+    const modal = avatarPickerRef.current;
+
+    const modalWidth = cardRect.width / 2;
+    const modalHeight = cardRect.height;
+
+    modal.style.position = 'fixed';
+    modal.style.top = `${cardRect.top + window.scrollY}px`;
+    modal.style.left = `${cardRect.left + window.scrollX + modalWidth}px`; // mitad derecha
+    modal.style.width = `${modalWidth}px`;
+    modal.style.height = `${modalHeight}px`;
+    modal.style.zIndex = '1002';
+
   }, [showAvatarModal]);
 
 
@@ -754,26 +800,6 @@ export default function StudentEditProfile() {
       };
     }
   }, [showAvatarModal, updateAvatarModalPosition]);
-
-
-  const getAvatarDisplayName = () => {
-    
-    const avatar = avatarOptions.find(a => (a.id === selectedAvatar) || (a.imageUrl === selectedAvatar));
-
-    if (avatar) {
-      return avatar.name;
-    }
-
-    if (fileInputRef.current?.files?.[0]) {
-      return `Avatar personalizado de ${userName}`;
-    }
-
-    return 'Seleccionar imagen...';
-
-  };
-
-
-  const avatarDisplayName = getAvatarDisplayName();
 
 
   const handleConfirmClick = () => {
@@ -836,6 +862,11 @@ export default function StudentEditProfile() {
 
                 {/* Avatar */}
                 <div className="studentEditProfile-avatar-section">
+                  <div className="studentEditProfile-field-wrapper">
+                    <div className="studentEditProfile-field-label">
+                      Cambiar avatar
+                    </div>
+                  </div>
                   <div className="studentEditProfile-avatar-preview"
                     onClick={openAvatarModal}
                   >
@@ -849,14 +880,6 @@ export default function StudentEditProfile() {
                       <IonIcon icon={personOutline} className="studentEditProfile-avatar-icon" />
                     )}
                   </div>
-                  <div className="studentEditProfile-field-wrapper">
-                    <div className="studentEditProfile-field-label">
-                      Cambiar avatar <span className="required-star">*</span>
-                    </div>
-                    <div className="studentEditProfile-avatar-select-field" onClick={openAvatarModal}>
-                      <IonText>{avatarDisplayName}</IonText>
-                    </div>
-                  </div>
                 </div>
                 
                 {/* Username */}
@@ -869,7 +892,7 @@ export default function StudentEditProfile() {
                       className="studentEditProfile-input-item"
                       placeholder="Escribir aquí..."
                       value={userName}
-                      onIonInput={(e) => setUserName(e.detail.value || '')}
+                      onIonInput={(e) => setUserName(normalizeUsername(e.detail.value || ''))}
                     />
                     <IonIcon
                       icon={isUsernameValid ? checkmarkOutline : closeOutline}
@@ -962,7 +985,8 @@ export default function StudentEditProfile() {
                         ))}
                       </ul>
                     </div>
-
+                    
+                    {/*
                     <div className="studentEditProfile-field-wrapper">
                       <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
                       <div className="studentEditProfile-input-with-icon">
@@ -989,6 +1013,7 @@ export default function StudentEditProfile() {
                         />
                       </div>
                     </div>
+                    */} {/* Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro */}
                   </>
                 )}
 
@@ -1020,7 +1045,8 @@ export default function StudentEditProfile() {
                         ))}
                       </ul>
                     </div>
-
+                    
+                    {/*
                     <div className="studentEditProfile-field-wrapper">
                       <div className="studentEditProfile-subfield-label">Repetir contraseña</div>
                       <div className="studentEditProfile-pictogram-container">
@@ -1041,6 +1067,7 @@ export default function StudentEditProfile() {
                         </div>
                       </div>
                     </div>
+                    */} {/* Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro */}
                   </>
                 )}
 
@@ -1052,7 +1079,11 @@ export default function StudentEditProfile() {
               <IonButton 
                 expand="block"
                 className={`studentEditProfile-confirm-button ${
-                  !isFormReadyForSubmit ? 'studentEditProfile-confirm-button--disabled' : ''
+                  !isFormReadyForSubmit
+                    ? 'studentEditProfile-confirm-button--disabled'
+                    : !isFormValid
+                      ? 'studentEditProfile-confirm-button--visually-disabled'
+                      : ''
                 }`}
                 disabled={!isFormReadyForSubmit}
                 onClick={handleConfirmClick}
@@ -1092,16 +1123,17 @@ export default function StudentEditProfile() {
       {/* Modales */}
 
       {pictoModalState.visible && createPortal(
-        <div className="studentEditProfile-picto-picker-overlay" onClick={closePictoModal}>
+        <div className="studentEditProfile-picker-overlay" onClick={closePictoModal}>
           <div
-            ref={pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef : repeatPictoPickerRef}
+            ref={pictoPickerRef}
+            /*ref={pictoModalState.target === 'newGraphicalPassword' ? pictoPickerRef : repeatPictoPickerRef}*/ //Funcionalidad de repetición de contraseña desactivada y comentada por si se necesitara en el futuro
             className={`studentEditProfile-picto-picker-custom ${
               pictoModalState.visible ? 'studentEditProfile-picto-picker-visible' : ''
             }`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="studentEditProfile-picto-picker-header">
-              <h3>Selecciona un pictograma</h3>
+              <h3>Selecciona entre {MIN_GRAPHICAL_PASSWORD_LENGTH} y {MAX_GRAPHICAL_PASSWORD_LENGTH} pictogramas</h3>
               <IonButton fill="clear" size="small" onClick={closePictoModal}>
                 Cerrar
               </IonButton>
@@ -1113,7 +1145,9 @@ export default function StudentEditProfile() {
                   className="studentEditProfile-picto-option"
                   onClick={() => selectPictogram(picto.id)}
                 >
-                  <IonImg src={picto.image} alt={picto.name} />
+                  <div className="studentEditProfile-picto-image-container">
+                    <IonImg src={picto.image} alt={picto.name} />
+                  </div>
                   <span>{picto.name}</span>
                 </div>
               ))}
@@ -1124,7 +1158,7 @@ export default function StudentEditProfile() {
       )}
     
       {showAvatarModal && createPortal(
-        <div className="studentEditProfile-avatar-picker-overlay" onClick={closeAvatarModal}>
+        <div className="studentEditProfile-picker-overlay" onClick={closeAvatarModal}>
           <div
             ref={avatarPickerRef}
             className={`studentEditProfile-avatar-picker ${

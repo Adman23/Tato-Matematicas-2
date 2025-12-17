@@ -131,6 +131,7 @@ export default function EditColorsStudent() {
       bubble_selected: palette.colors[6]
     });
 
+    setAriaMessage(`Paleta ${palette.name} seleccionada`);
 
   };
 
@@ -142,6 +143,8 @@ export default function EditColorsStudent() {
       await saveColorPalette(user.id, customPalette);
 
       setAriaMessage('Paleta guardada correctamente');
+
+      router.push('/student/profile', 'back');
 
       console.log("Paleta guardada correctamente!", customPalette);
     } catch (err) {

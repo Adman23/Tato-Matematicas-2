@@ -1,7 +1,10 @@
 /* =============================================================================
    CSS Styles for MenuAdmin page
    ========================================================================== */
+.ContentMenuEdicion{
 
+    --background: var(--ion-color-primary-contrast);
+}
 
 /* ========================================
    Container
@@ -41,7 +44,7 @@
 ion-button.studentEditProfile-dashboard-button::part(native) {
     width: 400px;
     height: 48px;
-    background-color: white;
+    background-color: var(--button-profile-bg);
     color: var(--ion-color-primary);
     border-radius: 40px;
     border: none;

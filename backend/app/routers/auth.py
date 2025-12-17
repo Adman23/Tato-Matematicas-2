@@ -23,6 +23,8 @@ from ..services.supabase import supabase
 from ..services.supabase import supabase_admin
 from ..dependencies import is_auth_current_user, is_admin_current_user
 
+import unicodedata
+
 # Config router 
 router = APIRouter()
 
@@ -290,6 +292,14 @@ async def login(data: LoginRequest):
 	"""
 
 
+def normalize_username(value: str) -> str:
+    return (
+    unicodedata.normalize("NFD", value)
+        .encode("ascii", "ignore")
+        .decode("utf-8")
+        .lower()
+    )
+
 
 @router.get("/exists/{username}", response_model=ExistsResponse)
 async def username_exists(username: str):
@@ -319,6 +329,8 @@ async def username_exists(username: str):
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error fetching auth users: {str(e)}"
             )
+        
+        normalized_input = normalize_username(username)
 
         exists = False
         if users:
@@ -342,9 +354,11 @@ async def username_exists(username: str):
                     continue
 
                 # Compare case-insensitively
-                if username_from_email and username_from_email.lower() == username.lower():
-                    exists = True
-                    break
+                if username_from_email:
+                    normalized_username = normalize_username(username_from_email)
+                    if normalized_username == normalized_input:
+                        exists = True
+                        break
 
         return ExistsResponse(exists=exists)
 
