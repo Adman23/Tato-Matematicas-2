@@ -102,7 +102,7 @@ export default function EditText(){
         <IonPage>
 
             <SimpleHeaderEdit studentName={name} Editing={"Editar texto"} onHome={handleHome}/>
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding ContentEditTextTeacher">
                 <div className='MainContainer-EditText'>
                     
                     <div role="radiogroup" aria-label="Selecciona una fuente">

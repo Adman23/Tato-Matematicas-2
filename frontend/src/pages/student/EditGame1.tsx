@@ -249,6 +249,7 @@ export default function EditGame1() {
 
                 <div className="EditGame1-wrapper">
                     <div className="EditGame1-back-button-content">
+                        {user?.role === 'student' && (
                         <Button3Dtext
                             onClick={() => {
                                 if (user?.role === 'teacher' && id && name) {
@@ -260,7 +261,7 @@ export default function EditGame1() {
                             aria-label="Volver atrás"
                         >
                             <IonIcon icon={arrowBack} />
-                        </Button3Dtext>
+                        </Button3Dtext>)}
                     </div>
 
                     {/* 3 Main Buttons */}

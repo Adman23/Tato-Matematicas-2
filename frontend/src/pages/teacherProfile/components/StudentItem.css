@@ -43,10 +43,12 @@
   justify-content: space-between;
   gap: 30px;
   overflow: hidden;
+  font-family: var(--tatomaths-font);
+
 }
 
 .student-item__name {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   width: 120px;
   white-space: nowrap;
@@ -63,7 +65,7 @@
 .student-item__icons ion-icon{
 
   color: var(--ion-color-primary);
-  background-color: var(--ion-color-primary-contrast);;
+  background-color: var(--ion-color-primary-contrast);
   width: 30px;
   height: 30px;
   box-shadow: none;

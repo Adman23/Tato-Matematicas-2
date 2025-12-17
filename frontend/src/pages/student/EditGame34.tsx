@@ -239,6 +239,7 @@ export default function EditGame34() {
             <IonContent className="EditGame34-content" fullscreen scrollY={false}>
                 <div className="EditGame34-wrapper">
                     <div className="EditGame34-back-button">
+                        {user?.role === 'student' && (
                         <Button3Dtext
                             onClick={() => {
                                 if (user?.role === 'teacher' && id && name) {
@@ -249,7 +250,7 @@ export default function EditGame34() {
                             }}
                             aria-label="Volver atrás">
                             <IonIcon icon={arrowBack} aria-hidden="true" />
-                        </Button3Dtext>
+                        </Button3Dtext>)}
                     </div>
 
                     <div className="EditGame34-config-buttons">

@@ -50,7 +50,7 @@ ion-buttons[slot="end"] {
 }
 
 .homeButton-header-editStudentProfile::part(native) {
-  background: white;
+  background: var(--button-profile-bg);
   border-radius: 10px;
   width: 50px;
   height: 50px;
@@ -58,12 +58,11 @@ ion-buttons[slot="end"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  --background-hover: white;
 }
 
 .homeButton-header-editStudentProfile ion-icon {
   color: var(--ion-color-primary);
-  background-color: white;
+  background-color: var(--button-profile-bg);
   width: 50px;
   height: 50px;
 }
@@ -74,7 +73,7 @@ ion-buttons[slot="end"] {
 .title-header-editStudentProfile {
   font-family: var(--ion-font-family);
   font-weight: var(--ion-weight-regular);
-  color: white;
+  color: var(--tatomaths-text-primary);
   font-size: 3rem;
 
   text-align: center;
@@ -95,7 +94,7 @@ ion-buttons[slot="end"] {
 
     font-family: var(--ion-font-family);
     font-weight: var(--ion-weight-regular);
-    color: white;
+    color: var(--tatomaths-text-primary);
     font-size: 2rem;
     padding-bottom: 20px;
     text-align: center;

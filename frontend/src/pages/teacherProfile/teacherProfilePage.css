@@ -11,13 +11,19 @@
     height: 85%;
     border-radius: 20px;
     margin: auto auto;
-    background: var(--ion-color-primary-contrast);
+    background-color: var(--ion-color-primary-contrast);
+}
+
+.TeacherProfile-StudentList{
+
+    background-color: var(--ion-color-primary-contrast);
 }
 
 .perfilProfesor-buscador {
 
     width: 350px;
     margin: auto auto;
+    padding-top: 15px;
 
 }
 

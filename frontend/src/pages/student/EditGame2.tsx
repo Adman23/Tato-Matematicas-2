@@ -484,6 +484,7 @@ export default function EditGame2() {
                 <div className="EditGame2-wrapper">
                     {/* Back button - navigates to student edit menu (teacher) or student profile (student) */}
                     <div className="EditGame2-back-button">
+                        {user?.role === 'student' && (
                         <Button3Dtext
                             onClick={() => {
                                 if (user?.role === 'teacher') {
@@ -494,7 +495,7 @@ export default function EditGame2() {
                             }}
                             aria-label="Volver atrás">
                             <IonIcon icon={arrowBack} aria-hidden="true" />
-                        </Button3Dtext>
+                        </Button3Dtext>)}
                     </div>
 
                     {/* Main configuration buttons (Quantity, Range, Order, Mode) */}

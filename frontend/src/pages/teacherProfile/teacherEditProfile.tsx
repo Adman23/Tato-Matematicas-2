@@ -363,7 +363,7 @@ export default function TeacherEditProfile() {
   const displayUser = targetUser || user;
 
   return (
-    <IonPage style={{ backgroundColor: '#f4f5f8' }}>
+    <IonPage>
       {isEditingAsAdmin ? (
         <SimpleHeaderAdmin adminName={user?.username || 'Admin'} />
       ) : (

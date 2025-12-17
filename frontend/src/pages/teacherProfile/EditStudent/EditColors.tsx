@@ -261,7 +261,7 @@ export default function EditColor() {
     return (
         <IonPage>
             <SimpleHeaderEdit studentName={name} Editing={"Editar colores"} onHome={handleHome}/>
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding ContentEditColorTeacher">
                 <div className="studentEditProfile-editcolors-outer-container">
                     <div className='studentEditColor-ionTitle'>Paletas predefinidas</div>
 

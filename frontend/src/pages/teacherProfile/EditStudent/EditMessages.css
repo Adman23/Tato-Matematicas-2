@@ -1,7 +1,10 @@
 /* =============================================================================
    CSS Styles for EditMessages Page
    ========================================================================== */
+.ContentEditMessagesProfesor{
 
+    --background: var(--ion-color-primary-contrast);
+}
 
 /* ========================================
     Messages Columns Flex
@@ -53,7 +56,10 @@
     position: relative;
 }
 
+.List-EditMessages{
 
+    background-color: var(--ion-color-primary-contrast);
+}
 /* ========================================
     Input
    ======================================== */

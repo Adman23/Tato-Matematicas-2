@@ -54,7 +54,7 @@ export default function TeacherProfilePage() {
               onIonCancel={() => setStudentQuery('')}></IonSearchbar>
 
             <div className='studentTable'>
-              <IonList>
+              <IonList className='TeacherProfile-StudentList'>
                 {(
                   (studentQuery === '' ? Array.from(students.values()) : Array.from(students.values()).filter(entry => {
                     const s = entry.user; 

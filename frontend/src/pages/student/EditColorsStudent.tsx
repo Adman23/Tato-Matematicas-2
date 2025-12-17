@@ -131,6 +131,7 @@ export default function EditColorsStudent() {
       bubble_selected: palette.colors[6]
     });
 
+    setAriaMessage(`Paleta ${palette.name} seleccionada`);
 
   };
 

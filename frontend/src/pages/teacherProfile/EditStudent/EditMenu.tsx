@@ -85,7 +85,7 @@ export default function EditMenu() {
     return (
         <IonPage>
             <SimpleHeaderEdit studentName={name} Editing={"Menú de edición"} onHome={handleHome} />
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding ContentMenuEdicion">
                 <div className="studentEditProfile-dashboard-outer-container">
                     <IonCard className="studentEditProfile-dashboard-card">
                         <IonCardContent className='studentEditProfile-card-content'>

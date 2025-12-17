@@ -8,7 +8,7 @@ import {
   IonAvatar,
   useIonRouter
 } from '@ionic/react';
-import { homeOutline } from 'ionicons/icons';
+import { arrowBack } from 'ionicons/icons';
 import './HeaderTeacherItem.css';
 
 interface Props {
@@ -44,7 +44,7 @@ const HeaderItem: React.FC<Props> = ({
         <div className="container-teacherProfile">
           
           <IonButton className="homeButton-teacherProfile" onClick={handleHomeClick}>
-            <IonIcon slot="icon-only" md={homeOutline} />
+            <IonIcon slot="icon-only" md={arrowBack} />
           </IonButton>
 
           <IonAvatar className="profileAvatar-teacherProfile">

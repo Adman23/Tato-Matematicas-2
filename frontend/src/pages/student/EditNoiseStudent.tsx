@@ -194,6 +194,7 @@ const EditNoiseStudent: React.FC = () => {
           '--overflow': 'hidden' 
         } as React.CSSProperties}
       >
+        {user?.role === 'student' && (
         <Button3Dtext
             onClick={() => {
                 if (user?.role === 'teacher' && id && name) {
@@ -204,7 +205,7 @@ const EditNoiseStudent: React.FC = () => {
             }}
             aria-label="Volver atrás">
             <IonIcon icon={arrowBack} aria-hidden="true" />
-        </Button3Dtext>
+        </Button3Dtext>)}
 
         {/* CONTENEDOR PRINCIPAL */}
         <div className="container-editNoiseStudent">

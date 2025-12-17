@@ -36,7 +36,7 @@ ion-button.homeButton-teacherProfile {
 }
 
 ion-button.homeButton-teacherProfile::part(native) {
-  background: white;
+  background: var(--button-profile-bg);
   border-radius: 10px; 
   --width: 20px;
   --height: 20px;
@@ -45,7 +45,7 @@ ion-button.homeButton-teacherProfile::part(native) {
 
 ion-button.homeButton-teacherProfile ion-icon {
   color: var(--ion-color-primary);
-  background-color: white;
+  background-color: var(--button-profile-bg);
   width: 30px;
   height: 30px;
 }
@@ -83,7 +83,8 @@ ion-button.homeButton-teacherProfile ion-icon {
 .profileName-teacherProfile {
   font-size: clamp(24px, 4vw, 50px); /* CORREGIDO: Tamaño dinámico para evitar colisiones */
   font-weight: 600;
-  color: white;
+  font-family: var(--tatomaths-font);
+  color: var(--tatomaths-text-primary);
   text-align: left;
   white-space: nowrap; /* Evita saltos de línea feos */
 }
@@ -118,19 +119,22 @@ ion-button.logoutButton-teacherProfile::part(native) {
 ion-button.editButton-teacherProfile {
   --width: 70px;
   --height: 48px;
-  background-color: white;
+  background-color: var(--button-profile-bg);
   color: var(--ion-color-primary);
   border-radius: 40px;
   border: 2px solid var(--ion-color-primary);
+  font-family: var(--tatomaths-font);
 }
 
 ion-button.logoutButton-teacherProfile {
   --width: 50px;
   --height: 48px;
-  background-color: white;
+  background-color: var(--button-profile-bg);
   color: var(--ion-color-primary);
   border-radius: 40px;
   border: 2px solid var(--ion-color-primary);
+  font-family: var(--tatomaths-font);
+
 }
 
 /*===========================================

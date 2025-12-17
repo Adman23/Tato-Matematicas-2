@@ -372,7 +372,7 @@ export default function EditMessages() {
     return (
         <IonPage>
             <SimpleHeaderEdit studentName={name} Editing={"Editar mensajes"} onHome={handleHome} />
-            <IonContent>
+            <IonContent className='ContentEditMessagesProfesor'>
                 {loadingMessages ? (
                     <div className='Game1-spinner'>
                         <LoadingSpinner message="Cargando mensajes" />
@@ -383,7 +383,7 @@ export default function EditMessages() {
                             <h2>Mensajes positivos</h2>
                             <div className="edit-messages-table">
                                 <div className="edit-messages-items">
-                                    <IonList>
+                                    <IonList className='List-EditMessages'>
                                         {messagesPositive.map((message, index) => (
                                             <MessageItem key={message.id || index} message={message} />
                                         ))}
@@ -417,7 +417,7 @@ export default function EditMessages() {
                             <h2>Mensajes de refuerzo</h2>
                             <div className="edit-messages-table">
                                 <div className="edit-messages-items">
-                                    <IonList>
+                                    <IonList className='List-EditMessages'>
                                         {messagesReinforcement.map((message, index) => (
                                             <MessageItem key={message.id || index} message={message} />
                                         ))}
