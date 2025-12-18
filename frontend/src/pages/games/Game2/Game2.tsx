@@ -30,7 +30,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   IonContent,
   IonPage,
-  IonText,
   IonSpinner,
   useIonRouter
 } from '@ionic/react';
