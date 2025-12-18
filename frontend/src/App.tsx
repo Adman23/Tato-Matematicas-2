@@ -60,7 +60,6 @@ import StudentProfile from './pages/student/StudentProfile';
 // === Personalización alumno ===
 import EditMenu from './pages/teacherProfile/EditStudent/EditMenu';
 import EditColor from './pages/teacherProfile/EditStudent/EditColors';
-import Prueba from './pages/teacherProfile/EditStudent/prueba';
 import EditGame1 from './pages/student/EditGame1';
 import EditGame34 from './pages/student/EditGame34';
 import StudentEditProfile from './pages/teacherProfile/EditStudent/StudentEditProfile';
@@ -168,7 +167,6 @@ export default function App() {
                   exact component={EditText} />
                 <PrivateRoute path="/student-edit-messages/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditMessages} />
-                <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
                 <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher", "admin"]}
                   exact component={StudentEditProfile} />
 
