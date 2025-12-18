@@ -22,8 +22,7 @@ const TeacherManagementItem: React.FC<Props> = ({
     if (tipo === 'profesores') {
       router.push(`/teacher/edit-profile/${userId}`, 'forward');
     } else {
-      // Para alumnos, puedes añadir la ruta correspondiente si existe
-      console.log('Editar alumno:', userId);
+      router.push(`/student-edit-profile/${userId}/${teacherName}`, 'forward');
     }
   };
 
@@ -34,15 +33,15 @@ const TeacherManagementItem: React.FC<Props> = ({
       {/* Contenedor interno para controlar flex sin tocar el ion-item por fuera */}
       <div className="teacherManagementItem-mainContainer">
 
-            <IonAvatar className="teacherManagementItem-avatar">
-            <img src={teacherAvatar} alt={teacherName} />
-            </IonAvatar>
+        <IonAvatar className="teacherManagementItem-avatar">
+          <img src={teacherAvatar} alt={teacherName} />
+        </IonAvatar>
 
-            <div className="teacherManagementItem-name">{teacherName}</div>
+        <div className="teacherManagementItem-name">{teacherName}</div>
 
-            <IonButton className='teacherManagementItme-EditButton' onClick={handleEdit}>
-                <IonIcon slot="icon-only" md={create}></IonIcon>
-            </IonButton>
+        <IonButton className='teacherManagementItme-EditButton' onClick={handleEdit}>
+          <IonIcon slot="icon-only" md={create}></IonIcon>
+        </IonButton>
 
       </div>
 

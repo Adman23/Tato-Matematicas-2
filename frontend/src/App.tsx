@@ -135,7 +135,7 @@ export default function App() {
                 <PrivateRoute path="/student/edit-noise" allowedRoles={["student"]}
                   exact component={EditNoiseStudent} />
                 <PrivateRoute path="/student-edit-noise/:id/:name/:role" allowedRoles={["teacher"]}
-                    exact component={EditNoiseStudent} />
+                  exact component={EditNoiseStudent} />
                 <PrivateRoute path="/teacher/dashboard" allowedRoles={["teacher"]}
                   exact component={TutorDashboard} />
                 <PrivateRoute path="/teacher/profile" allowedRoles={["teacher"]}
@@ -169,7 +169,7 @@ export default function App() {
                 <PrivateRoute path="/student-edit-messages/:id/:name/:role" allowedRoles={["teacher"]}
                   exact component={EditMessages} />
                 <PrivateRoute path="/prueba" allowedRoles={["teacher"]} exact component={Prueba} />
-                <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher"]}
+                <PrivateRoute path="/student-edit-profile/:id/:name" allowedRoles={["teacher", "admin"]}
                   exact component={StudentEditProfile} />
 
                 {/* Redirección por defecto: ahora va a student-login en lugar de Home */}
