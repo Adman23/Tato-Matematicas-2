@@ -1,8 +1,9 @@
 /* --- MAIN STYLE --- */
 .main-container {
     background: var(--ion-color-primary-contrast);
-    height: 100%;
+    height: 100% - clamp(70px, 13vh, 115px);
     padding: 0;
+    overflow-y: hidden;
 }
 
 /* --- EDIT SECTION STYLE --- */

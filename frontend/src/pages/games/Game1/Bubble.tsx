@@ -33,6 +33,7 @@ import './Bubble.css';
  * const props: Props = { value: 2, usePictogram: true, onClick: v => console.log(v) }
  */
 type Props = {
+    className?: string;
     value: number;
     usePictogram?: boolean;
     isSelected?: boolean;
@@ -56,6 +57,7 @@ type Props = {
  */
 const Bubble: React.FC<Props> = ({
     value,
+    className = '',
     usePictogram = true,
     isSelected = false,
     disabled = false,
@@ -81,7 +83,7 @@ const Bubble: React.FC<Props> = ({
         <div className="nm-number-wrapper">
             <button
                 type="button"
-                className={classes}
+                className={`${classes} ${className}`}
                 onClick={handleClick}
                 aria-label={`Número ${value}${isSelected ? ', seleccionado' : ', no seleccionado'}`}
                 aria-disabled={disabled || isHinted}

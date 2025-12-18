@@ -299,7 +299,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
    * calculateStars() // 1 (20%)
    */
   const calculateStars = () => {
-    if (game_id === 1) {
+    if (game_id != 2) {
       return totalNumbersCorrect
     }
     else {
@@ -412,7 +412,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
             <div className="stat-row">
               <IonIcon icon={checkmarkCircle} className="stat-icon stat-icon-green" />
               <span className="stat-label">Aciertos:</span>
-              <span className="stat-value">{(game_id === 1 ? totalNumbersCorrect : netCorrect)}</span>
+              <span className="stat-value">{(game_id == 2 ? netCorrect : totalNumbersCorrect)}</span>
             </div>
 
             <div className="stat-row">

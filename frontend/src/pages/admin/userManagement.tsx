@@ -1,7 +1,7 @@
 import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
 
-import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, useIonRouter } from '@ionic/react';
+import { IonPage, IonContent, IonList, IonLabel, IonButton, useIonRouter } from '@ionic/react';
 import { Redirect, useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';

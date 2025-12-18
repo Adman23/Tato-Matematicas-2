@@ -35,7 +35,6 @@
 
 import {
     IonContent,
-    IonSpinner,
     IonPage,
     IonList,
     IonTitle,

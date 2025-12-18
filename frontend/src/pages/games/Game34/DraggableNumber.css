@@ -1,0 +1,132 @@
+.draggable-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent; /* Delegamos al Bubble */
+    border: none;             /* No sobreescribimos el borde del Bubble */
+    padding: 0;
+    margin: 0;
+    width: auto;              /* permitir que Bubble defina su tamaño */
+    height: auto;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.12s ease, opacity 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* Estado cuando se está arrastrando: el wrapper toma un estado (aún no oculta el contenido) */
+.draggable-number.dragging {
+    cursor: grabbing;
+}
+
+/* Clase añadida en JS para ocultar la burbuja original pero mantener su espacio en el layout */
+.draggable-number.dragging-hidden .nm-number-circle {
+    visibility: hidden; /* ocultar visualmente (no layout shift) */
+}
+
+/* Preview creado y añadido al body - parece la bola que transportas */
+.drag-preview {
+    pointer-events: none;
+    transform-origin: center center;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    /* añadir efecto "levantado" */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    transform: translateY(-6px) scale(1.03);
+    border-radius: 50%;
+    /* asegurar que el contenido interno (pictogram/number) se mantenga centrado */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* asegurar el mismo tamaño que la burbuja original */
+    box-sizing: border-box;
+}
+
+/* Forzar que la burbuja clonada no aplique escalados ni offsets que deformen el contenido */
+.drag-preview .nm-number-circle {
+    transform: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+}
+
+/* Mantener el valor numérico centrado y con line-height estable dentro del preview */
+.drag-preview .nm-number-value {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    line-height: 1 !important;
+    font-size: inherit !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Asegurar pictograma centrado y sin estiramiento en el preview */
+.drag-preview .nm-pictogram-image {
+    width: 70% !important;
+    height: 70% !important;
+    max-width: 70% !important;
+    max-height: 70% !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+/* Hacer el preview ligeramente más brillante en el pointer */
+.drag-preview .nm-number-value,
+.drag-preview .nm-pictogram-image {
+    opacity: 1;
+}
+
+/* Estado deshabilitado del wrapper: no bloquear la visibilidad del número,
+   pero marcar claramente que no es seleccionable. */
+.draggable-number.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 1; /* mantener visible */
+}
+
+/* Anular estilos internos de la burbuja cuando el wrapper está disabled.
+   Esto no modifica Bubble.css, solo lo sobreescribe en contexto. */
+.draggable-number.disabled .nm-number-circle {
+    /* fondo con el color primario del tema y 80% de opacidad */
+    background-color: var(--bubble-selected-bg) !important;
+    opacity: 0.6 !important;
+
+    /* texto claro y legible sobre el fondo primario */
+    color: rgba(255,255,255,0.95) !important;
+
+    /* mantener apariencia atenuada (sin sombra fuerte) */
+    box-shadow: none !important;
+    border: 2px solid rgba(0,0,0,0.06) !important;
+    transform: none !important;
+}
+
+/* Ajuste para pictogramas dentro del estado disabled */
+.draggable-number.disabled .nm-pictogram-image {
+    opacity: 0.95 !important;
+    filter: none !important;
+}
+
+/* Mantener el wrapper sin comprimir al contener la burbuja */
+.draggable-number .nm-number-wrapper {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+}
+
+/* Additional class for the bubble to control the size */
+.draggable-number-bubble {
+    width: clamp(48px, 6.5vw, 100px);
+    height: clamp(48px, 6.5vw, 100px);
+}
+
+.draggable-number .nm-number-value {
+    font-size: clamp(1vw, 3vw, 5vw);
+}

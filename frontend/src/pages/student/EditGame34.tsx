@@ -185,7 +185,7 @@ export default function EditGame34() {
             await Promise.all([saveGame3, saveGame4]);
 
             if (user?.role === 'teacher' && id && name) {
-                router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
             } else {
                 router.push('/student/profile', 'back', 'pop');
             }
@@ -216,6 +216,7 @@ export default function EditGame34() {
             </IonPage>
         );
     }
+    
 
     return (
         <IonPage className="EditGame34-page">
@@ -224,7 +225,7 @@ export default function EditGame34() {
                 <SimpleHeaderEdit
                     studentName={name}
                     Editing={"Editar Juego 3/4"}
-                    onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`)}
+                    onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`,"back","pop")}
                 />
             ) : (
                 <SimpleHeaderUser

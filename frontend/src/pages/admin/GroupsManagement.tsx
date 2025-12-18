@@ -24,7 +24,7 @@ setupIonicReact();
  * ```
  */
 
-import { IonPage, IonContent, IonSpinner, IonList, IonLabel, IonButton, IonSearchbar, useIonRouter } from '@ionic/react';
+import { IonPage, IonContent, IonList, IonLabel, IonButton, IonSearchbar, useIonRouter } from '@ionic/react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { fetchGroups, deleteGroup } from '../../lib/api';

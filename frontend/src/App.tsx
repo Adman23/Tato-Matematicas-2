@@ -37,6 +37,8 @@ import EditGame2 from './pages/student/EditGame2';
 // === Juegos ===
 import Game1 from './pages/games/Game1/Game1';
 import Game2 from './pages/games/Game2/Game2';
+import Game3 from './pages/games/Game34/Game3';
+import Game4 from './pages/games/Game34/Game4';
 
 // == Paginas de tutor ====
 
@@ -67,6 +69,7 @@ import EditColorsStudent from './pages/student/EditColorsStudent';
 import EditNoiseStudent from './pages/student/EditNoiseStudent';
 import EditText from './pages/teacherProfile/EditStudent/EditText';
 import EditMessages from './pages/teacherProfile/EditStudent/EditMessages';
+import EditPhoto from './pages/student/EditPhoto';
 
 
 /**
@@ -111,6 +114,10 @@ export default function App() {
                   exact component={Game1} />
                 <PrivateRoute path="/game/game2" allowedRoles={["student", "teacher"]}
                   exact component={Game2} />
+                <PrivateRoute path="/game/game3" allowedRoles={["student", "teacher"]}
+                  exact component={Game3} /> 
+                <PrivateRoute path="/game/game4" allowedRoles={["student", "teacher"]}
+                  exact component={Game4} /> 
 
                 {/* Users Routes (except admin) */}
                 <PrivateRoute path="/student/dashboard" allowedRoles={["student"]}
@@ -131,6 +138,8 @@ export default function App() {
                   exact component={EditGame34} />
                 <PrivateRoute path="/student/edit-colors" allowedRoles={["student"]}
                   exact component={EditColorsStudent} />
+                  <PrivateRoute path="/student/edit-photo/:id" allowedRoles={["student"]}
+                  exact component={EditPhoto} />
                 <PrivateRoute path="/student/edit-noise" allowedRoles={["student"]}
                   exact component={EditNoiseStudent} />
                 <PrivateRoute path="/student-edit-noise/:id/:name/:role" allowedRoles={["teacher"]}
