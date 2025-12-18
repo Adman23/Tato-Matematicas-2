@@ -112,6 +112,17 @@ export default function StudentProfile() {
                         {/* Edit section - 80% en desktop, 100% en móvil */}
                         <IonCol size="12" sizeMd="9.6" className="edit-section-col">
                             <div className="edit-section">
+
+                                {/* Edit photo */}
+                                <SimpleButton className="big-button" onClick={() => handleDirection(`/student/edit-photo/${user?.id}`)}>
+                                    <img
+                                        src="/assets/pictograms/foto de perfil.png"
+                                        alt="Ir a editar foto de perfil"
+                                        className="simple-button-image"
+                                    />
+                                    <div className="simple-button-title">FOTO</div>
+                                </SimpleButton>
+
                                 {/* Edit colors */}
                                 <SimpleButton className="big-button" onClick={() => handleDirection("/student/edit-colors")}>
                                     <img
@@ -162,15 +173,6 @@ export default function StudentProfile() {
                                     <div className="simple-button-title">JUEGO 3 & 4</div>
                                 </SimpleButton>
 
-                                {/* Edit game_4 */}
-                                <SimpleButton className="big-button" onClick={() => handleDirection("/student/dashboard")}>
-                                    <img
-                                        src="/assets/juegosImg/juego4.png"
-                                        alt="Ir a editar juego cuatro"
-                                        className="simple-button-image"
-                                    />
-                                    <div className="simple-button-title">JUEGO 4</div>
-                                </SimpleButton>
                             </div>
                         </IonCol>
 
