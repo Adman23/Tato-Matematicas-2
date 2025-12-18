@@ -259,6 +259,7 @@ const Game3: React.FC = () => {
 
     return (
         <BaseGame34
+            videoGame='/assets/videos/video_game3.mp4'
             gameKey="distribute_equal"
             gameTitle="Meter números"
             gameImage="/assets/juegosImg/game34/cuenco.png"

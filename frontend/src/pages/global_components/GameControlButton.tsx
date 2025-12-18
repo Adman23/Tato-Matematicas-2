@@ -43,13 +43,13 @@ export const GameControlButton: React.FC<GameControlButtonProps> = ({
     onFocus,
     onMouseLeave,
     onKeyDown,
-    tabIndex,
     disabled = false,
     noBorder = false,
     text,
 }) => {
     return (
         <IonButton
+            role="button"
             fill="clear"
             className={`game-control-button ${noBorder ? 'no-border' : ''} ${className}`}
             onClick={onClick}
@@ -57,10 +57,10 @@ export const GameControlButton: React.FC<GameControlButtonProps> = ({
             onFocus={onFocus}
             onMouseLeave={onMouseLeave}
             onKeyDown={onKeyDown}
-            tabIndex={tabIndex}
             disabled={disabled}
+            aria-label={text || "Botón de control de juego"}
         >
-            <div className="game-control-button-content">
+            <div aria-hidden="true"tabIndex={-1} className="game-control-button-content" style={{ pointerEvents: 'none' }}>
                 {children}
                 {text && <p className="game-control-button-text">{text}</p>}
             </div>

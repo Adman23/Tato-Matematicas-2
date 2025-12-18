@@ -223,6 +223,7 @@ const ContainerBlock: React.FC<Props> = ({
                                                 ${isZone ? 'container-content-zone' : ''}`}>
                     {numbers.map((item) => (
                         <DraggableNumber
+                            aria-live="polite"
                             key={item.id}
                             id={item.id}
                             number={item.value}

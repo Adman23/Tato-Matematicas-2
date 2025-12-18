@@ -69,6 +69,7 @@ type BaseGame34Props = {
     gameTitle: string;
     gameImage: string;
     headerImage: string;
+    videoGame: string; // Video source for the game instructions
     generateRoundData: (config: GameConfig) => {
         containers: Container[];
         topZone: NumberItem[];
@@ -94,6 +95,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
     headerImage,
     generateRoundData,
     useHint,
+    videoGame,
 }) => {
     const { user } = useAuth();
     const { loadingUser } = useUserData();
@@ -177,6 +179,33 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
             console.error('Error creating game session:', error);
         }
     };
+
+    /**
+     * Opens the video modal with instructions.
+     *
+     * @returns void
+     * @example
+     * openVideoModal();
+     */
+    const openVideoModal = () => {
+        setShowVideoModal(true);
+    };
+
+    /**
+     * Closes the video modal and stops playback if active.
+     *
+     * @returns void
+     * @example
+     * closeVideoModal();
+     */
+    const closeVideoModal = () => {
+        if (videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+        }
+        setShowVideoModal(false);
+    };
+
 
     const loadGameConfig = async () => {
         try {
@@ -526,7 +555,7 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
 
                             {/* Buttons section */}
                             <div className="base-game34-buttons-container">
-                                <GameControlButton onClick={() => { /* instrucciones */ }}>
+                                <GameControlButton onClick={() => { openVideoModal(); }}>
                                     <img src="/assets/juegosImg/instrucciones.png" alt="Instrucciones" className="game-control-button-image" />
                                     <span className="game-control-button-text">INSTRUCCIONES</span>
                                 </GameControlButton>
@@ -540,6 +569,27 @@ const BaseGame34: React.FC<BaseGame34Props> = ({
                                 </GameControlButton>
                             </div>
                         </div>
+                        {showVideoModal && (
+                            <div className="game-video-modal-overlay" onClick={closeVideoModal}>
+                                <div className="game-video-modal-content" onClick={(e) => e.stopPropagation()}>
+                                    <button
+                                        className="game-video-close-button"
+                                        onClick={closeVideoModal}
+                                        aria-label="Cerrar video tutorial">
+                                        ✕
+                                    </button>
+                                    <video
+                                        ref={videoRef}
+                                        controls
+                                        autoPlay
+                                        className="game-video-player"
+                                    >
+                                        <source src={videoGame} type="video/mp4" />
+                                        Tu navegador no soporta la reproducción de videos.
+                                    </video>
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
             </IonContent>

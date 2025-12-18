@@ -16,33 +16,41 @@ const Game4: React.FC = () => {
     });
 
     /**
-     * Genera los datos de una ronda para el Juego 4.
-     * Cada solución tiene entre 3 y (object_count/container_count) objetos (mínimo 2 si es menor que 3).
-     * Siempre hay que quitar al menos un número, preferiblemente más de uno.
+     * Generates round data for Game 4.
+     * @param config Game configuration settings.
+     * @returns An object containing containers, top zone numbers, target total, and solution mapping.
      */
     const generateRoundData = (config: GameConfig): {
-        containers: Container[];
-        topZone: NumberItem[];
-        targetTotal: number;
-        solution: { [bowlId: string]: string[] };
+        containers: Container[];    // The containing bowls with numbers
+        topZone: NumberItem[];      // Numbers in the top zone (removed from bowls)
+        targetTotal: number;        // The target total to achieve
+        solution: { [bowlId: string]: string[] }; // Mapping of bowl IDs to number item IDs that should remain
     } => {
+
+        // Establish the number range
         const [min, max] = config.number_range.split('-').map(Number);
         const actualMin = Math.max(1, min);
 
+        // Settings
         let containersCount = config.settings?.container_count || 2;
         let objectsCount = config.settings?.object_count || 8;
-        if (objectsCount <= containersCount) {
-            objectsCount = containersCount + 4;
-        } else if (objectsCount <= containersCount + 1) {
-            objectsCount = containersCount + 5;
+
+        // Control imbalances, in the case of 3 containers and 4 containers
+        if (containersCount >= 3) {
+            if (objectsCount <= 4) {
+                objectsCount = 8; // Establish the object count to at least 8
+            }
         }
 
-        const targetTotal = generateBiasedRandomInRange(actualMin, max);
+        
+        // Get the target total, biased towards the upper end of the range
+        const targetTotal = generateBiasedRandomInRange(actualMin+1, max);
+
+        // Highest number allowed for items in the bowls
         const maxNumberValue = targetTotal - 1;
-        if (maxNumberValue < actualMin) {
-            const newTarget = Math.max(actualMin + 3, Math.floor((max - actualMin) * 0.7) + actualMin);
-            return generateRoundDataWithTarget(config, newTarget, actualMin, max, containersCount, objectsCount);
-        }
+
+
+        // CALCULATE DISTRIBUTION OF NUMBERS IN BOWLS
 
         const numbersPerBowl = Math.floor(objectsCount / containersCount);
         const extraNumbers = objectsCount % containersCount;
@@ -179,44 +187,33 @@ const Game4: React.FC = () => {
         return parts;
     };
 
+
+    /**
+     * @brief Generates a biased random number within a specified range.
+     * @param min Minimum value (inclusive).
+     * @param max Maximum value (inclusive).
+     * @returns A value between min and max, biased towards the upper 70% end of the range.
+     */
     const generateBiasedRandomInRange = (min: number, max: number): number => {
         const range = max - min;
         const u1 = Math.random();
         const u2 = Math.random();
+
+        // Normal distribution using Box-Muller transform
         const normalRandom = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+
+        // Move mean to 0.7 and reduce standard deviation
         const biasedValue = 0.7 + (normalRandom * 0.15);
+
+        // Clamp to [0, 1]
         const clampedValue = Math.max(0, Math.min(1, biasedValue));
+
+        // Get final value in range
         const result = Math.round(min + (clampedValue * range));
         return Math.max(min, Math.min(max, result));
     };
 
-    // Si usas generateRoundDataWithTarget, asegúrate de que también devuelva 'solution'
-    const generateRoundDataWithTarget = (
-        config: GameConfig,
-        target: number,
-        actualMin: number,
-        max: number,
-        containersCount: number,
-        objectsCount: number
-    ): {
-        containers: Container[];
-        topZone: NumberItem[];
-        targetTotal: number;
-        solution: { [bowlId: string]: string[] };
-    } => {
-        // ...igual que arriba, puedes reutilizar el mismo algoritmo...
-        return generateRoundData({
-            ...config,
-            settings: {
-                ...config.settings,
-                container_count: containersCount,
-                object_count: objectsCount
-            },
-            number_range: `${actualMin}-${max}`
-        });
-    };
-
-    // Hint: move a removable number (not in solution) to the top zone (only one per hint)
+    
     const useHint = (
         gameState: {
             containers: Container[],
@@ -246,6 +243,7 @@ const Game4: React.FC = () => {
 
     return (
         <BaseGame34
+            videoGame='/assets/videos/video_game4.mp4'
             gameKey="remove_equal"
             gameTitle="Sacar números"
             gameImage="/assets/juegosImg/game34/cuenco.png"
