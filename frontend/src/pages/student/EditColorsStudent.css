@@ -18,7 +18,10 @@
     justify-content: space-around;
     align-items: center;
 
+
+    height: 100% - clamp(100px, 20vh, 200px);
     
+
 }
 
 /*======================================
