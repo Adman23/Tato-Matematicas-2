@@ -177,7 +177,7 @@ export default function StudentEditProfile() {
 
   const router = useIonRouter();
   const handleHome = () => {
-    router.push(`/student-edit-menu/${id}/${name}`);
+    router.push(`/student-edit-menu/${id}/${name}/student`);
   }
 
   // Normaliza el nombre de usuario, 
