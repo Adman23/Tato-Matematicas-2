@@ -190,7 +190,7 @@
   color: var(--ion-color-danger);
 }
 
-.studentEditProfile-input-item {
+ion-input.studentEditProfile-input-item {
   --background: white;
   --border-radius: 100px;
   --padding-start: 1rem;
