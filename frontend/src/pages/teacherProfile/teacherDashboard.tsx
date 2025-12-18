@@ -69,12 +69,12 @@ export default function TutorDashboard() {
                 <div className="simple-button-title">Ordena la secuencia</div>
               </SimpleButton>
 
-              <SimpleButton onClick={() => router.push('/game3')}>
+              <SimpleButton onClick={() => router.push('/game/game3')}>
                 <img src="/assets/juegosImg/repartir.png" alt="Juego 3" className="simple-button-image" />
                 <div className="simple-button-title">Juego de repartir</div>
               </SimpleButton>
 
-              <SimpleButton onClick={() => router.push('/game4')}>
+              <SimpleButton onClick={() => router.push('/game/game4')}>
                 <img src="/assets/juegosImg/meter.png" alt="Juego 4" className="simple-button-image" />
                 <div className="simple-button-title">Igualar recipientes</div>
               </SimpleButton>

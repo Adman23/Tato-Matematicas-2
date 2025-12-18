@@ -1,0 +1,342 @@
+/**
+ * ContainerBlock.css
+ * Styles for the ContainerBlock component in Game34.
+ */
+
+
+/* ========================================
+    MAIN STYLES
+   ======================================== */
+
+/* Main container, occupy all the available width */
+.container-block {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* No height restriction, se ajusta al contenido */
+}
+
+/* Visual part of the container, It then contains the background image or zone and the drop zone*/
+.container-visual {
+    position: relative;
+    display: flex;
+    align-items: stretch; /* Cambia a stretch para que el contenido crezca en altura */
+    justify-content: center;
+    flex: 0 0 auto; /* Solo ocupa el espacio necesario */
+    min-height: 0;  /* Sin altura mínima forzada */
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.6em 0.8em; /* Espacio alrededor del contenido */
+}
+
+.container-bg {
+    width: 100%;
+    max-width: 48vw;
+    min-height: 0; /* Sin altura mínima forzada */
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
+    background-position: center bottom;
+    background-size: 100% 100%;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+    align-self: stretch;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    align-items: stretch;
+    box-sizing: border-box;
+    padding: 0.6em 0.8em; /* Espacio alrededor del contenido */
+}
+
+.container-zone {
+    flex: 0 0 auto;
+    background: #e6e8ef;
+    border: 1px solid #D0D1D6;
+    border-radius: 16px;
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    align-items: stretch;
+    box-sizing: border-box;
+    padding: 0.6em 0.8em; /* Espacio alrededor del contenido */
+}
+
+/* Operation overview, just below the container-visual (siblings) */
+.container-total {
+    flex: 0 0 auto;
+    min-height: 18px; /* Reduced from clamp(40px, 12%, 80px) */
+    max-height: 40px; /* Reduced from 80px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    border-radius: 12px;
+    padding: 0.2em 0.6em; /* Reduced padding */
+    margin-top: clamp(0.2rem, 0.5vh, 0.4rem);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    max-width: 100%; /* No exceder el ancho del contenedor padre */
+    align-self: center; /* Centrar horizontalmente */
+    overflow:hidden;
+}
+
+.container-total-text {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 700;
+    color: #2c3e50;
+    letter-spacing: 0.05em;
+    text-align: center;
+    line-height: 1.1;
+    
+    /* CONFIGURACIÓN FLEX PARA ELIPSIS */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap; /* Fuerza una sola línea */
+    overflow: hidden;    /* Oculta lo que se salga */
+}
+
+/* Clase nueva para la operación larga (la que debe cortarse) */
+.total-operation {
+    flex: 0 1 auto;      /* 0 grow, 1 shrink (se encoge), auto basis */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;        /* CRUCIAL: permite que un hijo flex se encoja más allá de su contenido */
+    opacity: 0.9;
+    font-size: 1em;
+}
+
+/* Clase nueva para el signo igual */
+.total-equals {
+    flex: 0 0 auto; /* No se encoge, no crece */
+    opacity: 0.9;
+    font-weight: 900;
+    font-size: 1.05em;
+    margin: 0 clamp(0.1rem, 0.5vw, 0.3rem);
+}
+
+/* Clase nueva para el resultado final */
+.total-result {
+    flex: 0 0 auto; /* No se encoge, siempre visible */
+    color: var(--ion-color-primary);
+    font-weight: 900;
+    font-size: 1.15em;
+}
+
+
+
+
+/*
+.container-zone:hover,
+.container-zone:focus {
+    background: linear-gradient(180deg, #7c7d81 0%, #D7D8DC 100%);
+    border-color: #C1C3C9;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 8px 18px rgba(0, 0, 0, 0.1);
+    outline: none;
+}
+*/
+
+/* Contenido interno: números arrastrables o estáticos */
+.container-content {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto; /* Se ajusta al contenido */
+    min-height: clamp(48px, 6.5vw, 100px); /* Altura mínima superior para mejor usabilidad */
+    display: flex;
+    flex-wrap: wrap-reverse;
+    gap: clamp(0.3rem, 1vw, 0.8rem);
+    justify-content: flex-start;
+    align-content: flex-start;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Style just for the chest */
+.container-chest {
+    justify-content: center;
+}
+
+.container-content-zone {
+    justify-content: center;
+    align-content: center;
+}
+
+/* Debug mode */
+.container-content.debug-visible {
+    background: rgba(255, 0, 0, 0.12);
+    border: 2px dashed rgba(255, 0, 0, 0.45);
+}
+.container-content.debug-visible::before {
+    content: 'DROP ZONE';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: bold;
+    color: rgba(255, 0, 0, 0.7);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 3;   
+}
+
+/* Números estáticos dentro del contenido (chest) */
+.container-number-static {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: clamp(56px, 10vw, 110px);
+    height: clamp(56px, 10vw, 110px);
+    border-radius: 50%;
+    background: #fff;
+    color: #000;
+    font-weight: 700;
+    font-size: clamp(1rem, 3.2vw, 1.4rem);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 2px solid rgba(0,0,0,0.08);
+    margin: clamp(0.2rem, 0.8vw, 0.5rem);
+    user-select: none;
+    pointer-events: none;
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 1024px) and (orientation: portrait) {
+    .container-bg {
+        max-width: 82vw;
+        min-height: 0; /* Sin altura mínima forzada */
+        max-height: none;
+        height: auto;
+        padding: 0.5em 0.5em;
+    }
+    .container-content {
+        left: 5%;
+        width: 90%;
+        height: auto;
+        min-height: 64px; /* Altura mínima superior también en media query */
+        gap: clamp(0.25rem, 0.9vw, 0.6rem);
+    }
+    .container-number-static {
+        width: clamp(52px, 16vw, 120px);
+        height: clamp(52px, 16vw, 120px);
+        font-size: clamp(0.95rem, 3.2vw, 1.3rem);
+    }
+    .container-total {
+        min-height: clamp(36px, 8vh, 60px);
+        padding: clamp(0.5rem, 1.5vh, 1rem) clamp(0.8rem, 2.5vw, 1.5rem);
+    }
+    .container-total-text {
+        font-size: clamp(1.2rem, 3.8vw, 1.8rem);
+        gap: clamp(0.4rem, 1.8vw, 1rem);
+    }
+    .container-zone {
+        padding: clamp(0.3rem, 0.8vh, 0.55rem);
+        min-height: 0;
+        max-height: none;
+        height: auto;
+        padding: 0.5em 0.5em;
+    }
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+    .container-bg {
+        max-width: 92vw;
+        min-height: 0;
+        max-height: none;
+        height: auto;
+        padding: 0.4em 0.3em;
+    }
+    .container-content {
+        left: 0;
+        width: 100%;
+        height: auto;
+        min-height: 56px; /* Altura mínima superior también en móvil */
+        gap: clamp(0.2rem, 0.8vw, 0.5rem);
+        justify-content: center;
+        align-items: center;
+    }
+    .container-content-zone {
+        justify-content: center !important;
+        align-content: center !important;
+        align-items: center !important;
+    }
+    .container-number-static {
+        width: clamp(50px, 21vw, 104px);
+        height: clamp(50px, 21vw, 104px);
+        font-size: clamp(0.9rem, 3.6vw, 1.2rem);
+    }
+    .container-total {
+        min-height: clamp(32px, 6vh, 52px);
+        padding: clamp(0.4rem, 1.2vh, 0.8rem) clamp(0.6rem, 2vw, 1.2rem);
+    }
+    .container-total-text {
+        font-size: clamp(1.1rem, 4vw, 1.6rem);
+        gap: clamp(0.3rem, 1.5vw, 0.8rem);
+    }
+    .container-zone {
+        padding: clamp(0.3rem, 0.8vh, 0.55rem);
+        min-height: 0;
+        max-height: none;
+        height: auto;
+        padding: 0.4em 0.3em;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+    .container-bg {
+        max-width: 46vw;
+        min-height: 0;
+        max-height: none;
+        height: auto;
+        padding: 0.4em 0.3em;
+    }
+    .container-zone {
+        padding: 0.4em 0.3em;
+        min-height: 0;
+        max-height: none;
+        height: auto;
+    }
+    .container-visual {
+        padding: 0.4em 0.3em;
+    }
+    .container-content {
+        left: 5%;
+        width: 90%;
+        height: auto;
+        min-height: 56px; /* Altura mínima superior también en landscape */
+        gap: clamp(0.2rem, 0.8vw, 0.5rem);
+    }
+    .container-number-static {
+        width: clamp(50px, 14vh, 110px);
+        height: clamp(50px, 14vh, 110px);
+        font-size: clamp(0.9rem, 2.2vh, 1.2rem);
+    }
+    .container-total {
+        min-height: clamp(30px, 7vh, 50px);
+        padding: clamp(0.4rem, 1vh, 0.7rem) clamp(0.7rem, 2vw, 1.3rem);
+    }
+    .container-total-text {
+        font-size: clamp(1rem, 3vh, 1.5rem);
+        gap: clamp(0.3rem, 1.2vw, 0.7rem);
+    }
+    .container-zone {
+        padding: clamp(0.3rem, 0.8vh, 0.55rem);
+        min-height: 0;
+        max-height: none;
+        height: auto;
+        padding: 0.4em 0.3em;
+    }
+}

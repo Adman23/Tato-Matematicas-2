@@ -501,7 +501,6 @@ const Game1: React.FC = () => {
                     correct_number: currentNumber,
                     is_correct: correct,
                     time_seconds: timeSeconds,
-                    is_final_attempt: true,
                     attempts: attemptsCount,
                     hints: hintsCount
                 });
@@ -568,7 +567,6 @@ const Game1: React.FC = () => {
                     correct_number: currentNumber,
                     is_correct: false,
                     time_seconds: timeSeconds,
-                    is_final_attempt: true,
                     attempts: attemptsCount,
                     hints: hintsCount
                 });
@@ -768,14 +766,14 @@ const Game1: React.FC = () => {
     }, []);
 
     /**
-  * Resumen funcional:
-  * Redirige al dashboard correspondiente según el rol del usuario.
-  *
-  * @returns void
-  *
-  * @example
-  * exitToDashboard();
-  */
+      * Resumen funcional:
+      * Redirige al dashboard correspondiente según el rol del usuario.
+      *
+      * @returns void
+      *
+      * @example
+      * exitToDashboard();
+      */
     const exitToDashboard = () => {
         const dashboardRoute = user?.role === "student" ? '/student/dashboard' : '/teacher/dashboard';
         router.push(dashboardRoute, "root", "push");

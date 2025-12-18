@@ -37,6 +37,8 @@ import EditGame2 from './pages/student/EditGame2';
 // === Juegos ===
 import Game1 from './pages/games/Game1/Game1';
 import Game2 from './pages/games/Game2/Game2';
+import Game3 from './pages/games/Game34/Game3';
+import Game4 from './pages/games/Game34/Game4';
 
 // == Paginas de tutor ====
 
@@ -112,6 +114,10 @@ export default function App() {
                   exact component={Game1} />
                 <PrivateRoute path="/game/game2" allowedRoles={["student", "teacher"]}
                   exact component={Game2} />
+                <PrivateRoute path="/game/game3" allowedRoles={["student", "teacher"]}
+                  exact component={Game3} /> 
+                <PrivateRoute path="/game/game4" allowedRoles={["student", "teacher"]}
+                  exact component={Game4} /> 
 
                 {/* Users Routes (except admin) */}
                 <PrivateRoute path="/student/dashboard" allowedRoles={["student"]}

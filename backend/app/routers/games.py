@@ -99,13 +99,12 @@ async def get_game_config(student_id: str, game_key: str):
             default_settings = {
                 "accessibility_mode": "drag_click",
                 "container_count": 2,
-                "requires_operations": False,
                 "object_count": 8
             }
         
         # Si no entra en ninguno (fallback seguro)
         if not default_settings:
-             default_settings = {}
+            default_settings = {}
 
         return GameConfigResponse(
             game_id=game_id,
@@ -344,7 +343,6 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "is_correct": request.round_result.is_correct,
                 "time": request.round_result.time_seconds,
                 "attempts": request.round_result.attempts or 0,
-                "is_final_attempt": request.round_result.is_final_attempt or False,
                 "hints": request.round_result.hints or 0
             }
         elif session.get("game_id") == 2:
@@ -358,6 +356,17 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
                 "hints": request.round_result.hints or 0,
                 "total_incorrect": request.round_result.total_incorrect or 0,
                 "omissions": request.round_result.omissions or 0
+            }
+        elif session.get("game_id") == 3 or session.get("game_id") == 4: 
+            # Game 3 & 4: Distribute/Remove equal
+            round_data = {
+                "round": request.round_result.round,
+                "bowls_totals": request.round_result.bowls_totals,
+                "chest_total": request.round_result.chest_total,
+                "is_correct": request.round_result.is_correct,
+                "time": request.round_result.time_seconds,
+                "attempts": request.round_result.attempts or 0,
+                "hints": request.round_result.hints or 0
             }
         else:
             # Unknown game, use generic fields
@@ -378,13 +387,12 @@ async def save_round_result(session_id: str, request: SaveRoundRequest):
         total_incorrect = session.get("total_incorrect", 0)
         total_omissions = session.get("total_omissions", 0)
 
-        if request.round_result.is_final_attempt:
-            if session.get("game_id") == 1:
-                # For Game 1: Touch number, use is_correct field
-                if request.round_result.is_correct:
-                    total_correct += 1
-                else:
-                    total_incorrect += 1
+        if session.get("game_id") != 2:
+            # For Game 1: Touch number, use is_correct field
+            if request.round_result.is_correct:
+                total_correct += 1
+            else:
+                total_incorrect += 1
             
         # Para Game 2: sumar los valores de la ronda
         if session.get("game_id") == 2:

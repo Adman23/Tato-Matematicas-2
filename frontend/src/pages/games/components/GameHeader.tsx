@@ -118,6 +118,7 @@ const GameHeader: React.FC<GameHeaderProps> = ({
           
           <IonIcon icon={arrowBack} />
         </Button3Dtext>
+        
         <div className="game-header-center">
           <IonText>
             <h2 className="game-header-title">{title}</h2>
@@ -127,16 +128,19 @@ const GameHeader: React.FC<GameHeaderProps> = ({
             <img
               src={pictogram1}
               alt="Pictograma 1"
+              aria-hidden="true"
               className="game-header-pictogram"
             />
             <img
               src={pictogramArrow}
               alt="Flecha"
+              aria-hidden="true"
               className="game-header-pictogram game-header-arrow"
             />
             <img
               src={pictogram2}
               alt="Pictograma 2"
+              aria-hidden="true"
               className="game-header-pictogram"
             />
           </div>
