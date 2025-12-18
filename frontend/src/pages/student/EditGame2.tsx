@@ -33,6 +33,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { gamesAPI, type GameConfig } from '../../lib/api';
 import SimpleHeaderUser from './components/SimpleHeaderUser';
+import SimpleHeaderEdit from '../teacherProfile/EditStudent/components/SimpleHeaderEdit';
 import { Button3Dtext } from '../global_components/PushableButtons';
 import LoadingSpinner from '../global_components/LoadingSpinner';
 import './EditGame2.css';
@@ -117,7 +118,8 @@ const ACCESSIBILITY_OPTIONS = [
 export default function EditGame2() {
     const { user } = useAuth();
     const router = useIonRouter();
-    const { id, name } = useParams<{ id: string; name: string }>();
+    const { id, name } = useParams<{ id?: string; name?: string }>();
+    const { role } = useParams<{ role?: string }>();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -357,7 +359,7 @@ export default function EditGame2() {
 
             // Redirigir según el rol del usuario
             if (user.role === 'teacher') {
-                router.push(`/student-edit-menu/${id}/${name}`, 'back');
+                router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
             } else {
                 router.push('/student/profile', 'back');
             }
@@ -461,19 +463,28 @@ export default function EditGame2() {
 
     return (
         <IonPage className="EditGame2-page">
-            {/* Header with game title and user info */}
-            <SimpleHeaderUser
-                userName={user?.username || "username"}
-                photoUrl={user?.photo_url}
-                hidden={true}
-                title={"JUEGO 2"}
-                title_image="/assets/pictograms/editar.png"
+            {/* Cabecera para edición por profesor */}
+            {id && name ? (
+            <SimpleHeaderEdit
+                studentName={name}
+                Editing={"Editar Juego 2"}
+                onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop')}
             />
+            ) : (
+            <SimpleHeaderUser
+                title="JUEGO 2"
+                title_image="/assets/pictograms/editar.png"
+                userName={user?.username || "username"}
+                photoUrl={user?.photo_url} hidden={true}
+            />
+            )}
+
 
             <IonContent className="EditGame2-content" fullscreen scrollY={false}>
                 <div className="EditGame2-wrapper">
                     {/* Back button - navigates to student edit menu (teacher) or student profile (student) */}
                     <div className="EditGame2-back-button">
+                        {user?.role === 'student' && (
                         <Button3Dtext
                             onClick={() => {
                                 if (user?.role === 'teacher') {
@@ -484,7 +495,7 @@ export default function EditGame2() {
                             }}
                             aria-label="Volver atrás">
                             <IonIcon icon={arrowBack} aria-hidden="true" />
-                        </Button3Dtext>
+                        </Button3Dtext>)}
                     </div>
 
                     {/* Main configuration buttons (Quantity, Range, Order, Mode) */}

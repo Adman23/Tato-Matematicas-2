@@ -52,6 +52,7 @@ export default function EditText(){
     const { user } = useAuth();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
+    const { role } = useParams<{ role: string }>();
 
     const router = useIonRouter();
 
@@ -68,7 +69,7 @@ export default function EditText(){
     });
 
     const handleHome = () => {
-        router.push(`/student-edit-menu/${id}/${name}`);
+        router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
     }
 
     if (!user) {
@@ -88,6 +89,8 @@ export default function EditText(){
         try {
             await saveFont(id, textConfig);
             setShowToast(true);
+
+            router.push(`/student-edit-menu/${id}/${name}`, 'back');
            
             //console.log("Configuración guardada correctamente!", customPalette);
         } catch (err) {
@@ -99,7 +102,7 @@ export default function EditText(){
         <IonPage>
 
             <SimpleHeaderEdit studentName={name} Editing={"Editar texto"} onHome={handleHome}/>
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding ContentEditTextTeacher">
                 <div className='MainContainer-EditText'>
                     
                     <div role="radiogroup" aria-label="Selecciona una fuente">

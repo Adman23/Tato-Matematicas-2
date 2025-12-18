@@ -37,7 +37,7 @@ const StudentItem: React.FC<Props> = ({
 }) => {
     return (
 
-        <IonItem lines="none">
+        <IonItem lines="none" className='messageitem-Item'>
             <div className="message-item-content">
                 <div>{message.text_message}</div>
             </div>

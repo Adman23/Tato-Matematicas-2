@@ -28,7 +28,7 @@ import {
 } from '@ionic/react';
 
 import './SimpleHeaderEdit.css';
-import { homeOutline } from 'ionicons/icons';
+import { arrowBack } from 'ionicons/icons';
 import { setupIonicReact } from '@ionic/react';
 
 setupIonicReact();
@@ -78,7 +78,7 @@ const SimpleHeaderEdit: React.FC<Props> = ({
 
                 <IonButtons slot='start'>
                     <IonButton className='homeButton-header-editStudentProfile' onClick={onHome} >
-                        <IonIcon slot="icon-only" md={homeOutline}></IonIcon>
+                        <IonIcon slot="icon-only" md={arrowBack}></IonIcon>
                     </IonButton>
                 </IonButtons>
 

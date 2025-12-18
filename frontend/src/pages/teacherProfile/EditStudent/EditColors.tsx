@@ -67,11 +67,12 @@ export default function EditColor() {
     const { user } = useAuth();
     const { id } = useParams<{ id: string }>();
     const { name } = useParams<{ name: string }>();
+    const { role } = useParams<{ role: string }>();
 
     const router = useIonRouter();
 
     const handleHome = () => {
-        router.push(`/student-edit-menu/${id}/${name}`);
+        router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
     }
 
     //Predefined color palettes
@@ -139,7 +140,7 @@ export default function EditColor() {
 
     //State for the modal
     const [showModal, setShowModal] = useState(false);
-    const [showToast, setShowToast] = useState(false);
+
 
 
     //Function that updates the preview of the final palette
@@ -233,7 +234,9 @@ export default function EditColor() {
                 bubble: customPalette.bubble,
                 bubble_selected: customPalette.bubble_selected
             });
-            setShowToast(true);
+
+            router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+
             console.log("Paleta guardada correctamente!", customPalette);
         } catch (err) {
             console.error("Error al guardar la paleta", err);
@@ -258,7 +261,7 @@ export default function EditColor() {
     return (
         <IonPage>
             <SimpleHeaderEdit studentName={name} Editing={"Editar colores"} onHome={handleHome}/>
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding ContentEditColorTeacher">
                 <div className="studentEditProfile-editcolors-outer-container">
                     <div className='studentEditColor-ionTitle'>Paletas predefinidas</div>
 
@@ -350,7 +353,7 @@ export default function EditColor() {
                     <IonToolbar >
                     <IonTitle>Informe de accesibilidad</IonTitle>
                     <IonButtons slot="end">
-                        <IonButton onClick={() => {setShowModal(false); setShowToast(false);}}>
+                        <IonButton onClick={() => {setShowModal(false)}}>
                         <IonIcon icon={close} />
                         </IonButton>
                     </IonButtons>
@@ -359,12 +362,6 @@ export default function EditColor() {
 
                 <IonContent className="ion-padding ModalColorEditContent">
                     <AccessibilityDashboard report={accessibilityReport} />
-
-                    {showToast && (
-                        <div className="SuccessEditColor" >
-                        Cambios guardados correctamente 
-                        </div>
-                    )}
                 </IonContent>
 
                 <IonFooter>

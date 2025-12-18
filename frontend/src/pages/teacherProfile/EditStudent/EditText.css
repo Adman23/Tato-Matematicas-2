@@ -1,3 +1,9 @@
+
+.ContentEditTextTeacher{
+
+  --background: var(--ion-color-primary-contrast);
+}
+
 .MainContainer-EditText{
 
     display: flex;
@@ -16,7 +22,8 @@
 .previewBox {
   padding: 12px 18px;
   border-radius: 10px;
-  border: 1px solid #dedede;
+  border: 1px solid var(--ion-color-primary);
+  background-color: white;
   min-width: 120px;
   width: 500px;
   text-align: center;

@@ -41,9 +41,10 @@ export default function TeacherProfilePage() {
           <HeaderTeacherItem
             teacherName={user.username}
             teacherAvatar={user.photo_url || "/assets/pictograms/user_default.png"}
+            onEditClick={() => router.push(`/student-edit-menu/${user.id}/${user.username}/teacher`, 'back', 'pop')}
             onLogoutClick={handleLogout}
           />
-          <IonContent>
+          <IonContent className='TeacherProfile-content'>
 
             <IonSearchbar className='perfilProfesor-buscador'
               placeholder="Buscar alumno"
@@ -53,7 +54,7 @@ export default function TeacherProfilePage() {
               onIonCancel={() => setStudentQuery('')}></IonSearchbar>
 
             <div className='studentTable'>
-              <IonList>
+              <IonList className='TeacherProfile-StudentList'>
                 {(
                   (studentQuery === '' ? Array.from(students.values()) : Array.from(students.values()).filter(entry => {
                     const s = entry.user; 
@@ -69,7 +70,7 @@ export default function TeacherProfilePage() {
                     studentAvatar={entry.user.photo_url || "no image"}
                     studentName={entry.user.username}
                     studentClass={entry.user.group_alias || "no group alias"}
-                    onEditClick={() => router.push(`/student-edit-menu/${entry.user.id}/${entry.user.username}`)}
+                    onEditClick={() => router.push(`/student-edit-menu/${entry.user.id}/${entry.user.username}/student`, 'back', 'pop')}
                   />
                 ))}
               </IonList>

@@ -13,6 +13,8 @@ import { SimpleButton } from '../global_components/SimpleButton';
 import imgAceptar from '/assets/pictograms/correcto.png';
 import { getAudioPreferences, saveAudioPreferences, type AudioPreferences } from '../../lib/api';
 import LoadingSpinner from "../global_components/LoadingSpinner";
+import SimpleHeaderEdit from '../teacherProfile/EditStudent/components/SimpleHeaderEdit';
+import { useParams } from 'react-router-dom';
 
 // --- Constantes y Configuraciones Estáticas ---
 const THEMES = [
@@ -42,6 +44,8 @@ const EditNoiseStudent: React.FC = () => {
   const [selectedVolume, setSelectedVolume] = useState<string>('bajito');
   const [pressedButton, setPressedButton] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { id, name } = useParams<{ id?: string; name?: string }>();
+  const { role } = useParams<{ role?: string}>();
   
   const router = useIonRouter();
   const { user } = useAuth();
@@ -164,11 +168,22 @@ const EditNoiseStudent: React.FC = () => {
 
   return (
     <IonPage>
-      <SimpleHeaderUser
-                title="Sonido"
-                title_image="/assets/pictograms/editar.png"
-                userName={user?.username || "username"}
-                photoUrl={user?.photo_url} hidden={true} />
+      {/* Cabecera para edición por profesor */}
+      {id && name ? (
+        <SimpleHeaderEdit
+          studentName={name}
+          Editing={"Editar Sonidos"}
+          onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop')}
+        />
+      ) : (
+        <SimpleHeaderUser
+          title="Sonido"
+          title_image="/assets/pictograms/editar.png"
+          userName={user?.username || "username"}
+          photoUrl={user?.photo_url} hidden={true}
+        />
+      )}
+
 
       <IonContent 
         className="ion-padding" 
@@ -179,12 +194,18 @@ const EditNoiseStudent: React.FC = () => {
           '--overflow': 'hidden' 
         } as React.CSSProperties}
       >
-        <Button3Dtext 
-          onClick={() => router.push('/student/profile', 'back', 'pop')} 
-          aria-label="Volver atrás"
-        >
-          <IonIcon icon={arrowBack} />
-        </Button3Dtext>
+        {user?.role === 'student' && (
+        <Button3Dtext
+            onClick={() => {
+                if (user?.role === 'teacher' && id && name) {
+                    router.push(`/student-edit-menu/${id}/${name}/${role}`, 'back', 'pop');
+                } else {
+                    router.push('/student/profile', 'back', 'pop');
+                }
+            }}
+            aria-label="Volver atrás">
+            <IonIcon icon={arrowBack} aria-hidden="true" />
+        </Button3Dtext>)}
 
         {/* CONTENEDOR PRINCIPAL */}
         <div className="container-editNoiseStudent">

@@ -6,7 +6,6 @@
  * Styling for the Game 3/4 (Classification) configuration page.
  * This page allows students and teachers to configure game parameters:
  * - Containers: Number of containers (hands/boxes)
- * - Numbers: With or without numbers (red circle)
  * - Range: Number range (0-10, 0-20, 0-100, 0-1000)
  * - Accessibility Mode: Different interaction methods
  *
@@ -150,36 +149,6 @@
     text-align: center;
     line-height: 1.1;
     word-break: break-word;
-}
-
-/* Red Circle (Numbers configuration) */
-.EditGame34-preview-circle {
-    width: 60px;
-    height: 60px;
-    background-color: #cf5c5c;
-    border: 3px solid #000;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-}
-
-.EditGame34-preview-circle.with-number span {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #000;
-}
-
-/* Large Red Circle (Inside Modal) */
-.EditGame34-preview-circle.large {
-    width: 90px;
-    height: 90px;
-    border-width: 4px;
-}
-
-.EditGame34-preview-circle.large.with-number span {
-    font-size: 3rem;
 }
 
 /* Hand Images (Containers) */
