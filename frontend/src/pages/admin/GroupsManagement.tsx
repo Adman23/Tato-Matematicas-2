@@ -31,6 +31,7 @@ import { fetchGroups, deleteGroup } from '../../lib/api';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import GroupItem from './components/GroupItem';
 import './GroupsManagement.css';
+import LoadingSpinner from '../global_components/LoadingSpinner';
 
 
 
@@ -87,8 +88,8 @@ export default function GroupsManagement() {
             <SimpleHeaderAdmin adminName={user?.username || "username"} />
             <IonContent scrollY={!(authLoading || loading)}>
                 {(authLoading || loading) ? (
-                    <div className='group-management-spinner'>
-                        <IonSpinner name='crescent' />
+                    <div>
+                        <LoadingSpinner message="Cargando grupos" />
                     </div>
                 ) : (
                     <div className="groupManagement-MainContainer">

@@ -56,6 +56,7 @@ import imgTatoFeliz from '/assets/Tato/TatoFeliz.png';
 import imgTatoTriste from '/assets/Tato/TatoTriste.png';
 import imgSiguiente from '/assets/juegosImg/siguiente.png';
 import imgInstrucciones from '/assets/juegosImg/instrucciones.png';
+import LoadingSpinner from '../../global_components/LoadingSpinner';
 
 // Arrow from assets
 const imgFlecha = '/assets/juegosImg/flecha.png';
@@ -1368,12 +1369,9 @@ const Game2: React.FC = () => {
   if (loading) {
     return (
       <IonPage>
-        <IonContent className="ion-padding ion-text-center">
-          <div style={{ marginTop: '50%' }}>
-            <IonSpinner name="crescent" />
-            <IonText>
-              <p>Cargando juego2...</p>
-            </IonText>
+        <IonContent>
+          <div>
+            <LoadingSpinner message="Cargando juego 2" />
           </div>
         </IonContent>
       </IonPage>

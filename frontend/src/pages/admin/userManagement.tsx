@@ -9,6 +9,7 @@ import { fetchStudents, fetchTeachers } from '../../lib/api';
 import SimpleHeaderAdmin from './components/SimpleHeaderAdmin';
 import TeacherManagementItem from './components/TeacherManagementItem';
 import './userManagement.css';
+import LoadingSpinner from '../global_components/LoadingSpinner';
 
 
 // Nota: interface User no usada — eliminada para evitar error de lint/ts
@@ -98,8 +99,8 @@ export default function UserManagement() {
       <SimpleHeaderAdmin adminName={user.username} />
       <IonContent scrollY={!(authLoading || loading)}>
         {(authLoading || loading) ? (
-          <div className='user-management-spinner'>
-            <IonSpinner name='crescent' />
+          <div>
+            <LoadingSpinner message={`Cargando ${tipo === 'profesores' ? 'profesores' : 'alumnos'}`} />
           </div>
         ) : (
           <div className="teacherManagement-MainContainer">

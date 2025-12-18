@@ -123,10 +123,10 @@ export default function EditGame34() {
                 // Leemos settings
                 const settings = data.settings || {};
                 setContainerCount(settings.container_count ?? 2);
-                
+
                 // Leemos object_count (default 8 si no existe)
                 setObjectCount(settings.object_count ?? 8);
-                
+
                 setAccessibilityMode(settings.accessibility_mode || 'drag_click');
 
                 if (user?.role !== 'teacher' && data.number_range === '0-10' && data.last_modified_by === 'teacher') {
@@ -211,7 +211,7 @@ export default function EditGame34() {
         return (
             <IonPage>
                 <IonContent className="ion-padding ion-text-center">
-                    <LoadingSpinner message="Cargando configuración..." />
+                    <LoadingSpinner message="Cargando configuración de los juegos 3 y 4" />
                 </IonContent>
             </IonPage>
         );
@@ -220,19 +220,19 @@ export default function EditGame34() {
     return (
         <IonPage className="EditGame34-page">
             {/* Cabecera para edición por profesor */}
-            {id && name && role? (
-            <SimpleHeaderEdit
-                studentName={name}
-                Editing={"Editar Juego 3/4"}
-                onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`)}
-            />
+            {id && name && role ? (
+                <SimpleHeaderEdit
+                    studentName={name}
+                    Editing={"Editar Juego 3/4"}
+                    onHome={() => router.push(`/student-edit-menu/${id}/${name}/${role}`)}
+                />
             ) : (
-            <SimpleHeaderUser
-                title="JUEGO 3 & 4"
-                title_image="/assets/pictograms/editar.png"
-                userName={user?.username || "username"}
-                photoUrl={user?.photo_url} hidden={true}
-            />
+                <SimpleHeaderUser
+                    title="JUEGO 3 & 4"
+                    title_image="/assets/pictograms/editar.png"
+                    userName={user?.username || "username"}
+                    photoUrl={user?.photo_url} hidden={true}
+                />
             )}
 
 
@@ -240,17 +240,17 @@ export default function EditGame34() {
                 <div className="EditGame34-wrapper">
                     <div className="EditGame34-back-button">
                         {user?.role === 'student' && (
-                        <Button3Dtext
-                            onClick={() => {
-                                if (user?.role === 'teacher' && id && name) {
-                                    router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
-                                } else {
-                                    router.push('/student/profile', 'back', 'pop');
-                                }
-                            }}
-                            aria-label="Volver atrás">
-                            <IonIcon icon={arrowBack} aria-hidden="true" />
-                        </Button3Dtext>)}
+                            <Button3Dtext
+                                onClick={() => {
+                                    if (user?.role === 'teacher' && id && name) {
+                                        router.push(`/student-edit-menu/${id}/${name}`, 'back', 'pop');
+                                    } else {
+                                        router.push('/student/profile', 'back', 'pop');
+                                    }
+                                }}
+                                aria-label="Volver atrás">
+                                <IonIcon icon={arrowBack} aria-hidden="true" />
+                            </Button3Dtext>)}
                     </div>
 
                     <div className="EditGame34-config-buttons">
@@ -349,7 +349,7 @@ export default function EditGame34() {
                 </div>
 
                 {/* MODALS */}
-                
+
                 {/* Modal Contenedores (2, 3, 4) */}
                 {showContainerModal && (
                     <div className="EditGame34-modal-overlay" onClick={closeAllModals}>

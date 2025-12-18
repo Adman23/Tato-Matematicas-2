@@ -56,6 +56,7 @@ import ClassSelect from './components/ClassSelect';
 import UserItem from './components/UserItem';
 import { authAPI, fetchTeachersWithGroups, fetchStudentsWithGroups, assignStudentsToGroup, assignTeachersToGroup, unassignStudentsFromGroup, unassignTeachersFromGroup } from '../../lib/api';
 import type { Group } from '../../lib/api';
+import LoadingSpinner from '../global_components/LoadingSpinner';
 
 /**
  * Represents a user in the selection UI (student or teacher).
@@ -415,7 +416,7 @@ export default function LinkProfiles() {
                         <div className='LinkProfiles-items'>
                             {loadingUsers ? (
                                 <div className='LinkProfiles-spinner'>
-                                    <IonSpinner name="crescent" />
+                                    <LoadingSpinner message="Cargando alummnos" />
                                 </div>
                             ) : (
                                 <IonList>
@@ -456,7 +457,7 @@ export default function LinkProfiles() {
                         <div className='LinkProfiles-items'>
                             {loadingUsers ? (
                                 <div className='LinkProfiles-spinner'>
-                                    <IonSpinner name="crescent" />
+                                    <LoadingSpinner message="Cargando profesores" />
                                 </div>
                             ) : (
                                 <IonList>
